@@ -13,6 +13,8 @@
   :root{
     --ink:#eef3fa; --dim:#a9b7c9; --accent:#22e02a; --gold:#ffd83d; --danger:#e5484d;
     --glass:rgba(10,15,21,.72); --line:rgba(255,255,255,.14);
+    --sand:#e0b877;                       /* the sandbox drawer's accent */
+    --sbW:376px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   /* dvh keeps the layout honest while mobile browser chrome slides in and out;
@@ -65,29 +67,140 @@
   .pill.gain{animation:pop .5s ease}
   @keyframes pop{0%,100%{transform:scale(1)}40%{transform:scale(1.07)}}
 
-  /* ------------------------------------------------------ test panel ---- */
-  #dev{
-    position:absolute;top:74px;left:16px;display:flex;align-items:center;gap:6px;
-    background:rgba(10,15,21,.72);border:1px dashed rgba(255,216,61,.45);border-radius:11px;
-    padding:6px 9px;backdrop-filter:blur(8px);box-shadow:0 6px 18px rgba(0,0,0,.4);
+  /* --------------------------------------------------- sandbox drawer ---
+     Same motion language as the shop, docked to the right instead. */
+  #sbTab{
+    position:absolute;right:0;top:50%;transform:translateY(-50%);
+    display:none;flex-direction:column;align-items:center;gap:9px;cursor:pointer;font:inherit;
+    background:linear-gradient(90deg,rgba(24,34,46,.94),rgba(12,18,26,.94));
+    border:1px solid var(--line);border-right:0;border-radius:16px 0 0 16px;
+    padding:26px 11px;color:var(--sand);font-weight:800;font-size:12px;
+    letter-spacing:2.6px;text-transform:uppercase;backdrop-filter:blur(10px);
+    writing-mode:vertical-rl;box-shadow:-8px 0 26px rgba(0,0,0,.5);
+    transition:right .42s cubic-bezier(.22,1.2,.36,1), background .15s;
+    z-index:13;
   }
-  #dev .lab{
-    font-size:8.5px;letter-spacing:1.6px;text-transform:uppercase;font-weight:800;
-    color:#0d1720;background:var(--gold);border-radius:4px;padding:3px 6px;
+  body.sandbox #sbTab{display:flex}
+  #sbTab:hover{background:linear-gradient(90deg,rgba(34,48,62,.96),rgba(18,26,36,.96))}
+  #sbTab .chev{writing-mode:horizontal-tb;transition:transform .42s cubic-bezier(.22,1.2,.36,1)}
+  #sbTab.open{right:var(--sbW)}
+  #sbTab.open .chev{transform:rotate(180deg)}
+
+  #sbPanel{
+    position:absolute;right:0;top:0;bottom:0;width:var(--sbW);display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(16,23,32,.95),rgba(8,12,18,.98));
+    border-left:1px solid var(--line);backdrop-filter:blur(14px);
+    transform:translateX(100%);transition:transform .42s cubic-bezier(.22,1.2,.36,1);
+    box-shadow:-16px 0 44px rgba(0,0,0,.55);z-index:12;
   }
-  #dev .sep{width:1px;height:22px;background:var(--line);margin:0 2px}
-  #dev input{
-    width:82px;background:#0c1219;border:1px solid var(--line);border-radius:7px;
-    color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:5px 8px;
-    font-variant-numeric:tabular-nums;
+  #sbPanel.open{transform:translateX(0)}
+  #sbPanel::before{
+    content:'';position:absolute;top:0;bottom:0;left:0;width:2px;
+    background:linear-gradient(180deg,transparent,var(--sand),transparent);
   }
-  #dev input:focus{outline:none;border-color:var(--gold)}
-  #dev button{
-    background:#141c26;border:1px solid var(--line);border-radius:7px;color:var(--dim);
-    font:inherit;font-size:11px;font-weight:700;padding:5px 9px;cursor:pointer;transition:.12s;
+  .sbHead{padding:12px 13px 9px;border-bottom:1px solid var(--line);flex:none}
+  .sbHead .t{
+    display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+    font-size:13px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;color:var(--sand);
   }
-  #dev button:hover{color:#0d1720;background:var(--gold);border-color:var(--gold)}
-  #dev button:active{transform:translateY(1px)}
+  .sbHead .t em{font-style:normal;font-size:9px;letter-spacing:1.6px;color:var(--dim)}
+  .sbPills{display:flex;gap:5px;margin-top:9px}
+  .sbPills button{
+    flex:1;font:inherit;font-size:10.5px;font-weight:800;cursor:pointer;padding:6px 2px;
+    border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.04);
+    color:var(--dim);transition:.13s;letter-spacing:.4px;
+  }
+  .sbPills button:hover{color:var(--ink);background:rgba(255,255,255,.09)}
+  .sbPills button.on{
+    color:#0d1720;background:var(--pc,var(--sand));border-color:var(--pc,var(--sand));
+    box-shadow:0 0 16px -3px var(--pc,var(--sand));
+  }
+  .sbSeg{display:flex;gap:4px;padding:9px 13px;flex:none;border-bottom:1px solid var(--line)}
+  .sbSeg button{
+    flex:1;font:inherit;font-size:10.5px;font-weight:800;cursor:pointer;padding:7px 2px;
+    border-radius:9px;border:1px solid transparent;background:rgba(255,255,255,.04);
+    color:var(--dim);transition:.13s;
+  }
+  .sbSeg button:hover{color:var(--ink);background:rgba(255,255,255,.09)}
+  .sbSeg button.on{color:#0d1720;background:var(--sand);border-color:var(--sand)}
+  .sbBody{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:10px 13px 16px;
+          scrollbar-width:thin;scrollbar-color:rgba(224,184,119,.45) transparent}
+  .sbBody::-webkit-scrollbar{width:9px}
+  .sbBody::-webkit-scrollbar-thumb{background:rgba(224,184,119,.4);border-radius:99px;
+    border:3px solid transparent;background-clip:content-box}
+  .sbBody h4{
+    position:sticky;top:-10px;z-index:2;margin:12px -13px 6px;padding:7px 13px 5px;
+    font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;color:var(--sand);
+    background:linear-gradient(180deg,rgba(10,15,21,.98),rgba(10,15,21,.86));
+  }
+  .sbBody h4:first-child{margin-top:0}
+  .sbRow{
+    display:flex;align-items:center;gap:9px;width:100%;text-align:left;font:inherit;
+    background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:10px;
+    padding:7px 9px;margin-bottom:5px;cursor:pointer;color:inherit;transition:.12s;
+  }
+  .sbRow:hover{background:rgba(255,255,255,.08);border-color:var(--sand)}
+  .sbRow.on{border-color:var(--sand);background:rgba(224,184,119,.16);
+            box-shadow:0 0 0 1px var(--sand) inset}
+  .sbRow .sw{width:26px;height:26px;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.5);
+             display:grid;place-items:center;font-size:10px;font-weight:900;color:#0d1720}
+  .sbRow .nm{flex:1;min-width:0;font-size:11.5px;font-weight:700;
+             overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sbRow .st{font-size:9.5px;color:var(--dim);font-variant-numeric:tabular-nums;flex:none}
+  .sbFld{margin-bottom:9px}
+  .sbFld label{display:block;font-size:9.5px;letter-spacing:1.4px;text-transform:uppercase;
+               color:var(--dim);margin-bottom:4px}
+  .sbFld input[type=text],.sbFld input[type=number],.sbFld select{
+    width:100%;background:#0c1219;border:1px solid var(--line);border-radius:8px;
+    color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:7px 9px;
+  }
+  .sbFld input:focus,.sbFld select:focus{outline:none;border-color:var(--sand)}
+  .sbFld input[type=range]{width:100%;accent-color:var(--sand)}
+  .sbSwatch{display:flex;flex-wrap:wrap;gap:5px}
+  .sbSwatch button{
+    width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer;padding:0;
+  }
+  .sbSwatch button.on{border-color:#fff;box-shadow:0 0 0 2px rgba(0,0,0,.6)}
+  .sbBtn{
+    width:100%;font:inherit;font-size:12px;font-weight:800;cursor:pointer;padding:9px;
+    border-radius:10px;border:1px solid var(--sand);color:#0d1720;background:var(--sand);
+    margin-top:4px;transition:.12s;
+  }
+  .sbBtn:hover{filter:brightness(1.12)}
+  .sbBtn:active{transform:translateY(1px)}
+  .sbBtn.ghost{background:rgba(255,255,255,.05);color:var(--dim);border-color:var(--line)}
+  .sbBtn.ghost:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  .sbBtn.warn{background:rgba(229,72,77,.16);color:#ff9ea1;border-color:rgba(229,72,77,.45)}
+  .sbBtn.warn:hover{background:rgba(229,72,77,.28);color:#fff}
+  .sbGrid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .sbNote{font-size:9.5px;color:var(--dim);line-height:1.5;margin:6px 0 2px}
+  .sbPrev{height:96px;border-radius:10px;border:1px solid var(--line);
+          background:radial-gradient(circle at 50% 60%,#16202b,#080c11);margin-bottom:9px;
+          position:relative;overflow:hidden}
+  .sbPrev canvas{position:absolute;inset:0;width:100%;height:100%}
+  #sbHint{
+    position:absolute;left:50%;top:120px;transform:translateX(-50%);
+    background:rgba(10,15,21,.86);border:1px solid var(--sand);border-radius:999px;
+    padding:7px 18px;font-size:12px;font-weight:800;color:var(--sand);letter-spacing:.6px;
+    display:none;z-index:14;pointer-events:none;backdrop-filter:blur(8px);
+  }
+  #sbHint.on{display:block}
+  body.mobile #sbTab{padding:34px 15px;font-size:19px;letter-spacing:3px}
+  body.mobile .sbHead .t{font-size:19px}
+  body.mobile .sbHead .t em{font-size:14px}
+  body.mobile .sbPills button{font-size:16px;padding:11px 2px;min-height:var(--tap)}
+  body.mobile .sbSeg button{font-size:15px;padding:12px 2px;min-height:var(--tap)}
+  body.mobile .sbBody h4{font-size:14px}
+  body.mobile .sbRow{padding:12px;margin-bottom:8px}
+  body.mobile .sbRow .sw{width:40px;height:40px;font-size:14px}
+  body.mobile .sbRow .nm{font-size:18px}
+  body.mobile .sbRow .st{font-size:14px}
+  body.mobile .sbFld label{font-size:14px}
+  body.mobile .sbFld input[type=text],body.mobile .sbFld input[type=number],
+  body.mobile .sbFld select{font-size:18px;padding:11px;min-height:var(--tap)}
+  body.mobile .sbSwatch button{width:42px;height:42px}
+  body.mobile .sbBtn{font-size:18px;padding:14px;min-height:var(--tap)}
+  body.mobile #sbHint{font-size:18px;padding:11px 26px}
 
   /* -------------------------------------------------------- settings ---- */
   #sets{position:absolute;top:16px;right:16px;display:flex;gap:7px}
@@ -405,6 +518,7 @@
   body.mobile #bossbar .row{font-size:19px}
 
   /* ---- shop: fewer, fatter, and it scrolls ---- */
+  body.mobile{--sbW:520px}
   body.mobile #shopTab{
     padding:0 46px;font-size:21px;letter-spacing:3px;gap:14px;
     min-height:var(--tap);border-radius:20px 20px 0 0;
@@ -475,21 +589,6 @@
   body.mobile #ttip .r b{font-size:16px}
   body.mobile #ttip .tag{font-size:13px;padding:3px 9px}
   body.mobile #ttip .th img{width:54px;height:58px}
-
-  /* the test panel folds away behind a chip so it never eats the board */
-  #devTog{display:none}
-  body.mobile #devTog{
-    display:grid;place-items:center;position:absolute;top:96px;left:14px;
-    min-width:var(--tap);min-height:var(--tap);border-radius:14px;font:inherit;
-    font-size:17px;font-weight:800;letter-spacing:1px;cursor:pointer;color:var(--gold);
-    background:rgba(10,15,21,.72);border:1px dashed rgba(255,216,61,.45);
-  }
-  body.mobile #dev{top:96px;left:calc(14px + var(--tap) + 10px);display:none;
-                   flex-wrap:wrap;max-width:1100px;gap:9px;padding:11px 13px}
-  body.mobile #dev.on{display:flex}
-  body.mobile #dev input{font-size:18px;padding:8px 10px;width:130px;min-height:var(--tap)}
-  body.mobile #dev button{font-size:16px;padding:0 14px;min-height:var(--tap)}
-  body.mobile #dev .lab{font-size:14px}
 
   body.mobile .overlay h1{font-size:min(62px,7vw)}
   body.mobile .overlay p{font-size:19px;max-width:1100px}
@@ -701,6 +800,11 @@
   .mcard .pips{display:flex;gap:4px;align-items:center}
   .mcard .pips i{width:16px;height:6px;border-radius:99px;background:rgba(255,255,255,.16)}
   .mcard .pips i.on{background:var(--mc)}
+  .mcard .pips .freeform{
+    font-size:8.5px;letter-spacing:1.8px;text-transform:uppercase;font-weight:800;
+    color:var(--mc);border:1px solid var(--mc);border-radius:99px;padding:2px 8px;opacity:.85;
+  }
+  body.mobile .mcard .pips .freeform{font-size:13px;padding:4px 12px}
   .mcard .mfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:1px}
   .mcard .best{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim)}
   .mcard .best b{color:var(--ink);font-variant-numeric:tabular-nums}
@@ -773,18 +877,6 @@
       </div>
     </div>
 
-    <button id="devTog" aria-label="Toggle test panel">TEST</button>
-    <div id="dev">
-      <span class="lab">Test</span>
-      <input id="devMoney" type="number" min="0" step="100" value="1000">
-      <button id="devSet">Set coins</button>
-      <button id="devAdd">+1000</button>
-      <button id="devBig">+10k</button>
-      <button id="devLives">+50 lives</button>
-      <span class="sep"></span>
-      <input id="devWave" type="number" min="1" step="1" value="20">
-      <button id="devWaveSet">Set wave</button>
-    </div>
 
     <div id="sets">
       <button class="chip" id="autoBtn"><span class="dot"></span>Auto-Skip</button>
@@ -811,6 +903,20 @@
       Shop
       <span class="hint">TAB</span>
     </button>
+
+    <button id="sbTab" aria-label="Sandbox panel">
+      <svg class="chev" width="15" height="15" viewBox="0 0 24 24"><path fill="#e0b877" d="M15 4l-8 8 8 8z"/></svg>
+      Sandbox
+    </button>
+    <div id="sbPanel">
+      <div class="sbHead">
+        <div class="t"><span>Sandbox</span><em id="sbDiffLbl">Medium rules</em></div>
+        <div class="sbPills" id="sbDiff"></div>
+      </div>
+      <div class="sbSeg" id="sbSeg"></div>
+      <div class="sbBody" id="sbBody"></div>
+    </div>
+    <div id="sbHint"></div>
 
     <div id="panel"></div>
   <div id="ttip"></div>
@@ -2276,13 +2382,13 @@ function canBuyUp(t, path, tier) {
   if (tier <= own) return 'owned';
   if (tier !== own + 1) return 'locked';
   if (tier === 3 && other >= 3) return 'blocked';
-  if (S.money < up[path].tiers[tier-1].cost) return 'poor';
+  if (!afford(up[path].tiers[tier-1].cost)) return 'poor';
   return 'ok';
 }
 function buyUp(t, path, tier) {
   if (canBuyUp(t, path, tier) !== 'ok') { beep(150, 0.08, 'square', 0.03); return false; }
   const u = UPGRADES[t.type][path].tiers[tier-1];
-  S.money -= u.cost;
+  spend(u.cost);
   if (path === 'A') t.upA = tier; else t.upB = tier;
   t._spec = null;
   burst(t.x, t.y - 20, path === 'A' ? '#ffd83d' : '#7fe9ff', 16);
@@ -2356,6 +2462,14 @@ const MODES = {
      its own map, camera, economy and win condition live in the Titan Fight
      section further down. The dials here are only what the shared shop and
      tower code read. */
+  sandbox:{ key:'sandbox', name:'Sandbox', mc:'#e0b877', pips:0, menu:true, preview:'sandbox',
+            sandbox:true, tint:['rgba(225,180,110,.30)','rgba(34,25,12,.55)'],
+            scoreLabel:'Best wave',
+            blurb:'Infinite coins &amp; lives. Spawn anything. Pick Easy&ndash;Nightmare rules.',
+            /* the dials are never read directly: M() swaps in whichever
+               difficulty the player picked inside the run. */
+            money:0, lives:0, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
+            bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 },
   titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:4, siege:true,
             menu:false, preview:'hard', tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
             scoreLabel:'Best time',
@@ -2363,7 +2477,33 @@ const MODES = {
             money:900, lives:1000, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
             bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 }
 };
-const M = () => MODES[S.mode] || MODES.normal;
+/* ------------------------------------------------------------ sandbox ---
+   Sandbox is a mode wrapper, not a fifth rule set: it borrows whichever
+   difficulty the player picked inside the run and only overrides what
+   "sandbox" actually means — free money, free lives, no cost curve.
+
+   Changing the difficulty mid-run takes effect IMMEDIATELY. Speed, leak
+   damage, elite weighting and boss health all read M() live, so they
+   switch on the spot; enemy health is baked at spawn, so blobs already on
+   the trail keep the health they were born with. */
+const SB = () => S.mode === 'sandbox';
+let _mCache = null, _mKey = '';
+const M = () => {
+  const m = MODES[S.mode] || MODES.normal;
+  if (!m.sandbox) return m;
+  const d = MODES[S.sbDiff] || MODES.normal;
+  if (_mKey !== S.sbDiff) {
+    _mCache = Object.assign({}, d, {
+      key:'sandbox', name:'Sandbox · ' + d.name, sandbox:true, mc:m.mc,
+      cost:1, refund:0.70, autoFrom:1
+    });
+    _mKey = S.sbDiff;
+  }
+  return _mCache;
+};
+/* nothing may be unaffordable in a sandbox, and nothing is ever deducted */
+const afford = c => SB() || S.money >= c;
+const spend  = c => { if (!SB()) S.money -= c; };
 /* prices and refunds are mode business, so nothing reads TOWERS[k].cost raw */
 const costOf   = k => Math.round(TOWERS[k].cost * M().cost);
 const refundOf = t => Math.floor((costOf(t.type) + upSpent(t)) * M().refund);
@@ -2412,10 +2552,11 @@ const eliteOf = e => (e.elite >= 0 ? ELITE[e.elite] : null);
 const eLeak  = e => Math.max(1, Math.round((e.leakN !== undefined ? e.leakN
                                           : e.elite >= 0 ? ELITE[e.elite].leak
                                                          : Math.max(1, Math.ceil(e.hp))) * M().leak));
-const eSpeed = e => (e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(1, e.hp) + 5))
+const eSpeed = e => (e.spd !== undefined ? e.spd
+                   : e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(1, e.hp) + 5))
                     * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
                     * (e.haste || 1);
-const eRad   = e => (e.elite >= 0 ? ELITE[e.elite].r    : E_R);
+const eRad   = e => (e.cust ? e.cust.r : e.elite >= 0 ? ELITE[e.elite].r : E_R);
 const eAbility = e => (e.elite >= 0 ? ELITE[e.elite].ability : null);
 
 /* ---------------------------------------------------- enemy abilities ----
@@ -2734,6 +2875,7 @@ const S = {
   /* null = let the frame rate decide, 0/2 = the player has decided for us */
   perfLock:null, tutorialDone:false,
   mode:'normal', bests:{}, titanBest:null, titan:null,
+  sbDiff:'normal', sbOpen:false, sbTab:'spawn', sbPick:null, sbQty:1, sbTrue:false, customs:[],
   cam:{ x:W/2, y:H/2, z:1, min:1, max:1 }, keys:{}, pan:null, pinch:null, pathPts:PATH
 };
 
@@ -2759,13 +2901,16 @@ function loadSave() {
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
   if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
   if (typeof j.autoSkip === 'boolean') S.autoSkip = j.autoSkip;
+  if (MODES[j.sbDiff] && !MODES[j.sbDiff].sandbox) S.sbDiff = j.sbDiff;
+  if (Array.isArray(j.customs)) S.customs = j.customs.filter(c => c && c.name).slice(0, 60);
   S.tutorialDone = !!j.tutorial;
 }
 function saveNow() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
-      autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0
+      autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
+      sbDiff:S.sbDiff, customs:S.customs
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
@@ -2964,7 +3109,7 @@ function buildShelf() {
 
 function syncShelf() {
   document.querySelectorAll('.med').forEach(el => {
-    const key = el.dataset.key, can = S.money >= costOf(key);
+    const key = el.dataset.key, can = afford(costOf(key));
     if (can && S.affordable[key] === false) { el.classList.add('newly'); setTimeout(() => el.classList.remove('newly'), 820); }
     S.affordable[key] = can;
     el.classList.toggle('locked', !can);
@@ -2974,6 +3119,10 @@ function syncShelf() {
 
 function setShop(open) {
   S.shopOpen = open;
+  if (open && S.sbOpen) {            // the shop and the sandbox drawer share the screen
+    S.sbOpen = false;
+    $('sbPanel').classList.remove('open'); $('sbTab').classList.remove('open');
+  }
   $('drawer').classList.toggle('open', open);
   $('shopTab').classList.toggle('open', open);
   $('shopTab').classList.toggle('nudge', !open && S.towers.length === 0 && S.phase !== 'menu');
@@ -2995,7 +3144,7 @@ function setPlacingBanner() {
 }
 
 function pick(key) {
-  if (S.money < costOf(key)) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
+  if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
   S.dupe = null;
   S.placing = key;
   syncShelf(); setPlacingBanner();
@@ -3013,7 +3162,7 @@ const dupeCost = t => costOf(t.type) + upSpent(t);
 
 function startDuplicate(t) {
   const cost = dupeCost(t);
-  if (S.money < cost) {
+  if (!afford(cost)) {
     toast('Need $' + cost.toLocaleString() + ' to duplicate ' + TOWERS[t.type].name);
     beep(150, 0.08, 'square', 0.03);
     return;
@@ -3028,12 +3177,15 @@ function startDuplicate(t) {
 
 /* ---------------------------------------------------------------- hud ---- */
 function syncHUD() {
-  $('hpVal').textContent = Math.max(0, Math.round(S.health)) + (S.shield > 0 ? ' +' + S.shield : '');
-  $('moneyVal').textContent = '$' + Math.floor(S.money);
+  const sb = SB();
+  $('hpVal').textContent = sb ? '∞'
+    : Math.max(0, Math.round(S.health)) + (S.shield > 0 ? ' +' + S.shield : '');
+  $('moneyVal').textContent = sb ? '∞' : '$' + Math.floor(S.money);
   $('waveVal').textContent = S.wave;
-  $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg)) : S.best;
+  $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
+                           : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
   $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
-  $('bestLbl').textContent = S.titan ? 'Damage' : 'Best';
+  $('bestLbl').textContent = S.titan ? 'Damage' : sb ? 'Rules' : 'Best';
   const sw = $('startWave'), tag = $('waveTag');
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
@@ -3053,7 +3205,11 @@ const LIFE_CAP = 99;      // nurses top the nursery back up, they don't stack it
 function reset() {
   const md = M();
   S.titan = null; camReset(); usePath(PATH);      // back to the serpentine
-  S.phase='build'; S.health=md.lives; S.money=md.money; S.wave=1; S.pops=0;
+  S.phase='build'; S.wave=1; S.pops=0;
+  /* the sandbox's numbers are only ever cosmetic; nothing can spend them
+     down and nothing can knock them out */
+  S.health = SB() ? 9999 : md.lives;
+  S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null;
@@ -3065,6 +3221,11 @@ function reset() {
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
   if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
   syncChips();
+  S.sbPick = null;
+  document.body.classList.toggle('sandbox', SB());
+  $('sbPanel').classList.remove('open'); $('sbTab').classList.remove('open');
+  S.sbOpen = false; sbHint();
+  if (SB()) { S.sbTab = 'spawn'; sbRender(); }
   hideTip(); setPlacingBanner(); setShop(true); syncHUD();
 }
 
@@ -3314,6 +3475,44 @@ function pvScene(key, g, w, h, t) {
     }
     pvJaxon(g, 'titan', w*0.16, ground + 4, h*0.62, false);
 
+  } else if (key === 'sandbox') {
+    /* a workshop: two Engineers and a production line of cars rolling out */
+    pvGround(g, w, h, '#4a3a1e', '#241a0b');
+    g.fillStyle = 'rgba(255,220,150,.06)'; g.fillRect(0, ground, w, h - ground);
+    /* the belt */
+    g.save();
+    g.strokeStyle = 'rgba(255,220,150,.18)'; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(0, ground + 4); g.lineTo(w, ground + 4); g.stroke();
+    g.strokeStyle = 'rgba(255,220,150,.30)'; g.lineWidth = 2;
+    g.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const x = frac(i/10 + p)*w;
+      g.moveTo(x, ground + 1); g.lineTo(x, ground + 8);
+    }
+    g.stroke(); g.restore();
+    /* cars leaving the line, alternating black and gold */
+    for (let j = 0; j < 4; j++) {
+      const v = frac(p + j/4);
+      const x = w*0.26 + v*w*0.86;
+      const bounce = Math.abs(Math.sin(v*12))*2;
+      pvSprite(g, j % 2 ? 'goldcar' : 'blackcar', x, ground - 11 - bounce, 24, 0);
+    }
+    /* sparks off the workbench, periodic so the loop stays seamless */
+    g.save();
+    for (let i = 0; i < 7; i++) {
+      const v = frac(p*3 + i/7);
+      const a = -1.9 + i*0.28;
+      const d = v*16;
+      g.globalAlpha = Math.max(0, 1 - v)*0.9;
+      g.fillStyle = i % 2 ? '#ffd83d' : '#fff0a8';
+      g.beginPath();
+      g.arc(w*0.24 + Math.cos(a)*d, ground - 20 + Math.sin(a)*d, 1.6, 0, 7);
+      g.fill();
+    }
+    g.restore();
+    pvJaxon(g, 'engineer', w*0.13, ground + 3, h*0.5, false);
+    pvJaxon(g, 'goldeng',  w*0.26, ground + 3, h*0.52, false);
+
   } else {                                        /* nightmare */
     pvGround(g, w, h, '#1b0b33', '#080314');
     g.fillStyle = 'rgba(168,107,255,.06)'; g.fillRect(0, ground, w, h - ground);
@@ -3382,7 +3581,9 @@ const MENU_MODES = () => Object.keys(MODES).filter(k => MODES[k].menu);
 function buildModeCards() {
   const card = k => {
     const m = MODES[k], best = bestOf(k);
-    const pips = [1,2,3,4].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('');
+    const pips = m.pips
+      ? [1,2,3,4].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('')
+      : '<span class="freeform">free&nbsp;play</span>';
     return `<button class="mcard" data-m="${k}" data-pv="${m.preview}" style="--mc:${m.mc}"
                     aria-label="${m.name}. ${m.blurb}">
         <div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>
@@ -3623,7 +3824,8 @@ const tierSpeed = tier => WAVE_SPEED / (tier + 5) * waveRamp();
    multiplier that decays, never the enemy's own value.                  */
 const COIN_BASE = 6.0, COIN_DECAY = 0.135;
 const coinCurve  = () => 1 / (1 + Math.max(0, S.wave - 1) * COIN_DECAY);
-const enemyWorth = e => (e.elite >= 0 ? 1.00 + e.elite*0.35
+const enemyWorth = e => (e.cust ? 1.4
+                       : e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
 const bountyFor  = e => COIN_BASE * enemyWorth(e) * coinCurve() * M().coin;
 
@@ -3659,6 +3861,7 @@ function salvageLeak(lives) {
 }
 
 function enemyFill(e) {
+  if (e.cust) return e.cust.fill;
   return e.elite >= 0 ? ELITE[e.elite].fill : TIER[Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)))].fill;
 }
 /* Whistle's mark, the Director's cut, Lunchbox's snack and the Director's
@@ -4144,6 +4347,451 @@ function targetFor(t) {
   return best || onBoss();
 }
 
+
+/* ======================================================================= *
+ *  SANDBOX DRAWER                                                         *
+ *  Everything the old floating TEST panel could do, plus a spawn          *
+ *  inventory and two makers, in a right-hand drawer that opens the same    *
+ *  way the shop does. It only exists while S.mode === 'sandbox'.           *
+ *                                                                         *
+ *  Hand-made units are plain data: a colour, a radius, a silhouette and a  *
+ *  few numbers. They ride the same pathing, targeting, damage and drawing  *
+ *  code as everything else, which is why the maker needed no engine work   *
+ *  beyond letting an enemy carry its own palette.                          *
+ * ======================================================================= */
+const SB_COLORS = ['#dd3333','#de8237','#decb38','#3ddc6a','#3fa8ff','#6737de',
+                   '#da36d9','#e0b877','#95a6bb','#2a2a2a','#f2f4f8','#ff8ec4'];
+const SB_LOOKS  = [['blob','Classic blob'], ['armour','Armoured']];
+const SB_THEMES = [['classic','Classic orb'], ['green','Matrix green'], ['red','Red hacker'],
+                   ['blue','Blue hacker'], ['white','White hacker'], ['gold','Gold hacker'],
+                   ['denied','ACCESS DENIED'], ['static','Static'], ['reaper','Reaper'],
+                   ['final','Final transmission']];
+const SB_SECTIONS = [['spawn','Spawn'], ['enemy','Enemy'], ['boss','Boss'], ['tools','Tools']];
+const SB_DIFFS = ['easy','normal','hard','nightmare'];
+
+const sbShade = (hex, k) => {
+  const v = parseInt(hex.slice(1), 16);
+  const c = [v >> 16 & 255, v >> 8 & 255, v & 255]
+    .map(x => Math.max(0, Math.min(255, Math.round(x*k))));
+  return '#' + c.map(x => x.toString(16).padStart(2, '0')).join('');
+};
+const sbText = hex => {
+  const v = parseInt(hex.slice(1), 16);
+  const lum = (v >> 16 & 255)*0.299 + (v >> 8 & 255)*0.587 + (v & 255)*0.114;
+  return lum > 150 ? '#1a2330' : '#ffffff';
+};
+/* the drafts the two makers are editing right now */
+const sbDraft = {
+  enemy:{ name:'My Blob', hp:120, size:26, color:'#3ddc6a', look:'blob' },
+  boss: { name:'My Boss', hp:6000, size:72, speed:90, leak:30, theme:'green', trueBoss:true }
+};
+
+function setSb(open) {
+  S.sbOpen = open;
+  $('sbPanel').classList.toggle('open', open);
+  $('sbTab').classList.toggle('open', open);
+  if (open) { sbRender(); setShop(false); }
+  beep(open ? 640 : 430, 0.06, 'triangle', 0.028);
+}
+
+/* ------------------------------------------------------------- chrome -- */
+function sbRender() {
+  if (!SB()) return;
+  const d = MODES[S.sbDiff] || MODES.normal;
+  $('sbDiffLbl').textContent = d.name + ' rules';
+  $('sbDiff').innerHTML = SB_DIFFS.map(k =>
+    `<button data-d="${k}" class="${k === S.sbDiff ? 'on' : ''}" style="--pc:${MODES[k].mc}">${MODES[k].name}</button>`
+  ).join('');
+  $('sbDiff').querySelectorAll('button').forEach(b => b.onclick = () => {
+    S.sbDiff = b.dataset.d; _mKey = '';                 // drop the memoised view
+    saveNow(); sbRender(); syncHUD();
+    toast('Sandbox rules: ' + MODES[S.sbDiff].name + ' — applies from now on');
+  });
+  $('sbSeg').innerHTML = SB_SECTIONS.map(([k, lbl]) =>
+    `<button data-s="${k}" class="${k === S.sbTab ? 'on' : ''}">${lbl}</button>`).join('');
+  $('sbSeg').querySelectorAll('button').forEach(b => b.onclick = () => {
+    S.sbTab = b.dataset.s; sbRender();
+  });
+  const body = $('sbBody');
+  body.scrollTop = 0;
+  if (S.sbTab === 'spawn')      sbSpawnList(body);
+  else if (S.sbTab === 'enemy') sbMaker(body, 'enemy');
+  else if (S.sbTab === 'boss')  sbMaker(body, 'boss');
+  else                          sbTools(body);
+}
+
+/* --------------------------------------------------------- the roster -- */
+function sbInventory() {
+  const inv = { Enemies:[], Elites:[], Bosses:[], Custom:[] };
+  for (let t = 1; t <= MAX_TIER; t++) {
+    inv.Enemies.push({ id:'t'+t, kind:'tier', tier:t, name:'Tier ' + t,
+                       fill:TIER[t].fill, stat:'HP ' + t, badge:String(t) });
+  }
+  ELITE.forEach((el, i) => inv.Elites.push({
+    id:'e'+i, kind:'elite', idx:i, name:el.label || (el.key[0].toUpperCase() + el.key.slice(1)),
+    fill:el.fill, stat:'HP ' + shortHp(eliteHp(i, S.wave)), badge:'E'
+  }));
+  BOSSES.forEach((b, i) => inv.Bosses.push({
+    id:'b'+i, kind:'boss', idx:i, name:b.name,
+    fill:(BOSS_THEME[b.theme] || {}).ring2 || '#ff5a4a',
+    stat:'W' + b.at + ' · ' + shortHp(b.hp), badge:'B'
+  }));
+  S.customs.forEach((c, i) => inv.Custom.push({
+    id:'c'+i, kind:'custom', idx:i, name:c.name,
+    fill:c.color || ((BOSS_THEME[c.theme] || {}).ring2) || '#e0b877',
+    stat:(c.boss ? 'Boss · ' : '') + 'HP ' + shortHp(c.hp), badge:c.boss ? 'B' : 'C'
+  }));
+  return inv;
+}
+
+function sbSpawnList(body) {
+  const inv = sbInventory();
+  let h = `<div class="sbNote">Pick a unit, then tap the field to drop it on the
+           nearest point of the trail. Or use Spawn to send it in from the start.</div>
+    <div class="sbGrid2" style="margin-bottom:8px">
+      <div class="sbFld" style="margin:0"><label>Quantity</label>
+        <select id="sbQty">${[1,5,10].map(q =>
+          `<option value="${q}"${q === S.sbQty ? ' selected' : ''}>x${q}</option>`).join('')}</select></div>
+      <div class="sbFld" style="margin:0"><label>Bosses spawn as</label>
+        <select id="sbTrue">
+          <option value="0"${S.sbTrue ? '' : ' selected'}>Field unit</option>
+          <option value="1"${S.sbTrue ? ' selected' : ''}>True boss</option>
+        </select></div>
+    </div>
+    <button class="sbBtn" id="sbGo">Spawn at trail start</button>`;
+  for (const grp in inv) {
+    if (!inv[grp].length) continue;
+    h += `<h4>${grp}</h4>`;
+    h += inv[grp].map(u => `
+      <button class="sbRow ${S.sbPick && S.sbPick.id === u.id ? 'on' : ''}" data-u="${u.id}">
+        <span class="sw" style="background:${u.fill}">${u.badge}</span>
+        <span class="nm">${u.name}</span>
+        <span class="st">${u.stat}</span>
+      </button>`).join('');
+  }
+  if (!inv.Custom.length) h += `<h4>Custom</h4>
+    <div class="sbNote">Nothing yet — build one in Enemy or Boss.</div>`;
+  body.innerHTML = h;
+
+  const all = [].concat(inv.Enemies, inv.Elites, inv.Bosses, inv.Custom);
+  body.querySelectorAll('.sbRow').forEach(el => el.onclick = () => {
+    const u = all.find(x => x.id === el.dataset.u);
+    S.sbPick = S.sbPick && S.sbPick.id === u.id ? null : u;
+    sbRender(); sbHint();
+  });
+  $('sbQty').onchange = e => { S.sbQty = +e.target.value; };
+  $('sbTrue').onchange = e => { S.sbTrue = e.target.value === '1'; };
+  $('sbGo').onclick = () => {
+    if (!S.sbPick) { toast('Pick a unit from the list first'); return; }
+    sbSpawn(S.sbPick, null);
+  };
+}
+function sbHint() {
+  const el = $('sbHint');
+  el.classList.toggle('on', !!S.sbPick && SB());
+  if (S.sbPick) el.textContent = (MOBILE ? 'Tap' : 'Click') + ' the field to place ' + S.sbPick.name;
+}
+
+/* ------------------------------------------------------------ spawning - */
+function sbSpawn(u, at) {
+  const cap = LIVE_CAP(S.wave);
+  const md = M();
+  let made = 0, capped = false;
+  const qty = u.kind === 'boss' || (u.kind === 'custom' && S.customs[u.idx].boss) ? 1 : S.sbQty;
+  for (let i = 0; i < qty; i++) {
+    if (S.enemies.length >= cap) { capped = true; break; }
+    /* where on the trail: nearest point to the click, or the very start */
+    const d = at ? nearestPathD(at.x, at.y) : 0;
+    if (u.kind === 'boss' || (u.kind === 'custom' && S.customs[u.idx].boss)) {
+      const c = u.kind === 'boss' ? BOSSES[u.idx] : S.customs[u.idx];
+      sbSpawnBoss(c, u.kind === 'custom', d);
+      made++;
+      continue;
+    }
+    const e = sbBaseEnemy(d);
+    if (u.kind === 'tier') { e.hp = e.max = u.tier; }
+    else if (u.kind === 'elite') {
+      e.elite = u.idx; e.hp = e.max = eliteHp(u.idx, S.wave);
+      const ab = ELITE[u.idx].ability;
+      e.abCd = ab === 'jam' ? ELITE[u.idx].jamCd : ab === 'heal' ? ELITE[u.idx].healCd : 0;
+      if (ab === 'husk') e.husk = huskTheme(Math.max(S.wave, 60));
+    } else {
+      const c = S.customs[u.idx];
+      /* a hand-made enemy is scaled by the sandbox difficulty exactly as a
+         real one would be, so Nightmare Sandbox still bites */
+      e.hp = e.max = Math.max(1, Math.round(c.hp * md.eliteHp));
+      e.spd = 120 * md.spd;
+      e.leakN = Math.max(1, Math.round(c.hp/40));
+      e.cust = { r:c.size, look:c.look, fill:c.color,
+                 edge:sbShade(c.color, 0.45), text:sbText(c.color) };
+    }
+    S.enemies.push(e);
+    made++;
+  }
+  if (capped) toast('Entity cap reached (' + cap + ') — spawned ' + made);
+  else if (made) beep(520, 0.07, 'triangle', 0.03);
+}
+function sbBaseEnemy(d) {
+  return { id:++EID, d, hp:1, max:1, elite:-1, hit:0, wob:Math.random()*Math.PI*2,
+           off:(Math.random()-0.5)*13, burn:0, burnDps:0, burnAcc:0, burnOwner:null, cap:null,
+           slow:0, stun:0, mark:0, markMul:1, dbl:false,
+           zap:0, zapDps:0, zapAcc:0, zapOwner:null, abCd:0, husk:null };
+}
+function sbSpawnBoss(c, isCustom, d) {
+  const md = M();
+  const theme = isCustom ? c.theme : c.theme;
+  const hp = Math.max(1, Math.round((isCustom ? c.hp : c.hp) * md.bossHp));
+  const r  = isCustom ? c.size : c.r;
+  if (S.sbTrue) {
+    const def = { name:c.name, hp, r, speed:(isCustom ? c.speed : c.speed),
+                  leak:(isCustom ? c.leak : c.leak), theme,
+                  power:isCustom ? null : c.power };
+    S.boss = { d:0, hp, max:hp, hit:0, def, cols:makeRain(def), glitch:0,
+               mark:0, markMul:1, dbl:false, stun:0,
+               pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9 };
+    dressBossBar(def);
+    $('bossbar').classList.add('on');
+    toast(c.name + ' enters the trail.');
+    beep(62, 1.2, 'sawtooth', 0.07, 34);
+  } else {
+    /* field unit: the husk treatment, which is how the game already draws a
+       boss that is not running the boss-bar sequence */
+    const e = sbBaseEnemy(d);
+    e.hp = e.max = hp;
+    e.elite = ELITE.length - 1;
+    e.husk = BOSS_THEME[theme] ? theme : 'denied';
+    e.cust = { r, look:'armour', fill:'#2a2a2a', edge:'#000', text:'#fff' };
+    e.leakN = (isCustom ? c.leak : c.leak);
+    e.spd = (isCustom ? c.speed : c.speed) * md.spd;
+    S.enemies.push(e);
+  }
+}
+/* the point on the trail closest to where the player tapped */
+function nearestPathD(px, py) {
+  let best = 0, bd = 1e9;
+  for (const sg of SEG) {
+    let t = (px - sg.x)*sg.dx + (py - sg.y)*sg.dy;
+    t = Math.max(0, Math.min(sg.len, t));
+    const dx = px - (sg.x + sg.dx*t), dy = py - (sg.y + sg.dy*t);
+    const dd = dx*dx + dy*dy;
+    if (dd < bd) { bd = dd; best = sg.start + t; }
+  }
+  return best;
+}
+
+/* -------------------------------------------------------- the makers --- */
+function sbMaker(body, kind) {
+  const D = sbDraft[kind], boss = kind === 'boss';
+  const sw = (val, key) => SB_COLORS.map(c =>
+    `<button data-c="${c}" class="${val === c ? 'on' : ''}" style="background:${c}"></button>`).join('');
+  body.innerHTML = `
+    <div class="sbPrev"><canvas id="sbPvC"></canvas></div>
+    <div class="sbFld"><label>Name</label>
+      <input type="text" id="mkName" maxlength="22" value="${D.name.replace(/"/g,'&quot;')}"></div>
+    <div class="sbGrid2">
+      <div class="sbFld"><label>Health</label>
+        <input type="number" id="mkHp" min="1" max="${boss ? 9000000 : 200000}" step="${boss ? 500 : 10}" value="${D.hp}"></div>
+      <div class="sbFld"><label>Size <b id="mkSzV">${D.size}</b></label>
+        <input type="range" id="mkSz" min="${boss ? 40 : 12}" max="${boss ? 190 : 60}" value="${D.size}"></div>
+    </div>
+    ${boss ? `<div class="sbGrid2">
+      <div class="sbFld"><label>Speed</label>
+        <input type="number" id="mkSpd" min="10" max="400" step="5" value="${D.speed}"></div>
+      <div class="sbFld"><label>Leak damage</label>
+        <input type="number" id="mkLeak" min="1" max="500" value="${D.leak}"></div>
+    </div>
+    <div class="sbFld"><label>Presentation</label>
+      <select id="mkTheme">${SB_THEMES.map(([k, l]) =>
+        `<option value="${k}"${k === D.theme ? ' selected' : ''}>${l}</option>`).join('')}</select></div>`
+    : `<div class="sbFld"><label>Appearance</label>
+      <select id="mkLook">${SB_LOOKS.map(([k, l]) =>
+        `<option value="${k}"${k === D.look ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    <div class="sbFld"><label>Colour</label><div class="sbSwatch" id="mkCol">${sw(D.color)}</div></div>`}
+    <button class="sbBtn" id="mkSave">Save to inventory</button>
+    <button class="sbBtn ghost" id="mkTry">Spawn one without saving</button>
+    ${S.customs.length ? `<h4>Saved</h4>` + S.customs.map((c, i) => `
+      <button class="sbRow" data-del="${i}">
+        <span class="sw" style="background:${c.color || ((BOSS_THEME[c.theme]||{}).ring2) || '#e0b877'}">${c.boss ? 'B' : 'C'}</span>
+        <span class="nm">${c.name}</span><span class="st">delete</span>
+      </button>`).join('') : ''}`;
+
+  const read = () => {
+    D.name = ($('mkName').value || '').trim().slice(0, 22) || (boss ? 'My Boss' : 'My Blob');
+    D.hp = Math.max(1, Math.min(boss ? 9000000 : 200000, Math.round(+$('mkHp').value || 1)));
+    D.size = +$('mkSz').value;
+    if (boss) {
+      D.speed = Math.max(10, Math.min(400, +$('mkSpd').value || 90));
+      D.leak = Math.max(1, Math.min(500, Math.round(+$('mkLeak').value || 30)));
+      D.theme = $('mkTheme').value;
+    } else D.look = $('mkLook').value;
+    $('mkSzV').textContent = D.size;
+  };
+  body.querySelectorAll('input,select').forEach(el => {
+    el.addEventListener('input', read);
+    el.addEventListener('keydown', ev => ev.stopPropagation());   // typing is not hotkeys
+  });
+  if (!boss) body.querySelectorAll('#mkCol button').forEach(b => b.onclick = () => {
+    D.color = b.dataset.c;
+    body.querySelectorAll('#mkCol button').forEach(x => x.classList.toggle('on', x === b));
+  });
+  $('mkSave').onclick = () => {
+    read();
+    if (S.customs.length >= 40) { toast('Custom inventory is full (40)'); return; }
+    S.customs.push(boss
+      ? { name:D.name, boss:true, hp:D.hp, size:D.size, speed:D.speed, leak:D.leak, theme:D.theme }
+      : { name:D.name, boss:false, hp:D.hp, size:D.size, color:D.color, look:D.look });
+    saveNow();
+    toast('"' + D.name + '" saved — find it under Custom');
+    S.sbTab = 'spawn'; sbRender();
+  };
+  $('mkTry').onclick = () => {
+    read();
+    const tmp = boss
+      ? { name:D.name, boss:true, hp:D.hp, size:D.size, speed:D.speed, leak:D.leak, theme:D.theme }
+      : { name:D.name, boss:false, hp:D.hp, size:D.size, color:D.color, look:D.look };
+    S.customs.push(tmp);
+    sbSpawn({ kind:'custom', idx:S.customs.length - 1, name:D.name }, null);
+    S.customs.pop();
+  };
+  body.querySelectorAll('[data-del]').forEach(b => b.onclick = () => {
+    const i = +b.dataset.del;
+    if (MOBILE && !confirm('Delete "' + S.customs[i].name + '"?')) return;
+    S.customs.splice(i, 1); saveNow(); sbRender();
+  });
+  sbPreview(kind);
+}
+
+/* the maker's live preview, driven by the same loop the menu cards use */
+let sbPvRaf = 0;
+function sbPreview(kind) {
+  cancelAnimationFrame(sbPvRaf);
+  const cvs = $('sbPvC');
+  if (!cvs) return;
+  const t0 = performance.now();
+  const tick = now => {
+    if (!cvs.isConnected) return;
+    sbPvRaf = requestAnimationFrame(tick);
+    const w = cvs.clientWidth, h = cvs.clientHeight;
+    if (!w || !h) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cvs.width !== Math.round(w*dpr)) { cvs.width = Math.round(w*dpr); cvs.height = Math.round(h*dpr); }
+    const g = cvs.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+    const t = (now - t0)/1000, D = sbDraft[kind];
+    try {
+      if (kind === 'boss') {
+        const r = Math.min(h*0.42, w*0.22) * (D.size/110 + 0.45);
+        const th = BOSS_THEME[D.theme];
+        g.save(); g.translate(w/2, h/2);
+        if (!th) {
+          const gr = g.createRadialGradient(-r*0.3, -r*0.4, r*0.1, 0, 0, r);
+          gr.addColorStop(0, '#ff5a4a'); gr.addColorStop(0.6, '#d10000'); gr.addColorStop(1, '#7a0000');
+          g.beginPath(); g.arc(0, 0, r, 0, 7); g.fillStyle = gr; g.fill();
+          g.lineWidth = 6; g.strokeStyle = '#4a0000'; g.stroke();
+        } else {
+          drawRain(g, { r, theme:D.theme }, th, r, t, pvRainCols('mk' + D.theme));
+          ctx = FIELD_CTX;
+          g.lineWidth = Math.max(3, r*0.12); g.strokeStyle = th.ring;
+          g.beginPath(); g.arc(0, 0, r - g.lineWidth/2, 0, 7); g.stroke();
+          if (th.stamp) {
+            g.rotate(-0.22); g.font = '900 ' + Math.round(r*0.2) + 'px "Segoe UI", system-ui, sans-serif';
+            g.textAlign = 'center'; g.textBaseline = 'middle';
+            g.fillStyle = '#ff2b2b'; g.fillText('ACCESS DENIED', 0, -r*0.62);
+            g.rotate(0.22);
+          }
+        }
+        g.restore();
+      } else {
+        const r = D.size*0.9;
+        pvBlob(g, w/2, h/2, r, 1, false);       // shadow + shape from the shared helper
+        g.save();
+        g.beginPath(); g.arc(w/2, h/2, r, 0, 7);
+        g.fillStyle = D.color; g.fill();
+        g.lineWidth = Math.max(2, r*0.2); g.strokeStyle = sbShade(D.color, 0.45); g.stroke();
+        if (D.look === 'armour') {
+          g.lineWidth = 2.4; g.strokeStyle = 'rgba(255,255,255,.3)';
+          for (let i = 0; i < 6; i++) {
+            const a = i/6*Math.PI*2 + 0.4;
+            g.beginPath();
+            g.moveTo(w/2 + Math.cos(a)*r*0.52, h/2 + Math.sin(a)*r*0.52);
+            g.lineTo(w/2 + Math.cos(a)*(r - 3), h/2 + Math.sin(a)*(r - 3));
+            g.stroke();
+          }
+          g.lineWidth = 3; g.strokeStyle = '#7dff9a';
+          g.beginPath(); g.arc(w/2, h/2, r + 5, -Math.PI/2, -Math.PI/2 + Math.PI*1.4); g.stroke();
+        }
+        g.fillStyle = sbText(D.color);
+        g.font = '900 ' + Math.round(r*0.85) + 'px "Segoe UI", system-ui, sans-serif';
+        g.textAlign = 'center'; g.textBaseline = 'middle';
+        g.fillText(shortHp(D.hp), w/2, h/2 + 1);
+        g.restore();
+      }
+    } finally { ctx = FIELD_CTX; }
+  };
+  sbPvRaf = requestAnimationFrame(tick);
+}
+
+/* ------------------------------------------------------------- tools --- */
+function sbTools(body) {
+  body.innerHTML = `
+    <div class="sbNote">Coins and lives are already infinite in Sandbox. These are
+      here so you can still test the HUD and jump around a run.</div>
+    <div class="sbGrid2">
+      <div class="sbFld"><label>Coins</label><input type="number" id="tlCoins" min="0" step="500" value="${Math.floor(S.money)}"></div>
+      <div class="sbFld"><label>Lives</label><input type="number" id="tlLives" min="1" step="10" value="${Math.max(1, Math.round(S.health))}"></div>
+    </div>
+    <div class="sbGrid2">
+      <button class="sbBtn ghost" id="tlCoinsSet">Set coins</button>
+      <button class="sbBtn ghost" id="tlLivesSet">Set lives</button>
+    </div>
+    <div class="sbFld" style="margin-top:10px"><label>Jump to wave</label>
+      <input type="number" id="tlWave" min="1" max="500" value="${S.wave}"></div>
+    <button class="sbBtn" id="tlWaveGo">Jump</button>
+    <h4>Board</h4>
+    <button class="sbBtn ghost" id="tlClear">Clear all enemies</button>
+    <button class="sbBtn ghost" id="tlKill">Kill the boss</button>
+    <div class="sbGrid2" style="margin-top:6px">
+      <button class="sbBtn ghost" id="tlAuto">Auto-skip: ${S.autoSkip ? 'on' : 'off'}</button>
+      <button class="sbBtn ghost" id="tlSpeed">Speed ${S.speed}&times;</button>
+    </div>
+    <h4>Run</h4>
+    <button class="sbBtn warn" id="tlReset">Reset sandbox run</button>`;
+  body.querySelectorAll('input').forEach(el =>
+    el.addEventListener('keydown', ev => ev.stopPropagation()));
+  $('tlCoinsSet').onclick = () => {
+    S.money = Math.max(0, Math.floor(+$('tlCoins').value || 0));
+    bump('moneyBox','gain'); syncHUD(); toast('Coins set');
+  };
+  $('tlLivesSet').onclick = () => {
+    S.health = Math.max(1, Math.round(+$('tlLives').value || 1));
+    bump('hpBox','gain'); syncHUD(); toast('Lives set');
+  };
+  $('tlWaveGo').onclick = () => { jumpToWave(+$('tlWave').value); sbRender(); };
+  $('tlClear').onclick = () => {
+    const k = S.enemies.length;
+    S.enemies = []; S.spawnQueue = 0; S.plan = [];
+    toast('Cleared ' + k + ' enemies');
+  };
+  $('tlKill').onclick = () => {
+    if (!S.boss) { toast('No boss on the trail'); return; }
+    S.boss = null; $('bossbar').classList.remove('on'); toast('Boss removed');
+  };
+  $('tlAuto').onclick = () => {
+    S.autoSkip = !S.autoSkip;
+    if (S.autoSkip) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4);
+    syncChips(); syncHUD(); sbRender();
+  };
+  $('tlSpeed').onclick = () => {
+    S.speed = S.speed === 1 ? 2 : (S.speed === 2 ? 3 : 1);
+    syncChips(); saveNow(); sbRender();
+  };
+  $('tlReset').onclick = () => {
+    if (MOBILE && !confirm('Reset the sandbox run?')) return;
+    startMode('sandbox');
+  };
+}
+
 /* --------------------------------------------------------- boss powers ---
    Waves 80, 90 and 100 do more than walk. Everything special about them
    lives here so the ordinary boss update stays the ordinary boss update. */
@@ -4256,10 +4904,14 @@ function update(dt) {
         bump('hpBox','gain'); beep(900, 0.14, 'sine', 0.035, 500);
       } else {
         const dmg = eLeak(e);                      // original: change Health by (costume# * -1)
-        S.health -= dmg;
-        salvageLeak(dmg);                          // Recycler Jaxon's insurance policy
-        S.floats.push({ x:W-150, y:800, txt:'-' + dmg, color:'#ff6b6b', life:1 });
-        bump('hpBox','hurt'); beep(140, 0.2, 'sawtooth', 0.05, 70);
+        if (SB()) {                                // sandbox: it got through, nothing is lost
+          S.floats.push({ x:W-150, y:800, txt:'blocked', color:'#e0b877', life:0.9 });
+        } else {
+          S.health -= dmg;
+          salvageLeak(dmg);                        // Recycler Jaxon's insurance policy
+          S.floats.push({ x:W-150, y:800, txt:'-' + dmg, color:'#ff6b6b', life:1 });
+          bump('hpBox','hurt'); beep(140, 0.2, 'sawtooth', 0.05, 70);
+        }
       }
     }
   }
@@ -4297,7 +4949,8 @@ function update(dt) {
       /* the split signal drags twice as much through the door with it */
       const LEAK_TMP = S.boss.def.leak * (S.boss.phase === 2 ? 2 : 1);
       const pw = S.boss.def.power;
-      if (S.shield > 0) S.shield--; else { S.health -= LEAK_TMP; salvageLeak(LEAK_TMP); }
+      if (S.shield > 0) S.shield--;
+      else if (!SB()) { S.health -= LEAK_TMP; salvageLeak(LEAK_TMP); }
       if (pw === 'reaper') {                       // he does not just take lives
         const stolen = Math.round(S.money * REAPER_TITHE);
         if (stolen > 0) {
@@ -5262,7 +5915,7 @@ function drawPanel() {
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
     <div class="paths">${col('A')}${col('B')}</div>
-    <button class="dupe${S.money < dcost ? ' poor' : ''}" id="pDupe">
+    <button class="dupe${afford(dcost) ? '' : ' poor'}" id="pDupe">
       <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
       <span class="ds">Copies this Jaxon with all upgrades</span>
     </button>
@@ -5312,7 +5965,7 @@ function refreshPanel() {
     const dc = dupeCost(t);
     const dn = dupe.querySelector('.dn');
     if (dn) dn.innerHTML = 'Duplicate &nbsp;$' + dc.toLocaleString();
-    dupe.classList.toggle('poor', S.money < dc);
+    dupe.classList.toggle('poor', !afford(dc));
   }
 }
 
@@ -5473,10 +6126,13 @@ function drawHusk(e) {
 
 function drawEnemy(e) {
   if (e.husk) { drawHusk(e); return; }
-  const el = eliteOf(e);
+  /* A hand-made enemy carries its own palette and its own silhouette, and
+     otherwise walks through exactly the same drawing code as a real one. */
+  const cu = e.cust;
+  const el = cu ? (cu.look === 'armour' ? cu : null) : eliteOf(e);
   const p = enemyPos(e);
   const tier = Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)));
-  const T = el ? el : TIER[tier];
+  const T = cu || (el ? el : TIER[tier]);
   const lean = S.perf;
   const x = p.x, y = p.y + (lean ? 0 : Math.sin(S.t*6 + e.wob)*2.2), r = eRad(e)*(1 + e.hit*0.16);
   ctx.save();
@@ -5527,11 +6183,11 @@ function drawEnemy(e) {
     ctx.strokeStyle = '#7dff9a';
     ctx.beginPath(); ctx.arc(x, y, r + 5, -Math.PI/2, -Math.PI/2 + Math.PI*2*Math.max(0, e.hp/e.max)); ctx.stroke();
   }
-  const label = el ? shortHp(Math.max(0, Math.ceil(e.hp))) : String(tier);
-  const fsz = el ? Math.round(r * (label.length >= 3 ? 0.72 : 0.95)) : Math.round(r*1.32);
+  const label = (cu || el) ? shortHp(Math.max(0, Math.ceil(e.hp))) : String(tier);
+  const fsz = (cu || el) ? Math.round(r * (label.length >= 3 ? 0.72 : 0.95)) : Math.round(r*1.32);
   ctx.font = '900 ' + fsz + 'px "Segoe UI", system-ui, sans-serif';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
-  ctx.lineWidth = el ? 5 : 6; ctx.strokeStyle = T.edge; ctx.strokeText(label, x, y+1);
+  ctx.lineWidth = (cu || el) ? 5 : 6; ctx.strokeStyle = T.edge; ctx.strokeText(label, x, y+1);
   ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillText(label, x, y+3);
   const tg = ctx.createLinearGradient(0, y - r*0.6, 0, y + r*0.6);
   tg.addColorStop(0, T.text);
@@ -7205,9 +7861,9 @@ function tryPlaceAt(x, y, silent) {
   if (!S.placing) return false;
   const spec = TOWERS[S.placing], dup = S.dupe;
   const cost = dup ? dup.cost : costOf(S.placing);
-  if (S.money < cost) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
+  if (!afford(cost)) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
-  S.money -= cost;
+  spend(cost);
   const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
@@ -7227,8 +7883,8 @@ function tryPlaceAt(x, y, silent) {
   burst(x, y + 30, dup ? '#8bf59a' : '#ffffff', dup ? 14 : 8); beep(560, 0.08, 'triangle', 0.04);
   if (dup) {
     S.floats.push({ x, y:y - 40, txt:'copy', color:'#8bf59a', life:1.1 });
-    if (S.money < dup.cost) cancelPlacing();   // drag out a whole row, same as the shop
-  } else if (S.money < costOf(S.placing)) cancelPlacing();
+    if (!afford(dup.cost)) cancelPlacing();    // drag out a whole row, same as the shop
+  } else if (!afford(costOf(S.placing))) cancelPlacing();
   syncHUD();
   return true;
 }
@@ -7273,6 +7929,8 @@ cv.addEventListener('pointerdown', ev => {
   try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
   if (S.titan) S.pan = { x:ev.clientX, y:ev.clientY, moved:false };
   if (!S.placing) {
+    /* a picked sandbox unit turns the whole field into a drop target */
+    if (S.sbPick && SB() && !towerAt(p.x, p.y)) { sbSpawn(S.sbPick, p); return; }
     if (S.titan && towerAt(p.x, p.y) === null) return;   // the click may become a pan
     const hit = towerAt(p.x, p.y);                 // click a Jaxon to open its upgrades
     if (hit) { hit === S.selected ? deselect() : selectTower(hit); }
@@ -7316,7 +7974,11 @@ window.addEventListener('keydown', ev => {
     toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
     return;
   }
-  if (ev.key === 'Escape') { cancelPlacing(); deselect(); hideTip(); }
+  if (ev.key === 'Escape') {
+    if (S.sbPick) { S.sbPick = null; sbHint(); if (S.sbOpen) sbRender(); }
+    else if (S.sbOpen) setSb(false);
+    cancelPlacing(); deselect(); hideTip();
+  }
   if (ev.key === 'Tab') { ev.preventDefault(); setShop(!S.shopOpen); }
   if (ev.key === ' ' && S.phase === 'build') { ev.preventDefault(); startWave(); }
   const n = parseInt(ev.key, 10);
@@ -7379,20 +8041,10 @@ function camKeys(dt) {
 window.addEventListener('keyup', ev => { S.keys[ev.key.toLowerCase()] = false; });
 window.addEventListener('blur', () => { S.keys = {}; });
 
-/* ---- testing helpers ---- */
-const devVal = () => Math.max(0, Math.floor(+$('devMoney').value || 0));
-function devGive(n) {
-  S.money = Math.max(0, n);
-  bump('moneyBox','gain'); syncHUD();
-  toast('Coins set to $' + Math.floor(S.money));
-}
-$('devSet').onclick  = () => devGive(devVal());
-$('devAdd').onclick  = () => devGive(S.money + 1000);
-$('devBig').onclick  = () => devGive(S.money + 10000);
-$('devLives').onclick = () => { S.health += 50; bump('hpBox','gain'); syncHUD(); toast('Lives set to ' + Math.round(S.health)); };
-$('devMoney').onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') devGive(devVal()); };
-
-function devSetWave(n) {
+/* The old floating TEST panel is gone from normal play. What it could do
+   now lives in the Sandbox drawer's Tools section, which is the only place
+   any of it is reachable from. */
+function jumpToWave(n) {
   n = Math.max(1, Math.floor(n) || 1);
   S.enemies = []; S.shots = []; S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
   S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
@@ -7404,8 +8056,6 @@ function devSetWave(n) {
   syncHUD();
   toast('Jumped to wave ' + n);
 }
-$('devWaveSet').onclick = () => devSetWave(+$('devWave').value);
-$('devWave').onkeydown = ev => { ev.stopPropagation(); if (ev.key === 'Enter') devSetWave(+$('devWave').value); };
 
 $('shopTab').onclick = () => { unlockAudio(); setShop(!S.shopOpen); };
 /* the placing banner IS the on-screen Esc */
@@ -7417,7 +8067,7 @@ document.addEventListener('pointerdown', ev => {
   if (ev.target.closest && (ev.target.closest('.med') || ev.target.closest('.upg'))) return;
   hideTip();
 }, true);
-$('devTog').onclick = () => $('dev').classList.toggle('on');
+
 $('rotateOk').onclick = () => { portraitOK = true; unlockAudio(); syncMode(); };
 $('startWave').onclick = startWave;
 $('playBtn').onclick = () => {
@@ -7428,6 +8078,7 @@ $('playBtn').onclick = () => {
 };
 $('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
 $('endModes').onclick = showModes;
+$('sbTab').onclick = () => setSb(!S.sbOpen);
 $('autoBtn').onclick = () => {
   if (!S.autoSkip && S.wave < M().autoFrom) {
     toast('Auto-skip unlocks at wave ' + M().autoFrom + ' in ' + M().name);
