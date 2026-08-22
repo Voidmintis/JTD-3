@@ -249,28 +249,39 @@
   #placing em{font-style:normal;color:#6c7f8f;font-weight:600;letter-spacing:.4px}
 
   /* ------------------------------------------------------- boss bar ----- */
-  #bossbar{
+  /* One bar per boss, stacked downwards — the sandbox can put a whole
+     ladder of them on the trail at once. */
+  #bossbars{
     position:absolute;left:50%;top:92px;transform:translateX(-50%);
-    width:560px;display:none;flex-direction:column;gap:5px;
-    background:rgba(14,6,8,.8);border:1px solid #4a2229;border-radius:13px;padding:10px 14px;
-    backdrop-filter:blur(8px);pointer-events:none;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    pointer-events:none;max-height:52vh;overflow:hidden;
   }
-  #bossbar.on{display:flex}
-  #bossbar .row{display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;text-transform:uppercase}
-  #bossbar .row b{color:#ff7b6b;font-variant-numeric:tabular-nums}
-  #bosstrack{height:12px;background:#2a1418;border-radius:99px;overflow:hidden;border:1px solid #4a2229}
-  #bossfill{height:100%;width:100%;background:linear-gradient(90deg,#ff2d2d,#ff8a5a);box-shadow:0 0 14px rgba(255,60,60,.55)}
-  #bossbar.hacked{font-family:"Consolas","Courier New",monospace}
-  #bossbar.hacked #bossLabel{animation:glitchTxt 3.1s steps(1) infinite}
-  #bossbar.hacked #bossNum{animation:glitchTxt 2.3s steps(1) infinite}
+  .bossbar{
+    width:560px;max-width:92vw;display:flex;flex-direction:column;gap:5px;
+    background:rgba(14,6,8,.8);border:1px solid #4a2229;border-radius:13px;padding:10px 14px;
+    backdrop-filter:blur(8px);
+    animation:bossIn .34s cubic-bezier(.22,1.2,.36,1) both;
+  }
+  @keyframes bossIn{from{opacity:0;transform:translateY(-9px) scale(.97)}to{opacity:1;transform:none}}
+  /* a stack of five is still readable; past that they tighten up */
+  #bossbars.many .bossbar{padding:6px 12px;gap:3px}
+  #bossbars.many .bossbar .row{font-size:10px}
+  #bossbars.many .bosstrack{height:8px}
+  .bossbar .row{display:flex;justify-content:space-between;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+  .bossbar .row b{color:#ff7b6b;font-variant-numeric:tabular-nums}
+  .bosstrack{height:12px;background:#2a1418;border-radius:99px;overflow:hidden;border:1px solid #4a2229}
+  .bossfill{height:100%;width:100%;background:linear-gradient(90deg,#ff2d2d,#ff8a5a);box-shadow:0 0 14px rgba(255,60,60,.55)}
+  .bossbar.hacked{font-family:"Consolas","Courier New",monospace}
+  .bossbar.hacked .bossLabel{animation:glitchTxt 3.1s steps(1) infinite}
+  .bossbar.hacked .bossNum{animation:glitchTxt 2.3s steps(1) infinite}
   @keyframes glitchTxt{
     0%,88%,100%{transform:translateX(0);opacity:1}
     90%{transform:translateX(-2px);opacity:.72}
     92%{transform:translateX(3px);opacity:1}
     94%{transform:translateX(-1px);opacity:.85}
   }
-  #bossbar.hacked #bosstrack{position:relative;overflow:hidden}
-  #bossbar.hacked #bosstrack::after{
+  .bossbar.hacked .bosstrack{position:relative;overflow:hidden}
+  .bossbar.hacked .bosstrack::after{
     content:'';position:absolute;inset:0;pointer-events:none;
     background:repeating-linear-gradient(90deg,rgba(0,0,0,.35) 0 2px,transparent 2px 6px);
   }
@@ -514,8 +525,8 @@
   body.mobile #placing img{width:38px;height:38px}
   body.mobile #placing em{font-size:16px}
 
-  body.mobile #bossbar{top:96px}
-  body.mobile #bossbar .row{font-size:19px}
+  body.mobile #bossbars{top:96px}
+  body.mobile .bossbar .row{font-size:19px}
 
   /* ---- shop: fewer, fatter, and it scrolls ---- */
   body.mobile{--sbW:520px}
@@ -889,10 +900,7 @@
     <div id="waveTag">Wave 1 in progress</div>
     <div id="placing"><img id="placingImg" src="" alt=""><span id="placingTxt">Placing</span><em>Esc to cancel</em></div>
 
-    <div id="bossbar">
-      <div class="row"><span id="bossLabel">Wave 10 Boss</span><b id="bossNum">500</b></div>
-      <div id="bosstrack"><div id="bossfill"></div></div>
-    </div>
+    <div id="bossbars"></div>
 
     <div id="drawer">
       <div class="sheen"></div>
@@ -2865,7 +2873,7 @@ const S = {
   enemies:[], towers:[], shots:[], waves:[], cars:[], holes:[], shreds:[], vortex:[], shocks:[],
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
-  boss:null, spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
+  bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, t:0,
@@ -2875,9 +2883,19 @@ const S = {
   /* null = let the frame rate decide, 0/2 = the player has decided for us */
   perfLock:null, tutorialDone:false,
   mode:'normal', bests:{}, titanBest:null, titan:null,
-  sbDiff:'normal', sbOpen:false, sbTab:'spawn', sbPick:null, sbQty:1, sbTrue:false, customs:[],
+  sbDiff:'normal', sbOpen:false, sbTab:'spawn', sbPick:null, sbQty:1, customs:[],
   cam:{ x:W/2, y:H/2, z:1, min:1, max:1 }, keys:{}, pan:null, pinch:null, pathPts:PATH
 };
+
+/* -------------------------------------------------------------- bosses ---
+   A wave never puts more than one boss on the trail, but the sandbox can,
+   so the real store is a list. S.boss survives as read-only shorthand for
+   "the first one out there" — it is all the HUD and the wave-over check
+   ever wanted. Anything that deals damage walks S.bosses instead. */
+Object.defineProperty(S, 'boss', { get() { return S.bosses.length ? S.bosses[0] : null; } });
+/* pierce-once bookkeeping: a shockwave remembers which bosses it caught */
+const bSeen = (o, b) => !!(o.bHit && o.bHit.has(b));
+const bMark = (o, b) => { (o.bHit || (o.bHit = new Set())).add(b); };
 
 /* -------------------------------------------------------------- saving ---
    One small blob in localStorage: the best run and the handful of settings
@@ -3213,11 +3231,11 @@ function reset() {
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null;
-  S.boss=null; S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
+  S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
   S.projSlow=0; S.plan=[]; S.dupe=null;
   deselect();
   S.affordable={};
-  $('bossbar').classList.remove('on');
+  clearBosses();
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
   if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
   syncChips();
@@ -3673,11 +3691,7 @@ function startWave() {
     const B = M().bossHp === 1 ? B0
             : Object.assign({}, B0, { hp:Math.round(B0.hp * M().bossHp),
                                       leak:Math.max(1, Math.round(B0.leak * M().leak)) });
-    S.boss = { d:0, hp:B.hp, max:B.hp, hit:0, def:B, cols:makeRain(B), glitch:0,
-               mark:0, markMul:1, dbl:false, stun:0,
-               pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9 };
-    dressBossBar(B);
-    $('bossbar').classList.add('on');
+    addBoss(B);
     toast(B.name + ' has breached the trail.');
     beep(B.theme === 'classic' ? 90 : 62, 1.4, 'sawtooth', 0.07, 34);
   }
@@ -3693,15 +3707,51 @@ function makeRain(B) {
   }
   return cols;
 }
-function dressBossBar(B) {
-  const th = BOSS_THEME[B.theme];
-  const bar = $('bossbar'), fill = $('bossfill');
-  $('bossLabel').textContent = B.name;
+/* --------------------------------------------------------- boss bars ----
+   Each boss owns its own bar and hands it back when it dies, so a sandbox
+   stack tidies itself up in whatever order the bosses go down. */
+function addBoss(def, extra) {
+  const b = Object.assign({
+    d:0, hp:def.hp, max:def.hp, hit:0, def, cols:makeRain(def), glitch:0,
+    mark:0, markMul:1, dbl:false, stun:0,
+    pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9, bar:null
+  }, extra || {});
+  S.bosses.push(b);
+  const el = document.createElement('div');
+  el.className = 'bossbar';
+  el.innerHTML = '<div class="row"><span class="bossLabel"></span><b class="bossNum"></b></div>' +
+                 '<div class="bosstrack"><div class="bossfill"></div></div>';
+  b.bar = el;
+  b.barLabel = el.querySelector('.bossLabel');
+  b.barFill  = el.querySelector('.bossfill');
+  b.barNum   = el.querySelector('.bossNum');
+  $('bossbars').appendChild(el);
+  dressBossBar(b);
+  syncBossBars();
+  return b;
+}
+function dropBoss(b) {
+  const i = S.bosses.indexOf(b);
+  if (i >= 0) S.bosses.splice(i, 1);
+  if (b.bar) { b.bar.remove(); b.bar = null; }
+  syncBossBars();
+}
+function clearBosses() {
+  for (const b of S.bosses) if (b.bar) b.bar.remove();
+  S.bosses.length = 0;
+  $('bossbars').innerHTML = '';
+  syncBossBars();
+}
+function syncBossBars() { $('bossbars').classList.toggle('many', S.bosses.length > 5); }
+function dressBossBar(b) {
+  const B = b.def, th = BOSS_THEME[B.theme];
+  const bar = b.bar, fill = b.barFill;
+  b.barLabel.textContent = B.name;
   if (!th) {
     bar.style.background = 'rgba(14,6,8,.8)'; bar.style.borderColor = '#4a2229';
     fill.style.background = 'linear-gradient(90deg,#ff2d2d,#ff8a5a)';
     fill.style.boxShadow = '0 0 14px rgba(255,60,60,.55)';
-    $('bossLabel').style.color = ''; $('bossNum').style.color = '';
+    b.barLabel.style.color = ''; b.barNum.style.color = '';
     bar.classList.remove('hacked');
     return;
   }
@@ -3709,8 +3759,8 @@ function dressBossBar(B) {
   bar.style.borderColor = th.ring;
   fill.style.background = 'linear-gradient(90deg,' + th.bar1 + ',' + th.bar2 + ')';
   fill.style.boxShadow = '0 0 16px ' + th.bar1;
-  $('bossLabel').style.color = th.label;
-  $('bossNum').style.color = th.bar2;
+  b.barLabel.style.color = th.label;
+  b.barNum.style.color = th.bar2;
   bar.classList.add('hacked');
 }
 
@@ -3742,6 +3792,7 @@ const threatOf = (elite, hp) => (elite >= 0 ? hp/25 + ELITE[elite].leak : hp + 1
 
 /* hard ceiling on living enemies. This is the real FPS guarantee: the
    spawner simply waits when the field is full. */
+const BOSS_CAP = 12;          // how many boss bars the stack will hold
 const LIVE_CAP = w => (w < 16 ? 400 : w < 36 ? 260 : w < 60 ? 150 : 95);
 
 function waveBudget(w) {
@@ -3934,18 +3985,19 @@ function hurtEnemy(e, dmg, owner) {
   } else beep(300, 0.035, 'triangle', 0.018);
 }
 
-function hurtBoss(dmg, owner) {
-  if (!S.boss) return;
-  if (S.boss.inv > 0) {                       // FINAL TRANSMISSION shrugs it off
-    const q = pointAt(S.boss.d);
-    if (Math.random() < 0.25) S.floats.push({ x:q.x, y:q.y - bossR()*0.8, txt:'BLOCKED', color:'#9fdcff', life:0.5 });
+function hurtBoss(dmg, owner, b) {
+  b = b || S.boss;
+  if (!b) return;
+  if (b.inv > 0) {                            // FINAL TRANSMISSION shrugs it off
+    const q = pointAt(b.d);
+    if (Math.random() < 0.25) S.floats.push({ x:q.x, y:q.y - b.def.r*0.8, txt:'BLOCKED', color:'#9fdcff', life:0.5 });
     return;
   }
   dmg = amplify(dmg, owner, null);
-  if (S.boss.mark > 0) dmg *= S.boss.markMul;
-  if (S.boss.dbl) { dmg *= 2; S.boss.dbl = false; }
-  const before = S.boss.hp;
-  S.boss.hp -= dmg; S.boss.hit = 1;
+  if (b.mark > 0) dmg *= b.markMul;
+  if (b.dbl) { dmg *= 2; b.dbl = false; }
+  const before = b.hp;
+  b.hp -= dmg; b.hit = 1;
   if (S.titan) {                              // a siege is paid by the hit, not by the wave
     const real = Math.min(dmg, Math.max(0, before));
     S.titan.dmg += real;
@@ -3955,11 +4007,11 @@ function hurtBoss(dmg, owner) {
     }
   }
   if (owner) owner.dmg += Math.min(dmg, Math.max(0, before));
-  if (before > 0 && S.boss.hp <= 0) {
-    let bounty = COIN_BASE * (S.boss.max/13) * coinCurve() * M().coin;   // bosses are the payday
-    if (S.boss.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
+  if (before > 0 && b.hp <= 0) {
+    let bounty = COIN_BASE * (b.max/13) * coinCurve() * M().coin;   // bosses are the payday
+    if (b.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
     S.money += bounty;
-    const p = pointAt(S.boss.d);
+    const p = pointAt(b.d);
     S.floats.push({ x:p.x, y:p.y - 60, txt:'+$' + Math.round(bounty), color:'#ffd83d', life:2.0, big:true });
     if (owner) owner.pops++;
     bump('moneyBox','gain');
@@ -4030,9 +4082,9 @@ function splashBurst(x, y, s) {
     const p = enemyPos(e);
     if (Math.hypot(p.x - x, p.y - y) <= s.splashR) hurtEnemy(e, s.splash, s.owner);
   }
-  if (S.boss) {
-    const p = pointAt(S.boss.d);
-    if (Math.hypot(p.x - x, p.y - y) <= s.splashR + bossR()) hurtBoss(s.splash, s.owner);
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - x, p.y - y) <= s.splashR + B.def.r) hurtBoss(s.splash, s.owner, B);
   }
 }
 
@@ -4044,7 +4096,7 @@ function nearestAnywhere(t) {
     const p = enemyPos(e), d = Math.hypot(p.x - t.x, p.y - t.y);
     if (d < bd) { bd = d; best = p; }
   }
-  if (!best && S.boss) best = pointAt(S.boss.d);
+  for (const B of S.bosses) { if (best) break; best = pointAt(B.d); }
   return best;
 }
 function anyEnemyWithin(t, r) {
@@ -4053,7 +4105,7 @@ function anyEnemyWithin(t, r) {
     const p = enemyPos(e);
     if (Math.hypot(p.x - t.x, p.y - t.y) <= r) return true;
   }
-  if (S.boss) { const p = pointAt(S.boss.d); if (Math.hypot(p.x - t.x, p.y - t.y) <= r) return true; }
+  for (const B of S.bosses) { const p = pointAt(B.d); if (Math.hypot(p.x - t.x, p.y - t.y) <= r) return true; }
   return false;
 }
 function inCone(t, p, range, arc) {
@@ -4077,9 +4129,9 @@ function beamTick(t, wp) {
       hits++;
     }
   }
-  if (S.boss) {
-    const p = pointAt(S.boss.d);
-    if (inCone(t, p, spec.range + bossR(), arc)) { hurtBoss(dmg, t); hits++; }
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    if (inCone(t, p, spec.range + B.def.r, arc)) { hurtBoss(dmg, t, B); hits++; }
   }
   t.flash = 1;
   if (hits) { t.shots++; beep(1400, 0.03, 'sine', 0.012); }
@@ -4098,9 +4150,9 @@ function orbitFlash(t, wp) {
       const p = enemyPos(e);
       if (Math.hypot(p.x - ox, p.y - oy) <= wp.flashR) hurtEnemy(e, wp.dmg, t);
     }
-    if (S.boss) {
-      const p = pointAt(S.boss.d);
-      if (Math.hypot(p.x - ox, p.y - oy) <= wp.flashR + bossR()) hurtBoss(wp.dmg, t);
+    for (const B of S.bosses) {
+      const p = pointAt(B.d);
+      if (Math.hypot(p.x - ox, p.y - oy) <= wp.flashR + B.def.r) hurtBoss(wp.dmg, t, B);
     }
   }
 }
@@ -4294,7 +4346,7 @@ function directorCut(t, spec) {
     e.stun = Math.max(e.stun || 0, spec.freeze);
     e.dbl = true;
   }
-  if (S.boss) { S.boss.stun = Math.max(S.boss.stun || 0, spec.freeze*0.5); S.boss.dbl = true; }
+  for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, spec.freeze*0.5); B.dbl = true; }
   t.shots++;
   toast('CUT!');
   beep(200, 0.5, 'square', 0.06, 60);
@@ -4318,9 +4370,10 @@ function bestCluster(t, range, r) {
     }
     if (n > bestN) { bestN = n; best = p; }
   }
-  if (!best && S.boss) {
-    const p = pointAt(S.boss.d);
-    if (Math.hypot(p.x - t.x, p.y - t.y) <= range + bossR()) best = p;
+  for (const B of S.bosses) {
+    if (!(!best)) break;
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - t.x, p.y - t.y) <= range + B.def.r) best = p;
   }
   return best;
 }
@@ -4328,15 +4381,18 @@ function bestCluster(t, range, r) {
 function targetFor(t) {
   const range = SP(t).range;
   const onBoss = () => {
-    if (!S.boss) return null;
-    const p = pointAt(S.boss.d);
-    return Math.hypot(p.x - t.x, p.y - t.y) <= range + bossR()*0.6 ? p : null;
+    let hit = null, hd = 1e9;
+    for (const B of S.bosses) {
+      const p = pointAt(B.d), d = Math.hypot(p.x - t.x, p.y - t.y);
+      if (d <= range + B.def.r*0.6 && d < hd) { hd = d; hit = p; }
+    }
+    return hit;
   };
   /* Endless: the boss is THE threat and it takes the shot.
      Siege: the Titan never leaves the field, so if it kept that priority
      every Jaxon would stare at the hill while the summons strolled into the
      base. Here the Titan is what you shoot once the lane is clear. */
-  if (S.boss && !S.titan) { const p = onBoss(); if (p) return p; }
+  if (S.bosses.length && !S.titan) { const p = onBoss(); if (p) return p; }
   let best = null, bestD = -1;
   for (const e of S.enemies) {
     if (e.dead) continue;
@@ -4448,16 +4504,9 @@ function sbSpawnList(body) {
   const inv = sbInventory();
   let h = `<div class="sbNote">Pick a unit, then tap the field to drop it on the
            nearest point of the trail. Or use Spawn to send it in from the start.</div>
-    <div class="sbGrid2" style="margin-bottom:8px">
-      <div class="sbFld" style="margin:0"><label>Quantity</label>
-        <select id="sbQty">${[1,5,10].map(q =>
-          `<option value="${q}"${q === S.sbQty ? ' selected' : ''}>x${q}</option>`).join('')}</select></div>
-      <div class="sbFld" style="margin:0"><label>Bosses spawn as</label>
-        <select id="sbTrue">
-          <option value="0"${S.sbTrue ? '' : ' selected'}>Field unit</option>
-          <option value="1"${S.sbTrue ? ' selected' : ''}>True boss</option>
-        </select></div>
-    </div>
+    <div class="sbFld" style="margin-bottom:8px"><label>Quantity</label>
+      <select id="sbQty">${[1,2,3,5,10].map(q =>
+        `<option value="${q}"${q === S.sbQty ? ' selected' : ''}>x${q}</option>`).join('')}</select></div>
     <button class="sbBtn" id="sbGo">Spawn at trail start</button>`;
   for (const grp in inv) {
     if (!inv[grp].length) continue;
@@ -4480,7 +4529,6 @@ function sbSpawnList(body) {
     sbRender(); sbHint();
   });
   $('sbQty').onchange = e => { S.sbQty = +e.target.value; };
-  $('sbTrue').onchange = e => { S.sbTrue = e.target.value === '1'; };
   $('sbGo').onclick = () => {
     if (!S.sbPick) { toast('Pick a unit from the list first'); return; }
     sbSpawn(S.sbPick, null);
@@ -4497,17 +4545,19 @@ function sbSpawn(u, at) {
   const cap = LIVE_CAP(S.wave);
   const md = M();
   let made = 0, capped = false;
-  const qty = u.kind === 'boss' || (u.kind === 'custom' && S.customs[u.idx].boss) ? 1 : S.sbQty;
-  for (let i = 0; i < qty; i++) {
-    if (S.enemies.length >= cap) { capped = true; break; }
+  const isBoss = u.kind === 'boss' || (u.kind === 'custom' && S.customs[u.idx].boss);
+  for (let i = 0; i < S.sbQty; i++) {
     /* where on the trail: nearest point to the click, or the very start */
     const d = at ? nearestPathD(at.x, at.y) : 0;
-    if (u.kind === 'boss' || (u.kind === 'custom' && S.customs[u.idx].boss)) {
+    if (isBoss) {
+      /* bars stack, but not forever — past a dozen the screen is only bars */
+      if (S.bosses.length >= BOSS_CAP) { capped = true; break; }
       const c = u.kind === 'boss' ? BOSSES[u.idx] : S.customs[u.idx];
       sbSpawnBoss(c, u.kind === 'custom', d);
       made++;
       continue;
     }
+    if (S.enemies.length >= cap) { capped = true; break; }
     const e = sbBaseEnemy(d);
     if (u.kind === 'tier') { e.hp = e.max = u.tier; }
     else if (u.kind === 'elite') {
@@ -4528,7 +4578,8 @@ function sbSpawn(u, at) {
     S.enemies.push(e);
     made++;
   }
-  if (capped) toast('Entity cap reached (' + cap + ') — spawned ' + made);
+  if (capped) toast(isBoss ? 'Boss cap reached (' + BOSS_CAP + ') — spawned ' + made
+                           : 'Entity cap reached (' + cap + ') — spawned ' + made);
   else if (made) beep(520, 0.07, 'triangle', 0.03);
 }
 function sbBaseEnemy(d) {
@@ -4537,34 +4588,18 @@ function sbBaseEnemy(d) {
            slow:0, stun:0, mark:0, markMul:1, dbl:false,
            zap:0, zapDps:0, zapAcc:0, zapOwner:null, abCd:0, husk:null };
 }
+/* A sandbox boss is the genuine article — same theme, same code rain, same
+   glitching bar, same powers. The only thing the sandbox adds is that it
+   can drop in partway along the trail and stand next to its siblings. */
 function sbSpawnBoss(c, isCustom, d) {
   const md = M();
-  const theme = isCustom ? c.theme : c.theme;
-  const hp = Math.max(1, Math.round((isCustom ? c.hp : c.hp) * md.bossHp));
-  const r  = isCustom ? c.size : c.r;
-  if (S.sbTrue) {
-    const def = { name:c.name, hp, r, speed:(isCustom ? c.speed : c.speed),
-                  leak:(isCustom ? c.leak : c.leak), theme,
-                  power:isCustom ? null : c.power };
-    S.boss = { d:0, hp, max:hp, hit:0, def, cols:makeRain(def), glitch:0,
-               mark:0, markMul:1, dbl:false, stun:0,
-               pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9 };
-    dressBossBar(def);
-    $('bossbar').classList.add('on');
-    toast(c.name + ' enters the trail.');
-    beep(62, 1.2, 'sawtooth', 0.07, 34);
-  } else {
-    /* field unit: the husk treatment, which is how the game already draws a
-       boss that is not running the boss-bar sequence */
-    const e = sbBaseEnemy(d);
-    e.hp = e.max = hp;
-    e.elite = ELITE.length - 1;
-    e.husk = BOSS_THEME[theme] ? theme : 'denied';
-    e.cust = { r, look:'armour', fill:'#2a2a2a', edge:'#000', text:'#fff' };
-    e.leakN = (isCustom ? c.leak : c.leak);
-    e.spd = (isCustom ? c.speed : c.speed) * md.spd;
-    S.enemies.push(e);
-  }
+  const hp = Math.max(1, Math.round(c.hp * md.bossHp));
+  const def = { name:c.name, hp, r:(isCustom ? c.size : c.r), speed:c.speed,
+                leak:c.leak, theme:c.theme, power:isCustom ? null : c.power };
+  const b = addBoss(def, { d });
+  toast(c.name + ' enters the trail.');
+  beep(62, 1.2, 'sawtooth', 0.07, 34);
+  return b;
 }
 /* the point on the trail closest to where the player tapped */
 function nearestPathD(px, py) {
@@ -4774,8 +4809,9 @@ function sbTools(body) {
     toast('Cleared ' + k + ' enemies');
   };
   $('tlKill').onclick = () => {
-    if (!S.boss) { toast('No boss on the trail'); return; }
-    S.boss = null; $('bossbar').classList.remove('on'); toast('Boss removed');
+    const k = S.bosses.length;
+    if (!k) { toast('No boss on the trail'); return; }
+    clearBosses(); toast(k === 1 ? 'Boss removed' : k + ' bosses removed');
   };
   $('tlAuto').onclick = () => {
     S.autoSkip = !S.autoSkip;
@@ -4795,8 +4831,8 @@ function sbTools(body) {
 /* --------------------------------------------------------- boss powers ---
    Waves 80, 90 and 100 do more than walk. Everything special about them
    lives here so the ordinary boss update stays the ordinary boss update. */
-function bossPowers(dt) {
-  const b = S.boss, pw = b.def.power;
+function bossPowers(dt, b) {
+  const pw = b.def.power;
   if (b.inv > 0) b.inv -= dt;
   if (b.ring > 0) b.ring -= dt;
   if (!pw) return;
@@ -4819,8 +4855,11 @@ function bossPowers(dt) {
   /* wave 90 — everything walking in his shadow hurries up */
   if (pw === 'reaper') {
     for (const e of S.enemies) {
+      /* several Reapers can be out in the sandbox; standing in any one
+         shadow is enough, so the fastest shadow wins */
       const q = enemyPos(e);
-      e.haste = Math.hypot(q.x - p.x, q.y - p.y) <= REAPER_R ? REAPER_HASTE : 1;
+      const on = Math.hypot(q.x - p.x, q.y - p.y) <= REAPER_R ? REAPER_HASTE : 1;
+      e.haste = Math.max(e.haste === undefined ? 1 : e.haste, on);
     }
   }
 
@@ -4844,6 +4883,9 @@ function bossPowers(dt) {
 }
 /* the Reaper's dread dies with him */
 function clearBossAuras() { for (const e of S.enemies) e.haste = 1; }
+/* the Reaper aura is rebuilt from scratch every frame, so it has to be
+   wiped before the bosses get their turn or it would only ever grow */
+function resetHaste() { for (const e of S.enemies) e.haste = 1; }
 
 /* -------------------------------------------------------------- update --- */
 function update(dt) {
@@ -4919,22 +4961,23 @@ function update(dt) {
 
   if (S.titan) titanUpdate(dt);
 
-  /* boss — 500 HP, ordinary damage, number counts down, colour never changes */
-  if (S.boss) {
-    if (S.boss.mark > 0) { S.boss.mark -= dt; if (S.boss.mark <= 0) S.boss.markMul = 1; }
-    if (S.boss.stun > 0) S.boss.stun -= dt;
-    if (S.boss.stun <= 0) S.boss.d += S.boss.def.speed*dt;      // bosses keep their own pace
-    S.boss.hit = Math.max(0, S.boss.hit - dt*6);
-    bossPowers(dt);
-    if (S.titan && S.boss.hp <= 0) {          // the colossus goes down: that is the win
+  /* bosses — ordinary damage, the number counts down, one bar each */
+  if (S.bosses.some(b => b.def.power === 'reaper')) resetHaste();
+  for (const B of S.bosses.slice()) {
+    if (B.mark > 0) { B.mark -= dt; if (B.mark <= 0) B.markMul = 1; }
+    if (B.stun > 0) B.stun -= dt;
+    if (B.stun <= 0) B.d += B.def.speed*dt;      // bosses keep their own pace
+    B.hit = Math.max(0, B.hit - dt*6);
+    bossPowers(dt, B);
+    if (S.titan && B.hp <= 0) {          // the colossus goes down: that is the win
       const tp = SG.titan;
       burst(tp.x, tp.y, '#ff5a3c', 150, 3); burst(tp.x, tp.y, '#ffd83d', 110, 2.4);
-      S.boss = null; $('bossbar').classList.remove('on');
+      clearBosses();
       titanEnd(true);
       return;
     }
-    if (S.boss.hp <= 0) {
-      const p = pointAt(S.boss.d), fin = S.boss.def.power === 'final';
+    if (B.hp <= 0) {
+      const p = pointAt(B.d), fin = B.def.power === 'final';
       burst(p.x, p.y, '#ff2d2d', fin ? 140 : 54); burst(p.x, p.y, '#ffd83d', fin ? 90 : 26);
       if (fin) {
         burst(p.x, p.y, '#3fa8ff', 140, 2.2); burst(p.x, p.y, '#ffffff', 70, 3);
@@ -4942,13 +4985,12 @@ function update(dt) {
       }
       beep(180, 0.9, 'sawtooth', 0.08, 50);
       const wasFinal = fin;
-      S.boss = null; clearBossAuras();
-      $('bossbar').classList.remove('on');
+      dropBoss(B); clearBossAuras();
       toast(wasFinal ? 'FINAL TRANSMISSION severed. The nursery holds.' : 'Boss defeated!');
-    } else if (S.boss.d >= PATH_LEN) {
+    } else if (B.d >= PATH_LEN) {
       /* the split signal drags twice as much through the door with it */
-      const LEAK_TMP = S.boss.def.leak * (S.boss.phase === 2 ? 2 : 1);
-      const pw = S.boss.def.power;
+      const LEAK_TMP = B.def.leak * (B.phase === 2 ? 2 : 1);
+      const pw = B.def.power;
       if (S.shield > 0) S.shield--;
       else if (!SB()) { S.health -= LEAK_TMP; salvageLeak(LEAK_TMP); }
       if (pw === 'reaper') {                       // he does not just take lives
@@ -4960,13 +5002,13 @@ function update(dt) {
           toast('The Reaper emptied your pockets on the way past');
         }
       }
-      S.boss = null; clearBossAuras();
-      $('bossbar').classList.remove('on'); bump('hpBox','hurt');
+      dropBoss(B); clearBossAuras();
+      bump('hpBox','hurt');
       S.floats.push({ x:W-150, y:800, txt:'-' + LEAK_TMP, color:'#ff6b6b', life:1.3, big:true });
       toast('The boss got through!');
-    } else {
-      $('bossfill').style.width = Math.max(0, S.boss.hp/S.boss.max*100) + '%';
-      $('bossNum').textContent = Math.max(0, Math.ceil(S.boss.hp));
+    } else if (B.bar) {
+      B.barFill.style.width = Math.max(0, B.hp/B.max*100) + '%';
+      B.barNum.textContent = shortHp(Math.max(0, Math.ceil(B.hp)));
     }
   }
 
@@ -5121,9 +5163,9 @@ function update(dt) {
             const p = enemyPos(e);
             if (Math.hypot(p.x - c.x, p.y - c.y) <= spec.cloudR) { hurtEnemy(e, spec.dmg, t); hit++; }
           }
-          if (S.boss) {
-            const p = pointAt(S.boss.d);
-            if (Math.hypot(p.x - c.x, p.y - c.y) <= spec.cloudR + bossR()) { hurtBoss(spec.dmg, t); hit++; }
+          for (const B of S.bosses) {
+            const p = pointAt(B.d);
+            if (Math.hypot(p.x - c.x, p.y - c.y) <= spec.cloudR + B.def.r) { hurtBoss(spec.dmg, t, B); hit++; }
           }
           if (hit) { t.lit = true; c.flash = 1; t.shots++; }
         }
@@ -5138,9 +5180,9 @@ function update(dt) {
             const p = enemyPos(e);
             if (Math.hypot(p.x - tg.x, p.y - tg.y) <= spec.boltR) hurtEnemy(e, spec.boltDmg, t);
           }
-          if (S.boss) {
-            const p = pointAt(S.boss.d);
-            if (Math.hypot(p.x - tg.x, p.y - tg.y) <= spec.boltR + bossR()) hurtBoss(spec.boltDmg, t);
+          for (const B of S.bosses) {
+            const p = pointAt(B.d);
+            if (Math.hypot(p.x - tg.x, p.y - tg.y) <= spec.boltR + B.def.r) hurtBoss(spec.boltDmg, t, B);
           }
           c.flash = 1;
         }
@@ -5157,7 +5199,7 @@ function update(dt) {
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+' + spec.heal + ' life', color:'#7dffb4', life:1.5 });
         if (spec.xtra.markAura) {                    // Triage: paint every blob on the board
           for (const e of S.enemies) if (!e.dead) { e.mark = Math.max(e.mark||0, 4); e.markMul = Math.max(e.markMul||1, 1.3); }
-          if (S.boss) { S.boss.mark = 4; S.boss.markMul = Math.max(S.boss.markMul||1, 1.3); }
+          for (const B of S.bosses) { B.mark = 4; B.markMul = Math.max(B.markMul||1, 1.3); }
         }
         bump('hpBox','gain'); beep(880, 0.14, 'sine', 0.032, 1250);
         syncHUD();
@@ -5214,11 +5256,11 @@ function update(dt) {
           any = true;
         }
       }
-      if (S.boss) {
-        const p = pointAt(S.boss.d);
-        if (Math.hypot(p.x - t.x, p.y - t.y) <= spec.range + bossR()) {
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - t.x, p.y - t.y) <= spec.range + B.def.r) {
           t.bossAcc = (t.bossAcc || 0) + spec.dmg*dt;
-          if (t.bossAcc >= 1) { const n = Math.floor(t.bossAcc); t.bossAcc -= n; hurtBoss(n, t); }
+          if (t.bossAcc >= 1) { const n = Math.floor(t.bossAcc); t.bossAcc -= n; hurtBoss(n, t, B); }
           any = true;
         }
       }
@@ -5326,9 +5368,9 @@ function update(dt) {
           hurtEnemy(e, h.dmg + Math.floor(Math.random()*(h.dmg*0.2 + 1)), h.owner);   // a little spread
         }
       }
-      if (S.boss) {
-        const p = pointAt(S.boss.d);
-        if (Math.hypot(p.x - h.x, p.y - h.y) <= h.r + bossR()) hurtBoss(h.dmg + Math.floor(Math.random()*(h.dmg*0.2 + 1)), h.owner);
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - h.x, p.y - h.y) <= h.r + B.def.r) hurtBoss(h.dmg + Math.floor(Math.random()*(h.dmg*0.2 + 1)), h.owner, B);
       }
     }
     if (h.t <= 0) h.dead = true;
@@ -5348,12 +5390,13 @@ function update(dt) {
         if (!e.dead && !e.cap) e.d = Math.max(0, e.d - w.wp.push);
       }
     }
-    if (S.boss && !w.bossHit) {
-      const p = pointAt(S.boss.d), d = Math.hypot(p.x - w.x, p.y - w.y);
-      if (d <= w.r + bossR()) {
-        w.bossHit = true;
-        hurtBoss(w.wp.dmgMin + Math.floor(Math.random()*(w.wp.dmgMax - w.wp.dmgMin + 1)), w.owner);
-        S.boss.d = Math.max(0, S.boss.d - w.wp.push*0.4);
+    for (const B of S.bosses) {
+      if (bSeen(w, B)) continue;
+      const p = pointAt(B.d), d = Math.hypot(p.x - w.x, p.y - w.y);
+      if (d <= w.r + B.def.r) {
+        bMark(w, B);
+        hurtBoss(w.wp.dmgMin + Math.floor(Math.random()*(w.wp.dmgMax - w.wp.dmgMin + 1)), w.owner, B);
+        B.d = Math.max(0, B.d - w.wp.push*0.4);
       }
     }
     if (w.r > w.max) w.dead = true;
@@ -5383,9 +5426,9 @@ function update(dt) {
         if (e.dead || !e.cap || e.cap.src !== g.id) continue;
         hurtEnemy(e, g.dmg, g.owner);
       }
-      if (S.boss) {
-        const p = pointAt(S.boss.d);
-        if (Math.hypot(p.x - g.x, p.y - g.y) <= g.grabR + bossR()) hurtBoss(g.dmg, g.owner);
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - g.x, p.y - g.y) <= g.grabR + B.def.r) hurtBoss(g.dmg, g.owner, B);
       }
     }
     /* the chains keep reeling in anything that wanders close */
@@ -5420,9 +5463,9 @@ function update(dt) {
         if (e.hp <= e.max*wp.exec) { hurtEnemy(e, e.hp, g.owner); continue; }   // executed anywhere on the map
         if (inR) hurtEnemy(e, wp.dmg, g.owner);
       }
-      if (S.boss) {
-        const p = pointAt(S.boss.d);
-        if (Math.hypot(p.x - g.x, p.y - g.y) <= wp.boomR + bossR()) hurtBoss(wp.dmg, g.owner);
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - g.x, p.y - g.y) <= wp.boomR + B.def.r) hurtBoss(wp.dmg, g.owner, B);
       }
     }
   }
@@ -5441,9 +5484,10 @@ function update(dt) {
         if (tickNow) hurtEnemy(e, g.dmg, g.owner);
       }
     }
-    if (tickNow && S.boss) {
-      const p = pointAt(S.boss.d);
-      if (Math.hypot(p.x - g.x, p.y - g.y) <= g.r + bossR()) hurtBoss(g.dmg, g.owner);
+    for (const B of S.bosses) {
+      if (!(tickNow)) break;
+      const p = pointAt(B.d);
+      if (Math.hypot(p.x - g.x, p.y - g.y) <= g.r + B.def.r) hurtBoss(g.dmg, g.owner, B);
     }
     if (g.t <= 0) g.dead = true;
   }
@@ -5462,12 +5506,13 @@ function update(dt) {
         else { e.stun = Math.max(e.stun || 0, w.spec.stun); hurtEnemy(e, w.spec.dmg, w.owner); }
       }
     }
-    if (S.boss && !w.bossHit) {
-      const p = pointAt(S.boss.d), d = Math.hypot(p.x - w.x, p.y - w.y);
-      if (d <= w.r + bossR()) {
-        w.bossHit = true;
-        if (w.kind === 'whistle') { S.boss.mark = w.spec.dur; S.boss.markMul = 1 + w.spec.amp; }
-        else hurtBoss(w.spec.dmg, w.owner);
+    for (const B of S.bosses) {
+      if (bSeen(w, B)) continue;
+      const p = pointAt(B.d), d = Math.hypot(p.x - w.x, p.y - w.y);
+      if (d <= w.r + B.def.r) {
+        bMark(w, B);
+        if (w.kind === 'whistle') { B.mark = w.spec.dur; B.markMul = 1 + w.spec.amp; }
+        else hurtBoss(w.spec.dmg, w.owner, B);
       }
     }
     if (w.r > w.max) w.dead = true;
@@ -5488,11 +5533,12 @@ function update(dt) {
                     life:0.35, max:0.35, color:'#dff4ff', r:2+Math.random()*2 });
       }
     }
-    if (S.boss && !g.bossHit) {
-      const p = pointAt(S.boss.d);
-      if (Math.hypot(p.x - g.x, p.y - g.y) <= g.r + bossR()) {
-        g.bossHit = true;
-        S.boss.d = Math.max(0, S.boss.d - g.spec.push*0.35);   // bosses shrug most of it off
+    for (const B of S.bosses) {
+      if (bSeen(g, B)) continue;
+      const p = pointAt(B.d);
+      if (Math.hypot(p.x - g.x, p.y - g.y) <= g.r + B.def.r) {
+        bMark(g, B);
+        B.d = Math.max(0, B.d - g.spec.push*0.35);   // bosses shrug most of it off
       }
     }
     if (g.r > g.max) g.dead = true;
@@ -5510,9 +5556,10 @@ function update(dt) {
       const p = enemyPos(e), d = Math.hypot(p.x - w.x, p.y - w.y);
       if (d <= w.r + E_R && d >= prev - E_R - 60) { w.hitSet.add(e.id); hurtEnemy(e, w.dmg, w.owner); }
     }
-    if (S.boss && !w.bossHit) {
-      const p = pointAt(S.boss.d), d = Math.hypot(p.x - w.x, p.y - w.y);
-      if (d <= w.r + bossR()) { w.bossHit = true; hurtBoss(w.dmg, w.owner); }
+    for (const B of S.bosses) {
+      if (bSeen(w, B)) continue;
+      const p = pointAt(B.d), d = Math.hypot(p.x - w.x, p.y - w.y);
+      if (d <= w.r + B.def.r) { bMark(w, B); hurtBoss(w.dmg, w.owner, B); }
     }
     if (w.r > w.max) w.dead = true;
   }
@@ -5535,10 +5582,11 @@ function update(dt) {
         if (c.hp <= 0) { c.dead = true; burst(cp.x, cp.y, c.kind === 'goldcar' ? '#ffc61e' : (c.kind === 'diamondcar' ? '#9be8ff' : '#2b3440'), 12); break; }
       }
     }
-    if (!c.dead && S.boss) {
-      const p = pointAt(S.boss.d);
-      if (Math.hypot(p.x - cp.x, p.y - cp.y) < bossR() + 20) {
-        hurtBoss(c.hp, c.owner); c.dead = true; burst(cp.x, cp.y, c.kind === 'goldcar' ? '#ffc61e' : '#2b3440', 12);
+    for (const B of S.bosses) {
+      if (!(!c.dead)) break;
+      const p = pointAt(B.d);
+      if (Math.hypot(p.x - cp.x, p.y - cp.y) < B.def.r + 20) {
+        hurtBoss(c.hp, c.owner, B); c.dead = true; burst(cp.x, cp.y, c.kind === 'goldcar' ? '#ffc61e' : '#2b3440', 12);
       }
     }
   }
@@ -5589,9 +5637,9 @@ function update(dt) {
         const p = enemyPos(e);
         if (Math.hypot(p.x - s.x, p.y - s.y) < E_R + 12) { s.hitSet.add(e.id); hurtEnemy(e, s.dmg, s.owner); }
       }
-      if (S.boss) {
-        const p = pointAt(S.boss.d);
-        if (Math.hypot(p.x - s.x, p.y - s.y) < bossR() + 12 && !s.bossHit) { s.bossHit = true; hurtBoss(s.dmg, s.owner); }
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) < B.def.r + 12 && !s.bossHit) { bMark(s, B); hurtBoss(s.dmg, s.owner, B); }
       }
       continue;
     }
@@ -5636,10 +5684,11 @@ function update(dt) {
         break;
       }
     }
-    if (!s.dead && S.boss) {
-      const p = pointAt(S.boss.d);
-      if (Math.hypot(p.x - s.x, p.y - s.y) < bossR()) {
-        hurtBoss(s.dmg, s.owner); s.dead = true;
+    for (const B of S.bosses) {
+      if (!(!s.dead)) break;
+      const p = pointAt(B.d);
+      if (Math.hypot(p.x - s.x, p.y - s.y) < B.def.r) {
+        hurtBoss(s.dmg, s.owner, B); s.dead = true;
         if (s.splash) splashBurst(s.x, s.y, s);
         else if (s.ammo === 'fireball') fireBoom(s.x, s.y, s.wp, s.owner);
         else S.fx.push({ k:'flash', x:s.x, y:s.y, life:0.1, max:0.1 });
@@ -6335,10 +6384,10 @@ function drawRain(g, B, th, r, t, cols) {
   ctx.restore();
 }
 
-function drawBoss() {
+function drawBoss(bs) {
   if (S.titan) return;                       // the Titan paints itself with the hill
-  const B = S.boss.def, th = BOSS_THEME[B.theme];
-  const p = pointAt(S.boss.d), r = B.r, pulse = 1 + Math.sin(S.t*3)*0.02;
+  const B = bs.def, th = BOSS_THEME[B.theme];
+  const p = pointAt(bs.d), r = B.r, pulse = 1 + Math.sin(S.t*3)*0.02;
   ctx.save();
   ctx.fillStyle = 'rgba(0,0,0,.4)';
   ctx.beginPath(); ctx.ellipse(p.x, p.y + r*0.95, r*0.85, r*0.3, 0, 0, 7); ctx.fill();
@@ -6352,14 +6401,14 @@ function drawBoss() {
     ctx.lineWidth = 11; ctx.strokeStyle = '#4a0000'; ctx.stroke();
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,180,150,.45)';
     ctx.beginPath(); ctx.arc(0, 0, r-8, Math.PI*1.05, Math.PI*1.9); ctx.stroke();
-    const label = String(Math.max(0, Math.ceil(S.boss.hp)));
+    const label = String(Math.max(0, Math.ceil(bs.hp)));
     const fs = Math.round(r * (label.length >= 4 ? 0.6 : label.length === 3 ? 0.76 : 0.92));
     ctx.font = '900 ' + fs + 'px "Segoe UI", system-ui, sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     ctx.lineWidth = 8; ctx.strokeStyle = '#4a0000'; ctx.strokeText(label, 0, 2);
     ctx.fillStyle = '#fff'; ctx.fillText(label, 0, 2);
   } else {
-    drawRain(ctx, B, th, r, S.t, S.boss.cols);
+    drawRain(ctx, B, th, r, S.t, bs.cols);
     /* rim */
     ctx.lineWidth = Math.max(8, r*0.12); ctx.strokeStyle = th.ring;
     ctx.beginPath(); ctx.arc(0, 0, r - ctx.lineWidth/2, 0, 7); ctx.stroke();
@@ -6391,7 +6440,7 @@ function drawBoss() {
       ctx.fillText('ACCESS DENIED', 0, -r*0.62);
       ctx.restore();
     }
-    const label = String(Math.max(0, Math.ceil(S.boss.hp)));
+    const label = String(Math.max(0, Math.ceil(bs.hp)));
     const fs = Math.round(r * (label.length >= 5 ? 0.42 : label.length === 4 ? 0.52 : label.length === 3 ? 0.66 : 0.82));
     corruptText(label, 0, th.stamp ? r*0.12 : 2, fs, th.num, th);
   }
@@ -6412,9 +6461,9 @@ function drawBoss() {
     ctx.globalAlpha = 1;
     ctx.restore();
     /* the tell: he goes bright white just before the pulse lands */
-    if (S.boss.pulseCd < 0.9) {
+    if (bs.pulseCd < 0.9) {
       ctx.save();
-      ctx.globalAlpha = (0.9 - S.boss.pulseCd)*0.8;
+      ctx.globalAlpha = (0.9 - bs.pulseCd)*0.8;
       ctx.fillStyle = '#ffffff';
       ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
       ctx.restore();
@@ -6464,7 +6513,7 @@ function drawBoss() {
     }
     ctx.restore();
   }
-  if (S.boss.phase === 2) {
+  if (bs.phase === 2) {
     const a = S.t*1.7, er = r*0.33, ox = Math.cos(a)*r*1.5, oy = Math.sin(a)*r*0.55;
     ctx.save();
     const eg = ctx.createRadialGradient(ox, oy, 2, ox, oy, er);
@@ -6474,7 +6523,7 @@ function drawBoss() {
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke();
     ctx.restore();
   }
-  if (S.boss.inv > 0) {                       // the frames where nothing lands
+  if (bs.inv > 0) {                       // the frames where nothing lands
     ctx.save();
     ctx.globalAlpha = 0.3 + Math.abs(Math.sin(S.t*28))*0.25;
     ctx.lineWidth = 8; ctx.strokeStyle = '#9fdcff';
@@ -6482,17 +6531,17 @@ function drawBoss() {
     ctx.restore();
   }
 
-  if (S.boss.hit > 0) { ctx.globalAlpha = S.boss.hit*0.5; ctx.fillStyle = '#fff';
+  if (bs.hit > 0) { ctx.globalAlpha = bs.hit*0.5; ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); }
   ctx.restore();
 
   /* the shockwave itself, drawn out in world space where it belongs */
-  if (S.boss.ring > 0) {
-    const k = Math.max(0, 1 - S.boss.ring/1.1);
-    const reach = S.boss.def.power === 'static' ? STATIC_R : 700;
+  if (bs.ring > 0) {
+    const k = Math.max(0, 1 - bs.ring/1.1);
+    const reach = bs.def.power === 'static' ? STATIC_R : 700;
     ctx.save();
-    ctx.globalAlpha = Math.min(1, S.boss.ring)*0.7;
-    ctx.lineWidth = 11; ctx.strokeStyle = S.boss.def.power === 'static' ? '#e8eef7' : '#9fdcff';
+    ctx.globalAlpha = Math.min(1, bs.ring)*0.7;
+    ctx.lineWidth = 11; ctx.strokeStyle = bs.def.power === 'static' ? '#e8eef7' : '#9fdcff';
     ctx.beginPath(); ctx.arc(p.x, p.y, 20 + k*reach, 0, 7); ctx.stroke();
     ctx.globalAlpha *= 0.4; ctx.lineWidth = 26;
     ctx.beginPath(); ctx.arc(p.x, p.y, 20 + k*reach, 0, 7); ctx.stroke();
@@ -6874,10 +6923,7 @@ function startTitan() {
     rainT:0
   };
   const def = { name:'THE TITAN', hp:SG.hp, r:SG.titan.r, speed:0, leak:0, theme:'titanfight' };
-  S.boss = { d:0, hp:SG.hp, max:SG.hp, hit:0, def, cols:makeRain(def), glitch:0,
-             mark:0, markMul:1, dbl:false, stun:0, pulseCd:1e9, ring:0, inv:0, phase:1, slowCd:1e9 };
-  dressBossBar(def);
-  $('bossbar').classList.add('on');
+  addBoss(def, { pulseCd:1e9, slowCd:1e9 });
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
   setShop(true); setPlacingBanner(); syncChips(); syncHUD();
   toast('THE TITAN stirs. Build on the platform — only long reach touches him.');
@@ -7581,7 +7627,7 @@ function render() {
   }
   for (const c of S.cars) drawCar(c);
   for (const e of S.enemies) drawEnemy(e);
-  if (S.boss) drawBoss();
+  for (const B of S.bosses) drawBoss(B);
   for (const s of S.shots) drawShot(s);
 
   for (const f of S.fx) {
@@ -8049,8 +8095,7 @@ function jumpToWave(n) {
   S.enemies = []; S.shots = []; S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
   S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
   S.cut = null;
-  S.boss = null; S.spawnQueue = 0; S.spawnTimer = 0;
-  $('bossbar').classList.remove('on');
+  clearBosses(); S.spawnQueue = 0; S.spawnTimer = 0;
   S.wave = n; S.best = Math.max(S.best, n - 1);
   S.phase = 'build'; S.autoTimer = 1.4;
   syncHUD();
