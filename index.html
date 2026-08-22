@@ -1454,6 +1454,27 @@ VARIANTS.director = { suitLite:'#3a3f4a', suit:'#1f242e', suitDark:'#0c0f14', ar
                     outline:'#ffd83d', outlineWidth:5,
                     pacG:'#ffd83d', pacGD:'#a97c00', pacO:'#e8edf5', pacOD:'#7e8ea4' };
 
+/* ---- the money Jaxons: nobody in this quartet throws a single punch ---- */
+VARIANTS.piggybank = { suitLite:'#ffc9e4', suit:'#ff8ec4', suitDark:'#c4478f', arm:'#ffd83d', armDark:'#a97c00',
+                    belt:'#ffd83d', beltDark:'#a97c00', lunchbox:true, wide:true,
+                    core:'#ffe98a', coreD:'#a97c00',
+                    outline:'#a3327f', outlineWidth:6,
+                    pacG:'#ff8ec4', pacGD:'#a3327f', pacO:'#ffd83d', pacOD:'#a97c00' };
+VARIANTS.tax = { suitLite:'#7fe0a8', suit:'#2fa86a', suitDark:'#12693f', arm:'#39424f', armDark:'#161b22',
+                    belt:'#ffd83d', beltDark:'#a97c00', heldTablet:true, goggles:true, wide:true,
+                    outline:'#0f5a36', outlineWidth:6,
+                    pacG:'#3ddc6a', pacGD:'#12722f', pacO:'#ffd83d', pacOD:'#a97c00' };
+VARIANTS.merchant = { suitLite:'#ffef86', suit:'#ffd21e', suitDark:'#c08f00', arm:'#5a3f8a', armDark:'#2c1c4a',
+                    belt:'#7d3fd0', beltDark:'#3a1070', beret:true, tabletRing:true, wide:true,
+                    core:'#fff0a0', coreD:'#8a6200',
+                    outline:'#a87a00', outlineWidth:6,
+                    pacG:'#ffd83d', pacGD:'#a97c00', pacO:'#a86bff', pacOD:'#4a1f8a' };
+VARIANTS.recycler = { suitLite:'#9fe6b4', suit:'#4ea86c', suitDark:'#236a41', arm:'#5a6472', armDark:'#232b36',
+                    belt:'#c9d4e2', beltDark:'#6d7d92', goggles:true, hammer:true, anvil:true, wide:true,
+                    hammerH:'#5a6472', hammerHD:'#232b36', hammerHead:'#4ea86c', hammerHeadD:'#12693f',
+                    outline:'#1f6b40', outlineWidth:6,
+                    pacG:'#3ddc6a', pacGD:'#12722f', pacO:'#c9d4e2', pacOD:'#6d7d92' };
+
 
 /* ------------------------------------------------------------------ *
  *  UPGRADES - two paths, three tiers, BTD-style.                      *
@@ -1965,6 +1986,79 @@ const UPGRADES = {
         mod:{"dmg":1.15,"cd":0.78,"add":{"shield":1},"range":1.2,"xtra":["markHit"]} }
     ] }
   },
+
+  piggybank: {
+    A: { name:"Fatter Pig", tiers:[
+      { name:"Bigger Slot", blurb:"Drops a noticeably fatter coin each time.", cost:280,
+        mod:{"set":{"income":46}} },
+      { name:"Piggy Feast", blurb:"Pays out far more, and a little faster.", cost:900,
+        mod:{"set":{"income":95},"cd":0.8} },
+      { name:"Golden Hog", blurb:"A fortune every two and a half seconds.", cost:3400,
+        mod:{"set":{"income":240},"cd":0.78} }
+    ] },
+    B: { name:"Compound Interest", tiers:[
+      { name:"Savings Account", blurb:"Also pays 1% of whatever you are already sitting on.", cost:400,
+        mod:{"set":{"interest":0.01}} },
+      { name:"Investments", blurb:"2.5% interest on every payout.", cost:1600,
+        mod:{"set":{"interest":0.025}} },
+      { name:"Hedge Fund", blurb:"5% of your entire wallet, over and over. Money makes money.", cost:6500,
+        mod:{"set":{"interest":0.05},"cd":0.85} }
+    ] }
+  },
+  tax: {
+    A: { name:"Higher Rate", tiers:[
+      { name:"Sales Tax", blurb:"Takes a 75% cut on top of every kill in range.", cost:520,
+        mod:{"set":{"taxCut":0.75}} },
+      { name:"Income Tax", blurb:"Doubles the payout on everything that dies in his ring.", cost:1900,
+        mod:{"set":{"taxCut":1.0}} },
+      { name:"Audit", blurb:"Every blob that dies in front of him pays out two and a half times over.", cost:7200,
+        mod:{"set":{"taxCut":1.5}} }
+    ] },
+    B: { name:"Wider Jurisdiction", tiers:[
+      { name:"District Office", blurb:"Collects from a wider stretch of trail.", cost:380,
+        mod:{"range":1.25} },
+      { name:"State Office", blurb:"A much wider collection radius, and a slightly better cut.", cost:1400,
+        mod:{"range":1.5,"mul":{"taxCut":1.3}} },
+      { name:"Federal Reserve", blurb:"Half the map pays him, and pays him well.", cost:5600,
+        mod:{"range":2.2,"mul":{"taxCut":1.8}} }
+    ] }
+  },
+  merchant: {
+    A: { name:"Bulk Buyer", tiers:[
+      { name:"Better Margins", blurb:"Banks more for every blob that fell this wave.", cost:1100,
+        mod:{"set":{"perKill":1.8}} },
+      { name:"Wholesale", blurb:"Every corpse on the ledger is worth a great deal more.", cost:4200,
+        mod:{"set":{"perKill":3.6}} },
+      { name:"Monopoly", blurb:"He takes a cut of the entire wave, and it shows.", cost:15000,
+        mod:{"set":{"perKill":8.0}} }
+    ] },
+    B: { name:"Standing Contract", tiers:[
+      { name:"Retainer", blurb:"A bigger guaranteed cheque every wave, kills or not.", cost:900,
+        mod:{"set":{"waveCut":18}} },
+      { name:"Royalties", blurb:"The cheque grows sharply with the wave number.", cost:3600,
+        mod:{"set":{"waveCut":42}} },
+      { name:"Trade Empire", blurb:"An enormous lump sum every single wave clear.", cost:13000,
+        mod:{"set":{"waveCut":110}} }
+    ] }
+  },
+  recycler: {
+    A: { name:"Scrap Value", tiers:[
+      { name:"Fair Price", blurb:"Neighbours sold nearby refund 40% extra.", cost:420,
+        mod:{"set":{"refund":0.4}} },
+      { name:"Chop Shop", blurb:"An 80% bonus on every nearby sale.", cost:1500,
+        mod:{"set":{"refund":0.8}} },
+      { name:"Full Salvage", blurb:"Sell a Jaxon beside him and you get more back than you paid.", cost:5200,
+        mod:{"set":{"refund":1.3},"range":1.3} }
+    ] },
+    B: { name:"Insurance", tiers:[
+      { name:"Small Print", blurb:"Bigger consolation coins for every life that leaks.", cost:500,
+        mod:{"set":{"salvage":14}} },
+      { name:"Full Cover", blurb:"Leaks hurt the wallet a lot less.", cost:1800,
+        mod:{"set":{"salvage":34}} },
+      { name:"Act of God", blurb:"Every life the nursery loses is paid back in gold, heavily.", cost:6800,
+        mod:{"set":{"salvage":80}} }
+    ] }
+  }
 };
 
 /* --------------------------------------------------------------- specs ---
@@ -2100,7 +2194,8 @@ const eliteHp = (i, wave) =>
 const eliteOf = e => (e.elite >= 0 ? ELITE[e.elite] : null);
 const eLeak  = e => (e.elite >= 0 ? ELITE[e.elite].leak : Math.max(1, Math.ceil(e.hp)));
 const eSpeed = e => (e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(1, e.hp) + 5))
-                    * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1);
+                    * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
+                    * (e.haste || 1);
 const eRad   = e => (e.elite >= 0 ? ELITE[e.elite].r    : E_R);
 
 const TOWERS = {
@@ -2228,10 +2323,29 @@ const TOWERS = {
                { k:'beam', cd:0.55, dmg:300, arc:0.52, slow:0.5 }
              ],
              blurb:'Three godly things at once: diamond cars every 0.5s for 380 that detonate for 190 splash, a fresh 2000 HP diamond car built onto the trail every 2.5s, and a red-and-blue tablet cone burning 300 damage every 0.55s through an unlimited crowd.',
-             tags:[['Diamond Cars','t-rain'],['Builder','t-aoe'],['Red / Blue Cone','t-fast']] }
+             tags:[['Diamond Cars','t-rain'],['Builder','t-aoe'],['Red / Blue Cone','t-fast']] },
+
+  /* ---- the money Jaxons. None of them deal a point of damage; they are
+     bought instead of a gun, and they have to pay for that gun later. ---- */
+  piggybank:{ name:'Piggybank Jaxon', cost:300, range:Infinity, cd:4.0, dmg:0, ammo:'bank',
+             income:26, interest:0,
+             blurb:'Shakes his piggybank loose every 4s for $26 — but only while a wave is actually running. Upgrades fatten the coin or start paying interest on whatever you are already holding.',
+             tags:[['Income','t-fast'],['No Damage',''],['Economy','t-rain']] },
+  recycler:{ name:'Recycler Jaxon', cost:450, range:300, dmg:0, ammo:'recycle',
+             refund:0.25, salvage:6,
+             blurb:'Sell any Jaxon standing in his ring and he digs 25% more out of the scrap. He also scrapes a consolation coin out of every life the nursery loses. No damage at all.',
+             tags:[['Refunds','t-fast'],['Leak Insurance','t-rain'],['No Damage','']] },
+  tax:     { name:'Tax Jaxon', cost:600, range:330, dmg:0, ammo:'tax', taxCut:0.5,
+             blurb:'Stands over a stretch of trail with a ledger. Anything that dies inside his ring pays out 50% more coins. He never fires a shot — he just takes his cut. Cuts do not stack.',
+             tags:[['+50% Bounty','t-fast'],['Aura','t-rain'],['No Damage','']] },
+  merchant:{ name:'Merchant Jaxon', cost:1200, range:Infinity, dmg:0, ammo:'ledger',
+             perKill:0.9, waveCut:8,
+             blurb:'Keeps the books. At every wave clear he settles up: $0.90 for every blob that died while he was on the board, plus $8 per wave number as a standing fee. The banker fantasy, fully realised.',
+             tags:[['Wave Payout','t-fast'],['Scales With Waves','t-rain'],['No Damage','']] }
 };
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
-               'rainbow','engineer','pinwheel','boombox','goldeng','lunchbox','forge','yoyo','tablet',
+               'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
+               'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','blackholelaser',
                'director','mirror','truegod'];
 /* Value index: work done per dollar, averaged over live 40-enemy benchmark runs.
@@ -2242,7 +2356,8 @@ const VALUE = {
                 whistle:100, laser:109, rainbow:100, engineer:110, pinwheel:100, boombox:101,
                 goldeng:110, lunchbox:100, forge:100, yoyo:93, tablet:106, titan:110,
                 titantablet:124, stormcloud:104, eclipse:107, upgradedlaser:124, titanmax:106,
-                blackholelaser:109, director:100, mirror:117, truegod:111 };
+                blackholelaser:109, director:100, mirror:117, truegod:111,
+                piggybank:100, recycler:100, tax:100, merchant:100 };
 
 const T_H = 88;
 const T_W = T_H * (660/720);
@@ -2252,7 +2367,8 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      tablet:1.0, upgradedlaser:1.15, blackholelaser:1.2, truegod:1.15,
                      boombox:1.05, forge:1.1, eclipse:1.35, mirror:1.15,
                      bubble:1.05, whistle:1.05, pinwheel:1.05, lunchbox:1.05, yoyo:1.05,
-                     stormcloud:1.3, director:1.2 };
+                     stormcloud:1.3, director:1.2,
+                     piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05 };
 const WIDE_FILL = 0.791;              // share of the wide box the body actually fills
 const FOOT_Y = 700;                   // where the legs end inside the drawing box
 const SPRITE = {};
@@ -2273,8 +2389,15 @@ const BOSSES = [
   { at:40, name:'Blue Hacker Boss',  hp:4000,  r:87,  speed:100, leak:40, theme:'blue'   },
   { at:50, name:'White Hacker Boss', hp:8000,  r:109, speed:92,  leak:50, theme:'white'  },
   { at:60, name:'Gold Hacker Boss',  hp:16000, r:136, speed:84,  leak:60, theme:'gold'   },
-  { at:70, name:'ACCESS DENIED',     hp:32000, r:149, speed:76,  leak:75, theme:'denied' }
+  { at:70, name:'ACCESS DENIED',     hp:32000, r:149, speed:76,  leak:75, theme:'denied' },
+  { at:80, name:'Static Sovereign',  hp:64000,  r:158, speed:80, leak:85,  theme:'static', power:'static' },
+  { at:90, name:'Nursery Reaper',    hp:128000, r:167, speed:88, leak:100, theme:'reaper', power:'reaper' },
+  { at:100,name:'FINAL TRANSMISSION',hp:256000, r:182, speed:82, leak:120, theme:'final',  power:'final'  }
 ];
+/* how far the Static Sovereign's jam reaches, and how far the Reaper's dread
+   hurries the crowd along behind him */
+const STATIC_R = 430, STATIC_EVERY = 6.0, STATIC_JAM = 1.0;
+const REAPER_R = 330, REAPER_HASTE = 1.35, REAPER_TITHE = 0.3;
 const BOSS = { every:10 };
 const bossR = () => (S.boss ? S.boss.def.r : 0);
 
@@ -2292,7 +2415,18 @@ const BOSS_THEME = {
   gold:   { bg:'#190f02', glyph:'#ffc61e', head:'#fff6cc', ring:'#8a6200', ring2:'#ffd83d',
             bar1:'#e0a800', bar2:'#fff0a0', num:'#ffeaa0', label:'#ffd83d', sparkle:true },
   denied: { bg:'#1c0205', glyph:'#ff2b2b', head:'#ffbcbc', ring:'#7a0000', ring2:'#ff5a3c',
-            bar1:'#ff2b2b', bar2:'#ff8a5a', num:'#ffdada', label:'#ff8a8a', binary:true, stamp:true }
+            bar1:'#ff2b2b', bar2:'#ff8a5a', num:'#ffdada', label:'#ff8a8a', binary:true, stamp:true },
+  /* wave 80 — a dead channel with something living in it */
+  static: { bg:'#0d1014', glyph:'#c9d4e2', head:'#ffffff', ring:'#4a545f', ring2:'#e8eef7',
+            bar1:'#8c98a8', bar2:'#e8eef7', num:'#eef3f9', label:'#c9d4e2',
+            binary:true, vary:true, scan:true, split:true },
+  /* wave 90 — the hooded thing that comes for the nursery itself */
+  reaper: { bg:'#0a0409', glyph:'#8a0f2c', head:'#ff9db4', ring:'#3a0512', ring2:'#ff2d5a',
+            bar1:'#c4143c', bar2:'#ff7a9c', num:'#ffd2dd', label:'#ff7a9c', hood:true },
+  /* wave 100 — everything at once, red and blue and very loud */
+  final:  { bg:'#05030f', glyph:'#9fdcff', head:'#ffffff', ring:'#2a0a3a', ring2:'#ff3b3b',
+            bar1:'#ff2d2d', bar2:'#3fa8ff', num:'#ffffff', label:'#9fdcff',
+            stamp:true, sparkle:true, vary:true, wings:true, split:true }
 };
 const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎ0123456789ABCDEF#$%&@';
 
@@ -2345,7 +2479,7 @@ const S = {
   phase:'menu', health:50, money:120, wave:1, best:0, pops:0,
   enemies:[], towers:[], shots:[], waves:[], cars:[], holes:[], shreds:[], vortex:[], shocks:[],
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
-  shield:0, cut:null,
+  shield:0, cut:null, projSlow:0,
   boss:null, spawnQueue:0, spawnTimer:0, spawnGap:0,
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
@@ -2599,6 +2733,7 @@ function reset() {
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null;
   S.boss=null; S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
+  S.projSlow=0;
   deselect();
   S.affordable={};
   $('bossbar').classList.remove('on');
@@ -2618,7 +2753,8 @@ function startWave() {
   if (isBossWave(S.wave)) {
     const B = bossFor(S.wave);
     S.boss = { d:0, hp:B.hp, max:B.hp, hit:0, def:B, cols:makeRain(B), glitch:0,
-               mark:0, markMul:1, dbl:false, stun:0 };
+               mark:0, markMul:1, dbl:false, stun:0,
+               pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9 };
     dressBossBar(B);
     $('bossbar').classList.add('on');
     toast(B.name + ' has breached the trail.');
@@ -2694,6 +2830,37 @@ const enemyWorth = e => (e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
 const bountyFor  = e => COIN_BASE * enemyWorth(e) * coinCurve();
 
+/* ------------------------------------------------------ the money Jaxons --
+   Four Jaxons that never deal damage and instead print, multiply, or claw
+   back coins. Everything they do funnels through these four helpers so the
+   weapons code never has to know they exist. */
+/* Tax Jaxon: the best single cut covering this spot. Cuts deliberately do
+   not stack, or four of him beside the exit would break the economy. */
+function taxCutAt(x, y) {
+  let cut = 0;
+  for (const t of S.towers) {
+    if (TOWERS[t.type].ammo !== 'tax') continue;
+    const sp = SP(t);
+    if (Math.hypot(t.x - x, t.y - y) <= sp.range) cut = Math.max(cut, sp.taxCut);
+  }
+  return cut;
+}
+/* Merchant Jaxon keeps a tally of every blob that fell while he stood there. */
+function ledgerTick() {
+  for (const m of S.towers) if (TOWERS[m.type].ammo === 'ledger') m.witness = (m.witness || 0) + 1;
+}
+/* Recycler Jaxon: a consolation coin for every life the nursery loses. */
+function salvageLeak(lives) {
+  if (lives <= 0) return;
+  let best = 0;
+  for (const r of S.towers) if (TOWERS[r.type].ammo === 'recycle') best = Math.max(best, SP(r).salvage);
+  if (!best) return;
+  const gain = Math.round(best * lives * (1 + S.wave*0.12));
+  S.money += gain;
+  S.floats.push({ x:W-150, y:760, txt:'+$' + gain + ' salvage', color:'#9fe6b4', life:1.4 });
+  bump('moneyBox','gain'); beep(520, 0.1, 'triangle', 0.03, 760);
+}
+
 function enemyFill(e) {
   return e.elite >= 0 ? ELITE[e.elite].fill : TIER[Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)))].fill;
 }
@@ -2749,6 +2916,8 @@ function hurtEnemy(e, dmg, owner) {
     if (owner) owner.pops++;
     let bounty = bountyFor(e);                    // decaying per-pop payout, see COIN_BASE above
     if (owner && owner.type) bounty *= 1 + (SP(owner).goldBonus || 0);
+    bounty *= 1 + taxCutAt(p.x, p.y);             // Tax Jaxon takes his cut of the corpse
+    ledgerTick();                                 // Merchant Jaxon writes it down
     S.money += bounty;
     if (bounty >= 3) S.floats.push({ x:p.x, y:p.y - 26, txt:'+$' + Math.round(bounty), color:'#ffd83d', life:0.9 });
     beep((e.elite >= 0 ? 220 : 520) + Math.random()*120, e.elite >= 0 ? 0.12 : 0.05, 'square', 0.03);
@@ -2757,6 +2926,11 @@ function hurtEnemy(e, dmg, owner) {
 
 function hurtBoss(dmg, owner) {
   if (!S.boss) return;
+  if (S.boss.inv > 0) {                       // FINAL TRANSMISSION shrugs it off
+    const q = pointAt(S.boss.d);
+    if (Math.random() < 0.25) S.floats.push({ x:q.x, y:q.y - bossR()*0.8, txt:'BLOCKED', color:'#9fdcff', life:0.5 });
+    return;
+  }
   dmg = amplify(dmg, owner, null);
   if (S.boss.mark > 0) dmg *= S.boss.markMul;
   if (S.boss.dbl) { dmg *= 2; S.boss.dbl = false; }
@@ -2764,7 +2938,8 @@ function hurtBoss(dmg, owner) {
   S.boss.hp -= dmg; S.boss.hit = 1;
   if (owner) owner.dmg += Math.min(dmg, Math.max(0, before));
   if (before > 0 && S.boss.hp <= 0) {
-    const bounty = COIN_BASE * (S.boss.max/12) * coinCurve();   // bosses are the payday
+    let bounty = COIN_BASE * (S.boss.max/12) * coinCurve();     // bosses are the payday
+    if (S.boss.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
     S.money += bounty;
     const p = pointAt(S.boss.d);
     S.floats.push({ x:p.x, y:p.y - 60, txt:'+$' + Math.round(bounty), color:'#ffd83d', life:2.0, big:true });
@@ -3146,9 +3321,63 @@ function targetFor(t) {
   return best;
 }
 
+/* --------------------------------------------------------- boss powers ---
+   Waves 80, 90 and 100 do more than walk. Everything special about them
+   lives here so the ordinary boss update stays the ordinary boss update. */
+function bossPowers(dt) {
+  const b = S.boss, pw = b.def.power;
+  if (b.inv > 0) b.inv -= dt;
+  if (b.ring > 0) b.ring -= dt;
+  if (!pw) return;
+  const p = pointAt(b.d);
+
+  /* wave 80 — a burst of static that knocks every nearby Jaxon off target */
+  if (pw === 'static') {
+    b.pulseCd -= dt;
+    if (b.pulseCd <= 0) {
+      b.pulseCd = STATIC_EVERY; b.ring = 0.9;
+      let hit = 0;
+      for (const t of S.towers) {
+        if (Math.hypot(t.x - p.x, t.y - p.y) <= STATIC_R) { t.jam = Math.max(t.jam || 0, STATIC_JAM); hit++; }
+      }
+      beep(70, 0.55, 'sawtooth', 0.07, 38);
+      if (hit) toast('Static pulse — ' + hit + ' Jaxon' + (hit === 1 ? '' : 's') + ' jammed');
+    }
+  }
+
+  /* wave 90 — everything walking in his shadow hurries up */
+  if (pw === 'reaper') {
+    for (const e of S.enemies) {
+      const q = enemyPos(e);
+      e.haste = Math.hypot(q.x - p.x, q.y - p.y) <= REAPER_R ? REAPER_HASTE : 1;
+    }
+  }
+
+  /* wave 100 — half health splits the signal, and the whole map keeps
+     stuttering while he is on it */
+  if (pw === 'final') {
+    if (b.phase === 1 && b.hp <= b.max*0.5) {
+      b.phase = 2; b.inv = 1.2; b.ring = 1.1;
+      burst(p.x, p.y, '#3fa8ff', 46); burst(p.x, p.y, '#ff2d2d', 46);
+      beep(64, 1.2, 'sawtooth', 0.09, 28);
+      toast('SIGNAL SPLIT — it will take twice as much with it now');
+    }
+    b.slowCd -= dt;
+    if (b.slowCd <= 0) {
+      b.slowCd = b.phase === 2 ? 8 : 12;
+      S.projSlow = 2.6; b.inv = 0.7; b.ring = 1.0;
+      beep(110, 0.6, 'square', 0.05, 55);
+      toast('Interference — every shot on the map is crawling');
+    }
+  }
+}
+/* the Reaper's dread dies with him */
+function clearBossAuras() { for (const e of S.enemies) e.haste = 1; }
+
 /* -------------------------------------------------------------- update --- */
 function update(dt) {
   S.t += dt;
+  if (S.projSlow > 0) S.projSlow = Math.max(0, S.projSlow - dt);
 
   if (S.phase === 'wave' && S.spawnQueue > 0) {
     S.spawnTimer -= dt;
@@ -3191,6 +3420,7 @@ function update(dt) {
       } else {
         const dmg = eLeak(e);                      // original: change Health by (costume# * -1)
         S.health -= dmg;
+        salvageLeak(dmg);                          // Recycler Jaxon's insurance policy
         S.floats.push({ x:W-150, y:800, txt:'-' + dmg, color:'#ff6b6b', life:1 });
         bump('hpBox','hurt'); beep(140, 0.2, 'sawtooth', 0.05, 70);
       }
@@ -3204,15 +3434,34 @@ function update(dt) {
     if (S.boss.stun > 0) S.boss.stun -= dt;
     if (S.boss.stun <= 0) S.boss.d += S.boss.def.speed*dt;      // bosses keep their own pace
     S.boss.hit = Math.max(0, S.boss.hit - dt*6);
+    bossPowers(dt);
     if (S.boss.hp <= 0) {
-      const p = pointAt(S.boss.d);
-      burst(p.x, p.y, '#ff2d2d', 54); burst(p.x, p.y, '#ffd83d', 26);
+      const p = pointAt(S.boss.d), fin = S.boss.def.power === 'final';
+      burst(p.x, p.y, '#ff2d2d', fin ? 140 : 54); burst(p.x, p.y, '#ffd83d', fin ? 90 : 26);
+      if (fin) {
+        burst(p.x, p.y, '#3fa8ff', 140, 2.2); burst(p.x, p.y, '#ffffff', 70, 3);
+        for (let i = 1; i <= 4; i++) setTimeout(() => beep(200 - i*30, 1.1, 'sawtooth', 0.08, 40), i*180);
+      }
       beep(180, 0.9, 'sawtooth', 0.08, 50);
-      S.boss = null; $('bossbar').classList.remove('on'); toast('Boss defeated!');
+      const wasFinal = fin;
+      S.boss = null; clearBossAuras();
+      $('bossbar').classList.remove('on');
+      toast(wasFinal ? 'FINAL TRANSMISSION severed. The nursery holds.' : 'Boss defeated!');
     } else if (S.boss.d >= PATH_LEN) {
-      const LEAK_TMP = S.boss.def.leak;
-      if (S.shield > 0) S.shield--; else S.health -= LEAK_TMP;
-      S.boss = null;
+      /* the split signal drags twice as much through the door with it */
+      const LEAK_TMP = S.boss.def.leak * (S.boss.phase === 2 ? 2 : 1);
+      const pw = S.boss.def.power;
+      if (S.shield > 0) S.shield--; else { S.health -= LEAK_TMP; salvageLeak(LEAK_TMP); }
+      if (pw === 'reaper') {                       // he does not just take lives
+        const stolen = Math.round(S.money * REAPER_TITHE);
+        if (stolen > 0) {
+          S.money -= stolen;
+          S.floats.push({ x:W-150, y:760, txt:'-$' + stolen + ' stolen', color:'#ff2d5a', life:1.8, big:true });
+          bump('moneyBox','hurt'); beep(90, 0.5, 'square', 0.06, 40);
+          toast('The Reaper emptied your pockets on the way past');
+        }
+      }
+      S.boss = null; clearBossAuras();
       $('bossbar').classList.remove('on'); bump('hpBox','hurt');
       S.floats.push({ x:W-150, y:800, txt:'-' + LEAK_TMP, color:'#ff6b6b', life:1.3, big:true });
       toast('The boss got through!');
@@ -3255,8 +3504,34 @@ function update(dt) {
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     t.copyFlash = Math.max(0, (t.copyFlash || 0) - dt*2);
 
+    /* the Static Sovereign's pulse — this Jaxon cannot see a thing right now */
+    if (t.jam > 0) { t.jam -= dt; t.lit = false; continue; }
+
     /* Forge Jaxon — no attack at all, he just makes the neighbours faster */
     if (spec.ammo === 'buff') { t.lit = true; continue; }
+
+    /* Piggybank Jaxon — prints coins, but only while a wave is on the board
+       so you cannot idle on the build screen and farm him. */
+    if (spec.ammo === 'bank') {
+      t.lit = true;
+      if (S.phase !== 'wave') { t.cd = Math.min(t.cd, spec.cd); continue; }
+      t.cd -= dt;
+      if (t.cd <= 0) {
+        t.cd = spec.cd * mul;
+        const gain = Math.max(1, Math.round(spec.income + S.money*(spec.interest || 0)));
+        S.money += gain; t.shots++; t.earned = (t.earned || 0) + gain;
+        S.floats.push({ x:t.x, y:t.y - 46, txt:'+$' + gain, color:'#ffd83d', life:1.3 });
+        bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
+        syncHUD();
+      }
+      continue;
+    }
+    /* Tax Jaxon — pure aura, the cut is taken in hurtEnemy */
+    if (spec.ammo === 'tax')     { t.lit = anyEnemyWithin(t, spec.range); continue; }
+    /* Merchant Jaxon — settles up at the wave clear */
+    if (spec.ammo === 'ledger')  { t.lit = true; continue; }
+    /* Recycler Jaxon — paid out on sales and on leaks */
+    if (spec.ammo === 'recycle') { t.lit = true; continue; }
 
     /* Band-Aid Jaxon — a plaster over the door each wave, plus slow repairs */
     if (spec.ammo === 'aid') {
@@ -3763,8 +4038,9 @@ function update(dt) {
   S.cars = S.cars.filter(c => !c.dead);
 
   /* projectiles */
+  const sdt = S.projSlow > 0 ? dt*0.35 : dt;      // FINAL TRANSMISSION drags every shot down
   for (const s of S.shots) {
-    s.x += s.vx*dt; s.y += s.vy*dt; s.spin += dt*14; s.life -= dt; s.hue = (s.hue + dt*720) % 360;
+    s.x += s.vx*sdt; s.y += s.vy*sdt; s.spin += sdt*14; s.life -= sdt; s.hue = (s.hue + dt*720) % 360;
     if (s.ammo === 'blackhole') {                       // steers onto whoever is closest
       const tg = nearestAnywhere(s);
       if (tg) { s.tx = tg.x; s.ty = tg.y; }
@@ -3877,6 +4153,18 @@ function update(dt) {
     S.wave++;                                       // original: change Level by 1
     const reward = 25 + S.wave*10;                  // the round-end bonus matters more now that pops decay
     S.money += reward;
+    /* Merchant Jaxon closes his books: everything that died on his watch,
+       plus the standing fee that grows with the wave number. */
+    for (const m of S.towers) {
+      if (TOWERS[m.type].ammo !== 'ledger') continue;
+      const msp = SP(m);
+      const pay = Math.round((m.witness || 0)*msp.perKill + msp.waveCut*S.wave);
+      m.witness = 0;
+      if (pay > 0) {
+        S.money += pay; m.earned = (m.earned || 0) + pay;
+        S.floats.push({ x:m.x, y:m.y - 54, txt:'+$' + pay, color:'#ffd83d', life:1.9, big:true });
+      }
+    }
     S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + reward, color:'#ffd83d', life:1.6, big:true });
     S.phase = 'build'; S.autoTimer = 1.4;
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
@@ -4502,9 +4790,108 @@ function drawBoss() {
     corruptText(label, 0, th.stamp ? r*0.12 : 2, fs, th.num, th);
   }
 
+  /* ---- wave 80: a dead channel. Rolling bars, scanlines, red/blue split ---- */
+  if (th && th.scan) {
+    ctx.save();
+    ctx.beginPath(); ctx.arc(0, 0, r - 4, 0, 7); ctx.clip();
+    ctx.globalAlpha = 0.14; ctx.fillStyle = '#ffffff';
+    for (let y = -r; y < r; y += 9) ctx.fillRect(-r, y, r*2, 3);
+    ctx.globalAlpha = 0.55;
+    const roll = (S.t*150) % (r*2);
+    for (let i = 0; i < 3; i++) {
+      const by = -r + ((roll + i*r*0.73) % (r*2));
+      ctx.fillStyle = i === 0 ? 'rgba(255,60,60,.4)' : i === 1 ? 'rgba(60,150,255,.4)' : 'rgba(255,255,255,.32)';
+      ctx.fillRect(-r, by, r*2, 6 + i*5);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+    /* the tell: he goes bright white just before the pulse lands */
+    if (S.boss.pulseCd < 0.9) {
+      ctx.save();
+      ctx.globalAlpha = (0.9 - S.boss.pulseCd)*0.8;
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  /* ---- wave 90: the hood, the pacifier core, and the trail of ash ---- */
+  if (th && th.hood) {
+    ctx.save();
+    ctx.fillStyle = 'rgba(5,1,7,.93)';
+    ctx.beginPath();
+    ctx.moveTo(-r*0.99, r*0.28);
+    ctx.quadraticCurveTo(0, -r*1.55, r*0.99, r*0.28);
+    ctx.quadraticCurveTo(0, -r*0.18, -r*0.99, r*0.28);
+    ctx.fill();
+    const gg = ctx.createRadialGradient(0, r*0.02, 2, 0, r*0.02, r*0.46);
+    gg.addColorStop(0, '#ffffff'); gg.addColorStop(0.3, '#ff2d5a');
+    gg.addColorStop(1, 'rgba(255,45,90,0)');
+    ctx.fillStyle = gg;
+    ctx.beginPath(); ctx.arc(0, r*0.02, r*0.46, 0, 7); ctx.fill();
+    ctx.restore();
+    if (Math.random() < 0.7) S.fx.push({ k:'p', x:p.x + (Math.random()-0.5)*r*1.2, y:p.y + (Math.random()-0.5)*r,
+      vx:(Math.random()-0.5)*50, vy:50 + Math.random()*90, life:0.8, max:0.8,
+      color:'#12010a', r:3 + Math.random()*5 });
+    /* the dread radius he hurries the crowd along inside */
+    ctx.save();
+    ctx.globalAlpha = 0.13 + Math.sin(S.t*2.2)*0.04;
+    ctx.strokeStyle = '#ff2d5a'; ctx.lineWidth = 4; ctx.setLineDash([18, 14]);
+    ctx.beginPath(); ctx.arc(0, 0, REAPER_R, 0, 7); ctx.stroke();
+    ctx.restore();
+  }
+
+  /* ---- wave 100: wings of signal, and the echo orb once it splits ---- */
+  if (th && th.wings) {
+    ctx.save();
+    ctx.globalAlpha = 0.5;
+    for (const sg of [-1, 1]) {
+      ctx.fillStyle = sg < 0 ? 'rgba(255,45,45,.55)' : 'rgba(63,168,255,.55)';
+      ctx.beginPath();
+      ctx.moveTo(sg*r*0.6, -r*0.2);
+      for (let i = 0; i < 5; i++) {
+        const len = r*(1.35 + i*0.2), a = -0.6 + i*0.28 + Math.sin(S.t*2.2 + i*0.7)*0.06;
+        ctx.lineTo(sg*Math.cos(a)*len, Math.sin(a)*len);
+        ctx.lineTo(sg*r*0.62, r*0.02 + i*r*0.08);
+      }
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  if (S.boss.phase === 2) {
+    const a = S.t*1.7, er = r*0.33, ox = Math.cos(a)*r*1.5, oy = Math.sin(a)*r*0.55;
+    ctx.save();
+    const eg = ctx.createRadialGradient(ox, oy, 2, ox, oy, er);
+    eg.addColorStop(0, '#ffffff'); eg.addColorStop(0.5, '#3fa8ff'); eg.addColorStop(1, '#ff2d2d');
+    ctx.fillStyle = eg;
+    ctx.beginPath(); ctx.arc(ox, oy, er, 0, 7); ctx.fill();
+    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.stroke();
+    ctx.restore();
+  }
+  if (S.boss.inv > 0) {                       // the frames where nothing lands
+    ctx.save();
+    ctx.globalAlpha = 0.3 + Math.abs(Math.sin(S.t*28))*0.25;
+    ctx.lineWidth = 8; ctx.strokeStyle = '#9fdcff';
+    ctx.beginPath(); ctx.arc(0, 0, r + 13, 0, 7); ctx.stroke();
+    ctx.restore();
+  }
+
   if (S.boss.hit > 0) { ctx.globalAlpha = S.boss.hit*0.5; ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); }
   ctx.restore();
+
+  /* the shockwave itself, drawn out in world space where it belongs */
+  if (S.boss.ring > 0) {
+    const k = Math.max(0, 1 - S.boss.ring/1.1);
+    const reach = S.boss.def.power === 'static' ? STATIC_R : 700;
+    ctx.save();
+    ctx.globalAlpha = Math.min(1, S.boss.ring)*0.7;
+    ctx.lineWidth = 11; ctx.strokeStyle = S.boss.def.power === 'static' ? '#e8eef7' : '#9fdcff';
+    ctx.beginPath(); ctx.arc(p.x, p.y, 20 + k*reach, 0, 7); ctx.stroke();
+    ctx.globalAlpha *= 0.4; ctx.lineWidth = 26;
+    ctx.beginPath(); ctx.arc(p.x, p.y, 20 + k*reach, 0, 7); ctx.stroke();
+    ctx.restore();
+  }
 }
 
 function drawTower(t, ghost) {
@@ -4515,7 +4902,8 @@ function drawTower(t, ghost) {
   const sw = spriteW(t.type)*grow, sh = spriteH(t.type)*grow;
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
   ctx.save();
-  ctx.globalAlpha = ghost ? 0.72 : 1;
+  /* jammed by the Static Sovereign: he flickers and stops firing */
+  ctx.globalAlpha = ghost ? 0.72 : (t.jam > 0 ? 0.45 + Math.abs(Math.sin(S.t*36))*0.3 : 1);
   if (!ghost) {
     ctx.fillStyle = 'rgba(0,0,0,.33)';
     ctx.beginPath(); ctx.ellipse(t.x, t.y + T_H*0.44, foot, foot*0.36, 0, 0, 7); ctx.fill();
@@ -5295,11 +5683,21 @@ function canvasPos(ev) {
 }
 function sellTower(t) {
   const refund = Math.floor((TOWERS[t.type].cost + upSpent(t))*0.7);
+  /* Recycler Jaxon digs a little extra out of anything scrapped beside him.
+     Best single rate only — stacking Recyclers would print money. */
+  let rate = 0;
+  for (const r of S.towers) {
+    if (r === t || TOWERS[r.type].ammo !== 'recycle') continue;
+    const rsp = SP(r);
+    if (Math.hypot(r.x - t.x, r.y - t.y) <= rsp.range) rate = Math.max(rate, rsp.refund);
+  }
+  const bonus = Math.floor(refund*rate);
   if (S.selected === t) deselect();
   S.towers = S.towers.filter(x => x !== t);
-  S.money += refund; hideTip();
-  burst(t.x, t.y, '#ffffff', 10); beep(300, 0.1, 'triangle', 0.03);
-  S.floats.push({ x:t.x, y:t.y - 30, txt:'+$' + refund, color:'#ffd83d', life:1 });
+  S.money += refund + bonus; hideTip();
+  burst(t.x, t.y, bonus ? '#9fe6b4' : '#ffffff', bonus ? 18 : 10); beep(300, 0.1, 'triangle', 0.03);
+  S.floats.push({ x:t.x, y:t.y - 30, txt:'+$' + (refund + bonus), color:'#ffd83d', life:1 });
+  if (bonus) S.floats.push({ x:t.x, y:t.y - 58, txt:'recycled +$' + bonus, color:'#9fe6b4', life:1.4 });
   bump('moneyBox','gain'); syncHUD();
 }
 
