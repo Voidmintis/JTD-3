@@ -674,6 +674,7 @@
       <button class="chip" id="autoBtn"><span class="dot"></span>Auto-Skip</button>
       <button class="chip on" id="spdBtn">Speed 1&times;</button>
       <button class="chip on" id="sndBtn">Sound</button>
+      <button class="chip on" id="perfBtn">Graphics Auto</button>
     </div>
 
     <button id="startWave">Start Wave 1</button>
@@ -703,7 +704,7 @@
       <div class="tagline">Endless Tower Defense</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
-      <p>Endless waves of angry numbered blobs march the long trail. Twenty-eight Jaxons stand between them and the nursery &mdash; and a boss shows up every tenth wave. See how far you can get.</p>
+      <p>Endless waves of angry numbered blobs march the long trail. Thirty-two Jaxons stand between them and the nursery &mdash; and a boss shows up every tenth wave, all the way to the FINAL TRANSMISSION on wave 100. See how far you can get.</p>
       <div id="help" data-touch="0">
         <div><kbd>Shop</kbd><span>Press the arrow tab at the bottom to slide the shop open, and again to close it.</span></div>
         <div><kbd>Hover</kbd><span>Point at a placed Jaxon for live stats &mdash; damage, pops, wave placed.</span></div>
@@ -2264,15 +2265,18 @@ function enemyAbility(e, ab) {
 const TOWERS = {
   /* ------------------------------------------------------------------ *
    *  BALANCE LINE:  every Jaxon buys the same amount of work per dollar. *
-   *  Rainbow Laser Jaxon ($250) is the yardstick — 10 Rainbows land the  *
-   *  same total damage as one $2,500 Titan, one $750 Tablet matches      *
-   *  three Rainbows, and so on all the way to the $35,000 True God.      *
+   *  Rainbow Laser Jaxon ($250) is the yardstick — 11 Rainbows land the  *
+   *  same total damage as one $2,750 Titan, and so on up the shelf.      *
    *  Numbers below were fitted against a live 40-enemy trail, not by eye.*
+   *  The three end-game monsters — Upgraded Titan, Black Hole Laser and  *
+   *  True God — pay a further 12% premium on top of that line. They win  *
+   *  runs on their own otherwise, and the shelf above them stops         *
+   *  mattering the moment you can afford one.                            *
    * ------------------------------------------------------------------ */
   basic:   { name:'Basic Jaxon', cost:40, range:280, cd:1.00, dmg:8, speed:700, ammo:'car',
              blurb:'Throws toy cars at whatever is closest to the exit. 8 damage a second, and he never stops.',
              tags:[['Single Target','t-single'],['Projectile',''],['Starter','']] },
-  slingshot:{ name:'Slingshot Jaxon', cost:55, range:320, cd:0.65, dmg:4, speed:620, ammo:'pebble',
+  slingshot:{ name:'Slingshot Jaxon', cost:60, range:320, cd:0.65, dmg:4, speed:620, ammo:'pebble',
              bounce:1, bounceR:210,
              blurb:'Lobs a heavy pebble every 0.65s for 4 damage, and the stone ricochets once into whatever is nearest.',
              tags:[['Bounce Shot','t-single'],['Arcing',''],['Starter','']] },
@@ -2282,7 +2286,7 @@ const TOWERS = {
   bedtime: { name:'Bedtime Jaxon', cost:65, range:Infinity, cd:7.0, dmg:2, ammo:'scream',
              blurb:'Lets out a soundwave that rolls across the whole map every 7s. 2 damage, infinite pierce, one hit per enemy.',
              tags:[['Soundwave','t-aoe'],['Infinite Pierce','t-aoe'],['Whole Map','']] },
-  ninja:   { name:'Ninja Jaxon', cost:65, range:240, cd:0.12, dmg:1.5, speed:1000, ammo:'shuriken',
+  ninja:   { name:'Ninja Jaxon', cost:62, range:240, cd:0.12, dmg:1.5, speed:1000, ammo:'shuriken',
              blurb:'Machine-guns shurikens every 0.12s for 1.5 damage each. Short reach, brutal fire rate.',
              tags:[['Single Target','t-single'],['Rapid Fire','t-fast'],['Short Range','']] },
   nurse:   { name:'Nurse Jaxon', cost:90, range:Infinity, cd:16.0, dmg:0, ammo:'heal', heal:1,
@@ -2294,14 +2298,14 @@ const TOWERS = {
   whistle: { name:'Whistle Jaxon', cost:120, range:300, cd:6.0, dmg:0, ammo:'mark', amp:0.4, dur:3.0,
              blurb:'Deals nothing himself. Every 6s he blows a blast that paints every blob in range for 3s — and marked blobs take 40% more damage from every Jaxon on the board.',
              tags:[['Mark','t-fast'],['+40% Damage','t-fast'],['Support','']] },
-  laser:   { name:'Laser Jaxon', cost:125, range:310, cd:0.40, dmg:11.5, speed:1150, ammo:'laser',
+  laser:   { name:'Laser Jaxon', cost:135, range:310, cd:0.40, dmg:11.5, speed:1150, ammo:'laser',
              blurb:'Fires a searing laser ball every 0.4s for 11.5 damage.',
              tags:[['Single Target','t-single'],['Laser','t-fast'],['Heavy Hit','']] },
   rainbow: { name:'Rainbow Laser Jaxon', cost:250, range:340, cd:0.25, dmg:7, speed:1250, ammo:'rainbow',
              splash:3.5, splashR:110,
              blurb:'The yardstick every other Jaxon is measured against. Rainbow balls every 0.25s for 7 damage, bursting for 3.5 more across 110.',
              tags:[['Splash','t-rain'],['Rainbow','t-rain'],['Benchmark','t-fast']] },
-  engineer:{ name:'Engineer Jaxon', cost:350, range:Infinity, cd:2.4, dmg:3, ammo:'build', carHp:140, carKind:'blackcar',
+  engineer:{ name:'Engineer Jaxon', cost:385, range:Infinity, cd:2.4, dmg:3, ammo:'build', carHp:140, carKind:'blackcar',
              blurb:'Every 2.4s he builds a black car at the exit that drives back up the trail. 140 HP, and it spends 1 for every point of damage it lands.',
              tags:[['Builder','t-aoe'],['Whole Trail','t-aoe'],['140 HP Cars','']] },
   pinwheel:{ name:'Pinwheel Jaxon', cost:380, range:340, cd:4.0, dmg:0, ammo:'gust', push:150,
@@ -2310,7 +2314,7 @@ const TOWERS = {
   boombox: { name:'Boombox Jaxon', cost:400, range:340, cd:5.0, dmg:50, ammo:'stun', stun:1.0,
              blurb:'Drops the bass every 5s — a pulse ring that freezes everything in range solid for a full second and knocks 50 damage off it.',
              tags:[['Stun','t-aoe'],['Pulse Ring','t-aoe'],['Support','']] },
-  goldeng: { name:'Golden Engineer Jaxon', cost:500, range:Infinity, cd:2.4, dmg:6, ammo:'build', carHp:200, carKind:'goldcar',
+  goldeng: { name:'Golden Engineer Jaxon', cost:550, range:Infinity, cd:2.4, dmg:6, ammo:'build', carHp:200, carKind:'goldcar',
              blurb:'Same trade, better workshop — his cars are gold and carry 200 HP.',
              tags:[['Builder','t-aoe'],['Whole Trail','t-aoe'],['200 HP Cars','t-fast']] },
   lunchbox:{ name:'Lunchbox Jaxon', cost:520, range:290, cd:6.0, dmg:0, ammo:'snack', amt:0.3, dur:4.0,
@@ -2319,13 +2323,13 @@ const TOWERS = {
   forge:   { name:'Forge Jaxon', cost:650, range:300, cd:1.0, dmg:0, ammo:'buff', rate:0.20,
              blurb:'No attack of his own — he hammers upgrades into his neighbours instead. Every Jaxon inside the ring fires 20% faster, and it stacks.',
              tags:[['Buff','t-fast'],['+20% Fire Rate','t-fast'],['Support','']] },
-  yoyo:    { name:'Yo-Yo Jaxon', cost:650, range:360, cd:0.90, dmg:80, speed:900, ammo:'yoyo',
+  yoyo:    { name:'Yo-Yo Jaxon', cost:600, range:360, cd:0.90, dmg:80, speed:900, ammo:'yoyo',
              blurb:'Throws a yo-yo out to the end of its string and walks it back. 80 damage on the way out and 80 more on the way home — every blob on the line gets clipped twice.',
              tags:[['Double Hit','t-single'],['Returning','t-rain'],['Mid Game','']] },
-  tablet:  { name:'Tablet Jaxon', cost:750, range:340, cd:0.55, dmg:36, ammo:'beam', arc:0.52,
+  tablet:  { name:'Tablet Jaxon', cost:795, range:340, cd:0.55, dmg:36, ammo:'beam', arc:0.52,
              blurb:'Holds up a tablet and floods a cone of light. 36 damage every 0.55s to every enemy standing in it — no pierce limit. Worth about three Rainbows.',
              tags:[['Light Cone','t-aoe'],['Infinite Pierce','t-aoe'],['Area Damage','']] },
-  titan:   { name:'Titan Jaxon', cost:2500, range:440, ammo:'multi',
+  titan:   { name:'Titan Jaxon', cost:2750, range:440, ammo:'multi',
              weapons:[
                { k:'goldcar',   cd:0.75, dmg:50, speed:840 },
                { k:'fireball',  cd:2.00, dmg:75, speed:660, boomR:200, burnDps:28, burnDur:5 },
@@ -2333,7 +2337,7 @@ const TOWERS = {
              ],
              blurb:'Three weapons at once: gold cars every 0.75s for 50, fireballs every 2s that set a wide area alight for 28 a second, and a black hole every 5s that swallows a crowd for 185. Ten Rainbows in one body.',
              tags:[['Multi-Weapon','t-rain'],['Burn','t-fast'],['Black Hole','t-aoe']] },
-  titantablet:{ name:'Titan Tablet Jaxon', cost:5000, range:450, ammo:'multi',
+  titantablet:{ name:'Titan Tablet Jaxon', cost:6200, range:450, ammo:'multi',
              weapons:[
                { k:'orbit', cd:1.15, dmg:230, count:6, orbit:150, flashR:120 },
                { k:'goldcar', cd:0.75, dmg:130, speed:840 }
@@ -2344,20 +2348,20 @@ const TOWERS = {
              tick:0.25, cloudR:150, drift:190, boltCd:3.0, boltDmg:610, boltR:180,
              blurb:'Calls down a thunderhead that drifts to wherever the crowd is thickest. 45 damage every quarter second to everything under it, and a 610 damage strike every 3s.',
              tags:[['Storm','t-aoe'],['Follows Crowds','t-rain'],['End Game','']] },
-  eclipse: { name:'Eclipse Jaxon', cost:12000, range:540, ammo:'multi',
+  eclipse: { name:'Eclipse Jaxon', cost:12800, range:540, ammo:'multi',
              weapons:[
                { k:'disc', cd:6.0, dmg:45, speed:300, discR:180, dur:6.0, tick:0.25, slow:0.28 }
              ],
              blurb:'Hurls a slow black disc that settles on the trail for 6s: 45 damage every quarter second to everything crossing it, and anything inside crawls at 28% speed.',
              tags:[['Zone Control','t-aoe'],['Heavy Slow','t-rain'],['End Game','']] },
-  upgradedlaser:{ name:'Upgraded Laser Jaxon', cost:15000, range:430, ammo:'multi',
+  upgradedlaser:{ name:'Upgraded Laser Jaxon', cost:18600, range:430, ammo:'multi',
              weapons:[
                { k:'hyper', cd:0.35, dmg:165, speed:1450, splash:85, splashR:140 },
                { k:'shock', cd:9.0, dmgMin:420, dmgMax:570, push:150, charge:1.1 }
              ],
              blurb:'Twin hypercharged cannons for 165 damage every 0.35s, each bolt bursting for 85 splash. Every 9s he charges white-hot and lets go a red shockwave — 420-570 damage, one hit per enemy, and it shoves them back down the trail.',
              tags:[['Hyper Laser','t-fast'],['Splash','t-rain'],['Shockwave','t-aoe']] },
-  titanmax:{ name:'Upgraded Titan Jaxon', cost:17500, range:540, ammo:'multi',
+  titanmax:{ name:'Upgraded Titan Jaxon', cost:20800, range:540, ammo:'multi',
              weapons:[
                { k:'tri',   cd:0.30, dmg:60, speed:1150 },
                { k:'shred', cd:20.0, dmg:10.5, tick:0.1, dur:12.5, grabR:520 },
@@ -2365,7 +2369,7 @@ const TOWERS = {
              ],
              blurb:'Ice, fire and drills every 0.3s for 60 damage each, plus a chain-shredder every 20s at 10.5 a tick. And every 24s the magnets tear open a Judgment Singularity: it drags the whole crowd off the trail, holds them 2s, then detonates for 620 — and anything anywhere on the map already under a quarter health is simply deleted.',
              tags:[['Ice / Fire / Drill','t-rain'],['Shredder','t-aoe'],['Singularity','t-fast']] },
-  blackholelaser:{ name:'Black Hole Laser Jaxon', cost:25000, range:460, ammo:'multi',
+  blackholelaser:{ name:'Black Hole Laser Jaxon', cost:30500, range:460, ammo:'multi',
              weapons:[
                { k:'hypervoid', cd:0.30, dmg:280, speed:1500, splash:130, splashR:200 },
                { k:'vortex', cd:5.0, dmg:190, tick:0.25, dur:3.6, cap:5, grabR:340, charge:0.8 }
@@ -2376,10 +2380,10 @@ const TOWERS = {
              freeze:1.2, flash:1.05, crit:0.18,
              blurb:'Every 18s he calls CUT — the entire board freezes for 1.2s and the next hit every blob takes is doubled. Between takes, every Jaxon around him lands 18% crits.',
              tags:[['Freeze All','t-aoe'],['Double Damage','t-fast'],['Crit Aura','t-rain']] },
-  mirror:  { name:'Mirror Jaxon', cost:28000, range:360, cd:0.55, dmg:45, ammo:'mirror', boost:3.25,
+  mirror:  { name:'Mirror Jaxon', cost:32750, range:360, cd:0.55, dmg:45, ammo:'mirror', boost:3.25,
              blurb:'Copies the last shot fired by any Jaxon inside his ring and throws it straight back 3.25x stronger, every 0.55s. Worthless alone, monstrous beside the big ones.',
              tags:[['Copycat','t-rain'],['3.25x Power','t-fast'],['End Game','']] },
-  truegod: { name:'True God Jaxon', cost:35000, range:500, ammo:'multi', slow:0.5,
+  truegod: { name:'True God Jaxon', cost:43500, range:500, ammo:'multi', slow:0.5,
              weapons:[
                { k:'diamondcar', cd:0.50, dmg:380, speed:980, splash:190, splashR:130 },
                { k:'build', cd:2.50, carHp:2000, carKind:'diamondcar' },
@@ -2409,17 +2413,17 @@ const TOWERS = {
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'lunchbox','forge','yoyo','tablet','merchant',
-               'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','blackholelaser',
-               'director','mirror','truegod'];
+               'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
+               'blackholelaser','mirror','truegod'];
 /* Value index: work done per dollar, averaged over live 40-enemy benchmark runs.
    100 = exactly as much bang per coin as a Rainbow Laser Jaxon. Support Jaxons that
    deal no damage are held on the same line by hand. */
 const VALUE = {
-                basic:104, slingshot:109, bubble:96, bedtime:99, ninja:95, nurse:100, bandaid:100,
-                whistle:100, laser:109, rainbow:100, engineer:110, pinwheel:100, boombox:101,
-                goldeng:110, lunchbox:100, forge:100, yoyo:93, tablet:106, titan:110,
-                titantablet:124, stormcloud:104, eclipse:107, upgradedlaser:124, titanmax:106,
-                blackholelaser:109, director:100, mirror:117, truegod:111,
+                basic:104, slingshot:100, bubble:96, bedtime:99, ninja:100, nurse:100, bandaid:100,
+                whistle:100, laser:100, rainbow:100, engineer:100, pinwheel:100, boombox:101,
+                goldeng:100, lunchbox:100, forge:100, yoyo:100, tablet:100, titan:100,
+                titantablet:100, stormcloud:104, eclipse:100, upgradedlaser:100, titanmax:89,
+                blackholelaser:89, director:100, mirror:100, truegod:89,
                 piggybank:100, recycler:100, tax:100, merchant:100 };
 
 const T_H = 88;
@@ -2549,8 +2553,40 @@ const S = {
   speed:1, sound:true, t:0,
   /* 0 = everything on, 1 = lean, 2 = leanest. Set by measured frame rate,
      with a floor from the wave number so deep runs never start heavy. */
-  perf:0, perfToasted:false, auraT:0, dupe:null
+  perf:0, perfToasted:false, auraT:0, dupe:null,
+  /* null = let the frame rate decide, 0/2 = the player has decided for us */
+  perfLock:null, tutorialDone:false
 };
+
+/* -------------------------------------------------------------- saving ---
+   One small blob in localStorage: the best run and the handful of settings
+   worth remembering. Everything is optional and every read is defensive —
+   a private window with storage blocked just plays with the defaults. */
+const SAVE_KEY = 'jtd3.save';
+function loadSave() {
+  let j;
+  try { j = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return; }
+  if (!j || typeof j !== 'object') return;
+  if (typeof j.best === 'number' && isFinite(j.best)) S.best = Math.max(0, Math.floor(j.best));
+  if (typeof j.sound === 'boolean') S.sound = j.sound;
+  if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
+  if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
+  if (typeof j.autoSkip === 'boolean') S.autoSkip = j.autoSkip;
+  S.tutorialDone = !!j.tutorial;
+}
+function saveNow() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      best:S.best, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
+      autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0
+    }));
+  } catch (e) { /* storage disabled — settings just do not survive the tab */ }
+}
+/* the best run is worth writing the moment it changes, not at game over */
+function noteBest(w) {
+  if (w <= S.best) return;
+  S.best = w; saveNow(); syncHUD();
+}
 /* Hard ceilings. Enemies are capped at the spawner (see LIVE_CAP); these
    catch everything else so one silly frame cannot snowball. */
 const FX_CAP = [900, 420, 170], SHOT_CAP = 700, CAR_CAP = 70, FLOAT_CAP = 36;
@@ -2995,7 +3031,7 @@ const tierSpeed = tier => WAVE_SPEED / (tier + 5) * waveRamp();
    enormous crowds rather than from fat individual kills.
    A tougher blob is still worth more than a weak one — it is the WAVE
    multiplier that decays, never the enemy's own value.                  */
-const COIN_BASE = 6.0, COIN_DECAY = 0.12;
+const COIN_BASE = 6.0, COIN_DECAY = 0.135;
 const coinCurve  = () => 1 / (1 + Math.max(0, S.wave - 1) * COIN_DECAY);
 const enemyWorth = e => (e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
@@ -3113,7 +3149,7 @@ function hurtBoss(dmg, owner) {
   S.boss.hp -= dmg; S.boss.hit = 1;
   if (owner) owner.dmg += Math.min(dmg, Math.max(0, before));
   if (before > 0 && S.boss.hp <= 0) {
-    let bounty = COIN_BASE * (S.boss.max/12) * coinCurve();     // bosses are the payday
+    let bounty = COIN_BASE * (S.boss.max/13) * coinCurve();     // bosses are the payday
     if (S.boss.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
     S.money += bounty;
     const p = pointAt(S.boss.d);
@@ -4356,7 +4392,7 @@ function update(dt) {
   if (S.health <= 0 && S.phase !== 'over') { S.phase = 'over'; endGame(); return; }
 
   if (S.phase === 'wave' && S.spawnQueue === 0 && S.enemies.length === 0 && !S.boss) {
-    S.best = Math.max(S.best, S.wave);
+    noteBest(S.wave);
     S.wave++;                                       // original: change Level by 1
     const reward = 25 + S.wave*10;                  // the round-end bonus matters more now that pops decay
     S.money += reward;
@@ -4374,6 +4410,7 @@ function update(dt) {
     }
     S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + reward, color:'#ffd83d', life:1.6, big:true });
     S.phase = 'build'; S.autoTimer = 1.4;
+    if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
     for (const e of S.enemies) e.cap = null;
@@ -5948,14 +5985,48 @@ function render() {
     ctx.fillStyle = f.color; ctx.fillText(f.txt, f.x, f.y); ctx.restore();
   }
 
-  if (S.phase === 'build' && S.towers.length === 0 && !S.placing) {
-    ctx.save();
-    ctx.font = '700 20px "Segoe UI", system-ui, sans-serif'; ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(0,0,0,.42)'; ctx.fillRect(W/2 - 290, 470, 580, 48);
-    ctx.fillStyle = '#eaf3ea';
-    ctx.fillText('Open the shop below, pick a Jaxon, then click the grass', W/2, 501);
-    ctx.restore();
+  drawCoach();
+}
+
+/* ---------------------------------------------------------- first run ----
+   Five steps that follow what the player has actually done, not a timer.
+   It retires itself the moment wave 2 starts and never comes back — the
+   flag lives in the same save blob as the settings. */
+function coachStep() {
+  if (S.tutorialDone || S.phase === 'menu' || S.phase === 'over') return null;
+  const tap = MOBILE ? 'Tap' : 'Click';
+  if (S.towers.length === 0) {
+    if (!S.shopOpen && !S.placing) return [1, 'Open the Shop at the bottom of the screen'];
+    if (!S.placing)               return [2, tap + ' a Jaxon to pick him up'];
+    return [3, tap + ' the grass to set him down — hold and drag to lay a whole row'];
   }
+  if (S.phase === 'build') return [4, MOBILE ? 'Tap Start Wave when your line is ready'
+                                            : 'Press Start Wave, or hit Space'];
+  return [5, tap + ' a placed Jaxon to upgrade, sell or duplicate him'];
+}
+
+function drawCoach() {
+  const step = coachStep();
+  if (!step) return;
+  const [num, txt] = step;
+  const bob = Math.sin(S.t*2.6)*3;
+  const y = 462 + bob, h = 54;
+  ctx.save();
+  ctx.font = '700 20px "Segoe UI", system-ui, sans-serif';
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const tw = ctx.measureText(txt).width;
+  const w = tw + 108, x = W/2 - w/2;
+  ctx.fillStyle = 'rgba(6,10,14,.72)';
+  ctx.strokeStyle = 'rgba(34,224,42,.55)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(x, y, w, h, 14); ctx.fill(); ctx.stroke();
+  /* step badge */
+  ctx.fillStyle = 'rgba(34,224,42,.16)';
+  ctx.beginPath(); ctx.roundRect(x + 12, y + 11, 62, h - 22, 9); ctx.fill();
+  ctx.fillStyle = '#8bf59a'; ctx.font = '800 15px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(num + ' of 5', x + 21, y + h/2 + 1);
+  ctx.fillStyle = '#eaf3ea'; ctx.font = '700 20px "Segoe UI", system-ui, sans-serif';
+  ctx.fillText(txt, x + 88, y + h/2 + 1);
+  ctx.restore();
 }
 
 /* -------------------------------------------------------------- input ---- */
@@ -6020,7 +6091,7 @@ function tryPlaceAt(x, y, silent) {
   burst(x, y + 30, dup ? '#8bf59a' : '#ffffff', dup ? 14 : 8); beep(560, 0.08, 'triangle', 0.04);
   if (dup) {
     S.floats.push({ x, y:y - 40, txt:'copy', color:'#8bf59a', life:1.1 });
-    cancelPlacing();                       // one copy per press, never a drag-stamp
+    if (S.money < dup.cost) cancelPlacing();   // drag out a whole row, same as the shop
   } else if (S.money < spec.cost) cancelPlacing();
   syncHUD();
   return true;
@@ -6034,7 +6105,7 @@ cv.addEventListener('pointermove', ev => {
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true;
   if (S.placing || S.phase === 'menu' || S.phase === 'over') {
     hideTip(); cv.style.cursor = S.placing ? 'crosshair' : 'default';
-    if (S.placing && !S.dupe && S.mouse.down && S.t >= dragCd) {
+    if (S.placing && S.mouse.down && S.t >= dragCd) {
       if (tryPlaceAt(p.x, p.y, true)) dragCd = S.t + 0.05;   // a light throttle, footprint spacing does the rest
     }
     return;
@@ -6131,20 +6202,39 @@ $('playBtn').onclick = reset;
 $('againBtn').onclick = reset;
 $('autoBtn').onclick = () => {
   S.autoSkip = !S.autoSkip;
-  $('autoBtn').classList.toggle('on', S.autoSkip);
   if (S.autoSkip) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4);
   toast(S.autoSkip ? 'Auto-skip on — waves chain automatically' : 'Auto-skip off');
-  syncHUD();
+  syncChips(); saveNow(); syncHUD();
 };
 $('spdBtn').onclick = () => {
   S.speed = S.speed === 1 ? 2 : (S.speed === 2 ? 3 : 1);
-  $('spdBtn').textContent = 'Speed ' + S.speed + '×';
+  syncChips(); saveNow();
 };
 $('sndBtn').onclick = () => {
   S.sound = !S.sound;
+  syncChips(); saveNow();
+};
+/* Auto → High → Fast. Auto follows the frame rate; the other two are the
+   player overruling it in either direction. */
+$('perfBtn').onclick = () => {
+  S.perfLock = S.perfLock === null ? 0 : S.perfLock === 0 ? 2 : null;
+  S.perfToasted = true;                       // they know what it does now
+  setPerf();
+  syncChips(); saveNow();
+  toast(S.perfLock === null ? 'Graphics follow the frame rate'
+      : S.perfLock === 0    ? 'Graphics locked high — may drop frames on big waves'
+      :                       'Graphics locked fast — fewer particles, simpler blobs');
+};
+
+/* every chip's label and lit state, in one place */
+function syncChips() {
+  $('autoBtn').classList.toggle('on', S.autoSkip);
+  $('spdBtn').textContent = 'Speed ' + S.speed + '×';
   $('sndBtn').textContent = 'Sound' + (S.sound ? '' : ' Off');
   $('sndBtn').classList.toggle('on', S.sound);
-};
+  $('perfBtn').textContent = 'Graphics ' + (S.perfLock === null ? 'Auto' : S.perfLock === 0 ? 'High' : 'Fast');
+  $('perfBtn').classList.toggle('on', S.perfLock !== 2);
+}
 
 /* --------------------------------------------------------------- loop ---- */
 let panelTick = 0;
@@ -6160,6 +6250,7 @@ let last = performance.now();
    doing, and a genuinely slow frame rate drops another level on top. */
 let fpsAcc = 0, fpsN = 0, fpsAvg = 60;
 function setPerf() {
+  if (S.perfLock !== null) { S.perf = S.perfLock; return; }   // player's call, not ours
   const floor = S.wave >= 40 ? 1 : 0;          // deep waves always run lean
   let want = S.perf;
   if (fpsAvg < 34)      want = 2;
@@ -6214,7 +6305,8 @@ function syncHelp() {
 const _syncMode = syncMode;
 syncMode = function () { _syncMode(); syncHelp(); };
 
-loadImages(() => { fitAll(); syncHelp(); makeGrass(); buildShelf(); syncHUD(); requestAnimationFrame(frame); });
+loadSave();
+loadImages(() => { fitAll(); syncHelp(); makeGrass(); buildShelf(); syncChips(); syncHUD(); requestAnimationFrame(frame); });
 </script>
 </body>
 </html>
