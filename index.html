@@ -353,6 +353,17 @@
     background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:9px;padding:7px 11px;
   }
   #panel .close:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  #panel .dupe{
+    width:100%;display:block;text-align:center;font:inherit;cursor:pointer;margin-top:9px;
+    background:rgba(34,224,42,.13);border:1px solid rgba(34,224,42,.42);color:#8bf59a;
+    border-radius:9px;padding:7px 8px;transition:.14s;
+  }
+  #panel .dupe:hover:not(.poor){background:rgba(34,224,42,.24);color:#fff}
+  #panel .dupe .dn{display:block;font-weight:800;font-size:11px}
+  #panel .dupe .ds{display:block;font-size:8.5px;color:var(--dim);margin-top:2px;letter-spacing:.3px}
+  #panel .dupe.poor{
+    background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
+  }
   #panel .hint{font-size:8.5px;color:var(--dim);text-align:center;margin-top:7px;letter-spacing:.4px}
 
 
@@ -447,6 +458,9 @@
   body.mobile #panel .sell,body.mobile #panel .close{
     font-size:19px;border-radius:14px;min-height:var(--tap);padding:0 22px;
   }
+  body.mobile #panel .dupe{border-radius:14px;min-height:var(--tap);padding:8px 18px;margin-top:14px}
+  body.mobile #panel .dupe .dn{font-size:19px}
+  body.mobile #panel .dupe .ds{font-size:13px;margin-top:3px}
   body.mobile #panel .hint{font-size:14px;margin-top:10px}
   /* landscape phones are short: drop the panel's chrome and hug the right edge */
   body.mobile:not(.portrait) #panel{
@@ -2192,11 +2206,26 @@ const TIER = {
 const MAX_TIER = 7, E_R = 22;
 
 /* ---- armoured enemies that start showing up once the waves get real ---- */
+/* Ordered by the wave they unlock on — the spawn weighting leans on that
+   order, so keep it sorted. Abilities are deliberately flags-and-timers:
+   nothing here allocates, spawns, or draws extra per frame. */
 const ELITE = [
   { key:'steel',    from:12, hp:60,   fill:'#95a6bb', edge:'#3a4757', text:'#0e1620', leak:8,  r:30, spd:132 },
+  { key:'sprinter', from:16, hp:70,   fill:'#ffd23d', edge:'#8a6200', text:'#241f00', leak:6,  r:24, spd:236,
+                    ability:'sprint', label:'Sprinter' },
   { key:'cobalt',   from:20, hp:150,  fill:'#3f7fe0', edge:'#153468', text:'#eaf4ff', leak:12, r:33, spd:122 },
+  { key:'tank',     from:24, hp:900,  fill:'#7a6a4a', edge:'#2e2513', text:'#ffeccc', leak:32, r:46, spd:62,
+                    ability:'tank', label:'Tank' },
   { key:'obsidian', from:28, hp:400,  fill:'#42356b', edge:'#150f26', text:'#e8dcff', leak:18, r:36, spd:112 },
-  { key:'titanium', from:36, hp:1000, fill:'#eef3f9', edge:'#79879a', text:'#1a2330', leak:26, r:40, spd:102 }
+  { key:'shielded', from:30, hp:520,  fill:'#2f9ea8', edge:'#0d454b', text:'#e6ffff', leak:20, r:35, spd:106,
+                    ability:'shield', armour:38, label:'Shielded' },
+  { key:'titanium', from:36, hp:1000, fill:'#eef3f9', edge:'#79879a', text:'#1a2330', leak:26, r:40, spd:102 },
+  { key:'jammer',   from:38, hp:760,  fill:'#c86ad8', edge:'#4a1257', text:'#ffe6ff', leak:22, r:36, spd:104,
+                    ability:'jam', jamR:230, jamCd:3.2, label:'Jammer' },
+  { key:'healer',   from:44, hp:900,  fill:'#4fd07a', edge:'#125a2c', text:'#e8ffee', leak:22, r:35, spd:98,
+                    ability:'heal', healR:200, healCd:1.6, label:'Healer' },
+  { key:'husk',     from:52, hp:4200, fill:'#3a1418', edge:'#120507', text:'#ffdada', leak:44, r:58, spd:80,
+                    ability:'husk', label:'Ex-boss husk' }
 ];
 /* Armour thickens every wave it survives, so the expensive Jaxons keep
    having something worth shooting at. */
@@ -2209,6 +2238,28 @@ const eSpeed = e => (e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(
                     * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
                     * (e.haste || 1);
 const eRad   = e => (e.elite >= 0 ? ELITE[e.elite].r    : E_R);
+const eAbility = e => (e.elite >= 0 ? ELITE[e.elite].ability : null);
+
+/* ---------------------------------------------------- enemy abilities ----
+   Only the Jammer and the Healer actually run code, and both are on a
+   multi-second timer, so a screen full of them costs almost nothing. */
+function enemyAbility(e, ab) {
+  const p = enemyPos(e), el = ELITE[e.elite];
+  if (ab === 'jam') {                       // slows nearby Jaxons, never silences them
+    for (const t of S.towers) {
+      if (Math.hypot(t.x - p.x, t.y - p.y) <= el.jamR) t.fireSlow = Math.max(t.fireSlow || 0, el.jamCd*0.55);
+    }
+  } else if (ab === 'heal') {               // rate limited: eight neighbours, 4% each
+    let n = 0;
+    for (const o of S.enemies) {
+      if (n >= 8) break;
+      if (o === e || o.dead || o.hp >= o.max) continue;
+      const q = enemyPos(o);
+      if (Math.hypot(q.x - p.x, q.y - p.y) > el.healR) continue;
+      o.hp = Math.min(o.max, o.hp + o.max*0.04); n++;
+    }
+  }
+}
 
 const TOWERS = {
   /* ------------------------------------------------------------------ *
@@ -2492,11 +2543,17 @@ const S = {
   enemies:[], towers:[], shots:[], waves:[], cars:[], holes:[], shreds:[], vortex:[], shocks:[],
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
-  boss:null, spawnQueue:0, spawnTimer:0, spawnGap:0,
+  boss:null, spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
-  speed:1, sound:true, t:0
+  speed:1, sound:true, t:0,
+  /* 0 = everything on, 1 = lean, 2 = leanest. Set by measured frame rate,
+     with a floor from the wave number so deep runs never start heavy. */
+  perf:0, perfToasted:false, auraT:0, dupe:null
 };
+/* Hard ceilings. Enemies are capped at the spawner (see LIVE_CAP); these
+   catch everything else so one silly frame cannot snowball. */
+const FX_CAP = [900, 420, 170], SHOT_CAP = 700, CAR_CAP = 70, FLOAT_CAP = 36;
 
 /* -------------------------------------------------------------- audio ---- */
 let AC = null;
@@ -2693,7 +2750,7 @@ function setShop(open) {
   $('drawer').classList.toggle('open', open);
   $('shopTab').classList.toggle('open', open);
   $('shopTab').classList.toggle('nudge', !open && S.towers.length === 0 && S.phase !== 'menu');
-  if (open) { S.placing = null; setPlacingBanner(); syncShelf(); beep(660, 0.06, 'triangle', 0.03); }
+  if (open) { S.placing = null; S.dupe = null; setPlacingBanner(); syncShelf(); beep(660, 0.06, 'triangle', 0.03); }
   else beep(440, 0.06, 'triangle', 0.025);
   hideTip();
 }
@@ -2702,20 +2759,45 @@ function setPlacingBanner() {
   const el = $('placing');
   if (!S.placing) { el.classList.remove('on'); return; }
   $('placingImg').src = PORTRAIT[S.placing];
-  $('placingTxt').textContent = (MOBILE ? 'Tap the grass · ' : 'Placing ') + TOWERS[S.placing].name;
+  const what = S.dupe
+    ? 'Copy of ' + TOWERS[S.placing].name + ' · ' + S.dupe.upA + '-' + S.dupe.upB
+    : TOWERS[S.placing].name;
+  $('placingTxt').textContent = (MOBILE ? 'Tap the grass · ' : 'Placing ') + what;
   el.querySelector('em').textContent = MOBILE ? 'Tap here to cancel' : 'Esc to cancel';
   el.classList.add('on');
 }
 
 function pick(key) {
   if (S.money < TOWERS[key].cost) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
+  S.dupe = null;
   S.placing = key;
   syncShelf(); setPlacingBanner();
   beep(760, 0.07, 'triangle', 0.035);
   setTimeout(() => setShop(false), 160);     // drawer slides away so the field stays clear
 }
 
-function cancelPlacing() { S.placing = null; setPlacingBanner(); syncShelf(); }
+function cancelPlacing() { S.placing = null; S.dupe = null; setPlacingBanner(); syncShelf(); }
+
+/* ---------------------------------------------------- duplicate a Jaxon --
+   Full rebuy: the shop price plus every coin ever spent upgrading this one.
+   Only the type and the permanent upgrade levels travel — the copy arrives
+   with no auras, no charge, no buffs, and every unique active on cooldown. */
+const dupeCost = t => TOWERS[t.type].cost + upSpent(t);
+
+function startDuplicate(t) {
+  const cost = dupeCost(t);
+  if (S.money < cost) {
+    toast('Need $' + cost.toLocaleString() + ' to duplicate ' + TOWERS[t.type].name);
+    beep(150, 0.08, 'square', 0.03);
+    return;
+  }
+  S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, cost, range:SP(t).range };
+  S.placing = t.type;
+  deselect();
+  syncShelf(); setPlacingBanner();
+  beep(820, 0.07, 'triangle', 0.035);
+  setTimeout(() => setShop(false), 160);
+}
 
 /* ---------------------------------------------------------------- hud ---- */
 function syncHUD() {
@@ -2745,7 +2827,7 @@ function reset() {
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null;
   S.boss=null; S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
-  S.projSlow=0;
+  S.projSlow=0; S.plan=[]; S.dupe=null;
   deselect();
   S.affordable={};
   $('bossbar').classList.remove('on');
@@ -2758,9 +2840,10 @@ function startWave() {
   S.phase = 'wave';
   /* Band-Aid Jaxon tapes a fresh plaster over the nursery door each wave */
   S.shield = S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
-  /* original shape (Level*10 enemies, 2/Level apart) with an endless ramp on top */
-  S.spawnQueue = S.wave * 10 + Math.max(0, S.wave - 10) * 15;
-  S.spawnGap = 20 / S.spawnQueue;
+  /* the wave is a threat budget now, not a body count — see buildWavePlan */
+  S.plan = buildWavePlan(S.wave);
+  S.spawnQueue = S.plan.length;
+  S.spawnGap = Math.max(0.05, 20 / Math.max(1, S.spawnQueue));
   S.spawnTimer = 0;
   if (isBossWave(S.wave)) {
     const B = bossFor(S.wave);
@@ -2806,25 +2889,101 @@ function dressBossBar(B) {
 }
 
 function spawnEnemy() {
-  let elite = -1;
-  const unlocked = [];
-  for (let i = 0; i < ELITE.length; i++) if (S.wave >= ELITE[i].from) unlocked.push(i);
-  if (unlocked.length) {
-    const chance = Math.min(0.42, (S.wave - ELITE[0].from + 2) * 0.018);   // armour thickens with depth
-    if (Math.random() < chance) {
-      const w = unlocked.map((_, i) => i + 1);                             // newest armour is likeliest
-      let roll = Math.random() * w.reduce((a, b) => a + b, 0);
-      for (let i = 0; i < unlocked.length; i++) { roll -= w[i]; if (roll <= 0) { elite = unlocked[i]; break; } }
-      if (elite < 0) elite = unlocked[unlocked.length - 1];
-    }
-  }
-  const hp = elite >= 0 ? eliteHp(elite, S.wave)
-                        : 1 + Math.floor(Math.random() * Math.min(S.wave, MAX_TIER));   // random 1..Level
+  const u = (S.plan && S.plan.length) ? S.plan.shift() : rollUnit(S.wave);
+  const elite = u.elite, hp = u.hp;
+  const ab = elite >= 0 ? ELITE[elite].ability : null;
   S.enemies.push({ id:++EID, d:0, hp, max:hp, elite, hit:0, wob:Math.random()*Math.PI*2,
                    off:(Math.random()-0.5)*13, burn:0, burnDps:0, burnAcc:0, burnOwner:null, cap:null,
                    slow:0, stun:0, mark:0, markMul:1, dbl:false,
-                   zap:0, zapDps:0, zapAcc:0, zapOwner:null });
+                   zap:0, zapDps:0, zapAcc:0, zapOwner:null,
+                   /* ability bookkeeping — a husk borrows an earlier boss's face */
+                   abCd:ab === 'jam' ? ELITE[elite].jamCd : ab === 'heal' ? ELITE[elite].healCd : 0,
+                   husk:ab === 'husk' ? huskTheme(S.wave) : null });
 }
+/* Ex-boss husks wear the colours of a boss you have already beaten. No boss
+   bar, no boss rules — they are ordinary elites that happen to look awful. */
+function huskTheme(w) {
+  const done = BOSSES.filter(b => b.at < w && b.theme !== 'classic');
+  if (!done.length) return 'denied';
+  return done[Math.floor(Math.random()*done.length)].theme;
+}
+/* --------------------------------------------------- the threat budget ---
+   Frame rate is a function of how many bodies are alive, not how dangerous
+   they are. So a wave is no longer "wave*10 blobs" — it is a budget worth
+   exactly what the old table was worth, spent on progressively fewer and
+   nastier units. Same pressure, a fraction of the entities.               */
+const threatOf = (elite, hp) => (elite >= 0 ? hp/25 + ELITE[elite].leak : hp + 1);
+
+/* hard ceiling on living enemies. This is the real FPS guarantee: the
+   spawner simply waits when the field is full. */
+const LIVE_CAP = w => (w < 16 ? 400 : w < 36 ? 260 : w < 60 ? 150 : 95);
+
+function waveBudget(w) {
+  const bodies = w*10 + Math.max(0, w - 10)*15;        // what the old table would have sent
+  const un = [];
+  for (let i = 0; i < ELITE.length; i++) if (w >= ELITE[i].from) un.push(i);
+  const ch = un.length ? Math.min(0.42, (w - ELITE[0].from + 2)*0.018) : 0;
+  const basic = (1 + Math.min(w, MAX_TIER))/2 + 1;
+  let el = 0;
+  if (un.length) {
+    let tot = 0, sw = 0;
+    un.forEach((idx, i) => { tot += threatOf(idx, eliteHp(idx, w))*(i + 1); sw += i + 1; });
+    el = tot/sw;
+  }
+  return bodies * ((1 - ch)*basic + ch*el);
+}
+
+/* One unit, rolled for this wave. Deeper waves take elites more often and
+   lean harder on the expensive end of the roster. */
+function rollUnit(w) {
+  const un = [];
+  for (let i = 0; i < ELITE.length; i++) if (w >= ELITE[i].from) un.push(i);
+  const chance = !un.length ? 0
+               : w <= 15 ? Math.min(0.42, (w - ELITE[0].from + 2)*0.018)   // waves 1-15 unchanged
+               : w < 36  ? Math.min(0.62, 0.26 + (w - 16)*0.02)            // elites mixed in
+               : w < 60  ? 0.86                                            // elites common
+               :           0.96;                                           // heavies and husks
+  let elite = -1;
+  if (un.length && Math.random() < chance) {
+    const k = w < 36 ? 1 : w < 60 ? 1.7 : 2.6;         // newest armour is likeliest, sharply so late
+    const wts = un.map((_, i) => Math.pow(i + 1, k));
+    let roll = Math.random()*wts.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < un.length; i++) { roll -= wts[i]; if (roll <= 0) { elite = un[i]; break; } }
+    if (elite < 0) elite = un[un.length - 1];
+  }
+  const hp = elite >= 0 ? eliteHp(elite, w)
+                        : 1 + Math.floor(Math.random()*Math.min(w, MAX_TIER));
+  return { elite, hp };
+}
+
+function buildWavePlan(w) {
+  const plan = [];
+  if (w <= 15) {                                       // early game keeps its dense little swarms
+    const n = w*10 + Math.max(0, w - 10)*15;
+    for (let i = 0; i < n; i++) plan.push(rollUnit(w));
+    return plan;
+  }
+  let budget = waveBudget(w), guard = 0;
+  /* Three spawn-generations' worth of bodies at most. Past that the budget
+     goes on HP instead, which is free for the frame rate. */
+  const capBodies = LIVE_CAP(w)*3;
+  while (budget > 0 && plan.length < capBodies && guard++ < 20000) {
+    const u = rollUnit(w);
+    plan.push(u);
+    budget -= threatOf(u.elite, u.hp);
+  }
+  /* Out of bodies but not out of menace: the leftover budget goes on as
+     armour rather than as more things to simulate. */
+  if (budget > 0) {
+    const heavies = plan.filter(u => u.elite >= 0);
+    if (heavies.length) {
+      const each = budget/heavies.length*25;
+      for (const u of heavies) u.hp = Math.round(u.hp + each);
+    }
+  }
+  return plan;
+}
+
 /* original shape: 10 / (costume# + 5), with a gentle endless speed ramp */
 const waveRamp = () => Math.min(1.75, 1 + Math.max(0, S.wave - 10) * 0.03);
 const tierSpeed = tier => WAVE_SPEED / (tier + 5) * waveRamp();
@@ -2914,6 +3073,10 @@ function onHit(e, owner) {
 
 function hurtEnemy(e, dmg, owner) {
   dmg = amplify(dmg, owner, e);
+  if (e.elite >= 0) {                          // Shielded soaks a flat slice of every hit
+    const arm = ELITE[e.elite].armour;
+    if (arm) dmg = Math.max(dmg*0.2, dmg - arm);
+  }
   const before = e.hp;
   e.hp -= dmg; e.hit = 1;
   if (owner) owner.dmg += Math.min(dmg, before);
@@ -2961,6 +3124,8 @@ function hurtBoss(dmg, owner) {
 }
 
 function burst(x, y, color, n, spread) {
+  if (S.perf) n = Math.max(3, Math.round(n*(S.perf === 1 ? 0.5 : 0.25)));
+  if (S.fx.length + n > FX_CAP[S.perf]) n = Math.max(0, FX_CAP[S.perf] - S.fx.length);
   for (let i = 0; i < n; i++) {
     const a = Math.random()*Math.PI*2, sp = (spread||1) * (60 + Math.random()*200);
     S.fx.push({ k:'p', x, y, vx:Math.cos(a)*sp, vy:Math.sin(a)*sp, life:0.44, max:0.44, color, r:2+Math.random()*3.5 });
@@ -3393,7 +3558,13 @@ function update(dt) {
 
   if (S.phase === 'wave' && S.spawnQueue > 0) {
     S.spawnTimer -= dt;
-    while (S.spawnTimer <= 0 && S.spawnQueue > 0) { spawnEnemy(); S.spawnQueue--; S.spawnTimer += S.spawnGap; }
+    const cap = LIVE_CAP(S.wave);
+    while (S.spawnTimer <= 0 && S.spawnQueue > 0) {
+      /* field is full: hold the rest of the wave at the gate rather than
+         dropping the frame rate. The wave simply takes a little longer. */
+      if (S.enemies.length >= cap) { S.spawnTimer = 0.15; break; }
+      spawnEnemy(); S.spawnQueue--; S.spawnTimer += S.spawnGap;
+    }
   }
 
   for (const e of S.enemies) {
@@ -3403,6 +3574,14 @@ function update(dt) {
     if (e.stun > 0) e.stun -= dt;
     if (e.bub > 0) e.bub -= dt;
     if (e.mark > 0) { e.mark -= dt; if (e.mark <= 0) e.markMul = 1; }
+    if (e.abCd > 0) {                                  // Jammer / Healer, on a slow timer
+      e.abCd -= dt;
+      if (e.abCd <= 0) {
+        const ab = eAbility(e);
+        enemyAbility(e, ab);
+        e.abCd = ab === 'jam' ? ELITE[e.elite].jamCd : ELITE[e.elite].healCd;
+      }
+    }
     if (e.zap > 0) {                                   // the True God's TV keeps cooking
       e.zap -= dt;
       e.zapAcc += e.zapDps*dt;
@@ -3489,30 +3668,38 @@ function update(dt) {
 
   /* Forge hammers in fire rate; the Director hands out crit. Both are worked
      out once a frame here rather than per shot. */
-  const forges    = S.towers.filter(x => TOWERS[x.type].ammo === 'buff');
-  const directors = S.towers.filter(x => TOWERS[x.type].ammo === 'cut');
-  for (const t of S.towers) {
-    let m = 1;
-    for (const fg of forges) {
-      if (fg === t) continue;
-      const fs = SP(fg);
-      if (Math.hypot(fg.x - t.x, fg.y - t.y) <= fs.range) m *= (1 - fs.rate);
+  for (const t of S.towers) if (t.dmgBuff > 0) t.dmgBuff -= dt;
+  /* This is an O(towers x buffers) sweep and its answer only changes when
+     something is bought, sold or moved — 8 Hz is plenty, and it is one of
+     the few costs that scales with a big board rather than a big crowd. */
+  S.auraT -= dt;
+  if (S.auraT <= 0) {
+    S.auraT = 0.125;
+    const forges    = S.towers.filter(x => TOWERS[x.type].ammo === 'buff');
+    const directors = S.towers.filter(x => TOWERS[x.type].ammo === 'cut');
+    for (const t of S.towers) {
+      let m = 1;
+      for (const fg of forges) {
+        if (fg === t) continue;
+        const fs = SP(fg);
+        if (Math.hypot(fg.x - t.x, fg.y - t.y) <= fs.range) m *= (1 - fs.rate);
+      }
+      t.rateMul = Math.max(0.3, m);
+      t.buffed = m < 1;
+      let cr = 0;
+      for (const d of directors) {
+        if (d === t) continue;
+        const ds = SP(d);
+        if (Math.hypot(d.x - t.x, d.y - t.y) <= ds.range) cr += ds.crit;
+      }
+      t.crit = Math.min(0.5, cr);
     }
-    t.rateMul = Math.max(0.3, m);
-    t.buffed = m < 1;
-    let cr = 0;
-    for (const d of directors) {
-      if (d === t) continue;
-      const ds = SP(d);
-      if (Math.hypot(d.x - t.x, d.y - t.y) <= ds.range) cr += ds.crit;
-    }
-    t.crit = Math.min(0.5, cr);
-    if (t.dmgBuff > 0) t.dmgBuff -= dt;
   }
 
   for (const t of S.towers) {
     const spec = SP(t);
-    const mul = t.rateMul || 1;
+    if (t.fireSlow > 0) t.fireSlow -= dt;                // a Jammer elite is standing nearby
+    const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     t.copyFlash = Math.max(0, (t.copyFlash || 0) - dt*2);
 
@@ -4158,6 +4345,14 @@ function update(dt) {
   for (const f of S.floats) { f.life -= dt; f.y -= dt*28; }
   S.floats = S.floats.filter(f => f.life > 0);
 
+  /* safety net: nothing here should ever run away, but if it does, the
+     oldest entries go rather than the frame rate. */
+  const fxCap = FX_CAP[S.perf];
+  if (S.fx.length     > fxCap)     S.fx.splice(0, S.fx.length - fxCap);
+  if (S.shots.length  > SHOT_CAP)  S.shots.splice(0, S.shots.length - SHOT_CAP);
+  if (S.cars.length   > CAR_CAP)   S.cars.splice(0, S.cars.length - CAR_CAP);
+  if (S.floats.length > FLOAT_CAP) S.floats.splice(0, S.floats.length - FLOAT_CAP);
+
   if (S.health <= 0 && S.phase !== 'over') { S.phase = 'over'; endGame(); return; }
 
   if (S.phase === 'wave' && S.spawnQueue === 0 && S.enemies.length === 0 && !S.boss) {
@@ -4372,6 +4567,7 @@ function drawPanel() {
   if (!t || !S.towers.includes(t)) { deselect(); return; }
   const base = TOWERS[t.type], sp = SP(t), up = UPGRADES[t.type];
   const refund = Math.floor((base.cost + upSpent(t))*0.7);
+  const dcost = dupeCost(t);
   const rng = sp.range === Infinity ? '∞' : Math.round(sp.range);
 
   const col = (path) => {
@@ -4405,6 +4601,10 @@ function drawPanel() {
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
     <div class="paths">${col('A')}${col('B')}</div>
+    <button class="dupe${S.money < dcost ? ' poor' : ''}" id="pDupe">
+      <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
+      <span class="ds">Copies this Jaxon with all upgrades</span>
+    </button>
     <div class="prow">
       <button class="sell" id="pSell">Sell &nbsp;+$${refund.toLocaleString()}</button>
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
@@ -4421,6 +4621,7 @@ function drawPanel() {
     bt.onmouseenter = () => showUpTip(t, bt.dataset.p, +bt.dataset.t, bt);
     bt.onmouseleave = () => hideTip();
   });
+  $('pDupe').onclick = ev => { ev.stopPropagation(); startDuplicate(t); };
   $('pSell').onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
 }
@@ -4445,6 +4646,13 @@ function refreshPanel() {
   });
   const sell = $('pSell');
   if (sell) sell.innerHTML = 'Sell &nbsp;+$' + Math.floor((TOWERS[t.type].cost + upSpent(t))*0.7).toLocaleString();
+  const dupe = $('pDupe');
+  if (dupe) {
+    const dc = dupeCost(t);
+    const dn = dupe.querySelector('.dn');
+    if (dn) dn.innerHTML = 'Duplicate &nbsp;$' + dc.toLocaleString();
+    dupe.classList.toggle('poor', S.money < dc);
+  }
 }
 
 /* hovering an upgrade previews exactly what it changes */
@@ -4557,32 +4765,99 @@ function drawField() {
 const shortHp = n => n >= 100000 ? Math.round(n/1000) + 'k'
                    : n >= 10000  ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k'
                    : String(n);
+/* An ex-boss husk: the same face as a boss you have already put down, at a
+   fraction of the health, with no boss bar and no boss rules. */
+function drawHusk(e) {
+  const p = enemyPos(e), r = eRad(e)*(1 + e.hit*0.16);
+  const th = BOSS_THEME[e.husk] || BOSS_THEME.denied;
+  const x = p.x, y = p.y;
+  ctx.save();
+  if (!S.perf) {
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.beginPath(); ctx.ellipse(x, y + r*0.92, r*0.82, r*0.3, 0, 0, 7); ctx.fill();
+  }
+  const g = ctx.createRadialGradient(x - r*0.3, y - r*0.4, r*0.1, x, y, r);
+  g.addColorStop(0, th.ring2); g.addColorStop(0.55, th.bg); g.addColorStop(1, '#000000');
+  ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = g; ctx.fill();
+  ctx.lineWidth = Math.max(4, r*0.12); ctx.strokeStyle = th.ring; ctx.stroke();
+  if (S.perf < 2) {
+    ctx.lineWidth = 2.5; ctx.strokeStyle = th.ring2; ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(x, y, r - 3, 0, 7); ctx.stroke();
+    ctx.globalAlpha = 0.5;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(S.t*0.5);
+    for (let i = 0; i < 8; i++) {
+      const a = i/8*Math.PI*2;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*(r + 3), Math.sin(a)*(r + 3));
+      ctx.lineTo(Math.cos(a)*(r + 9), Math.sin(a)*(r + 9));
+      ctx.stroke();
+    }
+    ctx.restore();
+    ctx.globalAlpha = 1;
+  }
+  ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.4)';
+  ctx.beginPath(); ctx.arc(x, y, r + 7, -Math.PI/2, Math.PI*1.5); ctx.stroke();
+  ctx.strokeStyle = '#ff5a5a';
+  ctx.beginPath(); ctx.arc(x, y, r + 7, -Math.PI/2, -Math.PI/2 + Math.PI*2*Math.max(0, e.hp/e.max)); ctx.stroke();
+  const label = shortHp(Math.max(0, Math.ceil(e.hp)));
+  ctx.font = '900 ' + Math.round(r*(label.length >= 4 ? 0.5 : 0.66)) + 'px "Segoe UI", system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 5; ctx.strokeStyle = '#000000'; ctx.strokeText(label, x, y + 1);
+  ctx.fillStyle = th.num; ctx.fillText(label, x, y + 1);
+  if (e.hit > 0) { ctx.globalAlpha = e.hit*0.5; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
+  ctx.restore();
+}
+
 function drawEnemy(e) {
+  if (e.husk) { drawHusk(e); return; }
   const el = eliteOf(e);
   const p = enemyPos(e);
   const tier = Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)));
   const T = el ? el : TIER[tier];
-  const x = p.x, y = p.y + Math.sin(S.t*6 + e.wob)*2.2, r = eRad(e)*(1 + e.hit*0.16);
+  const lean = S.perf;
+  const x = p.x, y = p.y + (lean ? 0 : Math.sin(S.t*6 + e.wob)*2.2), r = eRad(e)*(1 + e.hit*0.16);
   ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,.3)';
-  ctx.beginPath(); ctx.ellipse(x, y + r*0.92, r*0.84, r*0.3, 0, 0, 7); ctx.fill();
-  const g = ctx.createRadialGradient(x - r*0.32, y - r*0.4, r*0.12, x, y, r);
-  g.addColorStop(0, shade(T.fill, (!el && tier === 7) ? 1.0 : 1.28));
-  g.addColorStop(0.62, T.fill);
-  g.addColorStop(1, shade(T.fill, 0.82));
-  ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = g; ctx.fill();
+  if (!lean) {
+    ctx.fillStyle = 'rgba(0,0,0,.3)';
+    ctx.beginPath(); ctx.ellipse(x, y + r*0.92, r*0.84, r*0.3, 0, 0, 7); ctx.fill();
+  }
+  if (lean > 1) {                                    // flat fill, no gradient object per blob
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = T.fill; ctx.fill();
+  } else {
+    const g = ctx.createRadialGradient(x - r*0.32, y - r*0.4, r*0.12, x, y, r);
+    g.addColorStop(0, shade(T.fill, (!el && tier === 7) ? 1.0 : 1.28));
+    g.addColorStop(0.62, T.fill);
+    g.addColorStop(1, shade(T.fill, 0.82));
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fillStyle = g; ctx.fill();
+  }
   ctx.lineWidth = 5.5; ctx.strokeStyle = T.edge; ctx.stroke();
-  ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(255,255,255,.22)';
-  ctx.beginPath(); ctx.arc(x, y, r - 3.4, Math.PI*1.08, Math.PI*1.86); ctx.stroke();
-  ctx.beginPath(); ctx.ellipse(x - r*0.3, y - r*0.42, r*0.34, r*0.2, -0.5, 0, 7);
-  ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.fill();
+  if (!lean) {
+    ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(255,255,255,.22)';
+    ctx.beginPath(); ctx.arc(x, y, r - 3.4, Math.PI*1.08, Math.PI*1.86); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(x - r*0.3, y - r*0.42, r*0.34, r*0.2, -0.5, 0, 7);
+    ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.fill();
+  }
   if (el) {                                          // armour plating + HP ring
-    ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.28)';
-    for (let i = 0; i < 6; i++) {
-      const a = i/6*Math.PI*2 + 0.4;
+    if (lean < 2) {
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.28)';
+      for (let i = 0; i < 6; i++) {
+        const a = i/6*Math.PI*2 + 0.4;
+        ctx.beginPath();
+        ctx.moveTo(x + Math.cos(a)*r*0.52, y + Math.sin(a)*r*0.52);
+        ctx.lineTo(x + Math.cos(a)*(r-4),  y + Math.sin(a)*(r-4));
+        ctx.stroke();
+      }
+    }
+    /* one cheap tell per ability so you can read the crowd at a glance */
+    if (el.ability === 'jam' || el.ability === 'heal' || el.ability === 'shield') {
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = el.ability === 'jam' ? 'rgba(226,140,255,.75)'
+                      : el.ability === 'heal' ? 'rgba(120,255,160,.75)'
+                      : 'rgba(150,240,255,.8)';
       ctx.beginPath();
-      ctx.moveTo(x + Math.cos(a)*r*0.52, y + Math.sin(a)*r*0.52);
-      ctx.lineTo(x + Math.cos(a)*(r-4),  y + Math.sin(a)*(r-4));
+      if (el.ability === 'shield') ctx.arc(x, y, r + 3, Math.PI*0.75, Math.PI*2.25);
+      else ctx.arc(x, y, r + 3, 0, 7);
       ctx.stroke();
     }
     ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.35)';
@@ -5187,7 +5462,8 @@ function render() {
 
   if (S.placing) {
     const m = S.mouse, spec = TOWERS[S.placing], ok = validSpot(m.x, m.y);
-    drawRange(m.x, m.y - spriteH(S.placing)*0.18, spec.range, ok);
+    /* a duplicate shows the range it will actually have, upgrades and all */
+    drawRange(m.x, m.y - spriteH(S.placing)*0.18, S.dupe ? S.dupe.range : spec.range, ok);
     if (spec.range === Infinity) {
       ctx.save(); ctx.strokeStyle = ok ? 'rgba(255,255,255,.3)' : 'rgba(255,120,120,.6)';
       ctx.lineWidth = 2; ctx.setLineDash([14,11]); ctx.lineDashOffset = -S.t*26;
@@ -5195,7 +5471,8 @@ function render() {
     }
     if (m.in) {
       if (!ok) { ctx.save(); ctx.filter = 'grayscale(1)'; }
-      drawTower({ type:S.placing, x:m.x, y:m.y, face:1 }, true);
+      drawTower({ type:S.placing, x:m.x, y:m.y, face:1,
+                  upA:S.dupe ? S.dupe.upA : 0, upB:S.dupe ? S.dupe.upB : 0 }, true);
       if (!ok) ctx.restore();
     }
   }
@@ -5719,19 +5996,32 @@ function sellTower(t) {
 let dragCd = 0;
 function tryPlaceAt(x, y, silent) {
   if (!S.placing) return false;
-  const spec = TOWERS[S.placing];
-  if (S.money < spec.cost) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
+  const spec = TOWERS[S.placing], dup = S.dupe;
+  const cost = dup ? dup.cost : spec.cost;
+  if (S.money < cost) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
-  S.money -= spec.cost;
-  S.towers.push({ type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
-                  cds:(spec.weapons || []).map(w => w.cd*0.35),
-                  beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
-                  upA:0, upB:0, _spec:null, _sv:-1,
-                  rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
-                  lastFired:null, copied:null, copyFlash:0,
-                  placedWave:S.wave, dmg:0, pops:0, shots:0 });
-  burst(x, y + 30, '#ffffff', 8); beep(560, 0.08, 'triangle', 0.04);
-  if (S.money < spec.cost) cancelPlacing();
+  S.money -= cost;
+  const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
+              cds:(spec.weapons || []).map(w => w.cd*0.35),
+              beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
+              upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, _spec:null, _sv:-1,
+              rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
+              lastFired:null, copied:null, copyFlash:0,
+              placedWave:S.wave, dmg:0, pops:0, shots:0 };
+  if (dup) {
+    /* a copy starts cold — nothing temporary is inherited, and every unique
+       active (Judgment, CUT, the shockwave) waits out a full cooldown. */
+    const sp = SP(t);
+    t.cd = sp.cd || 0;
+    t.cds = (sp.weapons || []).map(w => w.cd);
+    t.fireSlow = 0; t.jam = 0;
+  }
+  S.towers.push(t);
+  burst(x, y + 30, dup ? '#8bf59a' : '#ffffff', dup ? 14 : 8); beep(560, 0.08, 'triangle', 0.04);
+  if (dup) {
+    S.floats.push({ x, y:y - 40, txt:'copy', color:'#8bf59a', life:1.1 });
+    cancelPlacing();                       // one copy per press, never a drag-stamp
+  } else if (S.money < spec.cost) cancelPlacing();
   syncHUD();
   return true;
 }
@@ -5744,7 +6034,7 @@ cv.addEventListener('pointermove', ev => {
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true;
   if (S.placing || S.phase === 'menu' || S.phase === 'over') {
     hideTip(); cv.style.cursor = S.placing ? 'crosshair' : 'default';
-    if (S.placing && S.mouse.down && S.t >= dragCd) {
+    if (S.placing && !S.dupe && S.mouse.down && S.t >= dragCd) {
       if (tryPlaceAt(p.x, p.y, true)) dragCd = S.t + 0.05;   // a light throttle, footprint spacing does the rest
     }
     return;
@@ -5865,9 +6155,31 @@ document.addEventListener('visibilitychange', () => {
   if (hidden && AC && AC.state === 'running') AC.suspend();
 });
 let last = performance.now();
+/* --------------------------------------------------- performance mode ----
+   Sampled twice a second. Deep waves start lean whatever the machine is
+   doing, and a genuinely slow frame rate drops another level on top. */
+let fpsAcc = 0, fpsN = 0, fpsAvg = 60;
+function setPerf() {
+  const floor = S.wave >= 40 ? 1 : 0;          // deep waves always run lean
+  let want = S.perf;
+  if (fpsAvg < 34)      want = 2;
+  else if (fpsAvg < 46) want = Math.max(want, 1);
+  else if (fpsAvg > 56) want = want - 1;              // recover one level at a time
+  want = Math.max(floor, Math.min(2, want));
+  if (want === S.perf) return;
+  const up = want > S.perf;
+  S.perf = want;
+  if (up && !S.perfToasted) {
+    S.perfToasted = true;
+    toast('Performance mode on — fewer particles, simpler blobs');
+  }
+}
+
 function frame(now) {
   if (hidden) { last = now; requestAnimationFrame(frame); return; }   // idle in the background
   const dt = Math.min(0.05, (now - last)/1000); last = now;
+  fpsAcc += dt; fpsN++;
+  if (fpsAcc >= 0.5) { fpsAvg = fpsN/fpsAcc; fpsAcc = 0; fpsN = 0; setPerf(); }
   if (S.phase === 'wave' || S.phase === 'build') {
     for (let i = 0; i < S.speed; i++) update(dt);
     if (S.hovered && S.towers.includes(S.hovered)) fillTip(S.hovered);   // live stats
