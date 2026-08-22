@@ -593,8 +593,35 @@
      strand the cards off the bottom of the stage */
   .overlay{overflow-y:auto;overflow-x:hidden}
   #ovMenu{gap:12px;justify-content:center}
+  /* the mood layer sits behind everything the menu says */
+  #menuFx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .overlay > *{position:relative;z-index:1}
+  #menuFx{z-index:0}
+  #menuFx .tl{
+    position:absolute;inset:0;opacity:0;transition:opacity .3s ease;
+    background:radial-gradient(1000px 680px at 50% 38%,var(--a,transparent),var(--b,transparent) 72%);
+  }
+  #menuRain{
+    position:absolute;inset:-20% -10%;opacity:0;transition:opacity .45s ease;
+    background:repeating-linear-gradient(74deg,
+      rgba(190,205,255,.30) 0 1px, transparent 1px 7px);
+    animation:menuRainFall 0.62s linear infinite;
+  }
+  #menuFx.storm #menuRain{opacity:.5}
+  @keyframes menuRainFall{ to{ transform:translate3d(-26px, 92px, 0); } }
+  #menuBolt{position:absolute;inset:0;background:#cbb8ff;opacity:0}
+  #menuBolt.flash{animation:menuBolt .62s ease-out}
+  @keyframes menuBolt{
+    0%{opacity:0} 6%{opacity:.5} 12%{opacity:.05} 20%{opacity:.42} 100%{opacity:0}
+  }
+  @media (prefers-reduced-motion: reduce){
+    #menuRain{animation:none}
+    #menuBolt.flash{animation:none}
+    .mcard.live .go{animation:none}
+  }
   #ovMenu h1{font-size:52px}
-  #ovMenu .cast img{height:44px}
+  #ovMenu .cast{max-height:42px;overflow:hidden;opacity:.85}
+  #ovMenu .cast img{height:40px}
   #ovMenu p{font-size:13px;max-width:640px}
   #ovMenu #help{margin-top:2px}
   #ovMenu #help[hidden]{display:none}
@@ -621,30 +648,53 @@
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
   /* ------------------------------------------------- gamemode select ---- */
-  #modeGrid{display:flex;flex-direction:column;gap:14px;width:min(940px,100%)}
-  #modeGrid .row{display:flex;gap:14px}
-  .mcard{
-    position:relative;flex:1;display:flex;flex-direction:column;gap:9px;text-align:left;
-    background:linear-gradient(180deg,rgba(18,26,36,.86),rgba(8,12,18,.94));
-    border:1px solid var(--line);border-radius:18px;padding:16px 17px 15px;
-    cursor:pointer;font:inherit;color:inherit;overflow:hidden;transition:.16s;
+  #modeGrid{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
+    width:min(880px,100%);
   }
+  .mcard{
+    position:relative;display:flex;flex-direction:column;gap:8px;text-align:left;
+    background:linear-gradient(180deg,rgba(18,26,36,.86),rgba(8,12,18,.94));
+    border:1px solid var(--line);border-radius:18px;padding:13px 14px 12px;
+    cursor:pointer;font:inherit;color:inherit;overflow:hidden;
+    transition:transform .18s cubic-bezier(.2,1.3,.4,1),box-shadow .18s,border-color .18s;
+  }
+  .mcard:focus-visible{outline:none}
   .mcard::before{
     content:'';position:absolute;inset:0;opacity:.16;pointer-events:none;
     background:radial-gradient(420px 200px at 22% 0%,var(--mc),transparent 70%);
   }
-  .mcard:hover{transform:translateY(-3px);border-color:var(--mc);
-               box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 1px var(--mc) inset}
-  .mcard .art{
-    position:relative;height:84px;border-radius:12px;overflow:hidden;flex:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.32));
-    border:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-end;
-    justify-content:center;gap:2px;padding-bottom:4px;
+  .mcard:hover,.mcard:focus-visible,.mcard.live{
+    transform:translateY(-6px) scale(1.025);border-color:var(--mc);
+    box-shadow:0 22px 48px rgba(0,0,0,.6),0 0 0 2px var(--mc) inset,0 0 34px -6px var(--mc);
   }
-  .mcard .art img{height:68px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.65))}
-  .mcard .art .glow{position:absolute;inset:0;background:radial-gradient(280px 120px at 50% 108%,var(--mc),transparent 68%);opacity:.35}
-  .mcard.wide .art{height:96px}
-  .mcard.wide .art img{height:82px}
+  .mcard:active{transform:translateY(1px) scale(.985);
+                box-shadow:0 6px 16px rgba(0,0,0,.55),0 0 0 2px var(--mc) inset}
+  .mcard.live .go{animation:goPulse 1.25s ease-in-out infinite}
+  @keyframes goPulse{
+    0%,100%{transform:scale(1);box-shadow:0 4px 0 rgba(0,0,0,.42)}
+    50%{transform:scale(1.07);box-shadow:0 4px 0 rgba(0,0,0,.42),0 0 22px -2px var(--mc)}
+  }
+  .mcard.live .mn{text-shadow:0 0 18px var(--mc)}
+  .mcard .art{
+    position:relative;height:104px;border-radius:12px;overflow:hidden;flex:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.36));
+    border:1px solid rgba(255,255,255,.08);
+  }
+  .mcard .art canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .mcard .art .glow{
+    position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(300px 130px at 50% 112%,var(--mc),transparent 68%);
+    opacity:.3;transition:opacity .25s;
+  }
+  .mcard:hover .art .glow,.mcard.live .art .glow{opacity:.5}
+  /* the still frame that stands in until the scene is actually running */
+  .mcard .art .idle{
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+    font-size:9.5px;letter-spacing:2.6px;text-transform:uppercase;color:rgba(255,255,255,.32);
+    transition:opacity .25s;
+  }
+  .mcard.live .art .idle{opacity:0}
   .mcard .mtop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .mcard .mn{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--mc)}
   .mcard .mb{font-size:12px;color:var(--dim);line-height:1.45;min-height:34px}
@@ -663,16 +713,13 @@
     border-radius:999px;padding:9px 26px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;
   }
   #endModes:hover,#modeBack:hover{color:var(--ink);background:rgba(255,255,255,.1)}
-  body.mobile #modeGrid{width:min(1200px,100%);gap:20px}
-  body.mobile #modeGrid .row{flex-direction:column;gap:20px}
+  body.mobile #modeGrid{grid-template-columns:1fr;width:min(760px,100%);gap:14px}
   body.mobile .mcard{padding:22px;border-radius:24px;gap:13px}
   body.mobile #ovMenu h1{font-size:min(52px,6vw)}
   body.mobile #ovMenu .cast{display:none}
   body.mobile #ovMenu #help{font-size:15px}
-  body.mobile .mcard .art{height:120px}
-  body.mobile .mcard .art img{height:100px}
-  body.mobile .mcard.wide .art{height:130px}
-  body.mobile .mcard.wide .art img{height:110px}
+  body.mobile .mcard .art{height:132px}
+
   body.mobile .mcard .mn{font-size:30px}
   body.mobile .mcard .mb{font-size:17px;min-height:0}
   body.mobile .mcard .best{font-size:15px}
@@ -770,6 +817,8 @@
     <div id="toast"></div>
 
     <div class="overlay on" id="ovMenu">
+      <div id="menuFx"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
+        <div id="menuRain"></div><div id="menuBolt"></div></div>
       <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
@@ -2277,25 +2326,39 @@ const PATH_W = 46;          // slimmer trail => wider grass strips between the l
    difficulty from the threat budget (how many arrive) and from speed, while
    elites and bosses take theirs from a straight HP multiplier.          */
 const MODES = {
-  normal: { key:'normal', name:'Endless', mc:'#22e02a', pips:2,
-            money:120, lives:50, budget:1,    eliteHp:1,    spd:1,    eliteShift:0,  eliteMul:1,
-            bossHp:1,    coin:1,    waveReward:1,   leak:1,    cost:1,    refund:0.70, autoFrom:1 },
-  easy:   { key:'easy', name:'Easy Mode', mc:'#3ddc6a', pips:1,
-            art:['basic','slingshot','ninja','rainbow'],
-            blurb:'More coins, softer enemies. Learn the ropes and build wild loadouts.',
+  /* menu:true is what puts a mode on the front page. Titan Fight keeps all
+     of its code and still runs if startMode('titan') is called, it simply
+     does not advertise itself yet. */
+  easy:   { key:'easy', name:'Easy', mc:'#3ddc6a', pips:1, menu:true, preview:'easy',
+            tint:['rgba(30,190,80,.30)','rgba(6,26,14,.55)'],
+            blurb:'More coins, gentler enemies. Learn and experiment.',
+            runTint:'rgba(40,200,90,.045)',
             money:150, lives:75, budget:0.75, eliteHp:0.72, spd:0.85, eliteShift:6,  eliteMul:0.6,
             bossHp:0.75, coin:1.3,  waveReward:1.3, leak:0.8,  cost:1,    refund:0.75, autoFrom:1 },
-  nightmare:{ key:'nightmare', name:'Nightmare Mode', mc:'#a86bff', pips:3, wide:true,
-            art:['eclipse','blackholelaser','truegod','mirror','director'],
-            blurb:'Less money, harder elites, punishing leaks. For high scores.',
-            money:60,  lives:35, budget:1.35, eliteHp:1.5,  spd:1.25, eliteShift:-6, eliteMul:1.6,
-            bossHp:1.8,  coin:0.78, waveReward:0.6, leak:1.4,  cost:1.1,  refund:0.55, autoFrom:10 },
+  normal: { key:'normal', name:'Medium', mc:'#ffd83d', pips:2, menu:true, preview:'medium',
+            tint:['rgba(210,160,20,.26)','rgba(28,20,4,.55)'],
+            blurb:'The standard fight. Fair pressure, fair rewards.',
+            money:120, lives:50, budget:1,    eliteHp:1,    spd:1,    eliteShift:0,  eliteMul:1,
+            bossHp:1,    coin:1,    waveReward:1,   leak:1,    cost:1,    refund:0.70, autoFrom:1 },
+  hard:   { key:'hard', name:'Hard', mc:'#ff5a3c', pips:3, menu:true, preview:'hard',
+            tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
+            blurb:'Tougher elites and bosses. Money gets tight.',
+            runTint:'rgba(215,60,30,.055)',
+            money:85,  lives:40, budget:1.18, eliteHp:1.32, spd:1.15, eliteShift:-3, eliteMul:1.3,
+            bossHp:1.4,  coin:0.88, waveReward:0.8, leak:1.2,  cost:1.05, refund:0.62, autoFrom:5 },
+  nightmare:{ key:'nightmare', name:'Nightmare', mc:'#a86bff', pips:4, menu:true, preview:'nightmare',
+            tint:['rgba(120,50,230,.34)','rgba(14,4,28,.62)'], storm:true,
+            blurb:'Purple hell. Rain, brutal scaling, high scores only.',
+            runTint:'rgba(120,50,230,.11)', runStorm:true,
+            money:60,  lives:30, budget:1.4,  eliteHp:1.62, spd:1.28, eliteShift:-6, eliteMul:1.7,
+            bossHp:1.9,  coin:0.78, waveReward:0.6, leak:1.45, cost:1.1,  refund:0.55, autoFrom:10 },
   /* The siege. Shares the towers and the boss art and almost nothing else —
      its own map, camera, economy and win condition live in the Titan Fight
      section further down. The dials here are only what the shared shop and
      tower code read. */
-  titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:3, siege:true,
-            art:['titanmax','titan'], scoreLabel:'Best time',
+  titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:4, siege:true,
+            menu:false, preview:'hard', tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
+            scoreLabel:'Best time',
             blurb:'Siege a colossal Titan in the rain. Defend the base. Scale is everything.',
             money:900, lives:1000, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
             bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 }
@@ -2740,7 +2803,11 @@ function beep(freq, dur, type, vol, slide) {
 
 /* ---------------------------------------------------------------- dom ---- */
 const $ = id => document.getElementById(id);
-const cv = $('cv'), ctx = cv.getContext('2d'), stage = $('stage'), ui = $('ui');
+const cv = $('cv'), stage = $('stage'), ui = $('ui');
+/* not const: the menu's card previews swap in their own canvas for the
+   handful of routines they borrow from the game, then hand it straight back */
+let ctx = cv.getContext('2d');
+const FIELD_CTX = ctx;
 
 /* Focusing a shop button (the drawer sits translated off past the bottom of
    #stage when closed, which counts as scrollable overflow) makes some
@@ -3013,6 +3080,7 @@ function showModes() {
   beep(700, 0.07, 'triangle', 0.03);
 }
 function startMode(k) {
+  pvStop(); setMenuMood(null); PV.picked = null;
   S.mode = MODES[k] ? k : 'normal';
   S.best = bestOf(S.mode);
   $('ovMenu').classList.remove('on');
@@ -3021,14 +3089,303 @@ function startMode(k) {
   toast(M().name + ' — good luck');
 }
 
-/* Three cards, built from the mode table so a new mode is a table entry. */
+
+/* ======================================================================= *
+ *  MENU PREVIEWS                                                          *
+ *  A tiny looping diorama inside each difficulty card. They borrow the     *
+ *  game's own art — the Jaxon portraits, the toy cars, the boss code-rain  *
+ *  — but they are NOT the game: no simulation, no collision, no state.     *
+ *  Everything is a pure function of a loop phase in [0,1), which is what   *
+ *  makes the restart invisible. The one exception is the code-rain, which  *
+ *  is fed real time on purpose: its columns wrap individually, so letting  *
+ *  it run continuously is seamless where resetting it would not be.        *
+ *                                                                         *
+ *  Only the hovered / focused card ever runs. Nothing animates otherwise.  *
+ * ======================================================================= */
+const PV_LOOP = 6.4;                                   // seconds per cycle
+const PV = { el:null, key:null, raf:0, t0:0, cols:{}, picked:null };
+
+const pvRainCols = key => (PV.cols[key] || (PV.cols[key] = makeRain({ r:120 })));
+
+function pvStart(el, key) {
+  if (PV.el === el) return;
+  pvStop();
+  PV.el = el; PV.key = key;
+  el.classList.add('live');
+  PV.t0 = performance.now();
+  PV.raf = requestAnimationFrame(pvFrame);
+  setMenuMood(key);
+}
+function pvStop() {
+  if (PV.raf) cancelAnimationFrame(PV.raf);
+  PV.raf = 0;
+  if (PV.el) PV.el.classList.remove('live');
+  PV.el = null; PV.key = null;
+}
+function pvFrame(now) {
+  PV.raf = requestAnimationFrame(pvFrame);
+  const el = PV.el;
+  if (!el || !el.isConnected) { pvStop(); return; }
+  const cvs = el.querySelector('canvas');
+  if (!cvs) return;
+  const w = cvs.clientWidth, h = cvs.clientHeight;
+  if (!w || !h) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const bw = Math.round(w*dpr), bh = Math.round(h*dpr);
+  if (cvs.width !== bw || cvs.height !== bh) { cvs.width = bw; cvs.height = bh; }
+  const g = cvs.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const t = (now - PV.t0)/1000;
+  try { pvScene(PV.key, g, w, h, t); }
+  finally { ctx = FIELD_CTX; }                 // always hand the field's ctx back
+}
+
+/* ------------------------------------------------------------ helpers -- */
+const frac = x => x - Math.floor(x);
+function pvBlob(g, x, y, r, tier, popped) {
+  if (popped) return;
+  const T = TIER[tier] || TIER[1];
+  g.save();
+  g.fillStyle = 'rgba(0,0,0,.3)';
+  g.beginPath(); g.ellipse(x, y + r*0.95, r*0.8, r*0.28, 0, 0, 7); g.fill();
+  g.beginPath(); g.arc(x, y, r, 0, 7);
+  g.fillStyle = T.fill; g.fill();
+  g.lineWidth = Math.max(1.4, r*0.22); g.strokeStyle = T.edge; g.stroke();
+  g.fillStyle = T.text;
+  g.font = '900 ' + (r*1.25).toFixed(0) + 'px "Segoe UI", system-ui, sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillText(String(tier), x, y + 1);
+  g.restore();
+}
+function pvPop(g, x, y, k, col) {                       // k in [0,1]
+  if (k <= 0 || k >= 1) return;
+  g.save();
+  g.globalAlpha = 1 - k;
+  g.strokeStyle = col; g.lineWidth = 2.5;
+  g.beginPath(); g.arc(x, y, 4 + k*18, 0, 7); g.stroke();
+  for (let i = 0; i < 6; i++) {
+    const a = i/6*Math.PI*2 + k;
+    g.beginPath();
+    g.moveTo(x + Math.cos(a)*(5 + k*10), y + Math.sin(a)*(5 + k*10));
+    g.lineTo(x + Math.cos(a)*(9 + k*20), y + Math.sin(a)*(9 + k*20));
+    g.stroke();
+  }
+  g.restore();
+}
+function pvJaxon(g, key, x, y, hgt, flip) {
+  const im = IMG[key];
+  if (!im || !im.width) return;
+  const wid = hgt*(im.width/im.height || 0.9);
+  g.save();
+  g.fillStyle = 'rgba(0,0,0,.34)';
+  g.beginPath(); g.ellipse(x, y, wid*0.34, hgt*0.07, 0, 0, 7); g.fill();
+  g.translate(x, y);
+  if (flip) g.scale(-1, 1);
+  g.drawImage(im, -wid/2, -hgt, wid, hgt);
+  g.restore();
+}
+function pvSprite(g, key, x, y, size, spin) {
+  const im = IMG[key];
+  if (!im || !im.width) return;
+  const wid = size, hgt = size*(im.height/im.width || 0.6);
+  g.save(); g.translate(x, y); if (spin) g.rotate(spin);
+  g.drawImage(im, -wid/2, -hgt/2, wid, hgt);
+  g.restore();
+}
+/* a boss the way the game draws one: code-rain in a ring, straight reuse */
+function pvBoss(g, key, theme, x, y, r, t, hpFrac) {
+  const th = BOSS_THEME[theme];
+  const B = { r, theme };
+  g.save();
+  g.translate(x, y);
+  drawRain(g, B, th, r, t, pvRainCols(key));    // borrows the field routine
+  ctx = FIELD_CTX;
+  g.lineWidth = Math.max(3, r*0.13); g.strokeStyle = th.ring;
+  g.beginPath(); g.arc(0, 0, r - g.lineWidth/2, 0, 7); g.stroke();
+  g.lineWidth = 1.5; g.strokeStyle = th.ring2;
+  g.beginPath(); g.arc(0, 0, r - 1.5, 0, 7); g.stroke();
+  g.restore();
+  /* the little health bar over its head, drained by the loop phase */
+  if (hpFrac !== undefined) {
+    const bw = r*2.4, bx = x - bw/2, by = y - r - 9;
+    g.save();
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(bx, by, bw, 5);
+    g.fillStyle = th.bar1; g.fillRect(bx, by, bw*Math.max(0, hpFrac), 5);
+    g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 1;
+    g.strokeRect(bx + 0.5, by + 0.5, bw - 1, 4);
+    g.restore();
+  }
+}
+function pvGround(g, w, h, top, bot) {
+  const gr = g.createLinearGradient(0, 0, 0, h);
+  gr.addColorStop(0, top); gr.addColorStop(1, bot);
+  g.fillStyle = gr; g.fillRect(0, 0, w, h);
+}
+function pvRainfall(g, w, h, t, alpha) {
+  g.save();
+  g.strokeStyle = 'rgba(180,200,240,' + alpha + ')'; g.lineWidth = 1;
+  g.beginPath();
+  for (let i = 0; i < 26; i++) {
+    const x = frac(i*0.3719 + t*0.10)*w;
+    const y = frac(i*0.7351 + t*1.35)*h;
+    g.moveTo(x, y); g.lineTo(x - 3, y + 9);
+  }
+  g.stroke(); g.restore();
+}
+
+/* ------------------------------------------------------------- scenes -- */
+function pvScene(key, g, w, h, t) {
+  const p = frac(t/PV_LOOP);                    // the loop everything hangs off
+  g.clearRect(0, 0, w, h);
+  const ground = h*0.82;
+
+  if (key === 'easy') {
+    pvGround(g, w, h, '#123a1c', '#0a2412');
+    g.fillStyle = 'rgba(255,255,255,.05)'; g.fillRect(0, ground, w, h - ground);
+    /* three blobs strolling in, popping at a fixed point in the cycle */
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p + i/3);
+      const x = w*1.08 - u*w*1.25, y = ground - 9;
+      const popAt = 0.66;
+      if (u < popAt) pvBlob(g, x, y, 9, 1 + (i % 2), false);
+      else pvPop(g, w*1.08 - popAt*w*1.25, y, (u - popAt)/0.16, '#ff8a6a');
+    }
+    /* toy cars, four per cycle so the sub-loop is periodic too */
+    for (let j = 0; j < 3; j++) {
+      const v = frac(p*4 + j/3);
+      pvSprite(g, 'car', w*0.2 + v*w*0.55, ground - 13, 20, 0);
+    }
+    pvJaxon(g, 'basic', w*0.15, ground + 3, h*0.52, false);
+
+  } else if (key === 'medium') {
+    pvGround(g, w, h, '#3a3410', '#1b1806');
+    g.fillStyle = 'rgba(255,255,255,.05)'; g.fillRect(0, ground, w, h - ground);
+    for (let i = 0; i < 4; i++) {
+      const u = frac(p + i/4);
+      const x = w*1.08 - u*w*1.25, y = ground - 9 - (i % 2)*7;
+      const popAt = 0.6 + (i % 2)*0.08;
+      if (u < popAt) pvBlob(g, x, y, 8.5, 2 + (i % 3), false);
+      else pvPop(g, w*1.08 - popAt*w*1.25, y, (u - popAt)/0.15, '#ffd83d');
+    }
+    /* laser bolts and a shuriken stream */
+    for (let j = 0; j < 4; j++) {
+      const v = frac(p*5 + j/4);
+      const x = w*0.24 + v*w*0.52, y = ground - 26;
+      g.save();
+      g.globalAlpha = Math.min(1, (1 - v)*3);
+      g.fillStyle = '#ff5b3a'; g.shadowColor = '#ff5b3a'; g.shadowBlur = 8;
+      g.beginPath(); g.arc(x, y, 3.4, 0, 7); g.fill();
+      g.restore();
+      pvSprite(g, 'shuriken', w*0.24 + frac(p*7 + j/4)*w*0.52, ground - 11, 11, t*15);
+    }
+    pvJaxon(g, 'laser', w*0.14, ground + 3, h*0.5, false);
+    pvJaxon(g, 'ninja', w*0.28, ground + 3, h*0.44, false);
+
+  } else if (key === 'hard') {
+    pvGround(g, w, h, '#3a1210', '#170606');
+    g.fillStyle = 'rgba(255,255,255,.04)'; g.fillRect(0, ground, w, h - ground);
+    const bx = w*0.72, by = h*0.44, br = Math.min(h*0.3, w*0.17);
+    /* a wave-30 style boss that dies inside the loop and comes back clean */
+    const hp = p < 0.86 ? 1 - p/0.86 : 1;
+    pvBoss(g, 'hard', 'red', bx, by, br, t, hp);
+    if (p > 0.86) {                              // the death flash covers the reset
+      const k = (p - 0.86)/0.14;
+      g.save();
+      g.globalAlpha = Math.max(0, 1 - k)*0.9;
+      g.fillStyle = '#fff';
+      g.beginPath(); g.arc(bx, by, br*(1 + k*1.6), 0, 7); g.fill();
+      g.restore();
+    }
+    /* black holes crossing to it, plus the pack they swallow */
+    for (let j = 0; j < 2; j++) {
+      const v = frac(p*3 + j/2);
+      const x = w*0.24 + v*(bx - w*0.24), y = by + Math.sin(v*3.1)*10;
+      const rr = 5 + v*7;
+      g.save();
+      const grd = g.createRadialGradient(x, y, 1, x, y, rr);
+      grd.addColorStop(0, '#000'); grd.addColorStop(0.6, '#5a2a9c'); grd.addColorStop(1, 'rgba(168,107,255,0)');
+      g.fillStyle = grd; g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
+      g.restore();
+    }
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p*2 + i/3);
+      const x = w*0.42 + Math.cos(u*6.28)*w*0.1, y = ground - 10 + Math.sin(u*6.28)*6;
+      pvBlob(g, x, y, 7.5, 4 + (i % 3), false);
+    }
+    pvJaxon(g, 'titan', w*0.16, ground + 4, h*0.62, false);
+
+  } else {                                        /* nightmare */
+    pvGround(g, w, h, '#1b0b33', '#080314');
+    g.fillStyle = 'rgba(168,107,255,.06)'; g.fillRect(0, ground, w, h - ground);
+    const bx = w*0.71, by = h*0.44, br = Math.min(h*0.33, w*0.19);
+    const hp = p < 0.9 ? 1 - p/0.9 : 1;
+    pvBoss(g, 'nightmare', 'final', bx, by, br, t, hp);
+    /* the wings of signal, cheap version of the wave-100 boss */
+    g.save();
+    g.globalAlpha = 0.45;
+    for (const sg of [-1, 1]) {
+      g.fillStyle = sg < 0 ? 'rgba(255,45,45,.5)' : 'rgba(63,168,255,.5)';
+      g.beginPath();
+      g.moveTo(bx + sg*br*0.5, by - br*0.2);
+      for (let i = 0; i < 4; i++) {
+        const len = br*(1.25 + i*0.2), a = -0.6 + i*0.32 + Math.sin(t*2 + i)*0.06;
+        g.lineTo(bx + sg*Math.cos(a)*len, by + Math.sin(a)*len);
+        g.lineTo(bx + sg*br*0.52, by + i*br*0.1);
+      }
+      g.closePath(); g.fill();
+    }
+    g.restore();
+    if (p > 0.9) {
+      const k = (p - 0.9)/0.1;
+      g.save();
+      g.globalAlpha = Math.max(0, 1 - k)*0.95;
+      g.fillStyle = '#fff';
+      g.beginPath(); g.arc(bx, by, br*(1 + k*1.7), 0, 7); g.fill();
+      g.restore();
+    }
+    /* the True God's red-and-blue cone and his diamond cars */
+    const jx = w*0.17;
+    g.save();
+    g.globalAlpha = 0.16 + Math.sin(t*5)*0.05;
+    const cone = g.createLinearGradient(jx, 0, bx, 0);
+    cone.addColorStop(0, 'rgba(255,60,60,.9)'); cone.addColorStop(1, 'rgba(70,140,255,0)');
+    g.fillStyle = cone;
+    g.beginPath();
+    g.moveTo(jx, ground - h*0.3);
+    g.lineTo(bx + br, by - br); g.lineTo(bx + br, by + br);
+    g.closePath(); g.fill();
+    g.restore();
+    for (let j = 0; j < 3; j++) {
+      const v = frac(p*3.5 + j/3);
+      pvSprite(g, 'diamondcar', jx + v*(bx - jx), ground - 16 - Math.sin(v*3.14)*16, 19, 0);
+    }
+    pvJaxon(g, 'truegod', jx, ground + 4, h*0.6, false);
+    pvRainfall(g, w, h, t, 0.4);
+    /* menu-side thunder: a quick wash, twice a cycle, never on a timer of
+       its own so it can never drift out of the loop */
+    const fl = Math.max(0, 1 - frac(p*2)*14);
+    if (fl > 0) { g.save(); g.globalAlpha = fl*0.5; g.fillStyle = '#cbb8ff';
+                  g.fillRect(0, 0, w, h); g.restore(); }
+  }
+
+  /* a soft vignette so every card sits back into the panel */
+  g.save();
+  const vg = g.createRadialGradient(w/2, h*0.5, h*0.2, w/2, h*0.5, h*1.1);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)');
+  g.fillStyle = vg; g.fillRect(0, 0, w, h);
+  g.restore();
+}
+
+/* Cards, built from the mode table so a new mode is a table entry. */
+const MENU_MODES = () => Object.keys(MODES).filter(k => MODES[k].menu);
+
 function buildModeCards() {
   const card = k => {
     const m = MODES[k], best = bestOf(k);
-    const pips = [1,2,3].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('');
-    const cast = (m.art || []).map(t => `<img src="${PORTRAIT[t]}" alt="">`).join('');
-    return `<button class="mcard ${m.wide ? 'wide' : ''}" data-m="${k}" style="--mc:${m.mc}">
-        <div class="art"><span class="glow"></span>${cast}</div>
+    const pips = [1,2,3,4].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('');
+    return `<button class="mcard" data-m="${k}" data-pv="${m.preview}" style="--mc:${m.mc}"
+                    aria-label="${m.name}. ${m.blurb}">
+        <div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>
         <div class="mtop"><span class="mn">${m.name}</span><span class="pips">${pips}</span></div>
         <div class="mb">${m.blurb}</div>
         <div class="mfoot">
@@ -3037,12 +3394,66 @@ function buildModeCards() {
         </div>
       </button>`;
   };
-  $('modeGrid').innerHTML =
-    `<div class="row">${card('easy')}${card('titan')}</div>
-     <div class="row">${card('nightmare')}</div>`;
+  $('modeGrid').innerHTML = MENU_MODES().map(card).join('');
   $('modeGrid').querySelectorAll('.mcard').forEach(el => {
-    el.onclick = () => startMode(el.dataset.m);
+    const k = el.dataset.m, pv = el.dataset.pv;
+    /* Pointer and keyboard both light the card up and shift the whole menu. */
+    el.addEventListener('mouseenter', () => { if (!MOBILE) pvStart(el, pv); });
+    el.addEventListener('mouseleave', () => { if (!MOBILE) pvStop(), setMenuMood(null); });
+    el.addEventListener('focus', () => pvStart(el, pv));
+    el.addEventListener('blur',  () => { if (PV.picked !== k) { pvStop(); setMenuMood(null); } });
+    el.addEventListener('click', () => {
+      /* Touch has no hover, so the first tap previews and the second plays.
+         A mouse plays on the first click, because it has already hovered. */
+      if (MOBILE && PV.picked !== k) {
+        PV.picked = k;
+        pvStart(el, pv);
+        toast('Tap ' + MODES[k].name + ' again to start');
+        return;
+      }
+      PV.picked = null;
+      startMode(k);
+    });
   });
+  setMenuMood(null);
+}
+
+/* ---------------------------------------------------------- menu mood ---
+   Hovering a card tints the entire menu in that difficulty's colour, and
+   Nightmare brings its weather with it. Two stacked layers so the colour
+   change is a real crossfade rather than a jump. */
+let moodSide = 0, moodKey = null, boltJob = 0;
+function setMenuMood(pvKey) {
+  const k = pvKey && MENU_MODES().find(m => MODES[m].preview === pvKey);
+  const m = k ? MODES[k] : null;
+  if (moodKey === (k || null)) return;
+  moodKey = k || null;
+  const fx = $('menuFx'), a = $('tlA'), b = $('tlB');
+  if (!fx) return;
+  const show = moodSide ? a : b, hide = moodSide ? b : a;
+  if (m) {
+    show.style.setProperty('--a', m.tint[0]);
+    show.style.setProperty('--b', m.tint[1]);
+    show.style.opacity = '1';
+    hide.style.opacity = '0';
+    moodSide = moodSide ? 0 : 1;
+  } else {
+    a.style.opacity = '0'; b.style.opacity = '0';
+  }
+  const storm = !!(m && m.storm);
+  fx.classList.toggle('storm', storm);
+  clearTimeout(boltJob);
+  if (storm) scheduleBolt();
+}
+function scheduleBolt() {
+  boltJob = setTimeout(() => {
+    if (!moodKey || !MODES[moodKey].storm) return;
+    const el = $('menuBolt');
+    el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+    beep(46, 1.15, 'sawtooth', 0.05, 24);          // the rumble, respects Sound off
+    setTimeout(() => beep(38, 0.8, 'triangle', 0.035, 20), 190);
+    scheduleBolt();
+  }, 2600 + Math.random()*4200);
 }
 
 function startWave() {
@@ -5215,8 +5626,8 @@ function corruptText(label, x, y, fs, core, th) {
   }
 }
 
-function drawRain(B, th, r, t) {
-  const cols = S.boss.cols;
+function drawRain(g, B, th, r, t, cols) {
+  ctx = g;                                    // the menu previews borrow this
   ctx.save();
   ctx.beginPath(); ctx.arc(0, 0, r - 3, 0, 7); ctx.clip();
   ctx.fillStyle = th.bg; ctx.fillRect(-r, -r, r*2, r*2);
@@ -5292,7 +5703,7 @@ function drawBoss() {
     ctx.lineWidth = 8; ctx.strokeStyle = '#4a0000'; ctx.strokeText(label, 0, 2);
     ctx.fillStyle = '#fff'; ctx.fillText(label, 0, 2);
   } else {
-    drawRain(B, th, r, S.t);
+    drawRain(ctx, B, th, r, S.t, S.boss.cols);
     /* rim */
     ctx.lineWidth = Math.max(8, r*0.12); ctx.strokeStyle = th.ring;
     ctx.beginPath(); ctx.arc(0, 0, r - ctx.lineWidth/2, 0, 7); ctx.stroke();
@@ -6620,6 +7031,7 @@ function render() {
   }
 
   camEnd();
+  drawModeWeather();
   if (S.cut) {
     const k = 1 - S.cut.t/S.cut.max;
     ctx.save();
@@ -6648,6 +7060,56 @@ function render() {
   camEnd();
 
   drawCoach();
+}
+
+/* ------------------------------------------------------- mode weather ---
+   Screen-space, so it never zooms with the siege camera and never lands
+   on the HUD. Nightmare gets its rain and its thunder; the other modes get
+   a wash so faint it only registers out of the corner of your eye, because
+   in-run readability beats atmosphere every time.
+
+   None of this touches S.fx, so it costs the entity budget nothing — the
+   rain is a single stroked path whose drop count follows performance mode. */
+function drawModeWeather() {
+  if (S.phase === 'menu' || S.phase === 'over') return;
+  const m = M();
+  if (!m.runTint) return;
+
+  ctx.save();
+  ctx.fillStyle = m.runTint;
+  ctx.fillRect(0, 0, W, H);
+
+  if (m.runStorm) {
+    /* corners darken so the middle of the trail stays the clearest thing */
+    const vg = ctx.createRadialGradient(W/2, H/2, H*0.34, W/2, H/2, H*1.06);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(28,6,54,.42)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+
+    const drops = S.perf === 2 ? 0 : S.perf === 1 ? 70 : 150;
+    if (drops) {
+      ctx.strokeStyle = 'rgba(190,180,255,.20)'; ctx.lineWidth = 1.6;
+      ctx.beginPath();
+      for (let i = 0; i < drops; i++) {
+        const seed = i*131.7;
+        const x = (seed*5.3 + S.t*150) % (W + 120) - 60;
+        const y = (seed*9.1 + S.t*(1250 + (i % 5)*180)) % (H + 80) - 40;
+        ctx.moveTo(x, y); ctx.lineTo(x - 13, y + 34);
+      }
+      ctx.stroke();
+    }
+    /* thunder: about once every nine seconds, and never in the leanest mode */
+    if (S.perf < 2) {
+      const k = (S.t/9) % 1;
+      if (k < 0.055) {
+        const f = Math.sin(k/0.055*Math.PI);
+        ctx.globalAlpha = f*f*0.3;
+        ctx.fillStyle = '#d9ccff';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+  ctx.restore();
 }
 
 /* ---------------------------------------------------------- first run ----
