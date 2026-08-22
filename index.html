@@ -589,6 +589,15 @@
     backdrop-filter:blur(4px);padding:30px;
   }
   .overlay.on{display:flex}
+  /* a tall menu (title + cast + three mode cards) must never be able to
+     strand the cards off the bottom of the stage */
+  .overlay{overflow-y:auto;overflow-x:hidden}
+  #ovMenu{gap:12px;justify-content:center}
+  #ovMenu h1{font-size:52px}
+  #ovMenu .cast img{height:44px}
+  #ovMenu p{font-size:13px;max-width:640px}
+  #ovMenu #help{margin-top:2px}
+  #ovMenu #help[hidden]{display:none}
   .overlay h1{font-size:66px;line-height:1;letter-spacing:-2px;font-weight:800;text-shadow:0 6px 0 rgba(0,0,0,.45)}
   .overlay h1 span{color:var(--accent)}
   .overlay p{color:var(--dim);max-width:620px;font-size:14px;line-height:1.65}
@@ -627,18 +636,18 @@
   .mcard:hover{transform:translateY(-3px);border-color:var(--mc);
                box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 1px var(--mc) inset}
   .mcard .art{
-    position:relative;height:96px;border-radius:12px;overflow:hidden;flex:none;
+    position:relative;height:84px;border-radius:12px;overflow:hidden;flex:none;
     background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.32));
     border:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-end;
     justify-content:center;gap:2px;padding-bottom:4px;
   }
-  .mcard .art img{height:78px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.65))}
+  .mcard .art img{height:68px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.65))}
   .mcard .art .glow{position:absolute;inset:0;background:radial-gradient(280px 120px at 50% 108%,var(--mc),transparent 68%);opacity:.35}
-  .mcard.wide .art{height:118px}
-  .mcard.wide .art img{height:96px}
+  .mcard.wide .art{height:96px}
+  .mcard.wide .art img{height:82px}
   .mcard .mtop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
   .mcard .mn{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--mc)}
-  .mcard .mb{font-size:12px;color:var(--dim);line-height:1.5;min-height:36px}
+  .mcard .mb{font-size:12px;color:var(--dim);line-height:1.45;min-height:34px}
   .mcard .pips{display:flex;gap:4px;align-items:center}
   .mcard .pips i{width:16px;height:6px;border-radius:99px;background:rgba(255,255,255,.16)}
   .mcard .pips i.on{background:var(--mc)}
@@ -657,10 +666,13 @@
   body.mobile #modeGrid{width:min(1200px,100%);gap:20px}
   body.mobile #modeGrid .row{flex-direction:column;gap:20px}
   body.mobile .mcard{padding:22px;border-radius:24px;gap:13px}
-  body.mobile .mcard .art{height:170px}
-  body.mobile .mcard .art img{height:140px}
-  body.mobile .mcard.wide .art{height:190px}
-  body.mobile .mcard.wide .art img{height:158px}
+  body.mobile #ovMenu h1{font-size:min(52px,6vw)}
+  body.mobile #ovMenu .cast{display:none}
+  body.mobile #ovMenu #help{font-size:15px}
+  body.mobile .mcard .art{height:120px}
+  body.mobile .mcard .art img{height:100px}
+  body.mobile .mcard.wide .art{height:130px}
+  body.mobile .mcard.wide .art img{height:110px}
   body.mobile .mcard .mn{font-size:30px}
   body.mobile .mcard .mb{font-size:17px;min-height:0}
   body.mobile .mcard .best{font-size:15px}
@@ -758,24 +770,18 @@
     <div id="toast"></div>
 
     <div class="overlay on" id="ovMenu">
-      <div class="tagline">Endless Tower Defense</div>
+      <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
-      <p>Endless waves of angry numbered blobs march the long trail. Thirty-two Jaxons stand between them and the nursery &mdash; and a boss shows up every tenth wave, all the way to the FINAL TRANSMISSION on wave 100. See how far you can get.</p>
-      <div id="help" data-touch="0">
+      <p id="menuSub">Thirty-two Jaxons, a boss every tenth wave, and a colossus in the rain. Pick your fight.</p>
+      <div id="modeGrid"></div>
+      <button id="playBtn">How to play</button>
+      <div id="help" data-touch="0" hidden>
         <div><kbd>Shop</kbd><span>Press the arrow tab at the bottom to slide the shop open, and again to close it.</span></div>
         <div><kbd>Hover</kbd><span>Point at a placed Jaxon for live stats &mdash; damage, pops, wave placed.</span></div>
         <div><kbd>Hold</kbd><span>Hold the mouse on the field to override auto-aim at your cursor.</span></div>
         <div><kbd>Space</kbd><span>Start the wave, or flip on <b>Auto-Skip</b> to chain them forever.</span></div>
       </div>
-      <button class="bigbtn" id="playBtn">PLAY</button>
-    </div>
-
-    <div class="overlay" id="ovModes">
-      <div class="tagline">Endless Tower Defense</div>
-      <h1>SELECT A <span>GAMEMODE</span></h1>
-      <div id="modeGrid"></div>
-      <button id="modeBack">Back</button>
     </div>
 
     <div class="overlay" id="ovEnd">
@@ -3001,16 +3007,15 @@ function reset() {
 function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0; }
 
 function showModes() {
-  $('ovMenu').classList.remove('on');
   $('ovEnd').classList.remove('on');
-  $('ovModes').classList.add('on');
+  $('ovMenu').classList.add('on');
   buildModeCards();
   beep(700, 0.07, 'triangle', 0.03);
 }
 function startMode(k) {
   S.mode = MODES[k] ? k : 'normal';
   S.best = bestOf(S.mode);
-  $('ovModes').classList.remove('on');
+  $('ovMenu').classList.remove('on');
   if (S.mode === 'titan') { startTitan(); return; }
   reset();
   toast(M().name + ' — good luck');
@@ -5807,7 +5812,6 @@ function startTitan() {
   dressBossBar(def);
   $('bossbar').classList.add('on');
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
-  $('ovModes').classList.remove('on');
   setShop(true); setPlacingBanner(); syncChips(); syncHUD();
   toast('THE TITAN stirs. Build on the platform — only long reach touches him.');
   beep(48, 2.2, 'sawtooth', 0.09, 24);
@@ -6954,13 +6958,13 @@ document.addEventListener('pointerdown', ev => {
 $('devTog').onclick = () => $('dev').classList.toggle('on');
 $('rotateOk').onclick = () => { portraitOK = true; unlockAudio(); syncMode(); };
 $('startWave').onclick = startWave;
-$('playBtn').onclick = showModes;
-$('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
-$('modeBack').onclick = () => {
-  $('ovModes').classList.remove('on');
-  $('ovMenu').classList.add('on');
-  beep(420, 0.06, 'triangle', 0.025);
+$('playBtn').onclick = () => {
+  const h = $('help');
+  h.hidden = !h.hidden;
+  $('playBtn').textContent = h.hidden ? 'How to play' : 'Hide controls';
+  beep(h.hidden ? 420 : 700, 0.06, 'triangle', 0.03);
 };
+$('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
 $('endModes').onclick = showModes;
 $('autoBtn').onclick = () => {
   if (!S.autoSkip && S.wave < M().autoFrom) {
@@ -7054,6 +7058,11 @@ function frame(now) {
 window.JTD = S;   // handy for tinkering from the console
 
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
+/* The mode cards ARE the main menu, so they get built right here rather than
+   inside the image-preload callback. Their art is data-URL portraits that
+   need no preloading, and hanging them off loadImages would leave the menu
+   empty for as long as a single image stalled. */
+buildModeCards();
 /* the front page explains whichever set of controls this device has */
 function syncHelp() {
   const h = $('help');
@@ -7073,7 +7082,10 @@ const _syncMode = syncMode;
 syncMode = function () { _syncMode(); syncHelp(); };
 
 loadSave();
-loadImages(() => { fitAll(); syncHelp(); makeGrass(); buildShelf(); syncChips(); syncHUD(); requestAnimationFrame(frame); });
+loadImages(() => {
+  fitAll(); syncHelp(); makeGrass(); buildShelf();
+  syncChips(); syncHUD(); requestAnimationFrame(frame);
+});
 </script>
 </body>
 </html>
