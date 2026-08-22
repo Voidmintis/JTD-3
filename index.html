@@ -611,6 +611,63 @@
   #help kbd{flex:none}
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
+  /* ------------------------------------------------- gamemode select ---- */
+  #modeGrid{display:flex;flex-direction:column;gap:14px;width:min(940px,100%)}
+  #modeGrid .row{display:flex;gap:14px}
+  .mcard{
+    position:relative;flex:1;display:flex;flex-direction:column;gap:9px;text-align:left;
+    background:linear-gradient(180deg,rgba(18,26,36,.86),rgba(8,12,18,.94));
+    border:1px solid var(--line);border-radius:18px;padding:16px 17px 15px;
+    cursor:pointer;font:inherit;color:inherit;overflow:hidden;transition:.16s;
+  }
+  .mcard::before{
+    content:'';position:absolute;inset:0;opacity:.16;pointer-events:none;
+    background:radial-gradient(420px 200px at 22% 0%,var(--mc),transparent 70%);
+  }
+  .mcard:hover{transform:translateY(-3px);border-color:var(--mc);
+               box-shadow:0 18px 40px rgba(0,0,0,.55),0 0 0 1px var(--mc) inset}
+  .mcard .art{
+    position:relative;height:96px;border-radius:12px;overflow:hidden;flex:none;
+    background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(0,0,0,.32));
+    border:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-end;
+    justify-content:center;gap:2px;padding-bottom:4px;
+  }
+  .mcard .art img{height:78px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.65))}
+  .mcard .art .glow{position:absolute;inset:0;background:radial-gradient(280px 120px at 50% 108%,var(--mc),transparent 68%);opacity:.35}
+  .mcard.wide .art{height:118px}
+  .mcard.wide .art img{height:96px}
+  .mcard .mtop{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+  .mcard .mn{font-size:19px;font-weight:800;letter-spacing:-.3px;color:var(--mc)}
+  .mcard .mb{font-size:12px;color:var(--dim);line-height:1.5;min-height:36px}
+  .mcard .pips{display:flex;gap:4px;align-items:center}
+  .mcard .pips i{width:16px;height:6px;border-radius:99px;background:rgba(255,255,255,.16)}
+  .mcard .pips i.on{background:var(--mc)}
+  .mcard .mfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:1px}
+  .mcard .best{font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--dim)}
+  .mcard .best b{color:var(--ink);font-variant-numeric:tabular-nums}
+  .mcard .go{
+    border:0;border-radius:999px;padding:8px 22px;font:inherit;font-weight:800;font-size:13px;
+    color:#06120a;background:var(--mc);box-shadow:0 4px 0 rgba(0,0,0,.42);pointer-events:none;
+  }
+  #endModes,#modeBack{
+    border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim);
+    border-radius:999px;padding:9px 26px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;
+  }
+  #endModes:hover,#modeBack:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  body.mobile #modeGrid{width:min(1200px,100%);gap:20px}
+  body.mobile #modeGrid .row{flex-direction:column;gap:20px}
+  body.mobile .mcard{padding:22px;border-radius:24px;gap:13px}
+  body.mobile .mcard .art{height:170px}
+  body.mobile .mcard .art img{height:140px}
+  body.mobile .mcard.wide .art{height:190px}
+  body.mobile .mcard.wide .art img{height:158px}
+  body.mobile .mcard .mn{font-size:30px}
+  body.mobile .mcard .mb{font-size:17px;min-height:0}
+  body.mobile .mcard .best{font-size:15px}
+  body.mobile .mcard .go{font-size:20px;padding:13px 34px;min-height:var(--tap)}
+  body.mobile .mcard .pips i{width:24px;height:9px}
+  body.mobile #endModes,body.mobile #modeBack{font-size:19px;padding:0 34px;min-height:var(--tap)}
+
   #scoreRow{display:flex;gap:34px;margin-top:2px}
   #scoreRow div{text-align:center}
   #scoreRow .k{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
@@ -641,7 +698,7 @@
     <div id="hud">
       <div class="pill" id="hpBox">
         <svg width="21" height="21" viewBox="0 0 24 24"><path fill="#e5484d" d="M12 21s-8-5.2-8-10.5A4.5 4.5 0 0 1 12 7a4.5 4.5 0 0 1 8 3.5C20 15.8 12 21 12 21z"/></svg>
-        <div><div class="lbl">Lives</div><div class="val" id="hpVal">50</div></div>
+        <div><div class="lbl" id="hpLbl">Lives</div><div class="val" id="hpVal">50</div></div>
       </div>
       <div class="pill" id="moneyBox">
         <svg width="21" height="21" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="#ffd83d"/><path fill="#a97c00" d="M11 6h2v12h-2z"/><path fill="#a97c00" d="M9 9.2c0-1.5 1.4-2.4 3-2.4s3 .8 3 2.2h-2c0-.4-.5-.7-1-.7s-1 .3-1 .8c0 1.6 4 .9 4 4 0 1.6-1.4 2.5-3 2.5s-3-.9-3-2.4h2c0 .5.5.9 1 .9s1-.3 1-.9c0-1.6-4-.8-4-4z"/></svg>
@@ -653,7 +710,7 @@
       </div>
       <div class="pill" id="bestBox">
         <svg width="21" height="21" viewBox="0 0 24 24"><path fill="#8fe4ff" d="M12 2l2.8 6.2 6.7.7-5 4.5 1.4 6.6L12 16.6 6.1 20l1.4-6.6-5-4.5 6.7-.7z"/></svg>
-        <div><div class="lbl">Best</div><div class="val" id="bestVal">0</div></div>
+        <div><div class="lbl" id="bestLbl">Best</div><div class="val" id="bestVal">0</div></div>
       </div>
     </div>
 
@@ -714,6 +771,13 @@
       <button class="bigbtn" id="playBtn">PLAY</button>
     </div>
 
+    <div class="overlay" id="ovModes">
+      <div class="tagline">Endless Tower Defense</div>
+      <h1>SELECT A <span>GAMEMODE</span></h1>
+      <div id="modeGrid"></div>
+      <button id="modeBack">Back</button>
+    </div>
+
     <div class="overlay" id="ovEnd">
       <h1 id="endTitle">NURSERY OVERRUN</h1>
       <p id="endText"></p>
@@ -723,6 +787,7 @@
         <div><div class="k">Total pops</div><div class="v" id="scPops">0</div></div>
       </div>
       <button class="bigbtn" id="againBtn">PLAY AGAIN</button>
+      <button id="endModes">Change gamemode</button>
     </div>
   </div>
 </div>
@@ -2195,6 +2260,45 @@ const W = 1600, H = 900;
 const PATH = [[0,180],[1400,180],[1400,345],[200,345],[200,510],[1440,510],[1440,675],[160,675],[160,840],[1600,840]];
 const PATH_W = 46;          // slimmer trail => wider grass strips between the lanes
 
+/* --------------------------------------------------------- gamemodes ----
+   One endless engine, three sets of dials. Nothing below forks the game —
+   every multiplier is read through M() at the point it matters, so Easy and
+   Nightmare stay honest copies of the same rules.
+
+   A note on enemy HP: a plain blob's HP *is* its tier — it is what picks the
+   colour and the number on its face, and it counts down as you shoot it.
+   Scaling that would repaint the whole early game, so the swarm takes its
+   difficulty from the threat budget (how many arrive) and from speed, while
+   elites and bosses take theirs from a straight HP multiplier.          */
+const MODES = {
+  normal: { key:'normal', name:'Endless', mc:'#22e02a', pips:2,
+            money:120, lives:50, budget:1,    eliteHp:1,    spd:1,    eliteShift:0,  eliteMul:1,
+            bossHp:1,    coin:1,    waveReward:1,   leak:1,    cost:1,    refund:0.70, autoFrom:1 },
+  easy:   { key:'easy', name:'Easy Mode', mc:'#3ddc6a', pips:1,
+            art:['basic','slingshot','ninja','rainbow'],
+            blurb:'More coins, softer enemies. Learn the ropes and build wild loadouts.',
+            money:150, lives:75, budget:0.75, eliteHp:0.72, spd:0.85, eliteShift:6,  eliteMul:0.6,
+            bossHp:0.75, coin:1.3,  waveReward:1.3, leak:0.8,  cost:1,    refund:0.75, autoFrom:1 },
+  nightmare:{ key:'nightmare', name:'Nightmare Mode', mc:'#a86bff', pips:3, wide:true,
+            art:['eclipse','blackholelaser','truegod','mirror','director'],
+            blurb:'Less money, harder elites, punishing leaks. For high scores.',
+            money:60,  lives:35, budget:1.35, eliteHp:1.5,  spd:1.25, eliteShift:-6, eliteMul:1.6,
+            bossHp:1.8,  coin:0.78, waveReward:0.6, leak:1.4,  cost:1.1,  refund:0.55, autoFrom:10 },
+  /* The siege. Shares the towers and the boss art and almost nothing else —
+     its own map, camera, economy and win condition live in the Titan Fight
+     section further down. The dials here are only what the shared shop and
+     tower code read. */
+  titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:3, siege:true,
+            art:['titanmax','titan'], scoreLabel:'Best time',
+            blurb:'Siege a colossal Titan in the rain. Defend the base. Scale is everything.',
+            money:900, lives:1000, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
+            bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 }
+};
+const M = () => MODES[S.mode] || MODES.normal;
+/* prices and refunds are mode business, so nothing reads TOWERS[k].cost raw */
+const costOf   = k => Math.round(TOWERS[k].cost * M().cost);
+const refundOf = t => Math.floor((costOf(t.type) + upSpent(t)) * M().refund);
+
 const TIER = {
   1:{fill:'#dd3333', edge:'#7c1414', text:'#ffffff'},
   2:{fill:'#de8237', edge:'#8a4409', text:'#ffffff'},
@@ -2231,10 +2335,14 @@ const ELITE = [
 /* Armour thickens every wave it survives, so the expensive Jaxons keep
    having something worth shooting at. */
 const ARMOUR_GROWTH = 1.045;
+/* Easy meets its armour late and lightly, Nightmare early and heavy. */
+const eliteFrom = i => Math.max(2, ELITE[i].from + M().eliteShift);
 const eliteHp = (i, wave) =>
-  Math.round(ELITE[i].hp * Math.pow(ARMOUR_GROWTH, Math.max(0, wave - ELITE[i].from)));
+  Math.round(ELITE[i].hp * M().eliteHp * Math.pow(ARMOUR_GROWTH, Math.max(0, wave - eliteFrom(i))));
 const eliteOf = e => (e.elite >= 0 ? ELITE[e.elite] : null);
-const eLeak  = e => (e.elite >= 0 ? ELITE[e.elite].leak : Math.max(1, Math.ceil(e.hp)));
+const eLeak  = e => Math.max(1, Math.round((e.leakN !== undefined ? e.leakN
+                                          : e.elite >= 0 ? ELITE[e.elite].leak
+                                                         : Math.max(1, Math.ceil(e.hp))) * M().leak));
 const eSpeed = e => (e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(1, e.hp) + 5))
                     * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
                     * (e.haste || 1);
@@ -2555,7 +2663,9 @@ const S = {
      with a floor from the wave number so deep runs never start heavy. */
   perf:0, perfToasted:false, auraT:0, dupe:null,
   /* null = let the frame rate decide, 0/2 = the player has decided for us */
-  perfLock:null, tutorialDone:false
+  perfLock:null, tutorialDone:false,
+  mode:'normal', bests:{}, titanBest:null, titan:null,
+  cam:{ x:W/2, y:H/2, z:1, min:1, max:1 }, keys:{}, pan:null, pinch:null, pathPts:PATH
 };
 
 /* -------------------------------------------------------------- saving ---
@@ -2567,7 +2677,15 @@ function loadSave() {
   let j;
   try { j = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return; }
   if (!j || typeof j !== 'object') return;
-  if (typeof j.best === 'number' && isFinite(j.best)) S.best = Math.max(0, Math.floor(j.best));
+  if (j.bests && typeof j.bests === 'object') {
+    for (const k in j.bests) if (typeof j.bests[k] === 'number' && isFinite(j.bests[k]))
+      S.bests[k] = Math.max(0, Math.floor(j.bests[k]));
+  }
+  /* a save from before gamemodes existed was always the endless balance */
+  if (typeof j.best === 'number' && isFinite(j.best))
+    S.bests.normal = Math.max(S.bests.normal || 0, Math.floor(j.best));
+  if (j.titan && typeof j.titan === 'object') S.titanBest = j.titan;
+  S.best = bestOf(S.mode);
   if (typeof j.sound === 'boolean') S.sound = j.sound;
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
   if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
@@ -2577,15 +2695,15 @@ function loadSave() {
 function saveNow() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
-      best:S.best, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
+      bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
 /* the best run is worth writing the moment it changes, not at game over */
 function noteBest(w) {
-  if (w <= S.best) return;
-  S.best = w; saveNow(); syncHUD();
+  if (w <= bestOf(S.mode)) { S.best = bestOf(S.mode); return; }
+  S.bests[S.mode] = w; S.best = w; saveNow(); syncHUD();
 }
 /* Hard ceilings. Enemies are capped at the spawner (see LIVE_CAP); these
    catch everything else so one silly frame cannot snowball. */
@@ -2744,7 +2862,7 @@ function buildShelf() {
         <div class="ring"><span class="glow"></span><img src="${PORTRAIT[k]}" alt="${t.name}"></div>
         ${i < 9 ? `<span class="key">${i+1}</span>` : ''}
         <div class="nm">${t.name}</div>
-        <div class="pr">$${t.cost}</div>
+        <div class="pr">$${costOf(k)}</div>
       </button>`;
   }).join('');
   $('shelf').querySelectorAll('.med').forEach(el => {
@@ -2773,7 +2891,7 @@ function buildShelf() {
 
 function syncShelf() {
   document.querySelectorAll('.med').forEach(el => {
-    const key = el.dataset.key, can = S.money >= TOWERS[key].cost;
+    const key = el.dataset.key, can = S.money >= costOf(key);
     if (can && S.affordable[key] === false) { el.classList.add('newly'); setTimeout(() => el.classList.remove('newly'), 820); }
     S.affordable[key] = can;
     el.classList.toggle('locked', !can);
@@ -2804,7 +2922,7 @@ function setPlacingBanner() {
 }
 
 function pick(key) {
-  if (S.money < TOWERS[key].cost) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
+  if (S.money < costOf(key)) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
   S.dupe = null;
   S.placing = key;
   syncShelf(); setPlacingBanner();
@@ -2818,7 +2936,7 @@ function cancelPlacing() { S.placing = null; S.dupe = null; setPlacingBanner(); 
    Full rebuy: the shop price plus every coin ever spent upgrading this one.
    Only the type and the permanent upgrade levels travel — the copy arrives
    with no auras, no charge, no buffs, and every unique active on cooldown. */
-const dupeCost = t => TOWERS[t.type].cost + upSpent(t);
+const dupeCost = t => costOf(t.type) + upSpent(t);
 
 function startDuplicate(t) {
   const cost = dupeCost(t);
@@ -2840,7 +2958,9 @@ function syncHUD() {
   $('hpVal').textContent = Math.max(0, Math.round(S.health)) + (S.shield > 0 ? ' +' + S.shield : '');
   $('moneyVal').textContent = '$' + Math.floor(S.money);
   $('waveVal').textContent = S.wave;
-  $('bestVal').textContent = S.best;
+  $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg)) : S.best;
+  $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
+  $('bestLbl').textContent = S.titan ? 'Damage' : 'Best';
   const sw = $('startWave'), tag = $('waveTag');
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
@@ -2858,7 +2978,9 @@ const isBossWave = w => w % BOSS.every === 0;
 const LIFE_CAP = 99;      // nurses top the nursery back up, they don't stack it to infinity
 
 function reset() {
-  S.phase='build'; S.health=50; S.money=120; S.wave=1; S.pops=0;
+  const md = M();
+  S.titan = null; camReset(); usePath(PATH);      // back to the serpentine
+  S.phase='build'; S.health=md.lives; S.money=md.money; S.wave=1; S.pops=0;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null;
@@ -2868,7 +2990,54 @@ function reset() {
   S.affordable={};
   $('bossbar').classList.remove('on');
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
+  if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
+  syncChips();
   hideTip(); setPlacingBanner(); setShop(true); syncHUD();
+}
+
+/* ------------------------------------------------------ gamemode flow ----
+   PLAY opens the picker, a card starts that mode. Bests are kept per mode:
+   the number on the HUD is always this mode's number. */
+function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0; }
+
+function showModes() {
+  $('ovMenu').classList.remove('on');
+  $('ovEnd').classList.remove('on');
+  $('ovModes').classList.add('on');
+  buildModeCards();
+  beep(700, 0.07, 'triangle', 0.03);
+}
+function startMode(k) {
+  S.mode = MODES[k] ? k : 'normal';
+  S.best = bestOf(S.mode);
+  $('ovModes').classList.remove('on');
+  if (S.mode === 'titan') { startTitan(); return; }
+  reset();
+  toast(M().name + ' — good luck');
+}
+
+/* Three cards, built from the mode table so a new mode is a table entry. */
+function buildModeCards() {
+  const card = k => {
+    const m = MODES[k], best = bestOf(k);
+    const pips = [1,2,3].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('');
+    const cast = (m.art || []).map(t => `<img src="${PORTRAIT[t]}" alt="">`).join('');
+    return `<button class="mcard ${m.wide ? 'wide' : ''}" data-m="${k}" style="--mc:${m.mc}">
+        <div class="art"><span class="glow"></span>${cast}</div>
+        <div class="mtop"><span class="mn">${m.name}</span><span class="pips">${pips}</span></div>
+        <div class="mb">${m.blurb}</div>
+        <div class="mfoot">
+          <span class="best">${m.scoreLabel || 'Best wave'} <b>${best || '—'}</b></span>
+          <span class="go">Play</span>
+        </div>
+      </button>`;
+  };
+  $('modeGrid').innerHTML =
+    `<div class="row">${card('easy')}${card('titan')}</div>
+     <div class="row">${card('nightmare')}</div>`;
+  $('modeGrid').querySelectorAll('.mcard').forEach(el => {
+    el.onclick = () => startMode(el.dataset.m);
+  });
 }
 
 function startWave() {
@@ -2882,7 +3051,11 @@ function startWave() {
   S.spawnGap = Math.max(0.05, 20 / Math.max(1, S.spawnQueue));
   S.spawnTimer = 0;
   if (isBossWave(S.wave)) {
-    const B = bossFor(S.wave);
+    const B0 = bossFor(S.wave);
+    /* the ladder is shared; only the health bar moves between modes */
+    const B = M().bossHp === 1 ? B0
+            : Object.assign({}, B0, { hp:Math.round(B0.hp * M().bossHp),
+                                      leak:Math.max(1, Math.round(B0.leak * M().leak)) });
     S.boss = { d:0, hp:B.hp, max:B.hp, hit:0, def:B, cols:makeRain(B), glitch:0,
                mark:0, markMul:1, dbl:false, stun:0,
                pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9 };
@@ -2957,8 +3130,8 @@ const LIVE_CAP = w => (w < 16 ? 400 : w < 36 ? 260 : w < 60 ? 150 : 95);
 function waveBudget(w) {
   const bodies = w*10 + Math.max(0, w - 10)*15;        // what the old table would have sent
   const un = [];
-  for (let i = 0; i < ELITE.length; i++) if (w >= ELITE[i].from) un.push(i);
-  const ch = un.length ? Math.min(0.42, (w - ELITE[0].from + 2)*0.018) : 0;
+  for (let i = 0; i < ELITE.length; i++) if (w >= eliteFrom(i)) un.push(i);
+  const ch = un.length ? Math.min(0.42, (w - eliteFrom(0) + 2)*0.018)*M().eliteMul : 0;
   const basic = (1 + Math.min(w, MAX_TIER))/2 + 1;
   let el = 0;
   if (un.length) {
@@ -2966,19 +3139,20 @@ function waveBudget(w) {
     un.forEach((idx, i) => { tot += threatOf(idx, eliteHp(idx, w))*(i + 1); sw += i + 1; });
     el = tot/sw;
   }
-  return bodies * ((1 - ch)*basic + ch*el);
+  return bodies * ((1 - ch)*basic + ch*el) * M().budget;
 }
 
 /* One unit, rolled for this wave. Deeper waves take elites more often and
    lean harder on the expensive end of the roster. */
 function rollUnit(w) {
   const un = [];
-  for (let i = 0; i < ELITE.length; i++) if (w >= ELITE[i].from) un.push(i);
+  for (let i = 0; i < ELITE.length; i++) if (w >= eliteFrom(i)) un.push(i);
   const chance = !un.length ? 0
-               : w <= 15 ? Math.min(0.42, (w - ELITE[0].from + 2)*0.018)   // waves 1-15 unchanged
-               : w < 36  ? Math.min(0.62, 0.26 + (w - 16)*0.02)            // elites mixed in
-               : w < 60  ? 0.86                                            // elites common
-               :           0.96;                                           // heavies and husks
+               : Math.min(0.985, M().eliteMul * (
+                   w <= 15 ? Math.min(0.42, (w - eliteFrom(0) + 2)*0.018)  // waves 1-15 unchanged
+                 : w < 36  ? Math.min(0.62, 0.26 + (w - 16)*0.02)          // elites mixed in
+                 : w < 60  ? 0.86                                          // elites common
+                 :           0.96));                                       // heavies and husks
   let elite = -1;
   if (un.length && Math.random() < chance) {
     const k = w < 36 ? 1 : w < 60 ? 1.7 : 2.6;         // newest armour is likeliest, sharply so late
@@ -3021,7 +3195,7 @@ function buildWavePlan(w) {
 }
 
 /* original shape: 10 / (costume# + 5), with a gentle endless speed ramp */
-const waveRamp = () => Math.min(1.75, 1 + Math.max(0, S.wave - 10) * 0.03);
+const waveRamp = () => Math.min(1.75, 1 + Math.max(0, S.wave - 10) * 0.03) * M().spd;
 const tierSpeed = tier => WAVE_SPEED / (tier + 5) * waveRamp();
 
 /* ---------------------------------------------------------------- coin ---
@@ -3035,7 +3209,7 @@ const COIN_BASE = 6.0, COIN_DECAY = 0.135;
 const coinCurve  = () => 1 / (1 + Math.max(0, S.wave - 1) * COIN_DECAY);
 const enemyWorth = e => (e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
-const bountyFor  = e => COIN_BASE * enemyWorth(e) * coinCurve();
+const bountyFor  = e => COIN_BASE * enemyWorth(e) * coinCurve() * M().coin;
 
 /* ------------------------------------------------------ the money Jaxons --
    Four Jaxons that never deal damage and instead print, multiply, or claw
@@ -3125,6 +3299,12 @@ function hurtEnemy(e, dmg, owner) {
     burst(p.x, p.y, enemyFill({ elite:e.elite, hp:before }), e.elite >= 0 ? 26 : 13);
     e.dead = true; S.pops++;
     if (owner) owner.pops++;
+    if (S.titan && e.siege) {
+      S.titan.killed++;
+      const b = 260 + S.titan.killed*40;
+      S.money += b;
+      S.floats.push({ x:p.x, y:p.y - 60, txt:'+$' + b, color:'#ffd83d', life:1.6, big:true });
+    }
     let bounty = bountyFor(e);                    // decaying per-pop payout, see COIN_BASE above
     if (owner && owner.type) bounty *= 1 + (SP(owner).goldBonus || 0);
     bounty *= 1 + taxCutAt(p.x, p.y);             // Tax Jaxon takes his cut of the corpse
@@ -3147,9 +3327,17 @@ function hurtBoss(dmg, owner) {
   if (S.boss.dbl) { dmg *= 2; S.boss.dbl = false; }
   const before = S.boss.hp;
   S.boss.hp -= dmg; S.boss.hit = 1;
+  if (S.titan) {                              // a siege is paid by the hit, not by the wave
+    const real = Math.min(dmg, Math.max(0, before));
+    S.titan.dmg += real;
+    S.titan.coinAcc += real*SG.perDamage;
+    if (S.titan.coinAcc >= 1) {
+      const c = Math.floor(S.titan.coinAcc); S.titan.coinAcc -= c; S.money += c;
+    }
+  }
   if (owner) owner.dmg += Math.min(dmg, Math.max(0, before));
   if (before > 0 && S.boss.hp <= 0) {
-    let bounty = COIN_BASE * (S.boss.max/13) * coinCurve();     // bosses are the payday
+    let bounty = COIN_BASE * (S.boss.max/13) * coinCurve() * M().coin;   // bosses are the payday
     if (S.boss.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
     S.money += bounty;
     const p = pointAt(S.boss.d);
@@ -3520,10 +3708,16 @@ function bestCluster(t, range, r) {
 
 function targetFor(t) {
   const range = SP(t).range;
-  if (S.boss) {
+  const onBoss = () => {
+    if (!S.boss) return null;
     const p = pointAt(S.boss.d);
-    if (Math.hypot(p.x - t.x, p.y - t.y) <= range + bossR()*0.6) return p;
-  }
+    return Math.hypot(p.x - t.x, p.y - t.y) <= range + bossR()*0.6 ? p : null;
+  };
+  /* Endless: the boss is THE threat and it takes the shot.
+     Siege: the Titan never leaves the field, so if it kept that priority
+     every Jaxon would stare at the hill while the summons strolled into the
+     base. Here the Titan is what you shoot once the lane is clear. */
+  if (S.boss && !S.titan) { const p = onBoss(); if (p) return p; }
   let best = null, bestD = -1;
   for (const e of S.enemies) {
     if (e.dead) continue;
@@ -3531,7 +3725,7 @@ function targetFor(t) {
     if (Math.hypot(p.x - t.x, p.y - t.y) > range) continue;
     if (e.d > bestD) { bestD = e.d; best = p; }
   }
-  return best;
+  return best || onBoss();
 }
 
 /* --------------------------------------------------------- boss powers ---
@@ -3655,6 +3849,8 @@ function update(dt) {
   }
   S.enemies = S.enemies.filter(e => !e.dead);
 
+  if (S.titan) titanUpdate(dt);
+
   /* boss — 500 HP, ordinary damage, number counts down, colour never changes */
   if (S.boss) {
     if (S.boss.mark > 0) { S.boss.mark -= dt; if (S.boss.mark <= 0) S.boss.markMul = 1; }
@@ -3662,6 +3858,13 @@ function update(dt) {
     if (S.boss.stun <= 0) S.boss.d += S.boss.def.speed*dt;      // bosses keep their own pace
     S.boss.hit = Math.max(0, S.boss.hit - dt*6);
     bossPowers(dt);
+    if (S.titan && S.boss.hp <= 0) {          // the colossus goes down: that is the win
+      const tp = SG.titan;
+      burst(tp.x, tp.y, '#ff5a3c', 150, 3); burst(tp.x, tp.y, '#ffd83d', 110, 2.4);
+      S.boss = null; $('bossbar').classList.remove('on');
+      titanEnd(true);
+      return;
+    }
     if (S.boss.hp <= 0) {
       const p = pointAt(S.boss.d), fin = S.boss.def.power === 'final';
       burst(p.x, p.y, '#ff2d2d', fin ? 140 : 54); burst(p.x, p.y, '#ffd83d', fin ? 90 : 26);
@@ -4389,12 +4592,15 @@ function update(dt) {
   if (S.cars.length   > CAR_CAP)   S.cars.splice(0, S.cars.length - CAR_CAP);
   if (S.floats.length > FLOAT_CAP) S.floats.splice(0, S.floats.length - FLOAT_CAP);
 
-  if (S.health <= 0 && S.phase !== 'over') { S.phase = 'over'; endGame(); return; }
+  if (S.health <= 0 && S.phase !== 'over') {
+    if (S.titan) { titanEnd(false); return; }
+    S.phase = 'over'; endGame(); return;
+  }
 
   if (S.phase === 'wave' && S.spawnQueue === 0 && S.enemies.length === 0 && !S.boss) {
     noteBest(S.wave);
     S.wave++;                                       // original: change Level by 1
-    const reward = 25 + S.wave*10;                  // the round-end bonus matters more now that pops decay
+    const reward = Math.round((25 + S.wave*10) * M().waveReward);   // round-end bonus, mode-scaled
     S.money += reward;
     /* Merchant Jaxon closes his books: everything that died on his watch,
        plus the standing fee that grows with the wave number. */
@@ -4428,11 +4634,13 @@ function update(dt) {
 }
 
 function endGame() {
-  $('endText').textContent = 'The blobs got through on wave ' + S.wave +
-    '. Best run so far: wave ' + Math.max(S.best, S.wave - 1) + '.';
-  $('scWave').textContent = Math.max(0, S.wave - 1);
-  $('scTowers').textContent = S.towers.length;
-  $('scPops').textContent = S.pops.toLocaleString();
+  $('endText').textContent = M().name + ' — the blobs got through on wave ' + S.wave +
+    '. Best run in this mode: wave ' + Math.max(bestOf(S.mode), S.wave - 1) + '.';
+  $('endTitle').textContent = 'NURSERY OVERRUN';
+  $('scoreRow').innerHTML =
+    '<div><div class="k">Waves survived</div><div class="v">' + Math.max(0, S.wave - 1) + '</div></div>' +
+    '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    '<div><div class="k">Total pops</div><div class="v">' + S.pops.toLocaleString() + '</div></div>';
   $('ovEnd').classList.add('on');
   setShop(false); hideTip();
   beep(160, 0.5, 'sawtooth', 0.06, 60);
@@ -4544,7 +4752,7 @@ function fillTip(t) {
     `<div class="th"><img src="${PORTRAIT[t.type]}" alt="">
        <div><div class="n">${spec.name}</div><div class="s">Placed on wave ${t.placedWave}</div></div></div>
      ${tagHTML(spec.tags)}${statRows(spec, t)}
-     <div class="ft"><span>Click to open upgrades</span><b>+$${Math.floor((TOWERS[t.type].cost + upSpent(t))*0.7)}</b></div>`;
+     <div class="ft"><span>Click to open upgrades</span><b>+$${refundOf(t)}</b></div>`;
 }
 function placeTipAt(x, y) {
   const el = $('ttip'); el.classList.add('on');
@@ -4562,7 +4770,7 @@ function showShopTip(key, el) {
   const spec = TOWERS[key];
   $('ttip').innerHTML =
     `<div class="th"><img src="${PORTRAIT[key]}" alt="">
-       <div><div class="n">${spec.name}</div><div class="s">$${spec.cost}</div></div></div>
+       <div><div class="n">${spec.name}</div><div class="s">$${costOf(spec.key)}</div></div></div>
      ${tagHTML(spec.tags)}
      <div class="r" style="padding-bottom:7px">${spec.blurb}</div>
      ${statRows(spec, null)}`;
@@ -4603,7 +4811,7 @@ function drawPanel() {
   const el = $('panel');
   if (!t || !S.towers.includes(t)) { deselect(); return; }
   const base = TOWERS[t.type], sp = SP(t), up = UPGRADES[t.type];
-  const refund = Math.floor((base.cost + upSpent(t))*0.7);
+  const refund = refundOf(t);
   const dcost = dupeCost(t);
   const rng = sp.range === Infinity ? '∞' : Math.round(sp.range);
 
@@ -4682,7 +4890,7 @@ function refreshPanel() {
     if (bt.className !== 'upg ' + want) bt.className = 'upg ' + want;
   });
   const sell = $('pSell');
-  if (sell) sell.innerHTML = 'Sell &nbsp;+$' + Math.floor((TOWERS[t.type].cost + upSpent(t))*0.7).toLocaleString();
+  if (sell) sell.innerHTML = 'Sell &nbsp;+$' + refundOf(t).toLocaleString();
   const dupe = $('pDupe');
   if (dupe) {
     const dc = dupeCost(t);
@@ -4761,6 +4969,7 @@ function tracePath(width) {
 }
 
 function drawField() {
+  if (S.titan) { drawSiegeField(); drawTitanFx(); drawTitan(); return; }
   ctx.fillStyle = grassPattern || '#009242'; ctx.fillRect(0, 0, W, H);
   const vg = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.36)');
@@ -5055,6 +5264,7 @@ function drawRain(B, th, r, t) {
 }
 
 function drawBoss() {
+  if (S.titan) return;                       // the Titan paints itself with the hill
   const B = S.boss.def, th = BOSS_THEME[B.theme];
   const p = pointAt(S.boss.d), r = B.r, pulse = 1 + Math.sin(S.t*3)*0.02;
   ctx.save();
@@ -5494,7 +5704,452 @@ function drawCar(c) {
   ctx.restore();
 }
 
+
+/* ======================================================================= *
+ *  TITAN FIGHT                                                            *
+ *  A siege, not a lap of the trail. One colossus dug into a hill in the    *
+ *  rain, a stone platform on the right that is the only buildable ground,  *
+ *  and a lane between them that the Titan's summons walk down.             *
+ *                                                                         *
+ *  It reuses far more than it replaces. The Titan IS the boss singleton    *
+ *  with speed 0, so every weapon, every upgrade and the boss bar already   *
+ *  know how to deal with it. Its summons are husk elites, so pathing,      *
+ *  targeting, bounty and drawing are all the code that already existed.    *
+ *  What is genuinely new is the map, the camera, and the abilities.        *
+ *                                                                         *
+ *  SCALE is the whole point: a Jaxon is 88px, the Titan is 9.5x that, and  *
+ *  the camera fits a 2900x1500 world into the 1600x900 frame. Nothing had  *
+ *  to be rescaled per draw call — the world is simply bigger.              *
+ * ======================================================================= */
+const SG = {
+  W:2900, H:1500,
+  /* The Titan's drawn centre and its logical position on the path are the
+     SAME point — it is the boss singleton parked at path distance 0, so if
+     these drift apart the Jaxons shoot at empty hill. The platform is then
+     placed so that a short-range Jaxon on its near corner just reaches him
+     and one on the far side does not: where you build is the decision. */
+  titan:{ x:820, y:780, r:380 },
+  base:{ x:1240, y:860, w:1420, h:500 },      // the only buildable ground
+  path:[[820,780],[1010,980],[1200,1090],[1560,1130],[2000,1105],[2680,1105]],
+  /* Sized against a real board: the platform holds maybe a dozen Jaxons, the
+     siege wage plus the damage cut plus the breach bonuses fund roughly
+     $90k over the fight, and that much tower kills 1.8M in about ten
+     minutes. Every number here was fitted by simulating the fight. */
+  hp:950000, life:2000,
+  money:2200,
+  income:120,                                  // $/sec while the base stands
+  perDamage:1/220,                             // coins per point of Titan damage
+  phaseBonus:[0.75, 0.5, 0.25],                // paid once each as its health falls
+  summonHp:4200, summonGrow:0.20
+};
+const TITAN_H = T_H*9.5;                       // 9.5 Jaxons tall. That is the fantasy.
+
+/* the boss ladder supplies the summons; the Titan borrows a face of its own */
+BOSS_THEME.titanfight = { bg:'#160308', glyph:'#ff5a3c', head:'#ffd8cc', ring:'#5a0d06', ring2:'#ff7a4a',
+                          bar1:'#ff3b1a', bar2:'#ffb04a', num:'#ffe0d2', label:'#ff8a5a' };
+
+/* --------------------------------------------------------------- camera --
+   Always present. Outside the siege it sits at z=1 centred on the middle of
+   the frame, which is the identity transform, so nothing else notices. */
+function camReset() { S.cam = { x:W/2, y:H/2, z:1, min:1, max:1 }; }
+function camFit() {
+  const z = Math.min(W/SG.W, H/SG.H);
+  S.cam = { x:SG.W/2, y:SG.H/2, z, min:z*0.92, max:2.4 };
+}
+function camBegin() {
+  const c = S.cam;
+  ctx.save();
+  ctx.translate(W/2, H/2); ctx.scale(c.z, c.z); ctx.translate(-c.x, -c.y);
+}
+function camEnd() { ctx.restore(); }
+function camClamp() {
+  const c = S.cam;
+  if (c.z === 1 && c.min === 1) return;                   // not sieging
+  c.z = Math.max(c.min, Math.min(c.max, c.z));
+  const hw = W/2/c.z, hh = H/2/c.z;
+  /* let the view breathe a little past the edges, but never lose the map */
+  c.x = Math.max(Math.min(hw, SG.W - hw), Math.min(c.x, Math.max(SG.W - hw, hw)));
+  c.y = Math.max(Math.min(hh, SG.H - hh), Math.min(c.y, Math.max(SG.H - hh, hh)));
+}
+/* zoom about a fixed world point, so the thing under the cursor stays put */
+function camZoomAt(wx, wy, factor) {
+  const c = S.cam;
+  const z0 = c.z;
+  c.z = Math.max(c.min, Math.min(c.max, c.z*factor));
+  const k = 1 - z0/c.z;
+  c.x += (wx - c.x)*k; c.y += (wy - c.y)*k;
+  camClamp();
+}
+
+/* ------------------------------------------------------- starting a run - */
+function startTitan() {
+  S.mode = 'titan';
+  const md = M();
+  S.phase = 'wave';                            // a siege never stops for a build phase
+  S.health = SG.life; S.money = SG.money; S.wave = 1; S.pops = 0;
+  S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[];
+  S.vortex=[]; S.shocks=[]; S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[];
+  S.fx=[]; S.floats=[]; S.shield=0; S.cut=null; S.projSlow=0; S.plan=[]; S.spawnQueue=0;
+  S.placing=null; S.dupe=null; S.hovered=null; S.autoTimer=0; S.autoSkip=false;
+  deselect(); S.affordable={};
+
+  usePath(SG.path);                            // the lane the summons walk
+  camFit();
+
+  S.titan = {
+    t:0, dmg:0, summons:0, killed:0, phase:0, enraged:false,
+    abCd:6.5, slam:null, rocks:[], grab:null, summonCd:34, incomeAcc:0, coinAcc:0,
+    rainT:0
+  };
+  const def = { name:'THE TITAN', hp:SG.hp, r:SG.titan.r, speed:0, leak:0, theme:'titanfight' };
+  S.boss = { d:0, hp:SG.hp, max:SG.hp, hit:0, def, cols:makeRain(def), glitch:0,
+             mark:0, markMul:1, dbl:false, stun:0, pulseCd:1e9, ring:0, inv:0, phase:1, slowCd:1e9 };
+  dressBossBar(def);
+  $('bossbar').classList.add('on');
+  $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
+  $('ovModes').classList.remove('on');
+  setShop(true); setPlacingBanner(); syncChips(); syncHUD();
+  toast('THE TITAN stirs. Build on the platform — only long reach touches him.');
+  beep(48, 2.2, 'sawtooth', 0.09, 24);
+}
+
+/* rebuild the shared path in place; every pathing consumer follows along */
+function usePath(pts) {
+  SEG.length = 0; PATH_LEN = 0;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const a = pts[i], b = pts[i+1];
+    const dx = b[0]-a[0], dy = b[1]-a[1], len = Math.hypot(dx, dy);
+    SEG.push({ x:a[0], y:a[1], dx:dx/len, dy:dy/len, len, start:PATH_LEN });
+    PATH_LEN += len;
+  }
+  S.pathPts = pts;
+}
+const inBase = (x, y) => x >= SG.base.x && x <= SG.base.x + SG.base.w
+                      && y >= SG.base.y && y <= SG.base.y + SG.base.h;
+
+/* ------------------------------------------------------------ summoning -
+   A summon is a husk elite with its own health and its own bite, which
+   means it is drawn, targeted, damaged and paid out by code that already
+   existed. It walks the lane; if it reaches the platform core it bites. */
+function summonBoss() {
+  if (S.enemies.length >= 46) return;                 // the shared entity budget
+  const T = S.titan;
+  const done = BOSSES.filter(b => b.theme !== 'classic');
+  const pick = done[Math.min(done.length - 1, Math.floor(T.summons/2))];
+  const grow = 1 + T.summons*SG.summonGrow;
+  const hp = Math.round(SG.summonHp*grow);
+  T.summons++;
+  S.enemies.push({ id:++EID, d:0, hp, max:hp, elite:ELITE.length - 1, hit:0,
+                   wob:Math.random()*Math.PI*2, off:(Math.random()-0.5)*46,
+                   burn:0, burnDps:0, burnAcc:0, burnOwner:null, cap:null,
+                   slow:0, stun:0, mark:0, markMul:1, dbl:false,
+                   zap:0, zapDps:0, zapAcc:0, zapOwner:null, abCd:0,
+                   husk:pick.theme, leakN:40, siege:true });
+  const p = pointAt(0);
+  burst(p.x, p.y, '#ff5a3c', 26, 2);
+  toast('The Titan summons ' + pick.name);
+  beep(72, 0.8, 'sawtooth', 0.07, 34);
+}
+
+/* --------------------------------------------------------- the abilities -
+   Five, on one rotating timer with a visible telegraph on every one. All of
+   them are timers and rectangles: nothing here allocates per frame.       */
+const TITAN_ABILITIES = ['slam', 'rockfall', 'grab', 'rain'];
+
+function titanUpdate(dt) {
+  const T = S.titan, b = S.boss;
+  if (!T || !b) return;
+  T.t += dt;
+  const frac = b.hp/b.max;
+
+  /* phase payouts as the health bar falls past each quarter */
+  while (T.phase < SG.phaseBonus.length && frac <= SG.phaseBonus[T.phase]) {
+    T.phase++;
+    const pay = Math.round(3000*T.phase*1.6);
+    S.money += pay;
+    S.floats.push({ x:SG.base.x + SG.base.w/2, y:SG.base.y - 30,
+                    txt:'+$' + pay + ' breach bonus', color:'#ffd83d', life:2.2, big:true });
+    bump('moneyBox','gain'); toast('The Titan cracks — $' + pay.toLocaleString() + ' salvaged');
+  }
+  if (!T.enraged && frac <= 0.25) {
+    T.enraged = true;
+    toast('THE TITAN IS ENRAGED');
+    beep(40, 2.0, 'sawtooth', 0.1, 22);
+  }
+
+  /* siege income: a wage while the base stands, and a cut of the damage */
+  T.incomeAcc += dt;
+  if (T.incomeAcc >= 1) {
+    const tick = Math.floor(T.incomeAcc); T.incomeAcc -= tick;
+    S.money += SG.income*tick;
+  }
+
+  /* --- the rotation ------------------------------------------------- */
+  T.abCd -= dt*(T.enraged ? 1.55 : 1);
+  if (T.abCd <= 0) {
+    T.abCd = (T.enraged ? 5.4 : 8.2) + Math.random()*3;
+    const pool = TITAN_ABILITIES.filter(a => a !== T.last);
+    const ab = pool[Math.floor(Math.random()*pool.length)];
+    T.last = ab;
+    titanCast(ab);
+  }
+  T.summonCd -= dt*(T.enraged ? 1.5 : 1);
+  if (T.summonCd <= 0) { T.summonCd = T.enraged ? 17 : 26; summonBoss(); }
+
+  /* --- slam: telegraph, then a shockwave across the platform --------- */
+  if (T.slam) {
+    T.slam.t -= dt;
+    if (T.slam.t <= 0 && !T.slam.fired) {
+      T.slam.fired = true; T.slam.wave = 0;
+      const hurt = T.enraged ? 70 : 42;
+      S.health -= hurt;
+      S.floats.push({ x:SG.base.x + SG.base.w/2, y:SG.base.y + 40, txt:'-' + hurt,
+                      color:'#ff6b6b', life:1.4, big:true });
+      bump('hpBox','hurt');
+      for (const t of S.towers) t.jam = Math.max(t.jam || 0, 0.9);
+      burst(SG.base.x + 60, SG.base.y + SG.base.h/2, '#ff9a6a', 34, 2.4);
+      beep(58, 0.7, 'sawtooth', 0.08, 30);
+      toast('SLAM — the platform rings, every Jaxon is shaken off aim');
+    }
+    if (T.slam.fired) { T.slam.wave += dt*2600; if (T.slam.wave > SG.W) T.slam = null; }
+  }
+
+  /* --- rockfall: marked circles, then anything under them is disabled - */
+  for (let i = T.rocks.length - 1; i >= 0; i--) {
+    const r = T.rocks[i];
+    r.t -= dt;
+    if (r.t <= 0 && !r.fired) {
+      r.fired = true; r.fade = 0.7;
+      burst(r.x, r.y, '#b08a6a', 22, 1.6);
+      for (const t of S.towers) {
+        if (Math.hypot(t.x - r.x, t.y - r.y) <= r.r) t.jam = Math.max(t.jam || 0, 2.4);
+      }
+      beep(90, 0.35, 'square', 0.05, 45);
+    }
+    if (r.fired) { r.fade -= dt; if (r.fade <= 0) T.rocks.splice(i, 1); }
+  }
+
+  /* --- grab shadow: a lingering zone that slows whoever stands in it -- */
+  if (T.grab) {
+    T.grab.t -= dt;
+    if (T.grab.t <= 0) T.grab = null;
+    else for (const t of S.towers) {
+      if (Math.hypot(t.x - T.grab.x, t.y - T.grab.y) <= T.grab.r) t.fireSlow = Math.max(t.fireSlow || 0, 0.4);
+    }
+  }
+  if (T.rainT > 0) { T.rainT -= dt; S.projSlow = Math.max(S.projSlow, 0.2); }
+}
+
+function titanCast(ab) {
+  const T = S.titan, B = SG.base;
+  if (ab === 'slam') {
+    T.slam = { t:1.25, fired:false, wave:0 };
+    toast('The Titan raises a fist — SLAM incoming');
+    beep(150, 0.5, 'triangle', 0.045, 70);
+  } else if (ab === 'rockfall') {
+    const n = T.enraged ? 5 : 3;
+    for (let i = 0; i < n; i++) {
+      T.rocks.push({ x:B.x + 60 + Math.random()*(B.w - 120),
+                     y:B.y + 50 + Math.random()*(B.h - 100),
+                     r:130, t:1.6, fired:false });
+    }
+    toast('ROCKFALL — get nothing new under those marks');
+    beep(190, 0.4, 'triangle', 0.04, 90);
+  } else if (ab === 'grab') {
+    T.grab = { x:B.x + 90 + Math.random()*(B.w - 180),
+               y:B.y + 60 + Math.random()*(B.h - 120), r:265, t:6.5 };
+    toast('GRAB SHADOW — Jaxons caught in it fire slowly');
+    beep(70, 0.6, 'sine', 0.05, 40);
+  } else {
+    T.rainT = 3.4; S.projSlow = Math.max(S.projSlow, 3.4);
+    toast('THE RAIN INTENSIFIES — every shot on the map slows');
+    beep(240, 0.7, 'sine', 0.04, 120);
+  }
+}
+
+/* ------------------------------------------------------------- painting - */
+function drawSiegeField() {
+  /* sky and rain-dimmed backdrop */
+  const sky = ctx.createLinearGradient(0, 0, 0, SG.H);
+  sky.addColorStop(0, '#0b1018'); sky.addColorStop(0.55, '#141d26'); sky.addColorStop(1, '#0a0d12');
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, SG.W, SG.H);
+
+  /* the hill the Titan is dug into */
+  ctx.save();
+  ctx.fillStyle = '#161d26';
+  ctx.beginPath();
+  ctx.moveTo(-100, SG.H + 50);
+  ctx.quadraticCurveTo(200, 700, 700, 640);
+  ctx.quadraticCurveTo(1050, 600, 1200, SG.H + 50);
+  ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#0d131a';
+  ctx.beginPath();
+  ctx.moveTo(-100, SG.H + 50);
+  ctx.quadraticCurveTo(280, 1010, 820, 980);
+  ctx.quadraticCurveTo(1120, 970, 1180, SG.H + 50);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+
+  /* the lane */
+  ctx.save();
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const lane = (w, col) => {
+    ctx.strokeStyle = col; ctx.lineWidth = w;
+    ctx.beginPath();
+    ctx.moveTo(S.pathPts[0][0], S.pathPts[0][1]);
+    for (let i = 1; i < S.pathPts.length; i++) ctx.lineTo(S.pathPts[i][0], S.pathPts[i][1]);
+    ctx.stroke();
+  };
+  lane(104, 'rgba(0,0,0,.4)'); lane(88, '#2a2118'); lane(72, '#3d3122');
+  ctx.restore();
+
+  /* the base platform: the only ground a Jaxon will stand on */
+  const B = SG.base;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  ctx.fillRect(B.x + 10, B.y + 16, B.w, B.h);
+  const stone = ctx.createLinearGradient(0, B.y, 0, B.y + B.h);
+  stone.addColorStop(0, '#3b4654'); stone.addColorStop(1, '#222b36');
+  ctx.fillStyle = stone; ctx.fillRect(B.x, B.y, B.w, B.h);
+  ctx.strokeStyle = 'rgba(140,170,200,.35)'; ctx.lineWidth = 5;
+  ctx.strokeRect(B.x, B.y, B.w, B.h);
+  ctx.globalAlpha = 0.1; ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+  for (let x = B.x + 70; x < B.x + B.w; x += 70) {
+    ctx.beginPath(); ctx.moveTo(x, B.y); ctx.lineTo(x, B.y + B.h); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  /* the core the summons are walking towards */
+  ctx.fillStyle = '#1b2530'; ctx.strokeStyle = '#7fe9ff'; ctx.lineWidth = 6;
+  ctx.beginPath(); ctx.roundRect(B.x + B.w - 130, B.y + B.h/2 - 120, 96, 240, 12);
+  ctx.fill(); ctx.stroke();
+  ctx.globalAlpha = 0.25 + Math.sin(S.t*2)*0.1;
+  ctx.fillStyle = '#7fe9ff';
+  ctx.beginPath(); ctx.roundRect(B.x + B.w - 130, B.y + B.h/2 - 120, 96, 240, 12); ctx.fill();
+  ctx.restore();
+
+  /* rain: one cheap pass, and it thins right out in performance mode */
+  const drops = S.perf === 2 ? 60 : S.perf === 1 ? 130 : 240;
+  ctx.save();
+  ctx.strokeStyle = 'rgba(170,200,235,.30)'; ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let i = 0; i < drops; i++) {
+    const seed = i*97.13;
+    const sp = 1500 + (i % 7)*230;
+    const x = (seed*7.7 % SG.W + S.t*130) % SG.W;
+    const y = (seed*13.3 + S.t*sp) % SG.H;
+    ctx.moveTo(x, y); ctx.lineTo(x - 11, y + 30);
+  }
+  ctx.stroke();
+  ctx.restore();
+}
+
+function drawTitan() {
+  const T = SG.titan, b = S.boss;
+  const sw = TITAN_H*(660/720), sh = TITAN_H;
+  const breathe = Math.sin(S.t*0.9)*8;
+  ctx.save();
+  /* the glow that says "this is the thing you are fighting" */
+  const g = ctx.createRadialGradient(T.x, T.y, T.r*0.2, T.x, T.y, T.r*2.1);
+  g.addColorStop(0, S.titan && S.titan.enraged ? 'rgba(255,60,30,.4)' : 'rgba(255,90,60,.22)');
+  g.addColorStop(1, 'rgba(255,90,60,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(T.x, T.y, T.r*2.1, 0, 7); ctx.fill();
+
+  ctx.fillStyle = 'rgba(0,0,0,.5)';
+  ctx.beginPath(); ctx.ellipse(T.x, T.y + sh*0.46, sw*0.44, sh*0.06, 0, 0, 7); ctx.fill();
+
+  if (IMG.titanmax && IMG.titanmax.width) {
+    ctx.drawImage(IMG.titanmax, T.x - sw/2, T.y - sh*0.46 + breathe, sw, sh);
+  }
+  /* the hit flash and the reach ring */
+  if (b && b.hit > 0) {
+    ctx.globalAlpha = b.hit*0.35; ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(T.x, T.y, T.r, 0, 7); ctx.fill(); ctx.globalAlpha = 1;
+  }
+  ctx.setLineDash([26, 20]); ctx.lineDashOffset = -S.t*24;
+  ctx.strokeStyle = 'rgba(255,120,80,.28)'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(T.x, T.y, T.r, 0, 7); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawTitanFx() {
+  const T = S.titan, B = SG.base;
+  if (!T) return;
+  ctx.save();
+  /* slam telegraph and its shockwave */
+  if (T.slam && !T.slam.fired) {
+    const k = 1 - T.slam.t/1.25;
+    ctx.globalAlpha = 0.25 + k*0.45;
+    ctx.fillStyle = '#ff5a3c';
+    ctx.fillRect(B.x, B.y, B.w, B.h);
+    ctx.globalAlpha = 0.9; ctx.strokeStyle = '#ffb04a'; ctx.lineWidth = 8;
+    ctx.strokeRect(B.x + 6, B.y + 6, B.w - 12, B.h - 12);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#ffd8cc'; ctx.font = '900 74px "Segoe UI", system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('SLAM', B.x + B.w/2, B.y - 26);
+  } else if (T.slam) {
+    ctx.globalAlpha = 0.55; ctx.strokeStyle = '#ffb04a'; ctx.lineWidth = 22;
+    ctx.beginPath(); ctx.arc(SG.titan.x, SG.titan.y + 240, T.slam.wave, 0, 7); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  /* rockfall marks */
+  for (const r of T.rocks) {
+    if (!r.fired) {
+      const k = 1 - r.t/1.6;
+      ctx.globalAlpha = 0.3 + k*0.4;
+      ctx.strokeStyle = '#ffb04a'; ctx.lineWidth = 7; ctx.setLineDash([18, 14]);
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, 7); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255,140,60,.16)';
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r*k, 0, 7); ctx.fill();
+    } else {
+      ctx.globalAlpha = Math.max(0, r.fade);
+      ctx.fillStyle = 'rgba(120,90,60,.7)';
+      ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, 7); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  /* grab shadow */
+  if (T.grab) {
+    ctx.globalAlpha = 0.3 + Math.sin(S.t*4)*0.08;
+    ctx.fillStyle = '#2a0d40';
+    ctx.beginPath(); ctx.arc(T.grab.x, T.grab.y, T.grab.r, 0, 7); ctx.fill();
+    ctx.globalAlpha = 0.8; ctx.strokeStyle = '#a86bff'; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.arc(T.grab.x, T.grab.y, T.grab.r, 0, 7); ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+
+/* --------------------------------------------------------- win and lose - */
+function titanEnd(won) {
+  if (S.phase === 'over') return;
+  S.phase = 'over';
+  const T = S.titan, secs = Math.round(T.t);
+  const prev = S.titanBest;
+  const better = won && (!prev || !prev.time || secs < prev.time);
+  if (better) { S.titanBest = { time:secs, dmg:Math.round(T.dmg) }; saveNow(); }
+  $('endTitle').textContent = won ? 'TITAN FELLED' : 'BASE DESTROYED';
+  $('endText').textContent = won
+    ? 'You brought the colossus down in ' + fmtTime(secs) + '.' +
+      (prev && prev.time ? ' Best: ' + fmtTime(better ? secs : prev.time) + '.' : '')
+    : 'The Titan tore the platform apart after ' + fmtTime(secs) + '.';
+  $('scoreRow').innerHTML =
+    '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
+    '<div><div class="k">Damage to Titan</div><div class="v">' + shortHp(Math.round(T.dmg)) + '</div></div>' +
+    '<div><div class="k">Summons killed</div><div class="v">' + T.killed + '</div></div>' +
+    '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>';
+  $('ovEnd').classList.add('on');
+  setShop(false); hideTip();
+  beep(won ? 300 : 150, 0.8, won ? 'triangle' : 'sawtooth', 0.07, won ? 900 : 60);
+  syncHUD();
+}
+const fmtTime = s => Math.floor(s/60) + ':' + String(s % 60).padStart(2, '0');
+
 function render() {
+  camBegin();
   drawField();
 
   if (S.placing) {
@@ -5960,6 +6615,7 @@ function render() {
     }
   }
 
+  camEnd();
   if (S.cut) {
     const k = 1 - S.cut.t/S.cut.max;
     ctx.save();
@@ -5977,6 +6633,7 @@ function render() {
     ctx.restore();
   }
 
+  camBegin();
   for (const f of S.floats) {
     ctx.save(); ctx.globalAlpha = Math.min(1, f.life*1.4);
     ctx.font = (f.big ? '900 44px ' : '800 22px ') + '"Segoe UI", system-ui, sans-serif';
@@ -5984,6 +6641,7 @@ function render() {
     ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.strokeText(f.txt, f.x, f.y);
     ctx.fillStyle = f.color; ctx.fillText(f.txt, f.x, f.y); ctx.restore();
   }
+  camEnd();
 
   drawCoach();
 }
@@ -5993,6 +6651,7 @@ function render() {
    It retires itself the moment wave 2 starts and never comes back — the
    flag lives in the same save blob as the settings. */
 function coachStep() {
+  if (S.mode === 'titan') return null;            // the siege coaches itself in toasts
   if (S.tutorialDone || S.phase === 'menu' || S.phase === 'over') return null;
   const tap = MOBILE ? 'Tap' : 'Click';
   if (S.towers.length === 0) {
@@ -6031,6 +6690,15 @@ function drawCoach() {
 
 /* -------------------------------------------------------------- input ---- */
 function validSpot(x, y) {
+  if (S.titan) {
+    /* the platform is the only ground; the lane through it is still a lane */
+    const pad = S.placing && VARIANTS[S.placing].wide ? 46 : 34;
+    if (x < SG.base.x + pad || x > SG.base.x + SG.base.w - pad) return false;
+    if (y < SG.base.y + pad || y > SG.base.y + SG.base.h - pad) return false;
+    if (distToPath(x, y) < PATH_W/2 + 11) return false;
+    for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < T_W*0.58) return false;
+    return true;
+  }
   if (x < 30 || x > W - 30 || y < 34 || y > H - 30) return false;
   if (distToPath(x, y) < PATH_W/2 + 11) return false;   // original: can't touch the brown trail
   if (S.placing && VARIANTS[S.placing].wide && distToPath(x, y) < PATH_W/2 + 16) return false;
@@ -6039,10 +6707,12 @@ function validSpot(x, y) {
 }
 function canvasPos(ev) {
   const r = cv.getBoundingClientRect();
-  return { x:(ev.clientX - r.left)/r.width*W, y:(ev.clientY - r.top)/r.height*H };
+  const sx = (ev.clientX - r.left)/r.width*W, sy = (ev.clientY - r.top)/r.height*H;
+  const c = S.cam;
+  return { x:(sx - W/2)/c.z + c.x, y:(sy - H/2)/c.z + c.y };
 }
 function sellTower(t) {
-  const refund = Math.floor((TOWERS[t.type].cost + upSpent(t))*0.7);
+  const refund = refundOf(t);
   /* Recycler Jaxon digs a little extra out of anything scrapped beside him.
      Best single rate only — stacking Recyclers would print money. */
   let rate = 0;
@@ -6068,7 +6738,7 @@ let dragCd = 0;
 function tryPlaceAt(x, y, silent) {
   if (!S.placing) return false;
   const spec = TOWERS[S.placing], dup = S.dupe;
-  const cost = dup ? dup.cost : spec.cost;
+  const cost = dup ? dup.cost : costOf(S.placing);
   if (S.money < cost) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
   S.money -= cost;
@@ -6092,7 +6762,7 @@ function tryPlaceAt(x, y, silent) {
   if (dup) {
     S.floats.push({ x, y:y - 40, txt:'copy', color:'#8bf59a', life:1.1 });
     if (S.money < dup.cost) cancelPlacing();   // drag out a whole row, same as the shop
-  } else if (S.money < spec.cost) cancelPlacing();
+  } else if (S.money < costOf(S.placing)) cancelPlacing();
   syncHUD();
   return true;
 }
@@ -6101,7 +6771,20 @@ function tryPlaceAt(x, y, silent) {
    mid-drag would otherwise yank the cursor across the board. We latch onto
    the first pointer down and ignore every other one until it lifts. */
 cv.addEventListener('pointermove', ev => {
+  if (S.pinch) return;                                  // two fingers are zooming
   if (S.ptrId !== null && ev.pointerId !== S.ptrId) return;
+  /* Siege: an empty-handed drag moves the camera instead of aiming. */
+  if (S.titan && S.pan && S.mouse.down && !S.placing) {
+    const c = S.cam, r = cv.getBoundingClientRect();
+    const k = W/r.width/c.z;
+    c.x -= (ev.clientX - S.pan.x)*k;
+    c.y -= (ev.clientY - S.pan.y)*(H/r.height/c.z);
+    S.pan = { x:ev.clientX, y:ev.clientY }; S.pan.moved = true;
+    camClamp();
+    cv.style.cursor = 'grabbing';
+    const q = canvasPos(ev); S.mouse.x = q.x; S.mouse.y = q.y;
+    return;
+  }
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true;
   if (S.placing || S.phase === 'menu' || S.phase === 'over') {
     hideTip(); cv.style.cursor = S.placing ? 'crosshair' : 'default';
@@ -6122,7 +6805,9 @@ cv.addEventListener('pointerdown', ev => {
   unlockAudio();                                // iOS only starts audio inside a gesture
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true; S.mouse.down = true;
   try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+  if (S.titan) S.pan = { x:ev.clientX, y:ev.clientY, moved:false };
   if (!S.placing) {
+    if (S.titan && towerAt(p.x, p.y) === null) return;   // the click may become a pan
     const hit = towerAt(p.x, p.y);                 // click a Jaxon to open its upgrades
     if (hit) { hit === S.selected ? deselect() : selectTower(hit); }
     else deselect();
@@ -6134,6 +6819,11 @@ cv.addEventListener('pointerdown', ev => {
 });
 const endPtr = ev => {
   if (S.ptrId !== null && ev.pointerId !== S.ptrId) return;
+  /* in the siege an empty-ground press only closes the panel if it was a
+     press and not a drag of the camera */
+  if (S.titan && S.pan && !S.pan.moved && !S.placing) deselect();
+  S.pan = null;
+  if (S.titan) cv.style.cursor = 'default';
   S.ptrId = null; S.mouse.down = false;
 };
 cv.addEventListener('pointerup', endPtr);
@@ -6150,12 +6840,78 @@ cv.addEventListener('contextmenu', ev => {
 
 window.addEventListener('keydown', ev => {
   if (ev.target && ev.target.tagName === 'INPUT') return;
+  const lk = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
+  if (S.titan && (lk === 'w' || lk === 'a' || lk === 's' || lk === 'd')) {
+    S.keys[lk] = true; ev.preventDefault(); return;      // WASD pans, it does not pick
+  }
+  if (S.titan && (lk === 'f' || lk === 'r')) {           // focus the Titan / the base
+    const to = lk === 'f' ? SG.titan : { x:SG.base.x + SG.base.w/2, y:SG.base.y + SG.base.h/2 };
+    S.cam.x = to.x; S.cam.y = to.y; camClamp();
+    toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
+    return;
+  }
   if (ev.key === 'Escape') { cancelPlacing(); deselect(); hideTip(); }
   if (ev.key === 'Tab') { ev.preventDefault(); setShop(!S.shopOpen); }
   if (ev.key === ' ' && S.phase === 'build') { ev.preventDefault(); startWave(); }
   const n = parseInt(ev.key, 10);
   if (n >= 1 && n <= 9 && n <= ORDER.length) pick(ORDER[n-1]);
 });
+
+/* ------------------------------------------------------ siege camera ----
+   Wheel and pinch zoom about the point you are pointing at, drag and WASD
+   pan, and none of it exists outside the Titan Fight. */
+cv.addEventListener('wheel', ev => {
+  if (!S.titan) return;
+  ev.preventDefault();
+  const p = canvasPos(ev);
+  camZoomAt(p.x, p.y, ev.deltaY < 0 ? 1.14 : 1/1.14);
+}, { passive:false });
+
+/* a second finger down means the player wants to zoom, not to build */
+const PT = new Map();
+const pinchDist = () => {
+  const v = [...PT.values()];
+  return Math.hypot(v[0].x - v[1].x, v[0].y - v[1].y);
+};
+cv.addEventListener('pointerdown', ev => {
+  PT.set(ev.pointerId, { x:ev.clientX, y:ev.clientY });
+  if (S.titan && PT.size === 2) {
+    S.mouse.down = false; S.pan = null;
+    S.pinch = { d:pinchDist(), z:S.cam.z };
+  }
+}, true);
+cv.addEventListener('pointermove', ev => {
+  if (!PT.has(ev.pointerId)) return;
+  PT.set(ev.pointerId, { x:ev.clientX, y:ev.clientY });
+  if (S.pinch && PT.size === 2) {
+    const d = pinchDist();
+    if (d > 8 && S.pinch.d > 8) {
+      const c = S.cam;
+      c.z = Math.max(c.min, Math.min(c.max, S.pinch.z * d/S.pinch.d));
+      camClamp();
+    }
+  }
+}, true);
+const dropPointer = ev => {
+  PT.delete(ev.pointerId);
+  if (PT.size < 2) S.pinch = null;
+};
+cv.addEventListener('pointerup', dropPointer, true);
+cv.addEventListener('pointercancel', dropPointer, true);
+cv.addEventListener('pointerleave', () => { PT.clear(); S.pinch = null; S.pan = null; }, true);
+
+/* WASD nudges the view every frame while the key is held */
+function camKeys(dt) {
+  if (!S.titan) return;
+  const k = S.keys, c = S.cam, sp = 900/c.z*dt;
+  if (k.a) c.x -= sp;
+  if (k.d) c.x += sp;
+  if (k.w) c.y -= sp;
+  if (k.s) c.y += sp;
+  if (k.a || k.d || k.w || k.s) camClamp();
+}
+window.addEventListener('keyup', ev => { S.keys[ev.key.toLowerCase()] = false; });
+window.addEventListener('blur', () => { S.keys = {}; });
 
 /* ---- testing helpers ---- */
 const devVal = () => Math.max(0, Math.floor(+$('devMoney').value || 0));
@@ -6198,9 +6954,19 @@ document.addEventListener('pointerdown', ev => {
 $('devTog').onclick = () => $('dev').classList.toggle('on');
 $('rotateOk').onclick = () => { portraitOK = true; unlockAudio(); syncMode(); };
 $('startWave').onclick = startWave;
-$('playBtn').onclick = reset;
-$('againBtn').onclick = reset;
+$('playBtn').onclick = showModes;
+$('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
+$('modeBack').onclick = () => {
+  $('ovModes').classList.remove('on');
+  $('ovMenu').classList.add('on');
+  beep(420, 0.06, 'triangle', 0.025);
+};
+$('endModes').onclick = showModes;
 $('autoBtn').onclick = () => {
+  if (!S.autoSkip && S.wave < M().autoFrom) {
+    toast('Auto-skip unlocks at wave ' + M().autoFrom + ' in ' + M().name);
+    beep(150, 0.08, 'square', 0.03); return;
+  }
   S.autoSkip = !S.autoSkip;
   if (S.autoSkip) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4);
   toast(S.autoSkip ? 'Auto-skip on — waves chain automatically' : 'Auto-skip off');
@@ -6271,6 +7037,7 @@ function frame(now) {
   const dt = Math.min(0.05, (now - last)/1000); last = now;
   fpsAcc += dt; fpsN++;
   if (fpsAcc >= 0.5) { fpsAvg = fpsN/fpsAcc; fpsAcc = 0; fpsN = 0; setPerf(); }
+  camKeys(dt);
   if (S.phase === 'wave' || S.phase === 'build') {
     for (let i = 0; i < S.speed; i++) update(dt);
     if (S.hovered && S.towers.includes(S.hovered)) fillTip(S.hovered);   // live stats
