@@ -2434,19 +2434,52 @@ if (window.visualViewport) {
 /* ------------------------------------------------------------- mode ----
    "mobile" drives a whole second layout in CSS: bigger taps, bottom sheets,
    a scrolling shop. Touch-primary OR simply not enough room. */
-const coarse = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
-let MOBILE = false;
+/* ---- am I actually on a phone or tablet? -------------------------------
+   This asks about the DEVICE, never the window size. A desktop browser
+   dragged down to 600px wide is still a desktop with a mouse and a keyboard,
+   and it keeps the desktop game. Only a real touch device switches.
+
+   'pointer: coarse and hover: none' is the honest test: the primary input is
+   a finger and nothing can hover. A Windows laptop with a touchscreen still
+   reports a fine pointer and real hover, so it correctly stays on desktop —
+   which is why maxTouchPoints alone is not good enough here.               */
+function detectMobileDevice() {
+  const q = new URLSearchParams(location.search).get('mode');
+  if (q === 'mobile')  return true;          // ?mode=mobile  — force, for testing
+  if (q === 'desktop') return false;         // ?mode=desktop — force, for testing
+
+  const ua = navigator.userAgent;
+
+  /* 1. An unambiguous phone or tablet signature settles it. */
+  if (/Android|iPhone|iPod|iPad|Windows Phone|webOS|BlackBerry|Opera Mini|IEMobile|Silk|Kindle|Mobile Safari/i.test(ua))
+    return true;
+
+  /* 2. iPadOS 13+ deliberately reports a desktop Safari UA. Real Macs have no
+        touch digitizer, so the touch-point count gives the iPad away. */
+  if (/Macintosh/i.test(ua) && navigator.maxTouchPoints > 0) return true;
+
+  /* 3. A desktop OS is a desktop, full stop — a Surface or a touchscreen
+        laptop still has a keyboard, a mouse and a resizable window, so it
+        keeps the desktop game no matter how small that window gets. */
+  if (/Windows NT|Macintosh|X11|Linux|CrOS/i.test(ua)) return false;
+
+  /* 4. Something unrecognised: fall back to asking what the pointer is. */
+  return matchMedia('(pointer: coarse) and (hover: none)').matches;
+}
+
+/* Fixed for the session — a device does not stop being a phone because you
+   rotated it, so nothing below ever re-decides this. */
+const MOBILE = detectMobileDevice();
 let portraitOK = false;           // set once the player insists on portrait
 function syncMode() {
-  const m = coarse || window.innerWidth < 900 || uiScale < 0.62;
   const portrait = window.innerHeight > window.innerWidth;
-  if (m !== MOBILE) { MOBILE = m; if (S.selected) drawPanel(); }
-  document.body.classList.toggle('mobile', m);
+  document.body.classList.toggle('mobile', MOBILE);
   document.body.classList.toggle('portrait', portrait);
-  document.body.classList.toggle('touch', coarse);
-  /* Only phone-sized portraits get the nudge — a portrait iPad at 0.48 scale
-     plays perfectly well and should never be interrupted. */
-  const cramped = portrait && coarse && uiScale < 0.36;
+  document.body.classList.toggle('touch', MOBILE);
+  /* Only cramped portrait phones get the rotate nudge — a portrait iPad at
+     0.48 scale plays fine and should never be interrupted, and a desktop
+     never sees it at all. */
+  const cramped = MOBILE && portrait && uiScale < 0.36;
   document.body.classList.toggle('needRotate', cramped && !portraitOK);
   document.body.classList.toggle('compact', cramped);
 }
