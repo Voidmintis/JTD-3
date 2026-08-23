@@ -4445,6 +4445,8 @@ const sbText = hex => {
 const MK_HP_MAX   = 2147483647;
 const MK_EHP_MAX  = 3000000;
 const MK_SPD_MAX  = 3000;
+const MK_SZ_MIN   = 40;
+const MK_SZ_MAX   = 500;      // a boss wide enough to sit across the whole trail
 const sbDraft = {
   enemy:{ name:'My Blob', hp:120, size:26, color:'#3ddc6a', look:'blob' },
   boss: { name:'My Boss', hp:6000, size:72, speed:90, leak:30, theme:'green', trueBoss:true }
@@ -4635,7 +4637,7 @@ function sbMaker(body, kind) {
       <div class="sbFld"><label>Health</label>
         <input type="number" id="mkHp" min="1" max="${boss ? MK_HP_MAX : MK_EHP_MAX}" step="${boss ? 500 : 10}" value="${D.hp}"></div>
       <div class="sbFld"><label>Size <b id="mkSzV">${D.size}</b></label>
-        <input type="range" id="mkSz" min="${boss ? 40 : 12}" max="${boss ? 190 : 60}" value="${D.size}"></div>
+        <input type="range" id="mkSz" min="${boss ? MK_SZ_MIN : 12}" max="${boss ? MK_SZ_MAX : 60}" value="${D.size}"></div>
     </div>
     ${boss ? `<div class="sbGrid2">
       <div class="sbFld"><label>Speed</label>
@@ -4724,7 +4726,8 @@ function sbPreview(kind) {
     const t = (now - t0)/1000, D = sbDraft[kind];
     try {
       if (kind === 'boss') {
-        const r = Math.min(h*0.42, w*0.22) * (D.size/110 + 0.45);
+        const k = (D.size - MK_SZ_MIN) / (MK_SZ_MAX - MK_SZ_MIN);
+        const r = Math.min(h*0.42, w*0.22) * (0.55 + k*0.9);
         const th = BOSS_THEME[D.theme];
         g.save(); g.translate(w/2, h/2);
         if (!th) {
