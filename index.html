@@ -3727,6 +3727,8 @@ function addBoss(def, extra) {
   b.barNum   = el.querySelector('.bossNum');
   $('bossbars').appendChild(el);
   dressBossBar(b);
+  b.barFill.style.width = '100%';
+  b.barNum.textContent = shortHp(Math.ceil(b.hp));
   syncBossBars();
   return b;
 }
@@ -4437,6 +4439,12 @@ const sbText = hex => {
   return lum > 150 ? '#1a2330' : '#ffffff';
 };
 /* the drafts the two makers are editing right now */
+/* How far the makers will let you push a unit. The boss health ceiling is
+   the signed 32-bit limit, which is as high as a number worth printing on a
+   bar goes; everything else is fifteen times what it used to be. */
+const MK_HP_MAX   = 2147483647;
+const MK_EHP_MAX  = 3000000;
+const MK_SPD_MAX  = 3000;
 const sbDraft = {
   enemy:{ name:'My Blob', hp:120, size:26, color:'#3ddc6a', look:'blob' },
   boss: { name:'My Boss', hp:6000, size:72, speed:90, leak:30, theme:'green', trueBoss:true }
@@ -4625,13 +4633,13 @@ function sbMaker(body, kind) {
       <input type="text" id="mkName" maxlength="22" value="${D.name.replace(/"/g,'&quot;')}"></div>
     <div class="sbGrid2">
       <div class="sbFld"><label>Health</label>
-        <input type="number" id="mkHp" min="1" max="${boss ? 9000000 : 200000}" step="${boss ? 500 : 10}" value="${D.hp}"></div>
+        <input type="number" id="mkHp" min="1" max="${boss ? MK_HP_MAX : MK_EHP_MAX}" step="${boss ? 500 : 10}" value="${D.hp}"></div>
       <div class="sbFld"><label>Size <b id="mkSzV">${D.size}</b></label>
         <input type="range" id="mkSz" min="${boss ? 40 : 12}" max="${boss ? 190 : 60}" value="${D.size}"></div>
     </div>
     ${boss ? `<div class="sbGrid2">
       <div class="sbFld"><label>Speed</label>
-        <input type="number" id="mkSpd" min="10" max="400" step="5" value="${D.speed}"></div>
+        <input type="number" id="mkSpd" min="10" max="${MK_SPD_MAX}" step="5" value="${D.speed}"></div>
       <div class="sbFld"><label>Leak damage</label>
         <input type="number" id="mkLeak" min="1" max="500" value="${D.leak}"></div>
     </div>
@@ -4652,10 +4660,10 @@ function sbMaker(body, kind) {
 
   const read = () => {
     D.name = ($('mkName').value || '').trim().slice(0, 22) || (boss ? 'My Boss' : 'My Blob');
-    D.hp = Math.max(1, Math.min(boss ? 9000000 : 200000, Math.round(+$('mkHp').value || 1)));
+    D.hp = Math.max(1, Math.min(boss ? MK_HP_MAX : MK_EHP_MAX, Math.round(+$('mkHp').value || 1)));
     D.size = +$('mkSz').value;
     if (boss) {
-      D.speed = Math.max(10, Math.min(400, +$('mkSpd').value || 90));
+      D.speed = Math.max(10, Math.min(MK_SPD_MAX, +$('mkSpd').value || 90));
       D.leak = Math.max(1, Math.min(500, Math.round(+$('mkLeak').value || 30)));
       D.theme = $('mkTheme').value;
     } else D.look = $('mkLook').value;
@@ -6126,7 +6134,9 @@ function drawField() {
   ctx.restore();
 }
 
-const shortHp = n => n >= 100000 ? Math.round(n/1000) + 'k'
+const shortHp = n => n >= 1e9     ? (n/1e9).toFixed(n >= 1e10 ? 0 : 2) + 'b'
+                   : n >= 1e6     ? (n/1e6).toFixed(n >= 1e7 ? 0 : 1) + 'm'
+                   : n >= 100000 ? Math.round(n/1000) + 'k'
                    : n >= 10000  ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k'
                    : String(n);
 /* An ex-boss husk: the same face as a boss you have already put down, at a
@@ -6401,7 +6411,7 @@ function drawBoss(bs) {
     ctx.lineWidth = 11; ctx.strokeStyle = '#4a0000'; ctx.stroke();
     ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,180,150,.45)';
     ctx.beginPath(); ctx.arc(0, 0, r-8, Math.PI*1.05, Math.PI*1.9); ctx.stroke();
-    const label = String(Math.max(0, Math.ceil(bs.hp)));
+    const label = shortHp(Math.max(0, Math.ceil(bs.hp)));
     const fs = Math.round(r * (label.length >= 4 ? 0.6 : label.length === 3 ? 0.76 : 0.92));
     ctx.font = '900 ' + fs + 'px "Segoe UI", system-ui, sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
@@ -6440,7 +6450,7 @@ function drawBoss(bs) {
       ctx.fillText('ACCESS DENIED', 0, -r*0.62);
       ctx.restore();
     }
-    const label = String(Math.max(0, Math.ceil(bs.hp)));
+    const label = shortHp(Math.max(0, Math.ceil(bs.hp)));
     const fs = Math.round(r * (label.length >= 5 ? 0.42 : label.length === 4 ? 0.52 : label.length === 3 ? 0.66 : 0.82));
     corruptText(label, 0, th.stamp ? r*0.12 : 2, fs, th.num, th);
   }
