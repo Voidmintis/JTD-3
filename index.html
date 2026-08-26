@@ -210,7 +210,8 @@
     padding:9px 12px;cursor:pointer;backdrop-filter:blur(8px);transition:.13s;
     display:flex;align-items:center;gap:6px;
   }
-  .chip:hover{color:var(--ink);border-color:rgba(255,255,255,.3)}
+  .chip:hover{color:var(--ink);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+  .chip:active{transform:translateY(1px)}
   .chip.on{color:#0a1f0c;background:linear-gradient(180deg,#5ef064,#1fce27);border-color:#1fce27}
   .chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
 
@@ -698,7 +699,10 @@
     background:radial-gradient(900px 620px at 50% 42%,rgba(8,13,19,.85),rgba(4,7,10,.97));
     backdrop-filter:blur(4px);padding:30px;
   }
-  .overlay.on{display:flex}
+  /* every overlay arrives rather than cuts in */
+  .overlay.on{display:flex;animation:ovIn .26s cubic-bezier(.2,1,.4,1) both}
+  @keyframes ovIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){ .overlay.on{animation:none} }
   /* a tall menu (title + cast + three mode cards) must never be able to
      strand the cards off the bottom of the stage */
   .overlay{overflow-y:auto;overflow-x:hidden}
@@ -757,6 +761,96 @@
   #help kbd{flex:none}
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
+  /* ------------------------------------------------------ pause menu ---- */
+  #ovPause{gap:14px;background:radial-gradient(900px 620px at 50% 45%,rgba(8,13,19,.78),rgba(3,6,9,.95))}
+  #ovPause .ptag{font-size:11px;letter-spacing:3.4px;text-transform:uppercase;color:var(--dim);font-weight:700}
+  #ovPause h1{font-size:52px}
+  .pmBtns{display:flex;flex-direction:column;gap:9px;width:min(320px,86vw)}
+  .pmBtns button{
+    font:inherit;font-size:15px;font-weight:800;letter-spacing:.5px;cursor:pointer;
+    padding:13px 18px;border-radius:13px;border:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(24,34,46,.92),rgba(12,18,26,.94));color:var(--ink);
+    transition:transform .1s cubic-bezier(.2,1.3,.4,1),border-color .12s,background .12s;
+  }
+  .pmBtns button:hover{border-color:var(--accent);background:rgba(255,255,255,.09);transform:translateY(-2px)}
+  .pmBtns button:active{transform:translateY(2px)}
+  .pmBtns button.warn:hover{border-color:#e5484d;color:#ff9ea1}
+  #setPanel{
+    width:min(430px,92vw);text-align:left;display:none;flex-direction:column;gap:2px;
+    background:linear-gradient(180deg,rgba(16,23,32,.94),rgba(8,12,18,.97));
+    border:1px solid var(--line);border-radius:16px;padding:6px 14px 12px;
+    max-height:56vh;overflow-y:auto;scrollbar-width:thin;
+  }
+  #setPanel.on{display:flex}
+  #setPanel h4{
+    margin:12px 0 4px;font-size:9.5px;letter-spacing:2.2px;text-transform:uppercase;color:var(--accent);
+  }
+  .setRow{
+    display:flex;align-items:center;gap:12px;justify-content:space-between;
+    padding:9px 0;border-bottom:1px solid rgba(255,255,255,.055);
+  }
+  .setRow:last-child{border-bottom:0}
+  .setRow .sl{min-width:0;flex:1}
+  .setRow .sn{font-size:13px;font-weight:700}
+  .setRow .sd{font-size:10.5px;color:var(--dim);line-height:1.45;margin-top:2px}
+  .setRow input[type=range]{width:132px;accent-color:var(--accent);flex:none}
+  .setRow .val{font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;width:36px;text-align:right}
+  .segbtn{display:flex;gap:4px;flex:none}
+  .segbtn button{
+    font:inherit;font-size:11px;font-weight:800;cursor:pointer;padding:7px 11px;border-radius:9px;
+    border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--dim);transition:.12s;
+  }
+  .segbtn button:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  .segbtn button.on{color:#06210a;background:var(--accent);border-color:var(--accent)}
+  .swch{
+    position:relative;width:46px;height:26px;border-radius:99px;flex:none;cursor:pointer;padding:0;
+    border:1px solid var(--line);background:rgba(255,255,255,.07);transition:.16s;
+  }
+  .swch::after{
+    content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;
+    background:var(--dim);transition:.16s cubic-bezier(.2,1.3,.4,1);
+  }
+  .swch.on{background:var(--accent);border-color:var(--accent)}
+  .swch.on::after{left:22px;background:#06210a}
+  body.mobile .pmBtns button{font-size:19px;padding:17px;min-height:var(--tap)}
+  body.mobile #setPanel{width:min(660px,94vw)}
+  body.mobile .setRow .sn{font-size:18px}
+  body.mobile .setRow .sd{font-size:14px}
+  body.mobile .segbtn button{font-size:16px;padding:11px 15px;min-height:var(--tap)}
+  body.mobile .swch{width:62px;height:34px}
+  body.mobile .swch::after{width:28px;height:28px}
+  body.mobile .swch.on::after{left:30px}
+
+  /* --------------------------------------------------- moment banners ---- */
+  #banner{
+    position:absolute;left:50%;top:31%;transform:translate(-50%,-50%);
+    display:none;flex-direction:column;align-items:center;gap:4px;
+    pointer-events:none;z-index:16;text-align:center;
+  }
+  #banner.on{display:flex;animation:bannerIn 1.9s cubic-bezier(.2,1.2,.4,1) both}
+  #banner .bt{
+    font-size:44px;font-weight:800;letter-spacing:-1.4px;line-height:1;
+    color:var(--bc,#fff);text-shadow:0 5px 0 rgba(0,0,0,.5),0 0 34px var(--bc,#fff);
+  }
+  #banner .bs{font-size:14px;font-weight:700;letter-spacing:2.6px;text-transform:uppercase;color:var(--dim)}
+  @keyframes bannerIn{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.82)}
+    12%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}
+    20%{transform:translate(-50%,-50%) scale(1)}
+    76%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+    100%{opacity:0;transform:translate(-50%,-56%) scale(1)}
+  }
+  body.mobile #banner .bt{font-size:62px}
+  body.mobile #banner .bs{font-size:19px}
+  #flash{
+    position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:17;
+    mix-blend-mode:screen;
+  }
+  @media (prefers-reduced-motion: reduce){
+    #banner.on{animation-duration:1.9s;animation-name:bannerFade}
+    @keyframes bannerFade{0%,100%{opacity:0}10%,80%{opacity:1}}
+  }
+
   /* ------------------------------------------------- gamemode select ---- */
   #modeGrid{
     display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
@@ -823,11 +917,11 @@
     border:0;border-radius:999px;padding:8px 22px;font:inherit;font-weight:800;font-size:13px;
     color:#06120a;background:var(--mc);box-shadow:0 4px 0 rgba(0,0,0,.42);pointer-events:none;
   }
-  #endModes,#modeBack{
+  #endModes,#modeBack,#playBtn,#menuSettings{
     border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim);
     border-radius:999px;padding:9px 26px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;
   }
-  #endModes:hover,#modeBack:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  #endModes:hover,#modeBack:hover,#playBtn:hover,#menuSettings:hover{color:var(--ink);background:rgba(255,255,255,.1)}
   body.mobile #modeGrid{grid-template-columns:1fr;width:min(760px,100%);gap:14px}
   body.mobile .mcard{padding:22px;border-radius:24px;gap:13px}
   body.mobile #ovMenu h1{font-size:min(52px,6vw)}
@@ -840,6 +934,8 @@
   body.mobile .mcard .best{font-size:15px}
   body.mobile .mcard .go{font-size:20px;padding:13px 34px;min-height:var(--tap)}
   body.mobile .mcard .pips i{width:24px;height:9px}
+  #menuRow{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
+  body.mobile #menuRow button{font-size:19px;padding:0 30px;min-height:var(--tap)}
   body.mobile #endModes,body.mobile #modeBack{font-size:19px;padding:0 34px;min-height:var(--tap)}
 
   #scoreRow{display:flex;gap:34px;margin-top:2px}
@@ -894,6 +990,7 @@
       <button class="chip on" id="spdBtn">Speed 1&times;</button>
       <button class="chip on" id="sndBtn">Sound</button>
       <button class="chip on" id="perfBtn">Graphics Auto</button>
+      <button class="chip" id="pauseBtn">Pause</button>
     </div>
 
     <button id="startWave">Start Wave 1</button>
@@ -901,6 +998,8 @@
     <div id="placing"><img id="placingImg" src="" alt=""><span id="placingTxt">Placing</span><em>Esc to cancel</em></div>
 
     <div id="bossbars"></div>
+    <div id="banner"><div class="bt"></div><div class="bs"></div></div>
+    <div id="flash"></div>
 
     <div id="drawer">
       <div class="sheen"></div>
@@ -938,7 +1037,10 @@
       <div class="cast" id="menuCast"></div>
       <p id="menuSub">Thirty-two Jaxons, a boss every tenth wave, and a colossus in the rain. Pick your fight.</p>
       <div id="modeGrid"></div>
-      <button id="playBtn">How to play</button>
+      <div id="menuRow">
+        <button id="playBtn">How to play</button>
+        <button id="menuSettings">Settings</button>
+      </div>
       <div id="help" data-touch="0" hidden>
         <div><kbd>Shop</kbd><span>Press the arrow tab at the bottom to slide the shop open, and again to close it.</span></div>
         <div><kbd>Hover</kbd><span>Point at a placed Jaxon for live stats &mdash; damage, pops, wave placed.</span></div>
@@ -957,6 +1059,18 @@
       </div>
       <button class="bigbtn" id="againBtn">PLAY AGAIN</button>
       <button id="endModes">Change gamemode</button>
+    </div>
+
+    <div class="overlay" id="ovPause">
+      <div class="ptag" id="pauseTag">Medium &middot; wave 1</div>
+      <h1>PAUSED</h1>
+      <div id="setPanel"></div>
+      <div class="pmBtns" id="pauseBtns">
+        <button id="pmResume">Resume</button>
+        <button id="pmSettings">Settings</button>
+        <button id="pmRestart">Restart run</button>
+        <button class="warn" id="pmQuit">Main menu</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2876,7 +2990,8 @@ const S = {
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
-  speed:1, sound:true, t:0,
+  speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
+  paused:false, dying:0, lastLeak:null, shakeT:0, shakeAmp:0, flash:0, bestAtStart:0,
   /* 0 = everything on, 1 = lean, 2 = leanest. Set by measured frame rate,
      with a floor from the wave number so deep runs never start heavy. */
   perf:0, perfToasted:false, auraT:0, dupe:null,
@@ -2919,6 +3034,9 @@ function loadSave() {
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
   if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
   if (typeof j.autoSkip === 'boolean') S.autoSkip = j.autoSkip;
+  if (typeof j.vol === 'number' && isFinite(j.vol)) S.vol = Math.max(0, Math.min(1, j.vol));
+  if (typeof j.shake === 'boolean') S.shake = j.shake;
+  if (typeof j.cbCues === 'boolean') S.cbCues = j.cbCues;
   if (MODES[j.sbDiff] && !MODES[j.sbDiff].sandbox) S.sbDiff = j.sbDiff;
   if (Array.isArray(j.customs)) S.customs = j.customs.filter(c => c && c.name).slice(0, 60);
   S.tutorialDone = !!j.tutorial;
@@ -2928,7 +3046,8 @@ function saveNow() {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
-      sbDiff:S.sbDiff, customs:S.customs
+      sbDiff:S.sbDiff, customs:S.customs,
+      vol:S.vol, shake:S.shake, cbCues:S.cbCues
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
@@ -2952,13 +3071,13 @@ function unlockAudio() {
   } catch (e) {}
 }
 function beep(freq, dur, type, vol, slide) {
-  if (!S.sound) return;
+  if (!S.sound || S.vol <= 0) return;
   try {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
     const o = AC.createOscillator(), g = AC.createGain();
     o.type = type || 'square'; o.frequency.value = freq;
     if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), AC.currentTime + dur);
-    g.gain.value = vol || 0.05;
+    g.gain.value = (vol || 0.05) * S.vol;
     g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + dur);
     o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
   } catch (e) {}
@@ -3062,6 +3181,9 @@ function detectMobileDevice() {
 
 /* Fixed for the session — a device does not stop being a phone because you
    rotated it, so nothing below ever re-decides this. */
+/* someone who has asked their system for less motion gets none of ours */
+const REDUCED = (() => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches; }
+                         catch (e) { return false; } })();
 const MOBILE = detectMobileDevice();
 let portraitOK = false;           // set once the player insists on portrait
 function syncMode() {
@@ -3230,7 +3352,9 @@ function reset() {
   S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
-  S.shield=0; S.cut=null;
+  S.shield=0; S.cut=null; S.dying=0; S.lastLeak=null; S.bestAtStart = bestOf(S.mode);
+  S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
+  $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
   S.projSlow=0; S.plan=[]; S.dupe=null;
   deselect();
@@ -3240,6 +3364,7 @@ function reset() {
   if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
   syncChips();
   S.sbPick = null;
+  if (S.paused) setPause(false);
   document.body.classList.toggle('sandbox', SB());
   $('sbPanel').classList.remove('open'); $('sbTab').classList.remove('open');
   S.sbOpen = false; sbHint();
@@ -3692,6 +3817,8 @@ function startWave() {
             : Object.assign({}, B0, { hp:Math.round(B0.hp * M().bossHp),
                                       leak:Math.max(1, Math.round(B0.leak * M().leak)) });
     addBoss(B);
+    shakeScreen(16, 1.1);
+    banner(B.name.toUpperCase(), 'wave ' + S.wave + ' boss', '#ff5a4a');
     toast(B.name + ' has breached the trail.');
     beep(B.theme === 'classic' ? 90 : 62, 1.4, 'sawtooth', 0.07, 34);
   }
@@ -4964,6 +5091,10 @@ function update(dt) {
           salvageLeak(dmg);                        // Recycler Jaxon's insurance policy
           S.floats.push({ x:W-150, y:800, txt:'-' + dmg, color:'#ff6b6b', life:1 });
           bump('hpBox','hurt'); beep(140, 0.2, 'sawtooth', 0.05, 70);
+          shakeScreen(S.health <= 0 ? 30 : 7, S.health <= 0 ? 1.6 : 0.4);
+          S.lastLeak = eliteOf(e) ? ELITE[e.elite].name
+                     : e.cust ? e.cust.name || 'a hand-made blob'
+                     : 'a tier ' + Math.max(1, Math.ceil(e.hp)) + ' blob';
         }
       }
     }
@@ -4995,6 +5126,9 @@ function update(dt) {
         for (let i = 1; i <= 4; i++) setTimeout(() => beep(200 - i*30, 1.1, 'sawtooth', 0.08, 40), i*180);
       }
       beep(180, 0.9, 'sawtooth', 0.08, 50);
+      shakeScreen(fin ? 26 : 13, fin ? 1.5 : 0.75);
+      flashScreen(fin ? 0.5 : 0.22);
+      banner(fin ? 'TRANSMISSION SEVERED' : 'BOSS DOWN', B.def.name, fin ? '#3fa8ff' : '#ff8a5a');
       const wasFinal = fin;
       dropBoss(B); clearBossAuras();
       toast(wasFinal ? 'FINAL TRANSMISSION severed. The nursery holds.' : 'Boss defeated!');
@@ -5015,6 +5149,8 @@ function update(dt) {
       }
       dropBoss(B); clearBossAuras();
       bump('hpBox','hurt');
+      shakeScreen(S.health <= 0 ? 30 : 18, 1.2);
+      S.lastLeak = B.def.name;
       S.floats.push({ x:W-150, y:800, txt:'-' + LEAK_TMP, color:'#ff6b6b', life:1.3, big:true });
       toast('The boss got through!');
     } else if (B.bar) {
@@ -5721,12 +5857,18 @@ function update(dt) {
   if (S.cars.length   > CAR_CAP)   S.cars.splice(0, S.cars.length - CAR_CAP);
   if (S.floats.length > FLOAT_CAP) S.floats.splice(0, S.floats.length - FLOAT_CAP);
 
-  if (S.health <= 0 && S.phase !== 'over') {
+  if (S.health <= 0 && S.phase !== 'over' && S.dying <= 0) {
     if (S.titan) { titanEnd(false); return; }
-    S.phase = 'over'; endGame(); return;
+    /* one slow second on the blob that did it, then the screen */
+    S.dying = 1.0;
+    flashScreen(0.3);
+    banner('OVERRUN', 'wave ' + S.wave, '#ff4d4d');
+    beep(90, 1.3, 'sawtooth', 0.08, 40);
+    return;
   }
 
   if (S.phase === 'wave' && S.spawnQueue === 0 && S.enemies.length === 0 && !S.boss) {
+    const cleared = S.wave, bestBefore = bestOf(S.mode);
     noteBest(S.wave);
     S.wave++;                                       // original: change Level by 1
     const reward = Math.round((25 + S.wave*10) * M().waveReward);   // round-end bonus, mode-scaled
@@ -5751,7 +5893,14 @@ function update(dt) {
     for (const e of S.enemies) e.cap = null;
     bump('moneyBox','gain');
     beep(660, 0.12, 'triangle', 0.04); setTimeout(() => beep(880, 0.16, 'triangle', 0.04), 110);
-    toast('Wave cleared — banked $' + reward);
+    /* a beaten personal best is the one thing worth interrupting for */
+    if (!SB() && cleared > bestBefore && S.bestAtStart > 0) {
+      banner('NEW BEST', 'Wave ' + cleared + ' · ' + M().name, '#ffd83d');
+      flashScreen(0.18);
+      for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
+    } else {
+      banner('WAVE ' + cleared + ' CLEARED', '+$' + reward.toLocaleString(), '#7dffb4');
+    }
     syncHUD();
   }
 
@@ -5763,16 +5912,22 @@ function update(dt) {
 }
 
 function endGame() {
-  $('endText').textContent = M().name + ' — the blobs got through on wave ' + S.wave +
-    '. Best run in this mode: wave ' + Math.max(bestOf(S.mode), S.wave - 1) + '.';
+  const survived = Math.max(0, S.wave - 1), best = Math.max(bestOf(S.mode), survived);
+  const isBest = survived > S.bestAtStart && !SB();
   $('endTitle').textContent = 'NURSERY OVERRUN';
+  $('endText').textContent =
+    'Base overrun on wave ' + S.wave +
+    (S.lastLeak ? ' — ' + S.lastLeak + ' walked through the nursery door.' : '.') +
+    ' ' + M().name + ' best: wave ' + best + '.';
   $('scoreRow').innerHTML =
-    '<div><div class="k">Waves survived</div><div class="v">' + Math.max(0, S.wave - 1) + '</div></div>' +
+    '<div><div class="k">Waves survived</div><div class="v">' + survived + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
-    '<div><div class="k">Total pops</div><div class="v">' + S.pops.toLocaleString() + '</div></div>';
+    '<div><div class="k">Total pops</div><div class="v">' + S.pops.toLocaleString() + '</div></div>' +
+    (isBest ? '<div><div class="k">Result</div><div class="v" style="color:#ffd83d">NEW BEST</div></div>' : '');
   $('ovEnd').classList.add('on');
   setShop(false); hideTip();
   beep(160, 0.5, 'sawtooth', 0.06, 60);
+  if (isBest) for (let i = 0; i < 3; i++) setTimeout(() => beep(520 + i*180, 0.16, 'triangle', 0.05), 420 + i*130);
   syncHUD();
 }
 
@@ -6302,6 +6457,7 @@ function drawEnemy(e) {
     ctx.beginPath(); ctx.ellipse(x - br*0.36, y - br*0.38, br*0.22, br*0.13, -0.5, 0, 7); ctx.fill();
     ctx.restore();
   }
+  if (S.cbCues && !lean) cbTag(e, x, y, r);
   if (e.burn > 0) {                                    // little flames riding along
     ctx.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 3; i++) {
@@ -6312,6 +6468,24 @@ function drawEnemy(e) {
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
   }
+  ctx.restore();
+}
+
+const CB_ABILITY = { jam:'⚡', heal:'✚', armour:'▲', husk:'☠' };
+function cbTag(e, x, y, r) {
+  const el = eliteOf(e);
+  if (!el) return;                                   // a plain blob already wears its tier
+  const ab = el.ability;
+  const tag = (ab && CB_ABILITY[ab]) || el.name.charAt(0).toUpperCase();
+  const ty = y - r - 9;
+  ctx.save();
+  ctx.font = '900 13px "Segoe UI", system-ui, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const w = Math.max(16, ctx.measureText(tag).width + 9);
+  ctx.fillStyle = 'rgba(6,10,15,.82)';
+  ctx.beginPath(); ctx.roundRect(x - w/2, ty - 8, w, 16, 8); ctx.fill();
+  ctx.lineWidth = 1.4; ctx.strokeStyle = el.fill; ctx.stroke();
+  ctx.fillStyle = '#fff'; ctx.fillText(tag, x, ty + 0.5);
   ctx.restore();
 }
 
@@ -6893,7 +7067,18 @@ function camFit() {
 function camBegin() {
   const c = S.cam;
   ctx.save();
+  /* a knock felt through the camera, never through the layout */
+  if (S.shakeT > 0) {
+    const k = S.shakeT*S.shakeAmp;
+    ctx.translate((Math.random()-0.5)*k, (Math.random()-0.5)*k);
+  }
   ctx.translate(W/2, H/2); ctx.scale(c.z, c.z); ctx.translate(-c.x, -c.y);
+}
+/* amp in pixels, dur in seconds; the setting and reduced-motion both mute it */
+function shakeScreen(amp, dur) {
+  if (!S.shake || REDUCED) return;
+  S.shakeAmp = Math.max(S.shakeAmp, amp);
+  S.shakeT = Math.max(S.shakeT, dur);
 }
 function camEnd() { ctx.restore(); }
 function camClamp() {
@@ -7298,7 +7483,9 @@ function render() {
       if (!ok) ctx.restore();
     }
   }
-  const ring = S.selected || S.hovered;
+  /* the hover ring is browsing too — it stays down while aiming */
+  const aiming = S.mouse.down && S.mouse.in && !S.placing;
+  const ring = S.selected || (aiming ? null : S.hovered);
   if (ring) drawRange(ring.x, ring.y - spriteH(ring.type)*0.18, SP(ring).range, true);
 
   if (S.mouse.down && S.mouse.in && !S.placing && S.towers.length) {
@@ -7967,6 +8154,13 @@ cv.addEventListener('pointermove', ev => {
     return;
   }
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true;
+  /* Holding the button is aiming, not browsing. Nothing pops up over the
+     board while the player is dragging a line of fire across it. */
+  if (S.mouse.down && !S.placing && S.phase !== 'menu') {
+    if (S.hovered) hideTip();
+    cv.style.cursor = 'crosshair';
+    return;
+  }
   if (S.placing || S.phase === 'menu' || S.phase === 'over') {
     hideTip(); cv.style.cursor = S.placing ? 'crosshair' : 'default';
     if (S.placing && S.mouse.down && S.t >= dragCd) {
@@ -7987,6 +8181,7 @@ cv.addEventListener('pointerdown', ev => {
   const p = canvasPos(ev); S.mouse.x = p.x; S.mouse.y = p.y; S.mouse.in = true; S.mouse.down = true;
   try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
   if (S.titan) S.pan = { x:ev.clientX, y:ev.clientY, moved:false };
+  if (!S.placing && !towerAt(p.x, p.y)) hideTip();   // a hold is an aim, not a hover
   if (!S.placing) {
     /* a picked sandbox unit turns the whole field into a drop target */
     if (S.sbPick && SB() && !towerAt(p.x, p.y)) { sbSpawn(S.sbPick, p); return; }
@@ -8034,10 +8229,16 @@ window.addEventListener('keydown', ev => {
     return;
   }
   if (ev.key === 'Escape') {
-    if (S.sbPick) { S.sbPick = null; sbHint(); if (S.sbOpen) sbRender(); }
-    else if (S.sbOpen) setSb(false);
-    cancelPlacing(); deselect(); hideTip();
+    if (S.paused) { setPause(false); return; }
+    if (S.sbPick) { S.sbPick = null; sbHint(); if (S.sbOpen) sbRender(); return; }
+    if (S.sbOpen) { setSb(false); return; }
+    if (S.placing || S.selected) { cancelPlacing(); deselect(); hideTip(); return; }
+    hideTip();
+    if (canPause()) setPause(true);
+    return;
   }
+  if (S.paused && ev.key !== 'p' && ev.key !== 'P') return;   // paused means paused
+  if (lk === 'p') { if (canPause() || S.paused) setPause(!S.paused); return; }
   if (ev.key === 'Tab') { ev.preventDefault(); setShop(!S.shopOpen); }
   if (ev.key === ' ' && S.phase === 'build') { ev.preventDefault(); startWave(); }
   const n = parseInt(ev.key, 10);
@@ -8136,6 +8337,12 @@ $('playBtn').onclick = () => {
 };
 $('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
 $('endModes').onclick = showModes;
+$('pauseBtn').onclick = () => setPause(!S.paused);
+$('pmResume').onclick = () => setPause(false);
+$('pmSettings').onclick = () => openSettings();
+$('pmRestart').onclick = () => { setPause(false); startMode(S.mode); };
+$('pmQuit').onclick = () => { setPause(false); showModes(); };
+$('menuSettings').onclick = () => setPause(true, true);
 $('sbTab').onclick = () => setSb(!S.sbOpen);
 $('autoBtn').onclick = () => {
   if (!S.autoSkip && S.wave < M().autoFrom) {
@@ -8177,6 +8384,115 @@ function syncChips() {
   $('perfBtn').classList.toggle('on', S.perfLock !== 2);
 }
 
+/* ------------------------------------------------------------- pause ----
+   A run freezes where it stands: the board keeps painting so you can read
+   it, but nothing moves and no timer runs down. */
+function canPause() { return S.phase === 'build' || S.phase === 'wave'; }
+function setPause(on, fromMenu) {
+  if (on && !canPause() && !fromMenu) return;
+  S.paused = !!on;
+  const ov = $('ovPause');
+  ov.classList.toggle('on', S.paused);
+  $('pauseBtn').classList.toggle('on', S.paused);
+  $('pauseBtn').textContent = S.paused ? 'Paused' : 'Pause';
+  if (S.paused) {
+    $('pauseTag').textContent = fromMenu ? 'Settings'
+      : M().name + ' · wave ' + S.wave;
+    ov.classList.toggle('fromMenu', !!fromMenu);
+    $('pauseBtns').style.display = fromMenu ? 'none' : '';
+    setShop(false); hideTip(); cancelPlacing();
+    if (fromMenu) openSettings(true); else closeSettings();
+    beep(300, 0.09, 'triangle', 0.03, 220);
+  } else {
+    closeSettings();
+    $('pauseBtns').style.display = '';
+    beep(520, 0.08, 'triangle', 0.03, 700);
+    last = performance.now();                  // no monster dt on resume
+  }
+}
+function closeSettings() { $('setPanel').classList.remove('on'); }
+function openSettings(force) {
+  const p = $('setPanel');
+  if (!force && p.classList.contains('on')) { closeSettings(); return; }
+  p.classList.add('on');
+  drawSettings();
+}
+
+/* ------------------------------------------------------------ settings ---
+   Every row writes straight through to S and to localStorage, so what the
+   player sets here is what they get next time they open the game. */
+function drawSettings() {
+  const p = $('setPanel');
+  const row = (name, desc, ctrl) =>
+    '<div class="setRow"><div class="sl"><div class="sn">' + name + '</div>' +
+    (desc ? '<div class="sd">' + desc + '</div>' : '') + '</div>' + ctrl + '</div>';
+  const sw = (id, on) => '<button class="swch' + (on ? ' on' : '') + '" id="' + id +
+    '" role="switch" aria-checked="' + (on ? 'true' : 'false') + '"></button>';
+  const seg = (id, opts, cur) => '<div class="segbtn" id="' + id + '">' + opts.map(o =>
+    '<button data-v="' + o[0] + '"' + (String(o[0]) === String(cur) ? ' class="on"' : '') + '>' +
+    o[1] + '</button>').join('') + '</div>';
+
+  p.innerHTML =
+    '<h4>Sound</h4>' +
+    row('Sound effects', 'Every pop, shot and boss stinger.', sw('stSound', S.sound)) +
+    row('Volume', '', '<input type="range" id="stVol" min="0" max="100" value="' +
+        Math.round(S.vol*100) + '"><span class="val" id="stVolV">' + Math.round(S.vol*100) + '%</span>') +
+    '<h4>Game</h4>' +
+    row('Default speed', 'Remembered for your next run.', seg('stSpeed', [[1,'1×'],[2,'2×'],[3,'3×']], S.speed)) +
+    row('Auto-skip waves', 'Start the next wave on its own.', sw('stAuto', S.autoSkip)) +
+    '<h4>Graphics &amp; access</h4>' +
+    row('Graphics', 'Fast cuts particles and simplifies blobs.',
+        seg('stPerf', [['auto','Auto'],['0','High'],['2','Fast']],
+            S.perfLock === null ? 'auto' : String(S.perfLock))) +
+    row('Screen shake', 'Knocks the camera on big hits.', sw('stShake', S.shake)) +
+    row('Colour-blind cues', 'Tags elites with a letter as well as a colour.', sw('stCb', S.cbCues));
+
+  const flip = (id, get, set) => {
+    const b = $(id);
+    b.onclick = () => {
+      set(!get());
+      b.classList.toggle('on', get());
+      b.setAttribute('aria-checked', get() ? 'true' : 'false');
+      saveNow(); syncChips();
+      beep(get() ? 660 : 300, 0.06, 'triangle', 0.03);
+    };
+  };
+  flip('stSound', () => S.sound, v => S.sound = v);
+  flip('stShake', () => S.shake, v => { S.shake = v; if (!v) { S.shakeT = 0; S.shakeAmp = 0; } });
+  flip('stCb',    () => S.cbCues, v => S.cbCues = v);
+  flip('stAuto',  () => S.autoSkip, v => { S.autoSkip = v; if (v) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4); });
+
+  $('stVol').oninput = ev => {
+    S.vol = Math.max(0, Math.min(1, (+ev.target.value || 0)/100));
+    $('stVolV').textContent = Math.round(S.vol*100) + '%';
+  };
+  $('stVol').onchange = () => { saveNow(); beep(620, 0.09, 'triangle', 0.05); };
+
+  const segPick = (id, apply) => $(id).querySelectorAll('button').forEach(b => b.onclick = () => {
+    $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    apply(b.dataset.v);
+    saveNow(); syncChips();
+    beep(560, 0.06, 'triangle', 0.03);
+  });
+  segPick('stSpeed', v => { S.speed = +v; });
+  segPick('stPerf',  v => { S.perfLock = v === 'auto' ? null : +v; S.perfToasted = false; setPerf(); });
+}
+
+/* ------------------------------------------------------------- banners ---
+   The big moments say so in the middle of the board rather than in the
+   corner where a toast lives. */
+let bannerT = 0;
+function banner(title, sub, color) {
+  const el = $('banner');
+  el.style.setProperty('--bc', color || '#fff');
+  el.querySelector('.bt').textContent = title;
+  el.querySelector('.bs').textContent = sub || '';
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(bannerT);
+  bannerT = setTimeout(() => el.classList.remove('on'), 1900);
+}
+function flashScreen(a) { S.flash = Math.max(S.flash, a); }
+
 /* --------------------------------------------------------------- loop ---- */
 let panelTick = 0;
 let hidden = false;
@@ -8209,10 +8525,19 @@ function setPerf() {
 
 function frame(now) {
   if (hidden) { last = now; requestAnimationFrame(frame); return; }   // idle in the background
-  const dt = Math.min(0.05, (now - last)/1000); last = now;
+  let dt = Math.min(0.05, (now - last)/1000); last = now;
   fpsAcc += dt; fpsN++;
   if (fpsAcc >= 0.5) { fpsAvg = fpsN/fpsAcc; fpsAcc = 0; fpsN = 0; setPerf(); }
   camKeys(dt);
+  if (S.shakeT > 0) { S.shakeT = Math.max(0, S.shakeT - dt*2.6); if (!S.shakeT) S.shakeAmp = 0; }
+  if (S.flash > 0) { S.flash = Math.max(0, S.flash - dt*2.2); $('flash').style.opacity = S.flash; }
+  if (S.paused) { render(); requestAnimationFrame(frame); return; }
+  /* the leak that ends the run plays out in slow motion before the screen */
+  if (S.dying > 0) {
+    S.dying -= dt;
+    if (S.dying <= 0) { S.dying = 0; S.phase = 'over'; endGame(); }
+    else dt *= 0.22;
+  }
   if (S.phase === 'wave' || S.phase === 'build') {
     for (let i = 0; i < S.speed; i++) update(dt);
     if (S.hovered && S.towers.includes(S.hovered)) fillTip(S.hovered);   // live stats
@@ -8227,6 +8552,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
 /* The mode cards ARE the main menu, so they get built right here rather than
