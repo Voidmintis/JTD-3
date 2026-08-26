@@ -1885,6 +1885,33 @@ VARIANTS.merchant = { suitLite:'#ffef86', suit:'#ffd21e', suitDark:'#c08f00', ar
                     core:'#fff0a0', coreD:'#8a6200',
                     outline:'#a87a00', outlineWidth:6,
                     pacG:'#ffd83d', pacGD:'#a97c00', pacO:'#a86bff', pacOD:'#4a1f8a' };
+/* ---- three more builders and two more money Jaxons ---- */
+VARIANTS.factory = { suitLite:'#cfd6e0', suit:'#9aa6b6', suitDark:'#5f6b7c', arm:'#ff8c1a', armDark:'#a34f00',
+                    belt:'#ff8c1a', beltDark:'#a34f00', goggles:true, hammer:true, wide:true,
+                    hammerH:'#5f6b7c', hammerHD:'#2c343f', hammerHead:'#ff8c1a', hammerHeadD:'#a34f00',
+                    outline:'#4a5460', outlineWidth:6,
+                    pacG:'#ff8c1a', pacGD:'#a34f00', pacO:'#cfd6e0', pacOD:'#5f6b7c' };
+VARIANTS.towtruck = { suitLite:'#ffe08a', suit:'#ffb020', suitDark:'#c07500', arm:'#39424f', armDark:'#161b22',
+                    belt:'#1a1f28', beltDark:'#000000', stripes:true, hammer:true, wide:true,
+                    hammerH:'#39424f', hammerHD:'#161b22', hammerHead:'#c9d4e2', hammerHeadD:'#6d7d92',
+                    outline:'#a36600', outlineWidth:6,
+                    pacG:'#ffb020', pacGD:'#a36600', pacO:'#c9d4e2', pacOD:'#6d7d92' };
+VARIANTS.mechanic = { suitLite:'#8fd9ff', suit:'#3aa6e0', suitDark:'#166a9c', arm:'#c9d4e2', armDark:'#6d7d92',
+                    belt:'#ff5a3c', beltDark:'#8f1f0d', goggles:true, hammer:true, anvil:true, wide:true,
+                    hammerH:'#c9d4e2', hammerHD:'#6d7d92', hammerHead:'#3aa6e0', hammerHeadD:'#0f5378',
+                    outline:'#125b86', outlineWidth:6,
+                    pacG:'#3aa6e0', pacGD:'#125b86', pacO:'#ff5a3c', pacOD:'#8f1f0d' };
+VARIANTS.caddy = { suitLite:'#e8f7d2', suit:'#b7e06a', suitDark:'#6f9c22', arm:'#f4f7fc', armDark:'#c3cad6',
+                    belt:'#ffd83d', beltDark:'#a97c00', beret:true, hammer:true, wide:true,
+                    hammerH:'#c3cad6', hammerHD:'#6d7d92', hammerHead:'#e8eef7', hammerHeadD:'#98a5b6',
+                    outline:'#5f8a1c', outlineWidth:6,
+                    pacG:'#b7e06a', pacGD:'#5f8a1c', pacO:'#ffd83d', pacOD:'#a97c00' };
+VARIANTS.tipjar = { suitLite:'#ffe3f2', suit:'#ffa8d8', suitDark:'#c4589c', arm:'#7fd6f5', armDark:'#2b86ab',
+                    belt:'#ffd83d', beltDark:'#a97c00', lunchbox:true, wide:true,
+                    core:'#fff3c9', coreD:'#a97c00',
+                    outline:'#b34a8c', outlineWidth:6,
+                    pacG:'#ffa8d8', pacGD:'#b34a8c', pacO:'#ffd83d', pacOD:'#a97c00' };
+
 VARIANTS.recycler = { suitLite:'#9fe6b4', suit:'#4ea86c', suitDark:'#236a41', arm:'#5a6472', armDark:'#232b36',
                     belt:'#c9d4e2', beltDark:'#6d7d92', goggles:true, hammer:true, anvil:true, wide:true,
                     hammerH:'#5a6472', hammerHD:'#232b36', hammerHead:'#4ea86c', hammerHeadD:'#12693f',
@@ -2094,6 +2121,96 @@ const UPGRADES = {
         mod:{"dmg":1.12,"cd":0.78} },
       { name:"Robot Factory", blurb:"Cars roll out far faster, and every one marks what it hits.", cost:1100,
         mod:{"dmg":1.15,"cd":0.769,"xtra":["markHit"]} }
+    ] }
+  },
+  factory: {
+    A: { name:"Thicker Stock", tiers:[
+      { name:"Better Steel", blurb:"The same stream, in cars that survive a hit or two.", cost:320,
+        mod:{"dmg":1.6} },
+      { name:"Pressed Panels", blurb:"Twice the metal per car, same production line.", cost:900,
+        mod:{"dmg":2.1} },
+      { name:"Heavy Line", blurb:"Cars off this line are a real obstacle, not a speed bump.", cost:2600,
+        mod:{"dmg":2.8} }
+    ] },
+    B: { name:"Night Shift", tiers:[
+      { name:"Second Shift", blurb:"The line barely stops now.", cost:280,
+        mod:{"cd":0.86} },
+      { name:"Overtime", blurb:"A car every half second.", cost:820,
+        mod:{"cd":0.80,"dmg":1.15} },
+      { name:"Lights Out", blurb:"A wall of cars, nose to tail, and every one marks what it hits.", cost:2400,
+        mod:{"cd":0.74,"dmg":1.2,"xtra":["markHit"]} }
+    ] }
+  },
+  towtruck: {
+    A: { name:"Bigger Winch", tiers:[
+      { name:"Steel Cable", blurb:"Shunts them a good deal further back.", cost:360,
+        mod:{"add":{"carPush":50}} },
+      { name:"Double Drum", blurb:"A serious shove, and tougher trucks.", cost:1000,
+        mod:{"add":{"carPush":110},"dmg":1.5} },
+      { name:"Recovery Rig", blurb:"Half the trail's progress undone every time a truck connects.", cost:3100,
+        mod:{"add":{"carPush":260},"dmg":1.9} }
+    ] },
+    B: { name:"Bigger Yard", tiers:[
+      { name:"Spare Truck", blurb:"Rolls one out noticeably sooner.", cost:300,
+        mod:{"cd":0.85} },
+      { name:"Full Fleet", blurb:"A truck out almost twice as often.", cost:950,
+        mod:{"cd":0.72,"dmg":1.25} },
+      { name:"Depot", blurb:"A constant convoy heading up the trail.", cost:2900,
+        mod:{"cd":0.6,"dmg":1.5} }
+    ] }
+  },
+  mechanic: {
+    A: { name:"Pit Crew", tiers:[
+      { name:"Toolkit", blurb:"Patches passing cars for a lot more.", cost:520,
+        mod:{"set":{"fixAmt":55}} },
+      { name:"Full Crew", blurb:"A proper crew — faster stops, bigger repairs.", cost:1500,
+        mod:{"set":{"fixAmt":120,"fixCd":0.9}} },
+      { name:"Formula Pit", blurb:"Cars leave his ring in better shape than they arrived.", cost:4400,
+        mod:{"set":{"fixAmt":300,"fixCd":0.6}} }
+    ] },
+    B: { name:"Tuned Engines", tiers:[
+      { name:"Tune-Up", blurb:"Cars in the ring pick up their pace.", cost:420,
+        mod:{"set":{"carBoost":1.6}} },
+      { name:"Turbo Kit", blurb:"Much quicker through his stretch, and he builds faster.", cost:1250,
+        mod:{"set":{"carBoost":2.1},"cd":0.8} },
+      { name:"Race Team", blurb:"Everything he touches flies, including his own workshop.", cost:3800,
+        mod:{"set":{"carBoost":2.9},"cd":0.66,"dmg":1.4} }
+    ] }
+  },
+  tipjar: {
+    A: { name:"Fuller Jar", tiers:[
+      { name:"Bigger Jar", blurb:"Two to five coins a tip instead of one to three.", cost:300,
+        mod:{"set":{"tipMin":2,"tipMax":5}} },
+      { name:"Glass Bowl", blurb:"A properly generous tip every time it lands.", cost:1000,
+        mod:{"set":{"tipMin":5,"tipMax":11}} },
+      { name:"Collection Plate", blurb:"Every pop in range is worth stopping for.", cost:3400,
+        mod:{"set":{"tipMin":14,"tipMax":26}} }
+    ] },
+    B: { name:"Friendlier Face", tiers:[
+      { name:"Nice Smile", blurb:"Tips land far more often.", cost:260,
+        mod:{"set":{"tipChance":0.7}} },
+      { name:"Regulars", blurb:"Nearly everything that dies in range leaves something.", cost:880,
+        mod:{"set":{"tipChance":0.95},"range":1.2} },
+      { name:"House Rules", blurb:"Every single pop in a much wider ring pays a tip.", cost:2900,
+        mod:{"set":{"tipChance":1},"range":1.7} }
+    ] }
+  },
+  caddy: {
+    A: { name:"Fatter Purse", tiers:[
+      { name:"Better Bag", blurb:"A bigger flat cheque at the end of every round.", cost:520,
+        mod:{"set":{"caddyBase":160}} },
+      { name:"Tournament Fee", blurb:"A serious retainer per wave cleared.", cost:1700,
+        mod:{"set":{"caddyBase":380}} },
+      { name:"Sponsorship", blurb:"He is paid like a professional now.", cost:5200,
+        mod:{"set":{"caddyBase":700}} }
+    ] },
+    B: { name:"Long Service", tiers:[
+      { name:"Loyalty Bonus", blurb:"Pays more the deeper the run gets.", cost:480,
+        mod:{"set":{"caddyWave":18}} },
+      { name:"Veteran Rate", blurb:"Every wave behind you is worth real money.", cost:1600,
+        mod:{"set":{"caddyWave":38}} },
+      { name:"Pension Plan", blurb:"A deep run pays him a fortune every single round.", cost:4800,
+        mod:{"set":{"caddyWave":60}} }
     ] }
   },
   goldeng: {
@@ -2795,6 +2912,18 @@ const TOWERS = {
   boombox: { name:'Boombox Jaxon', cost:400, range:340, cd:5.0, dmg:50, ammo:'stun', stun:1.0,
              blurb:'Drops the bass every 5s — a pulse ring that freezes everything in range solid for a full second and knocks 50 damage off it.',
              tags:[['Stun','t-aoe'],['Pulse Ring','t-aoe'],['Support','']] },
+  factory: { name:'Factory Jaxon', cost:700, range:Infinity, cd:0.62, dmg:1, ammo:'build',
+             carHp:40, carKind:'car',
+             blurb:'A production line, not a workshop. A thin 40 HP car rolls off it every 0.62s — no single one matters, and the trail is never empty.',
+             tags:[['Builder','t-aoe'],['Constant Stream','t-fast'],['40 HP Cars','']] },
+  towtruck:{ name:'Tow-Truck Jaxon', cost:900, range:Infinity, cd:2.8, dmg:5, ammo:'build',
+             carHp:180, carKind:'car', carFwd:true, carPush:90,
+             blurb:'Sends his trucks the other way — out of the nursery and up the trail. Everything they hit gets shunted 90 back down it as well as flattened.',
+             tags:[['Builder','t-aoe'],['Knockback','t-rain'],['Drives Forward','']] },
+  mechanic:{ name:'Mechanic Jaxon', cost:1400, range:340, cd:3.4, dmg:6, ammo:'build',
+             carHp:150, carKind:'blackcar', fixAmt:26, fixCd:1.2, carBoost:1.35,
+             blurb:'Builds his own cars, then runs a pit lane for everyone else: any car passing his ring is patched for 26 HP every 1.2s and drives 35% faster while it is in there.',
+             tags:[['Builder','t-aoe'],['Repairs Cars','t-fast'],['Pit Lane','']] },
   goldeng: { name:'Golden Engineer Jaxon', cost:550, range:Infinity, cd:2.4, dmg:6, ammo:'build', carHp:200, carKind:'goldcar',
              blurb:'Same trade, better workshop — his cars are gold and carry 200 HP.',
              tags:[['Builder','t-aoe'],['Whole Trail','t-aoe'],['200 HP Cars','t-fast']] },
@@ -2879,6 +3008,14 @@ const TOWERS = {
              income:14, interest:0,
              blurb:'Shakes his piggybank loose every 4s for $14 — but only while a wave is actually running. Upgrades fatten the coin; interest is real but tightly capped, so he stays a steady helper rather than a printing press.',
              tags:[['Income','t-fast'],['No Damage',''],['Economy','t-rain']] },
+  tipjar:  { name:'Tip Jar Jaxon', cost:340, range:250, dmg:0, ammo:'tipjar',
+             tipChance:0.45, tipMin:1, tipMax:3,
+             blurb:'Leaves a jar out by the trail. Every blob that dies within 250 of him has a 45% chance of dropping a coin or three into it. Flat coins, never a cut of your bank.',
+             tags:[['Income','t-fast'],['On Every Pop','t-single'],['No Damage','']] },
+  caddy:   { name:'Caddy Jaxon', cost:820, range:Infinity, dmg:0, ammo:'caddy',
+             caddyBase:70, caddyWave:9,
+             blurb:'Carries the bag and settles up at the end of every round. A flat $70 on each wave clear, plus $9 for every wave you have already survived. Nothing at all mid-wave.',
+             tags:[['Income','t-fast'],['Wave Bonus','t-rain'],['No Damage','']] },
   recycler:{ name:'Recycler Jaxon', cost:450, range:300, dmg:0, ammo:'recycle',
              refund:0.25, salvage:6,
              blurb:'Sell any Jaxon standing in his ring and he digs 25% more out of the scrap. He also scrapes a consolation coin out of every life the nursery loses. No damage at all.',
@@ -2912,6 +3049,9 @@ const ROLE = {
   bandaid:['starters','support'],     whistle:['starters','support'],
   laser:['starters','dps','splash'],  rainbow:['dps','splash'],
   engineer:['builders'],              goldeng:['builders'],
+  factory:['builders'],               towtruck:['builders'],
+  mechanic:['builders','support'],    tipjar:['income'],
+  caddy:['income'],
   pinwheel:['support'],               boombox:['support'],
   lunchbox:['support'],               forge:['support'],
   yoyo:['dps'],                       tablet:['dps'],
@@ -2930,6 +3070,7 @@ const inCat = (k, c) => c === 'all' || (ROLE[k] || []).includes(c);
 
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
+               'tipjar','factory','towtruck','caddy','mechanic',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -2942,7 +3083,8 @@ const VALUE = {
                 goldeng:100, lunchbox:100, forge:100, yoyo:100, tablet:100, titan:100,
                 titantablet:100, stormcloud:104, eclipse:100, upgradedlaser:100, titanmax:89,
                 blackholelaser:89, director:100, mirror:100, truegod:89,
-                piggybank:100, recycler:100, tax:100, merchant:100 };
+                piggybank:100, recycler:100, tax:100, merchant:100,
+                factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100 };
 
 const T_H = 88;
 const T_W = T_H * (660/720);
@@ -2953,7 +3095,8 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      boombox:1.05, forge:1.1, eclipse:1.35, mirror:1.15,
                      bubble:1.05, whistle:1.05, pinwheel:1.05, lunchbox:1.05, yoyo:1.05,
                      stormcloud:1.3, director:1.2,
-                     piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05 };
+                     piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
+                     factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05 };
 const WIDE_FILL = 0.791;              // share of the wide box the body actually fills
 const FOOT_Y = 700;                   // where the legs end inside the drawing box
 const SPRITE = {};
@@ -4240,6 +4383,11 @@ function hurtEnemy(e, dmg, owner) {
     let bounty = bountyFor(e);                    // decaying per-pop payout, see COIN_BASE above
     if (owner && owner.type) bounty *= 1 + (SP(owner).goldBonus || 0);
     bounty *= 1 + taxCutAt(p.x, p.y);             // Tax Jaxon takes his cut of the corpse
+    const tip = tipJarAt(p.x, p.y);               // Tip Jar Jaxon: flat coins, never a cut
+    if (tip > 0) {
+      S.money += tip;
+      S.floats.push({ x:p.x + 16, y:p.y - 42, txt:'+$' + tip, color:'#ffa8d8', life:0.9 });
+    }
     ledgerTick();                                 // Merchant Jaxon writes it down
     S.money += bounty;
     if (bounty >= 3) S.floats.push({ x:p.x, y:p.y - 26, txt:'+$' + Math.round(bounty), color:'#ffd83d', life:0.9 });
@@ -4323,12 +4471,62 @@ function fire(t, tx, ty) {
 }
 
 /* Engineer's build: black car spawned at the exit, driving back up the trail. */
+/* Most cars are built at the exit and drive back up the trail against the
+   traffic. A tow truck is built at the gate and drives the other way,
+   shunting whatever it hits back down the trail behind it. */
 function buildCar(t, wp) {
   const spec = wp || SP(t);
-  S.cars.push({ d:PATH_LEN - 6, hp:spec.carHp, max:spec.carHp, kind:spec.carKind,
+  const fwd = !!spec.carFwd;
+  S.cars.push({ d:fwd ? 6 : PATH_LEN - 6, hp:spec.carHp, max:spec.carHp, kind:spec.carKind,
+                fwd, push:spec.carPush || 0, tow:fwd,
                 owner:t, hitSet:new Set(), bob:Math.random()*6 });
   t.shots++;
-  beep(200, 0.12, 'square', 0.03, 420);
+  beep(fwd ? 150 : 200, 0.12, 'square', 0.03, fwd ? 300 : 420);
+}
+
+/* Mechanic Jaxon's pit lane: the strongest boost and patch a car is
+   standing in, never the sum of every mechanic on the map. */
+const NO_PIT = { boost:1, fix:0, cd:1, own:null };
+let anyPit = false;
+function pitLaneAt(x, y) {
+  if (!anyPit) return NO_PIT;
+  let boost = 1, fix = 0, cd = 1, own = null;
+  for (const t of S.towers) {
+    if (TOWERS[t.type].ammo !== 'build') continue;
+    const sp = SP(t);
+    if (!sp.fixAmt || Math.hypot(t.x - x, t.y - y) > sp.range) continue;
+    if (sp.carBoost > boost) boost = sp.carBoost;
+    if (sp.fixAmt > fix) { fix = sp.fixAmt; cd = sp.fixCd; own = t; }
+  }
+  return { boost, fix, cd, own };
+}
+
+/* Tip Jar Jaxon: a flat handful of coins on a pop nearby, never a slice of
+   what you are already holding. Every jar in reach gets to tip. */
+function tipJarAt(x, y) {
+  let coins = 0;
+  for (const t of S.towers) {
+    if (TOWERS[t.type].ammo !== 'tipjar') continue;
+    const sp = SP(t);
+    if (Math.hypot(t.x - x, t.y - y) > sp.range) continue;
+    if (Math.random() > sp.tipChance) continue;
+    const c = sp.tipMin + Math.floor(Math.random()*(sp.tipMax - sp.tipMin + 1));
+    coins += c; t.shots++; t.earned = (t.earned || 0) + c;
+  }
+  return coins;
+}
+
+/* Caddy Jaxon: settles up when the round does. */
+function caddyPayout() {
+  let paid = 0;
+  for (const t of S.towers) {
+    if (TOWERS[t.type].ammo !== 'caddy') continue;
+    const sp = SP(t);
+    const pay = Math.round(sp.caddyBase + sp.caddyWave*Math.max(0, S.wave - 1));
+    S.money += pay; paid += pay; t.shots++; t.earned = (t.earned || 0) + pay;
+    S.floats.push({ x:t.x, y:t.y - 54, txt:'+$' + pay, color:'#b7e06a', life:1.9, big:true });
+  }
+  return paid;
 }
 
 function splashBurst(x, y, s) {
@@ -5364,6 +5562,10 @@ function update(dt) {
     }
     /* Tax Jaxon — pure aura, the cut is taken in hurtEnemy */
     if (spec.ammo === 'tax')     { t.lit = anyEnemyWithin(t, spec.range); continue; }
+    /* Tip Jar Jaxon — paid in hurtEnemy, one pop at a time */
+    if (spec.ammo === 'tipjar')  { t.lit = anyEnemyWithin(t, spec.range); continue; }
+    /* Caddy Jaxon — paid at the wave clear and never in between */
+    if (spec.ammo === 'caddy')   { t.lit = S.phase === 'wave'; continue; }
     /* Merchant Jaxon — settles up at the wave clear */
     if (spec.ammo === 'ledger')  { t.lit = true; continue; }
     /* Recycler Jaxon — paid out on sales and on leaks */
@@ -5852,10 +6054,26 @@ function update(dt) {
   }
   S.waves = S.waves.filter(w => !w.dead);
 
-  /* engineer cars — drive backwards, spend HP as they deal damage */
+  /* built cars — spend HP as they deal damage. Engineer stock drives back
+     up the trail against the traffic; a tow truck drives the other way. */
+  anyPit = S.cars.length > 0 && S.towers.some(t => SP(t).fixAmt > 0);
   for (const c of S.cars) {
-    c.d -= CAR.speed*dt;
-    if (c.d <= 0) { c.dead = true; continue; }
+    const cp0 = pointAt(c.d);
+    const pit = pitLaneAt(cp0.x, cp0.y);
+    if (pit.fix > 0 && c.hp < c.max) {                 // patched as it rolls past
+      c.fixT = (c.fixT || 0) + dt;
+      if (c.fixT >= pit.cd) {
+        c.fixT = 0;
+        const before = c.hp;
+        c.hp = Math.min(c.max, c.hp + pit.fix);
+        if (c.hp > before) {
+          S.floats.push({ x:cp0.x, y:cp0.y - 34, txt:'+' + Math.round(c.hp - before), color:'#7dffb4', life:0.8 });
+          if (pit.own) pit.own.fixed = (pit.own.fixed || 0) + 1;
+        }
+      }
+    }
+    c.d += (c.fwd ? 1 : -1) * CAR.speed * pit.boost * dt;
+    if (c.d <= 0 || c.d >= PATH_LEN) { c.dead = true; continue; }
     const cp = pointAt(c.d);
     for (const e of S.enemies) {
       if (e.dead || c.hitSet.has(e.id) || e.cap) continue;
@@ -5865,8 +6083,10 @@ function update(dt) {
         const dealt = Math.min(c.hp, e.hp);
         hurtEnemy(e, dealt, c.owner);
         c.hp -= dealt;
+        /* a tow truck shunts what survives back down the trail */
+        if (c.push && !e.dead && !e.cap) e.d = Math.max(0, e.d - c.push);
         S.fx.push({ k:'flash', x:cp.x, y:cp.y, life:0.12, max:0.12 });
-        if (c.hp <= 0) { c.dead = true; burst(cp.x, cp.y, c.kind === 'goldcar' ? '#ffc61e' : (c.kind === 'diamondcar' ? '#9be8ff' : '#2b3440'), 12); break; }
+        if (c.hp <= 0) { c.dead = true; burst(cp.x, cp.y, c.kind === 'goldcar' ? '#ffc61e' : (c.kind === 'diamondcar' ? '#9be8ff' : (c.tow ? '#ffb020' : '#2b3440')), 12); break; }
       }
     }
     for (const B of S.bosses) {
@@ -6025,7 +6245,8 @@ function update(dt) {
         S.floats.push({ x:m.x, y:m.y - 54, txt:'+$' + pay, color:'#ffd83d', life:1.9, big:true });
       }
     }
-    S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + reward, color:'#ffd83d', life:1.6, big:true });
+    const caddy = caddyPayout();                    // Caddy Jaxon settles the round
+    S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + (reward + caddy), color:'#ffd83d', life:1.6, big:true });
     S.phase = 'build'; S.autoTimer = 1.4;
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
@@ -6039,7 +6260,7 @@ function update(dt) {
       flashScreen(0.18);
       for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
     } else {
-      banner('WAVE ' + cleared + ' CLEARED', '+$' + reward.toLocaleString(), '#7dffb4');
+      banner('WAVE ' + cleared + ' CLEARED', '+$' + (reward + caddy).toLocaleString(), '#7dffb4');
     }
     syncHUD();
   }
@@ -6098,6 +6319,8 @@ function statRows(spec, t) {
                : spec.ammo === 'cut'    ? 'Takes called'
                : spec.ammo === 'storm'  ? 'Lightning ticks'
                : spec.ammo === 'bank'   ? 'Payouts made'
+               : spec.ammo === 'tipjar' ? 'Tips taken'
+               : spec.ammo === 'caddy'  ? 'Rounds settled'
                : spec.ammo === 'mirror' ? 'Shots copied'
                : spec.ammo === 'multi'  ? 'Attacks fired' : 'Shots fired';
     if (spec.ammo === 'buff') {
@@ -6120,6 +6343,12 @@ function statRows(spec, t) {
                 : w.dmg + (w.splash ? ' + ' + w.splash + ' splash' : '');
       rows += `<div class="r"><span>${WEP_LABEL[w.k] || w.k}</span><b>${dmg} &middot; ${rateStr(w.cd)}</b></div>`;
     }
+  } else if (spec.ammo === 'build') {
+    rows += `<div class="r"><span>Cars</span><b>${spec.carHp} HP &middot; ${rateStr(spec.cd)}</b></div>`;
+    if (spec.carFwd) rows += `<div class="r"><span>Drives</span><b>up the trail</b></div>
+             <div class="r"><span>Knockback</span><b>${spec.carPush} back</b></div>`;
+    if (spec.fixAmt) rows += `<div class="r"><span>Pit repair</span><b>+${spec.fixAmt} HP / ${spec.fixCd}s</b></div>
+             <div class="r"><span>Pit speed</span><b>${Math.round((spec.carBoost - 1)*100)}% faster</b></div>`;
   } else if (spec.ammo === 'heal') {
     rows += `<div class="r"><span>Heals</span><b>${spec.heal} life</b></div>
              <div class="r"><span>Rate</span><b>every ${spec.cd}s</b></div>`;
@@ -6158,6 +6387,15 @@ function statRows(spec, t) {
   } else if (spec.ammo === 'mirror') {
     rows += `<div class="r"><span>Copy power</span><b>${spec.boost}&times;</b></div>
              <div class="r"><span>Rate</span><b>${rateStr(spec.cd)}</b></div>`;
+  } else if (spec.ammo === 'tipjar') {
+    rows += `<div class="r"><span>Tip</span><b>$${spec.tipMin}-${spec.tipMax} per pop</b></div>
+             <div class="r"><span>Chance</span><b>${Math.round(spec.tipChance*100)}%</b></div>
+             <div class="r"><span>Damage</span><b>none</b></div>`;
+  } else if (spec.ammo === 'caddy') {
+    const now = Math.round(spec.caddyBase + spec.caddyWave*Math.max(0, S.wave - 1));
+    rows += `<div class="r"><span>Per wave clear</span><b>$${spec.caddyBase} + $${spec.caddyWave}/wave</b></div>
+             <div class="r"><span>Next payout</span><b>$${now}</b></div>
+             <div class="r"><span>Damage</span><b>none</b></div>`;
   } else if (spec.ammo === 'bank') {
     rows += `<div class="r"><span>Payout</span><b>$${spec.income} every ${spec.cd}s</b></div>
              <div class="r"><span>Interest</span><b>${spec.interest
@@ -7139,6 +7377,17 @@ function drawCar(c) {
   ctx.beginPath(); ctx.ellipse(0, 14, 24, 7, 0, 0, 7); ctx.fill();
   ctx.scale(c.face === -1 ? -1 : 1, 1);
   ctx.drawImage(img, -26, -15, 52, 30);
+  if (c.tow) {                                        // orange beacon and a tow hook
+    ctx.fillStyle = '#2c343f';
+    ctx.fillRect(-26, -4, 12, 9);                     // the hook arm off the back
+    ctx.strokeStyle = '#c9d4e2'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(-26, 2); ctx.lineTo(-34, 6); ctx.stroke();
+    const blink = 0.45 + Math.abs(Math.sin(S.t*7 + c.bob))*0.55;
+    ctx.globalAlpha = blink;
+    ctx.fillStyle = '#ffb020';
+    ctx.beginPath(); ctx.arc(2, -17, 4.4, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
   ctx.restore();
   ctx.save();
   if (c.max > 10) {                                   // too many pips — show the number
@@ -8702,6 +8951,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 
 
