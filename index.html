@@ -3396,6 +3396,15 @@ Object.assign(ASC_VARIANTS.ninja,   { suitLite:'#bfe6ff', suit:'#5fa8e0', suitDa
 Object.assign(ASC_VARIANTS.rainbow, { rainbow:true, arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.goldeng, { suitLite:'#fff4b8', suit:'#ffd21e', suitDark:'#a87a00', arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.mirror,  { shards:true, suitLite:'#f8f2ff', suit:'#d9c6ff', suitDark:'#8f6bc4' });
+/* The Admin Jaxon's clothes are a hole in the screen. Two sprites make
+   that work: the ordinary one is used only as a stencil for the rain, and
+   this one has every scrap of cloth punched out of it, so what is left to
+   draw over the rain is the face, the pacifier and the outlines. */
+VARIANTS.admin_face = Object.assign({}, VARIANTS.admin, {
+  suitLite:'transparent', suit:'transparent', suitDark:'transparent',
+  arm:'transparent', armDark:'#ff5a3c',
+  outline:'#ff5a3c', outlineWidth:9
+});
 const ASC_KEY = k => 'asc_' + k;
 for (const k in ASC_VARIANTS) VARIANTS[ASC_KEY(k)] = ASC_VARIANTS[k];
 
@@ -3874,7 +3883,9 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      stormcloud:1.3, director:1.2,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
                      factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
-                     admin:1.2 };
+                     admin:1.2,
+                     /* the face-only sheet MUST match the body it is laid over */
+                     admin_face:1.2 };
 const WIDE_FILL = 0.791;              // share of the wide box the body actually fills
 const FOOT_Y = 700;                   // where the legs end inside the drawing box
 const SPRITE = {};
@@ -3991,7 +4002,7 @@ const S = {
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
-  camV:{x:0,y:0}, look:null, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
+  camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
@@ -5302,17 +5313,33 @@ function fire(t, tx, ty) {
 /* ------------------------------------------------------ Admin Jaxon ----
    Three weapons on three clocks, each one switched on by a level. */
 function adminTick(t, spec, dt, mul, override) {
-  /* 1. the beam, every 0.1s, bursting like a Rainbow */
-  t.cd -= dt;
-  if (t.cd <= 0) {
-    const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
-    if (aim) {
-      t.cd = spec.cd * mul;
-      t.face = aim.x < t.x ? -1 : 1;
-      t.flash = 1; t.shots++;
-      adminBurst(t, aim.x, aim.y, spec.dmg, spec.splash, spec.splashR, '#ff2b2b');
-      beep(1500, 0.02, 'square', 0.01);
-    } else t.cd = Math.min(t.cd, 0);
+  /* 1. the beam. It is one continuous beam that stays on whatever it is
+     pointed at — the 0.1s clock is how often it bites, not how often it
+     is drawn, so nothing about it strobes. */
+  const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+  if (aim) {
+    t.beamOn = true;
+    /* it swings onto a new target rather than snapping across the map */
+    if (!t.beamTo) t.beamTo = { x:aim.x, y:aim.y };
+    else {
+      const k = Math.min(1, dt*14);
+      t.beamTo.x += (aim.x - t.beamTo.x)*k;
+      t.beamTo.y += (aim.y - t.beamTo.y)*k;
+    }
+    t.face = aim.x < t.x ? -1 : 1;
+    t.flash = 1;
+    t.beamAcc = (t.beamAcc || 0) + dt;
+    const tick = spec.cd * mul;
+    let bites = 0;
+    while (t.beamAcc >= tick && bites < 6) {          // never more than a few per frame
+      t.beamAcc -= tick; bites++;
+      t.shots++;
+      adminBurst(t, t.beamTo.x, t.beamTo.y, spec.dmg, spec.splash, spec.splashR, '#ff2b2b');
+    }
+    if (bites && !t.beamHum) { t.beamHum = 0.35; beep(1300, 0.3, 'square', 0.012, 900); }
+    t.beamHum = Math.max(0, (t.beamHum || 0) - dt);
+  } else {
+    t.beamOn = false; t.beamTo = null; t.beamAcc = 0;
   }
 
   /* 2. level 30: admin cars, thrown down the trail with real pierce */
@@ -5373,10 +5400,9 @@ function adminBurst(t, x, y, dmg, splash, splashR, col) {
     if (d <= B.def.r + 12) hurtBoss(dmg, t, B);
     else if (d <= splashR + B.def.r) hurtBoss(splash, t, B);
   }
+  /* the beam is drawn continuously with him; this is only the impact */
   S.fx.push({ k:'boom', x, y, life:0.28, max:0.28, r:splashR });
-  if (!S.perf) burst(x, y, col, 7, 0.7);
-  /* the beam itself, drawn for a frame */
-  S.fx.push({ k:'admbeam', x, y, sx:t.x, sy:t.y - spriteH(t.type)*0.4, life:0.09, max:0.09 });
+  if (!S.perf) burst(x, y, col, 5, 0.6);
 }
 
 /* Engineer's build: black car spawned at the exit, driving back up the trail. */
@@ -7825,8 +7851,16 @@ function viewBox() {
 }
 function drawPark(v) {
   ctx.save();
-  /* ground everywhere the camera can see, a shade duller than the lawn */
-  ctx.fillStyle = '#046b32';
+  /* the same grass the arena is made of, tiling straight out of it, so the
+     lawn is a mown square of the field rather than a different material */
+  ctx.fillStyle = grassPattern || '#009242';
+  ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
+  /* the same falloff the lawn carries, spread over what the camera sees */
+  const cx = (v.x0 + v.x1)/2, cy2 = (v.y0 + v.y1)/2;
+  const rad = Math.max(v.x1 - v.x0, v.y1 - v.y0);
+  const pg = ctx.createRadialGradient(cx, cy2, rad*0.16, cx, cy2, rad*0.58);
+  pg.addColorStop(0, 'rgba(0,0,0,0)'); pg.addColorStop(1, 'rgba(0,0,0,.36)');
+  ctx.fillStyle = pg;
   ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
   /* far hills, only if the horizon is in shot */
   const HILL = ['#0b5f47', '#0a5340', '#084736'];
@@ -8457,27 +8491,77 @@ function drawTower(t, ghost) {
   ctx.restore();
 }
 
-/* ACCESS DENIED, running down him the way it runs down a boss. The rain
-   is clipped to his silhouette's bounding oval, which is enough to read as
-   "the body is a hole in the screen" without a per-pixel mask. */
+/* ACCESS DENIED, running down him, cropped to the exact shape of what he
+   is wearing. The rain goes onto an offscreen canvas, the ordinary sprite
+   stencils it down to his silhouette, and the face-only sprite goes over
+   the top — so the cloth is rain and nothing else is. */
+const ADM_BUF = { c:null, g:null, w:0, h:0 };
+function admBuffer(w, h) {
+  if (!ADM_BUF.c) { ADM_BUF.c = document.createElement('canvas'); ADM_BUF.g = ADM_BUF.c.getContext('2d'); }
+  const cw = Math.ceil(w), ch = Math.ceil(h);
+  if (ADM_BUF.w !== cw || ADM_BUF.h !== ch) {
+    ADM_BUF.c.width = cw; ADM_BUF.c.height = ch;
+    ADM_BUF.w = cw; ADM_BUF.h = ch;
+  }
+  return ADM_BUF;
+}
 function drawAdminBody(t, art, grow, ghost) {
   const th = BOSS_THEME.denied;
-  const w = spriteW(art)*grow*0.34, h = spriteH(art)*grow*0.36;
-  const cy = t.y + spriteTop(art)*grow + h*1.15;
-  if (!t.rainCols) t.rainCols = makeRain({ r:Math.max(28, w) });
-  ctx.save();
-  ctx.beginPath(); ctx.ellipse(t.x, cy, w, h, 0, 0, 7); ctx.clip();
-  ctx.translate(t.x, cy);
-  ctx.globalAlpha = ghost ? 0.5 : 1;
-  drawRain(ctx, { r:Math.max(w, h), theme:'denied' }, th, Math.max(w, h), S.t, t.rainCols);
+  const im = IMG[art], face = IMG.admin_face;
+  const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
+  const top = spriteTop(art)*grow;
+  if (!im || !im.width) return;
+  if (!t.rainCols) t.rainCols = makeRain({ r:Math.max(30, sw*0.6) });
+
+  const B = admBuffer(sw, sh);
+  const g = B.g;
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  g.clearRect(0, 0, B.w, B.h);
+  /* the rain, over the whole box */
+  g.save();
+  g.translate(B.w/2, B.h/2);
+  drawRain(g, { r:Math.max(B.w, B.h), theme:'denied' }, th, Math.max(B.w, B.h), S.t, t.rainCols);
   ctx = FIELD_CTX;
-  ctx.restore();
-  /* the outline that keeps him readable against the trail */
+  g.restore();
+  /* stencil it down to exactly the shape of him */
+  g.save();
+  g.globalCompositeOperation = 'destination-in';
+  g.drawImage(im, 0, 0, B.w, B.h);
+  g.restore();
+
   ctx.save();
-  ctx.globalAlpha = ghost ? 0.5 : (0.75 + Math.sin(S.t*4 + t.x)*0.2);
-  ctx.strokeStyle = th.ring2; ctx.lineWidth = 2.4;
-  ctx.beginPath(); ctx.ellipse(t.x, cy, w, h, 0, 0, 7); ctx.stroke();
+  ctx.globalAlpha = ghost ? 0.6 : 1;
+  if (t.face === -1) { ctx.translate(t.x, 0); ctx.scale(-1, 1); ctx.translate(-t.x, 0); }
+  ctx.drawImage(B.c, t.x - sw/2, t.y + top, sw, sh);
+  /* the face, the pacifier and the outlines, over the cloth */
+  if (face && face.width) ctx.drawImage(face, t.x - sw/2, t.y + top, sw, sh);
   ctx.restore();
+
+  /* the beam, held on the target rather than fired in pulses */
+  if (!ghost && t.beamOn && t.beamTo) {
+    const sx = t.x + (t.face === -1 ? -1 : 1)*sw*0.16, sy = t.y + top + sh*0.42;
+    const jit = Math.sin(S.t*46)*0.9;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.55;
+    ctx.strokeStyle = '#7a0000'; ctx.lineWidth = 11 + jit;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+    ctx.globalAlpha = 0.95;
+    ctx.strokeStyle = '#ff2b2b'; ctx.lineWidth = 5 + jit;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+    ctx.strokeStyle = '#ffdede'; ctx.lineWidth = 1.7;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+    /* where it lands */
+    const puls = 9 + Math.abs(Math.sin(S.t*13))*5;
+    const rg = ctx.createRadialGradient(t.beamTo.x, t.beamTo.y, 1, t.beamTo.x, t.beamTo.y, puls*2.2);
+    rg.addColorStop(0, 'rgba(255,255,255,.9)');
+    rg.addColorStop(0.4, 'rgba(255,43,43,.6)');
+    rg.addColorStop(1, 'rgba(255,43,43,0)');
+    ctx.fillStyle = rg;
+    ctx.beginPath(); ctx.arc(t.beamTo.x, t.beamTo.y, puls*2.2, 0, 7); ctx.fill();
+    ctx.restore();
+  }
 }
 
 function drawTierArt(t, art) {
@@ -9679,19 +9763,6 @@ function render() {
       ctx.strokeStyle = '#bfeeff'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(f.x, f.y, 12 + k*20, 0, 7); ctx.stroke();
       ctx.restore();
-    } else if (f.k === 'admbeam') {
-      const k = f.life/f.max;
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.globalAlpha = k;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#7a0000'; ctx.lineWidth = 9;
-      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
-      ctx.strokeStyle = '#ff2b2b'; ctx.lineWidth = 4.5;
-      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
-      ctx.strokeStyle = '#ffbcbc'; ctx.lineWidth = 1.6;
-      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
-      ctx.restore();
     } else if (f.k === 'bolt') {
       const k = 1 - f.life/f.max;
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
@@ -9960,8 +10031,10 @@ function tryPlaceAt(x, y, silent) {
 cv.addEventListener('pointermove', ev => {
   if (S.look) {                                         // a look-around drag
     const c = S.cam, r = cv.getBoundingClientRect();
-    c.x -= (ev.clientX - S.look.x)*(W/r.width)/c.z;
-    c.y -= (ev.clientY - S.look.y)*(H/r.height)/c.z;
+    const dx = ev.clientX - S.look.x, dy = ev.clientY - S.look.y;
+    if (Math.abs(dx) + Math.abs(dy) > 3) { S.look.moved = true; S.lookEnd = performance.now(); }
+    c.x -= dx*(W/r.width)/c.z;
+    c.y -= dy*(H/r.height)/c.z;
     S.look.x = ev.clientX; S.look.y = ev.clientY;
     camClamp();
     return;
@@ -10004,7 +10077,7 @@ cv.addEventListener('pointerdown', ev => {
   if (ev.button === 2 || ev.button === 1) {     // right / middle drag looks around
     if (S.phase === 'menu') return;
     ev.preventDefault();
-    S.look = { x:ev.clientX, y:ev.clientY, id:ev.pointerId };
+    S.look = { x:ev.clientX, y:ev.clientY, id:ev.pointerId, moved:false };
     try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
     cv.style.cursor = 'grabbing';
     return;
@@ -10045,6 +10118,8 @@ cv.addEventListener('pointercancel', endPtr);
 cv.addEventListener('lostpointercapture', ev => { if (MOBILE) S.mouse.in = false; endPtr(ev); });
 cv.addEventListener('contextmenu', ev => {
   ev.preventDefault();
+  if (S.look && S.look.moved) return;                 // still dragging the view
+  if (performance.now() - (S.lookEnd || -1e9) < 400) return;   // just finished one
   const p = canvasPos(ev), t = towerAt(p.x, p.y);
   if (t) { sellTower(t); return; }
   cancelPlacing();
@@ -10139,7 +10214,10 @@ cv.addEventListener('pointermove', ev => {
 const dropPointer = ev => {
   PT.delete(ev.pointerId);
   if (PT.size < 2) S.pinch = null;
-  if (S.look && ev.pointerId === S.look.id) { S.look = null; cv.style.cursor = 'default'; }
+  if (S.look && ev.pointerId === S.look.id) {
+    if (S.look.moved) S.lookEnd = performance.now();
+    S.look = null; cv.style.cursor = 'default';
+  }
 };
 cv.addEventListener('pointerup', dropPointer, true);
 cv.addEventListener('pointercancel', dropPointer, true);
@@ -10944,6 +11022,76 @@ const GUIDE = [
     }
   } },
 
+{ ch:'Ascended', title:'Double Ascended',
+  text:'Two Jaxons in the whole game go one step further: <b>Mirror</b> and <b>True God</b>. Nobody else, ever.<br><br>Get <b>two Ascended ones of the same type</b> onto the field and a second purple button appears under the first. It costs more than anything else in the game on purpose — this is what a long run spends its last fortune on.<br><br>The two fold into a single <b>Double Ascended</b> Jaxon: a third larger again, ringed by two circles of motes turning opposite ways, about <b>six times</b> the Ascended one he was built from. There can only ever be one of him.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5.4);
+    gbLawn(g, w, h);
+    const cx = w*0.5, cy = h*0.62;
+    if (p < 0.4) {
+      for (let i = 0; i < 2; i++) {
+        const x = w*0.3 + i*w*0.4;
+        g.save();
+        g.globalCompositeOperation = 'lighter';
+        const gg = g.createRadialGradient(x, cy - 6, 4, x, cy - 6, 46);
+        gg.addColorStop(0, 'rgba(192,139,255,.3)'); gg.addColorStop(1, 'rgba(150,90,255,0)');
+        g.fillStyle = gg; g.beginPath(); g.arc(x, cy - 6, 46, 0, 7); g.fill();
+        g.restore();
+        pvJaxon(g, ASC_KEY('truegod'), x, cy + h*0.14, h*0.3, false);
+        gbText(g, 'Ascended', x, h*0.86, 10, '#c9b0ee', 'center');
+      }
+      const bw = w*0.56;
+      g.save();
+      g.beginPath(); g.roundRect(cx - bw/2, h*0.13, bw, 34, 10);
+      const gr = g.createLinearGradient(0, h*0.13, 0, h*0.13 + 34);
+      gr.addColorStop(0, 'rgba(255,180,255,.5)'); gr.addColorStop(1, 'rgba(150,60,200,.45)');
+      g.fillStyle = gr; g.fill();
+      g.lineWidth = 1.7; g.strokeStyle = 'rgba(255,216,255,' + (0.7 + Math.sin(t*4)*0.3) + ')'; g.stroke();
+      g.restore();
+      gbText(g, 'Double Ascend  $2,200,000', cx, h*0.13 + 14, 12, '#fff0ff', 'center');
+      gbText(g, 'There can only be one', cx, h*0.13 + 26, 8, '#e8c6f0', 'center', 700);
+      if (p > 0.26) gbCursor(g, cx + 14, h*0.13 + 24, (p - 0.26)*7);
+    } else if (p < 0.62) {
+      const k = (p - 0.4)/0.22, e = k*k*(3 - 2*k);
+      for (let i = 0; i < 2; i++) {
+        const sx = w*0.3 + i*w*0.4, x = sx + (cx - sx)*e;
+        g.save(); g.globalAlpha = 1 - k*k;
+        pvJaxon(g, ASC_KEY('truegod'), x, cy + h*0.14, h*0.3, false);
+        g.restore();
+      }
+      g.save(); g.globalCompositeOperation = 'lighter';
+      const r = 24 + e*104;
+      const gg = g.createRadialGradient(cx, cy, 2, cx, cy, r);
+      gg.addColorStop(0, 'rgba(255,255,255,' + (0.9*k) + ')');
+      gg.addColorStop(0.4, 'rgba(255,216,255,' + (0.6*k) + ')');
+      gg.addColorStop(1, 'rgba(192,139,255,0)');
+      g.fillStyle = gg; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+      g.restore();
+    } else {
+      g.save(); g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 2; i++) {
+        const rr = 66 + i*22, a = (0.3 - i*0.1)*(0.6 + Math.sin(t*1.8 + i)*0.25);
+        const gg = g.createRadialGradient(cx, cy - 6, 6, cx, cy - 6, rr);
+        gg.addColorStop(0, 'rgba(255,216,255,' + a + ')');
+        gg.addColorStop(1, 'rgba(150,90,255,0)');
+        g.fillStyle = gg; g.beginPath(); g.arc(cx, cy - 6, rr, 0, 7); g.fill();
+      }
+      g.restore();
+      pvJaxon(g, ASC_KEY('truegod'), cx, cy + h*0.16, h*0.42, false);
+      for (let i = 0; i < 6; i++) {
+        const ring = i < 3 ? 1 : -1;
+        const a2 = t*1.35*ring + (i % 3)*2.094;
+        const rad = i < 3 ? 40 : 58;
+        g.save();
+        g.globalAlpha = 0.55 + Math.sin(a2*2)*0.28;
+        g.fillStyle = i < 3 ? ['#ffd83d','#7fe9ff','#c08bff'][i] : '#ffd8ff';
+        g.beginPath(); g.arc(cx + Math.cos(a2)*rad, cy - 20 + Math.sin(a2)*rad*0.34, 3.6, 0, 7); g.fill();
+        g.restore();
+      }
+      gbText(g, 'Double Ascended True God Jaxon', cx, h*0.16, 12, '#fff0ff', 'center');
+    }
+  } },
+
 { ch:'Camera', title:'Zoom in, look around',
   text:'The camera is yours to move and it never changes the fight.<br><br><b>Scroll wheel</b> zooms toward your cursor, from a fifth of the way out to five times in. <b>Right-drag</b> or <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> looks around; on a phone, <b>pinch</b> to zoom and drag with <b>two fingers</b> to pan. One finger is still aiming.<br><br>The camera eases up to speed and coasts to a stop, so panning looks like a film crane rather than a jump cut. <span class="k">R</span> puts the view back.',
   art:(g, w, h, t) => {
@@ -11369,6 +11517,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 
 
