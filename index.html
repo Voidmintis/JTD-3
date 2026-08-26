@@ -792,10 +792,13 @@
   .overlay.on{display:flex;animation:ovIn .26s cubic-bezier(.2,1,.4,1) both}
   @keyframes ovIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion: reduce){ .overlay.on{animation:none} }
-  /* a tall menu (title + cast + three mode cards) must never be able to
-     strand the cards off the bottom of the stage */
   .overlay{overflow-y:auto;overflow-x:hidden}
-  #ovMenu{gap:12px;justify-content:center}
+  /* The front page is a fixed screen, not a document: everything is sized
+     to fit 1600x900 at once, so there is nothing to scroll and no bar. */
+  #ovMenu{
+    gap:10px;justify-content:center;overflow:hidden;
+    padding:62px 30px 16px;
+  }
   /* the mood layer sits behind everything the menu says */
   #menuFx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
   .overlay > *{position:relative;z-index:1}
@@ -826,7 +829,12 @@
   #ovMenu .cast{max-height:42px;overflow:hidden;opacity:.85}
   #ovMenu .cast img{height:40px}
   #ovMenu p{font-size:13px;max-width:640px}
-  #ovMenu #help{margin-top:2px}
+  #ovMenu #help{
+    position:absolute;left:50%;bottom:70px;transform:translateX(-50%);
+    width:min(780px,92%);z-index:3;margin:0;max-height:44vh;overflow-y:auto;
+    background:rgba(10,15,21,.94);border:1px solid var(--line);border-radius:16px;
+    padding:14px 18px;backdrop-filter:blur(10px);box-shadow:0 18px 44px rgba(0,0,0,.6);
+  }
   #ovMenu #help[hidden]{display:none}
   .overlay h1{font-size:66px;line-height:1;letter-spacing:-2px;font-weight:800;text-shadow:0 6px 0 rgba(0,0,0,.45)}
   .overlay h1 span{color:var(--accent)}
@@ -851,7 +859,34 @@
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
   /* ------------------------------------------------------- guidebook ---- */
+  /* The book hovers above the whole menu on its own dock, so the float
+     animation and the button's own hover never fight over transform. */
+  #bookDock{
+    position:absolute;top:12px;left:50%;z-index:4;
+    animation:bookFloat 3.6s ease-in-out infinite;
+    filter:drop-shadow(0 14px 16px rgba(0,0,0,.55));
+  }
+  @keyframes bookFloat{
+    0%,100%{transform:translate(-50%,0)}
+    50%{transform:translate(-50%,-9px)}
+  }
+  /* the marching outline: a real rounded ring, so it hugs the pill */
+  #bookBtn .ants{
+    position:absolute;left:-8px;top:-8px;width:calc(100% + 16px);height:calc(100% + 16px);
+    overflow:visible;pointer-events:none;
+  }
+  #bookBtn .ants rect{
+    x:1px;y:1px;width:calc(100% - 2px);height:calc(100% - 2px);rx:24px;ry:24px;
+    fill:none;stroke:#7dffb4;stroke-width:2;stroke-dasharray:10 8;
+    animation:ants 1.1s linear infinite;
+  }
+  @keyframes ants{ to{ stroke-dashoffset:-36 } }
+  @media (prefers-reduced-motion: reduce){
+    #bookDock{animation:none}
+    #bookBtn .ants rect{animation:none}
+  }
   #bookBtn{
+    position:relative;
     display:flex;align-items:center;gap:9px;cursor:pointer;font:inherit;
     padding:10px 22px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.6px;
     color:#0d1f12;background:linear-gradient(180deg,#7dffb4,#22e02a);
@@ -861,7 +896,8 @@
   #bookBtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
   #bookBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #128a17}
   #bookBtn svg{flex:none}
-  body.mobile #bookBtn{font-size:21px;padding:16px 34px;min-height:var(--tap);gap:12px}
+  body.mobile #bookBtn{font-size:21px;padding:14px 30px;min-height:var(--tap);gap:12px}
+  body.mobile #bookBtn .ants rect{rx:32px;ry:32px}
 
   /* the book opens over the pause menu, so it has to sit above it */
   #ovBook{z-index:34;padding:0;gap:0;justify-content:flex-start;
@@ -1056,8 +1092,8 @@
 
   /* ------------------------------------------------- gamemode select ---- */
   #modeGrid{
-    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;
-    width:min(880px,100%);
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;
+    width:min(1240px,100%);
   }
   .mcard{
     position:relative;display:flex;flex-direction:column;gap:8px;text-align:left;
@@ -1084,7 +1120,7 @@
   }
   .mcard.live .mn{text-shadow:0 0 18px var(--mc)}
   .mcard .art{
-    position:relative;height:104px;border-radius:12px;overflow:hidden;flex:none;
+    position:relative;height:var(--artH,112px);border-radius:12px;overflow:hidden;flex:none;
     background:linear-gradient(180deg,rgba(255,255,255,.04),rgba(0,0,0,.36));
     border:1px solid rgba(255,255,255,.08);
   }
@@ -1125,17 +1161,19 @@
     border-radius:999px;padding:9px 26px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;
   }
   #endModes:hover,#modeBack:hover,#playBtn:hover,#menuSettings:hover{color:var(--ink);background:rgba(255,255,255,.1)}
-  body.mobile #modeGrid{grid-template-columns:1fr;width:min(760px,100%);gap:14px}
-  body.mobile .mcard{padding:22px;border-radius:24px;gap:13px}
+  body.mobile #modeGrid{grid-template-columns:repeat(3,minmax(0,1fr));width:min(1300px,100%);gap:12px}
+  body.mobile .mcard{padding:14px;border-radius:20px;gap:9px}
   body.mobile #ovMenu h1{font-size:min(52px,6vw)}
   body.mobile #ovMenu .cast{display:none}
-  body.mobile #ovMenu #help{font-size:15px}
-  body.mobile .mcard .art{height:132px}
+  body.mobile #ovMenu{padding:78px 18px 14px}
+  body.mobile #ovMenu p#menuSub{display:none}
+  body.mobile #ovMenu #help{font-size:15px;bottom:96px}
+  body.mobile .mcard .art{height:var(--artH,96px)}
 
-  body.mobile .mcard .mn{font-size:30px}
-  body.mobile .mcard .mb{font-size:17px;min-height:0}
-  body.mobile .mcard .best{font-size:15px}
-  body.mobile .mcard .go{font-size:20px;padding:13px 34px;min-height:var(--tap)}
+  body.mobile .mcard .mn{font-size:24px}
+  body.mobile .mcard .mb{font-size:14px;min-height:0;-webkit-line-clamp:3}
+  body.mobile .mcard .best{font-size:13px}
+  body.mobile .mcard .go{font-size:16px;padding:9px 20px;min-height:0}
   body.mobile .mcard .pips i{width:24px;height:9px}
   #menuRow{display:flex;gap:9px;flex-wrap:wrap;justify-content:center}
   body.mobile #menuRow button{font-size:19px;padding:0 30px;min-height:var(--tap)}
@@ -1237,12 +1275,15 @@
     <div class="overlay on" id="ovMenu">
       <div id="menuFx"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
         <div id="menuRain"></div><div id="menuBolt"></div></div>
-      <button id="bookBtn">
-        <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">
-          <path fill="#0d1f12" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
-        </svg>
-        Guidebook
-      </button>
+      <div id="bookDock">
+        <button id="bookBtn">
+          <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#0d1f12" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
+          </svg>
+          Guidebook
+          <svg class="ants" aria-hidden="true"><rect/></svg>
+        </button>
+      </div>
       <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
@@ -4056,6 +4097,7 @@ function reset() {
 function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0; }
 
 function showModes() {
+  setTimeout(fitMenu, 0);
   $('ovEnd').classList.remove('on');
   $('ovMenu').classList.add('on');
   buildModeCards();
@@ -9473,6 +9515,7 @@ $('playBtn').onclick = () => {
   const h = $('help');
   h.hidden = !h.hidden;
   $('playBtn').textContent = h.hidden ? 'How to play' : 'Hide controls';
+  fitMenu();
   beep(h.hidden ? 420 : 700, 0.06, 'triangle', 0.03);
 };
 $('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
@@ -10344,13 +10387,36 @@ window.JTD = S;   // handy for tinkering from the console
 
 
 
+
+
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
 /* The mode cards ARE the main menu, so they get built right here rather than
    inside the image-preload callback. Their art is data-URL portraits that
    need no preloading, and hanging them off loadImages would leave the menu
    empty for as long as a single image stalled. */
 buildModeCards();
+fitMenu();
 /* the front page explains whichever set of controls this device has */
+/* ------------------------------------------------------- menu fitting ---
+   The front page is one screen with no scrollbar, which means it has to
+   actually fit. The numbers are chosen so it does with room to spare, but
+   a long name or a big system font should bend the layout rather than
+   silently clip it — so if it ever does overrun, the card art gives way a
+   step at a time until it does not. */
+/* a plain declaration, because fitMenu runs before this line does */
+function ART_H() { return MOBILE ? 96 : 112; }
+function fitMenu() {
+  const m = $('ovMenu');
+  if (!m || !m.classList.contains('on')) return;
+  let art = ART_H();
+  m.style.setProperty('--artH', art + 'px');
+  for (let i = 0; i < 9 && art > 44; i++) {
+    if (m.scrollHeight <= m.clientHeight + 2) break;
+    art -= 8;
+    m.style.setProperty('--artH', art + 'px');
+  }
+}
+
 function syncHelp() {
   const h = $('help');
   if (!h || h.dataset.touch === (MOBILE ? '1' : '0')) return;
@@ -10369,7 +10435,7 @@ function syncHelp() {
        <div><kbd>Wheel</kbd><span>Zoom right in. <b>Right-drag</b> or <b>WASD</b> looks around, <b>R</b> puts it back.</span></div>`;
 }
 const _syncMode = syncMode;
-syncMode = function () { _syncMode(); syncHelp(); };
+syncMode = function () { _syncMode(); syncHelp(); fitMenu(); };
 
 loadSave();
 /* The game does not wait on pictures. Everything below is synchronous, so
