@@ -480,6 +480,12 @@
   #panel .pstats .k{font-size:8px;letter-spacing:1.1px;text-transform:uppercase;color:var(--dim)}
   #panel .pstats .v{font-size:12px;font-weight:800;font-variant-numeric:tabular-nums}
   #panel .paths{display:flex;gap:8px}
+  #panel .paths.three{gap:5px}
+  #panel .paths.three .col{min-width:0}
+  #panel .paths.three .upg{padding:6px 6px 6px 20px}
+  #panel .paths.three .upg .un{font-size:9px}
+  #panel .paths.three .upg .ub{font-size:8px;-webkit-line-clamp:3}
+  #panel .paths.three .plab{font-size:8.5px}
   #panel .col{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
   #panel .plab{
     font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
@@ -504,6 +510,7 @@
   .upg.ok:hover{background:rgba(255,255,255,.1);transform:translateY(-1px)}
   .upg.a.ok{border-color:rgba(255,216,61,.5)}
   .upg.b.ok{border-color:rgba(127,233,255,.45)}
+  .upg.c.ok{border-color:rgba(192,139,255,.5)}
   .upg.ok.rich{animation:upPulse 1.5s ease-in-out infinite}
   @keyframes upPulse{0%,100%{box-shadow:0 0 0 0 rgba(34,224,42,0)}50%{box-shadow:0 0 0 3px rgba(34,224,42,.2)}}
   .upg.owned{background:rgba(34,224,42,.12);border-color:rgba(34,224,42,.45);cursor:default}
@@ -535,6 +542,34 @@
   #panel .dupe .ds{display:block;font-size:8.5px;color:var(--dim);margin-top:2px;letter-spacing:.3px}
   #panel .dupe.poor{
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
+  }
+  /* -------------------------------------------------------- Ascension --- */
+  #panel .asc{
+    width:100%;display:block;text-align:center;font:inherit;cursor:pointer;margin-top:9px;
+    color:#f0e2ff;border-radius:11px;padding:9px 8px;transition:.14s;
+    background:linear-gradient(180deg,rgba(150,90,255,.34),rgba(96,44,190,.3));
+    border:1px solid rgba(192,139,255,.68);
+    box-shadow:0 0 18px -4px rgba(160,90,255,.8), 0 0 0 0 rgba(192,139,255,.35) inset;
+    animation:ascPulse 1.9s ease-in-out infinite;
+  }
+  @keyframes ascPulse{
+    0%,100%{box-shadow:0 0 16px -6px rgba(160,90,255,.75)}
+    50%{box-shadow:0 0 26px -2px rgba(180,120,255,.95)}
+  }
+  #panel .asc:hover:not(.poor){
+    background:linear-gradient(180deg,rgba(174,116,255,.52),rgba(120,60,220,.44));color:#fff;
+  }
+  #panel .asc .an{display:block;font-weight:800;font-size:12px;letter-spacing:.6px}
+  #panel .asc .as{display:block;font-size:8.5px;color:#c9b0ee;margin-top:2px;letter-spacing:.3px}
+  #panel .asc.poor{
+    background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;
+    cursor:not-allowed;animation:none;box-shadow:none;
+  }
+  #panel .asc.poor .as{color:#5c6874}
+  #panel .ascWhy{
+    margin-top:9px;padding:7px 9px;border-radius:9px;text-align:center;
+    font-size:8.5px;letter-spacing:.4px;color:#b79ce0;
+    background:rgba(150,90,255,.09);border:1px dashed rgba(192,139,255,.3);
   }
   #panel .hint{font-size:8.5px;color:var(--dim);text-align:center;margin-top:7px;letter-spacing:.4px}
 
@@ -621,6 +656,13 @@
   body.mobile #panel .pstats .k{font-size:13px}
   body.mobile #panel .pstats .v{font-size:22px}
   body.mobile #panel .paths{gap:12px}
+  body.mobile #panel .paths.three{gap:7px}
+  body.mobile #panel .paths.three .upg .un{font-size:14px}
+  body.mobile #panel .paths.three .upg .ub{font-size:12px}
+  body.mobile #panel .asc{min-height:var(--tap);border-radius:14px;padding:11px 16px}
+  body.mobile #panel .asc .an{font-size:19px}
+  body.mobile #panel .asc .as{font-size:13px}
+  body.mobile #panel .ascWhy{font-size:13px;padding:11px}
   body.mobile #panel .plab{font-size:16px;padding:7px 0 8px;border-radius:10px}
   body.mobile .upg{padding:11px 12px 11px 42px;border-radius:14px;min-height:var(--tap)}
   body.mobile .upg .tier{left:11px;top:11px;width:24px;height:24px;font-size:15px;border-radius:7px}
@@ -1949,6 +1991,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"range":1.12,"add":{"pierce":1}} },
       { name:"Pitching Machine", blurb:"Cars fly twice as fast and punch through three more blobs.", cost:130,
         mod:{"dmg":1.15,"range":1.15,"speed":1.9,"add":{"pierce":1}} }
+    ] },
+    C: { name:"Pit Lane", tiers:[
+      { name:"Racing Line", blurb:"Cars come off the shelf already rolling.", cost:70,
+        mod:{"cd":0.86} },
+      { name:"Twin Garage", blurb:"Two cars a throw instead of one.", cost:260,
+        mod:{"dmg":1.35,"cd":0.8} },
+      { name:"Grand Prix", blurb:"A constant stream of toy cars, and every one punches through.", cost:1150,
+        mod:{"dmg":1.8,"cd":0.62,"add":{"pierce":2}} }
     ] }
   },
   slingshot: {
@@ -2003,6 +2053,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"cd":0.802} },
       { name:"Endless Nap", blurb:"Waves come far faster, and each one marks its victims for the whole board.", cost:210,
         mod:{"dmg":1.15,"cd":0.752,"xtra":["markHit"]} }
+    ] },
+    C: { name:"Deep Sleep", tiers:[
+      { name:"Bad Dream", blurb:"The wave leaves everything it touches rattled.", cost:120,
+        mod:{"add":{"markAmp":0.25}} },
+      { name:"Sleep Paralysis", blurb:"A short freeze rides along with the sound.", cost:520,
+        mod:{"add":{"markAmp":0.45,"waveStun":0.35}} },
+      { name:"Endless Night", blurb:"Every scream stuns the whole map and paints it for the others.", cost:2400,
+        mod:{"dmg":1.6,"add":{"markAmp":0.9,"waveStun":0.8}} }
     ] }
   },
   ninja: {
@@ -2021,6 +2079,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"xtra":["twin"]} },
       { name:"Storm of Blades", blurb:"Shuriken cut through two more blobs and fly at double speed.", cost:210,
         mod:{"dmg":1.15,"add":{"pierce":1},"speed":1.8,"range":1.12} }
+    ] },
+    C: { name:"Frost Steel", tiers:[
+      { name:"Chilled Blades", blurb:"Shuriken drag on whatever they clip.", cost:110,
+        mod:{"set":{"slow":0.82}} },
+      { name:"Ice Fan", blurb:"A colder throw, and it reaches further.", cost:470,
+        mod:{"set":{"slow":0.66},"range":1.2} },
+      { name:"Winter Storm", blurb:"A blizzard of steel that leaves the trail crawling.", cost:2100,
+        mod:{"set":{"slow":0.45},"range":1.4,"cd":0.72} }
     ] }
   },
   nurse: {
@@ -2111,6 +2177,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"mul":{"splashR":1.4}} },
       { name:"Rainbow Storm", blurb:"Fires much faster and each ball drills through the crowd.", cost:800,
         mod:{"dmg":1.15,"cd":0.752,"add":{"pierce":1}} }
+    ] },
+    C: { name:"Prism", tiers:[
+      { name:"Split Beam", blurb:"Each shot forks into a second colour.", cost:320,
+        mod:{"add":{"pierce":1},"dmg":1.2} },
+      { name:"Refraction", blurb:"Shots fan out three ways.", cost:1250,
+        mod:{"add":{"pierce":3},"dmg":1.35} },
+      { name:"Full Spectrum", blurb:"A wall of colour that goes through everything on the trail.", cost:5200,
+        mod:{"add":{"pierce":7},"dmg":1.7,"splash":1.5} }
     ] }
   },
   engineer: {
@@ -2237,6 +2311,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"cd":0.78} },
       { name:"Royal Mint", blurb:"Cars roll out far faster and every pop pays 50% more.", cost:1600,
         mod:{"dmg":1.15,"cd":0.769,"add":{"goldBonus":0.5}} }
+    ] },
+    C: { name:"Scrapyard", tiers:[
+      { name:"Volatile Fuel", blurb:"His cars go out with a bang.", cost:420,
+        mod:{"add":{"carBoom":90}} },
+      { name:"Loaded Boot", blurb:"A real explosion when a car is spent.", cost:1500,
+        mod:{"add":{"carBoom":320}} },
+      { name:"Demolition Derby", blurb:"Every wreck takes the whole junction with it.", cost:5800,
+        mod:{"add":{"carBoom":1100},"dmg":1.3} }
     ] }
   },
   pinwheel: {
@@ -2435,6 +2517,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"mul":{"push":1.6},"cd":0.917} },
       { name:"Chain Lightning", blurb:"Far quicker shockwaves that freeze everything they touch.", cost:48000,
         mod:{"dmg":1.15,"cd":0.791,"mul":{"push":1.5},"range":1.2,"xtra":["stunHit"]} }
+    ] },
+    C: { name:"Overcharge", tiers:[
+      { name:"Capacitor Bank", blurb:"The hyper laser cycles noticeably faster.", cost:4200,
+        mod:{"cd":0.82} },
+      { name:"Runaway Reaction", blurb:"Barely stops to cool down.", cost:15000,
+        mod:{"cd":0.68,"dmg":1.3} },
+      { name:"Meltdown", blurb:"A continuous beam of red, and the shockwave hits like a truck.", cost:52000,
+        mod:{"cd":0.5,"dmg":1.8} }
     ] }
   },
   titanmax: {
@@ -2453,6 +2543,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"mul":{"grabR":1.4},"cd":0.917} },
       { name:"Perpetual Engine", blurb:"Every weapon much faster, and the singularity comes far sooner.", cost:56000,
         mod:{"dmg":1.15,"cd":0.78,"mul":{"grabR":1.3},"range":1.2} }
+    ] },
+    C: { name:"Magnetise", tiers:[
+      { name:"Stronger Field", blurb:"Magnetic Collapse comes round sooner.", cost:5200,
+        mod:{"cd":0.85} },
+      { name:"Event Magnet", blurb:"A wider collapse, and it comes far more often.", cost:19000,
+        mod:{"cd":0.7,"dmg":1.25} },
+      { name:"Singularity Engine", blurb:"The collapse is almost permanent and drags in half the trail.", cost:64000,
+        mod:{"cd":0.52,"dmg":1.7} }
     ] }
   },
   blackholelaser: {
@@ -2471,6 +2569,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"add":{"cap":2},"mul":{"grabR":1.2}} },
       { name:"Gravity Well", blurb:"Far quicker vortexes holding nine blobs, and every round slows what it clips.", cost:80000,
         mod:{"dmg":1.15,"cd":0.835,"add":{"cap":4},"mul":{"grabR":1.35},"xtra":["slowHit"]} }
+    ] },
+    C: { name:"Event Horizon", tiers:[
+      { name:"Deeper Well", blurb:"The vortex holds on for longer.", cost:7000,
+        mod:{"dmg":1.25} },
+      { name:"Tidal Forces", blurb:"Anything caught in the well is torn while it waits.", cost:26000,
+        mod:{"dmg":1.6,"cd":0.82} },
+      { name:"Point Of No Return", blurb:"A well that does not let go and grinds what it holds.", cost:86000,
+        mod:{"dmg":2.3,"cd":0.66} }
     ] }
   },
   director: {
@@ -2507,6 +2613,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"cd":0.752} },
       { name:"Infinity Mirror", blurb:"Far faster copies from a huge radius, each one marking its target.", cost:89600,
         mod:{"dmg":1.15,"cd":0.791,"range":1.35,"xtra":["markHit"]} }
+    ] },
+    C: { name:"Hall Of Mirrors", tiers:[
+      { name:"Second Pane", blurb:"Copies come in pairs.", cost:7400,
+        mod:{"add":{"echo":1}} },
+      { name:"Facing Mirrors", blurb:"Every copy echoes twice more.", cost:28000,
+        mod:{"add":{"echo":2},"cd":0.85} },
+      { name:"Infinite Regress", blurb:"One shot goes in and a corridor of them comes out.", cost:92000,
+        mod:{"add":{"echo":4},"cd":0.7,"mul":{"boost":1.3}} }
     ] }
   },
   truegod: {
@@ -2525,6 +2639,14 @@ const UPGRADES = {
         mod:{"dmg":1.12,"add":{"shield":1}} },
       { name:"Ascension", blurb:"Everything much faster, a second shield each wave, and his light marks the fallen.", cost:112000,
         mod:{"dmg":1.15,"cd":0.78,"add":{"shield":1},"range":1.2,"xtra":["markHit"]} }
+    ] },
+    C: { name:"Revelation", tiers:[
+      { name:"Louder Gospel", blurb:"The TV aura reaches further and cooks harder.", cost:9500,
+        mod:{"range":1.15,"dmg":1.2} },
+      { name:"Second Coming", blurb:"The ultimates come round in half the time.", cost:36000,
+        mod:{"cd":0.7,"dmg":1.35} },
+      { name:"Judgment Day", blurb:"Everything he has, all of it, all the time.", cost:120000,
+        mod:{"cd":0.55,"dmg":1.9,"range":1.25} }
     ] }
   },
 
@@ -2632,8 +2754,14 @@ function applyMod(sp, m) {
   if (m.xtra) for (const flag of m.xtra) sp.xtra[flag] = true;
 }
 
+/* Which paths a Jaxon actually offers. Most have two; the ten that can
+   ascend have a third, because ascending asks for one of each. */
+const PATHS = t => (UPGRADES[(t && t.type) || t] || {}).C ? ['A','B','C'] : ['A','B'];
+const upOf = (t, p) => (p === 'A' ? t.upA : p === 'B' ? t.upB : t.upC) || 0;
+const setUp = (t, p, v) => { if (p === 'A') t.upA = v; else if (p === 'B') t.upB = v; else t.upC = v; };
+
 function SP(t) {
-  const ver = (t.upA || 0)*4 + (t.upB || 0);
+  const ver = (t.upA || 0)*16 + (t.upB || 0)*4 + (t.upC || 0) + (t.asc ? 1024 : 0);
   if (t._spec && t._sv === ver) return t._spec;
   const base = TOWERS[t.type];
   const sp = Object.assign({}, base);
@@ -2643,33 +2771,36 @@ function SP(t) {
   if (up) {
     for (let i = 0; i < (t.upA || 0); i++) applyMod(sp, up.A.tiers[i].mod);
     for (let i = 0; i < (t.upB || 0); i++) applyMod(sp, up.B.tiers[i].mod);
+    if (up.C) for (let i = 0; i < (t.upC || 0); i++) applyMod(sp, up.C.tiers[i].mod);
   }
+  /* An Ascended Jaxon carries every path at once and then some — see ASCEND */
+  if (t.asc) ascendSpec(sp, t.type);
   t._spec = sp; t._sv = ver;
   return sp;
 }
 
 /* what the next tier would do, without committing to it */
 function previewSpec(t, path, tier) {
-  const ghost = { type:t.type, upA:t.upA, upB:t.upB };
-  if (path === 'A') ghost.upA = tier; else ghost.upB = tier;
+  const ghost = { type:t.type, upA:t.upA, upB:t.upB, upC:t.upC };
+  setUp(ghost, path, tier);
   return SP(ghost);
 }
 
 const upSpent = t => {
   const up = UPGRADES[t.type]; if (!up) return 0;
   let n = 0;
-  for (let i = 0; i < (t.upA||0); i++) n += up.A.tiers[i].cost;
-  for (let i = 0; i < (t.upB||0); i++) n += up.B.tiers[i].cost;
+  for (const p of PATHS(t)) for (let i = 0; i < upOf(t, p); i++) n += up[p].tiers[i].cost;
+  if (t.asc) n += ascCost(t.type);            // the fusion fee is part of what he is worth
   return n;
 };
 /* BTD rule: a tier 3 needs the other path parked at 2 or lower */
 function canBuyUp(t, path, tier) {
   const up = UPGRADES[t.type]; if (!up) return 'none';
-  const own = path === 'A' ? (t.upA||0) : (t.upB||0);
-  const other = path === 'A' ? (t.upB||0) : (t.upA||0);
+  const own = upOf(t, path);
   if (tier <= own) return 'owned';
   if (tier !== own + 1) return 'locked';
-  if (tier === 3 && other >= 3) return 'blocked';
+  /* one capstone per Jaxon: a tier 3 anywhere caps every other path at 2 */
+  if (tier === 3 && PATHS(t).some(p => p !== path && upOf(t, p) >= 3)) return 'blocked';
   if (!afford(up[path].tiers[tier-1].cost)) return 'poor';
   return 'ok';
 }
@@ -2677,7 +2808,7 @@ function buyUp(t, path, tier) {
   if (canBuyUp(t, path, tier) !== 'ok') { beep(150, 0.08, 'square', 0.03); return false; }
   const u = UPGRADES[t.type][path].tiers[tier-1];
   spend(u.cost);
-  if (path === 'A') t.upA = tier; else t.upB = tier;
+  setUp(t, path, tier);
   t._spec = null;
   burst(t.x, t.y - 20, path === 'A' ? '#ffd83d' : '#7fe9ff', 16);
   S.floats.push({ x:t.x, y:t.y - 56, txt:u.name, color:path === 'A' ? '#ffd83d' : '#7fe9ff', life:1.6 });
@@ -2687,6 +2818,122 @@ function buyUp(t, path, tier) {
 }
 
 const svgURL = s => 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s);
+/* ------------------------------------------------------- Ascension ------
+   Three maxed copies of the same Jaxon — one for each path — fold into a
+   single Ascended one. He keeps every path's capstone at once and then
+   gets the multipliers below on top, which is what the fee buys.
+
+   Each fusion is measured against ONE maxed path — see ascendSpec. */
+const ASC_MAX = 2;                       // never more than two of a type on the field
+/* 'mods' is measured against ONE maxed path, not the product of three —
+   see ascendSpec for why. Read dmg:2.8 as "nearly three times the damage
+   of the best maxed ordinary one", which is what the fee is buying.
+   'extra' is what only the Ascended form has at all. */
+const ASCEND = {
+  basic: { name:'Ascended Basic Jaxon', cost:32000,
+           mods:{ dmg:2.8, cd:0.6, range:1.3, extra:{ add:{ pierce:3 } } },
+           blurb:'The starter, taken all the way. A blur of heavy toy cars that punch through the queue.' },
+  bedtime: { name:'Ascended Bedtime Jaxon', cost:40000,
+           mods:{ dmg:3.0, cd:0.6, range:1, extra:{ add:{ markAmp:0.5, waveStun:0.4 } } },
+           blurb:'The lullaby is a siren now — the whole map stops, and everything on it takes more from everyone.' },
+  ninja: { name:'Ascended Ninja Jaxon', cost:45000,
+           mods:{ dmg:2.9, cd:0.58, range:1.35, extra:{ add:{ pierce:3 }, set:{ slow:0.4 } } },
+           blurb:'A standing storm of frozen steel. Nothing crosses him at speed and nothing crosses him whole.' },
+  rainbow: { name:'Ascended Rainbow Jaxon', cost:65000,
+           mods:{ dmg:3.0, cd:0.6, range:1.3, extra:{ splash:1.8, add:{ pierce:5 } } },
+           blurb:'Every colour at once, straight through the line, and the wall behind it goes up as well.' },
+  goldeng: { name:'Ascended Golden Engineer', cost:75000,
+           mods:{ dmg:3.2, cd:0.55, range:1, extra:{ add:{ carBoom:900, goldBonus:0.5 } } },
+           blurb:'A works team of solid gold. His cars are armour, they pay, and they take the junction with them.' },
+  upgradedlaser: { name:'Ascended Laser Jaxon', cost:150000,
+           mods:{ dmg:3.0, cd:0.55, range:1.28 },
+           blurb:'The beam never stops and the shockwave never softens. A permanent red line down the trail.' },
+  titanmax: { name:'Ascended Titan Jaxon', cost:200000,
+           mods:{ dmg:3.0, cd:0.55, range:1.28 },
+           blurb:'Ice, fire, drill and shredder all at once, over a collapse that barely lets go of the ground.' },
+  blackholelaser: { name:'Ascended Black Hole Jaxon', cost:260000,
+           mods:{ dmg:3.2, cd:0.55, range:1.28 },
+           blurb:'A void that fires as fast as it swallows. What it holds, it keeps, and what it keeps, it grinds.' },
+  mirror: { name:'Ascended Mirror Jaxon', cost:280000,
+           mods:{ dmg:2.4, cd:0.5, range:1.3, extra:{ add:{ echo:4 }, mul:{ boost:1.5 } } },
+           blurb:'A corridor of glass. One friendly shot goes in and a barrage of brighter ones comes back out.' },
+  truegod: { name:'Ascended True God Jaxon', cost:400000,
+           mods:{ dmg:3.4, cd:0.5, range:1.3 },
+           blurb:'Every divine path folded into one. The cars, the cone, the aura and the ultimates, all of it, always.' }
+};
+const ascCost = k => Math.round((ASCEND[k] ? ASCEND[k].cost : 0) * M().cost);
+const canAscend = k => !!ASCEND[k];
+/* One maxed path, the best of the three, as the yardstick everything about
+   an Ascended Jaxon is measured against. Worked out once per type. */
+const SOLO = {};
+function soloMax(type) {
+  if (SOLO[type]) return SOLO[type];
+  const up = UPGRADES[type];
+  let best = null, bestDps = -1;
+  for (const p of ['A','B','C']) {
+    if (!up || !up[p]) continue;
+    const sp = Object.assign({}, TOWERS[type]);
+    sp.xtra = {};
+    if (TOWERS[type].weapons) sp.weapons = TOWERS[type].weapons.map(w => Object.assign({}, w));
+    for (let i = 0; i < 3; i++) applyMod(sp, up[p].tiers[i].mod);
+    const dps = sp.weapons
+      ? sp.weapons.reduce((a, w) => a + (w.dmg || 0)/Math.max(0.02, w.cd || 1), 0)
+      : (sp.dmg || 0)/Math.max(0.02, sp.cd || 1);
+    if (dps > bestDps) { bestDps = dps; best = sp; }
+  }
+  SOLO[type] = best || Object.assign({}, TOWERS[type]);
+  return SOLO[type];
+}
+
+/* An Ascended Jaxon keeps every path's EFFECTS — the pierce, the slow, the
+   splash, the exploding cars — but his raw numbers are set against a single
+   maxed path rather than the product of three. Multiplying three full paths
+   together came out at a hundred times a maxed tower; this comes out at the
+   handful of times the fee is actually worth. */
+function ascendSpec(sp, type) {
+  const up = UPGRADES[type], A = ASCEND[type];
+  if (!up || !A) return;
+  for (const p of ['A','B','C']) {
+    if (!up[p]) continue;
+    for (let i = 0; i < 3; i++) applyMod(sp, up[p].tiers[i].mod);
+  }
+  const solo = soloMax(type), k = A.mods;
+  if (typeof sp.dmg === 'number') sp.dmg = Math.round(solo.dmg*(k.dmg || 1)*10)/10;
+  if (typeof sp.cd === 'number') sp.cd = solo.cd*(k.cd || 1);
+  if (typeof sp.range === 'number' && isFinite(sp.range)) sp.range = Math.round(solo.range*(k.range || 1));
+  if (sp.weapons && solo.weapons) {
+    sp.weapons.forEach((w, i) => {
+      const sw = solo.weapons[i]; if (!sw) return;
+      for (const key of ['dmg','dmgMin','dmgMax','splash','boltDmg','carHp']) {
+        if (typeof w[key] === 'number' && typeof sw[key] === 'number') w[key] = Math.round(sw[key]*(k.dmg || 1));
+      }
+      if (typeof w.cd === 'number' && typeof sw.cd === 'number') w.cd = sw.cd*(k.cd || 1);
+    });
+  }
+  if (k.extra) applyMod(sp, k.extra);
+}
+
+/* --------------------------------------------------- Ascended skins -----
+   Not a new creature: the same Jaxon with the three maxed silhouettes
+   folded together — the gear from each path, a shared violet-and-gold
+   trim that says "ascended", and the pacifier exactly where it was. */
+const ASC_TRIM = { belt:'#c08bff', beltDark:'#4a1f8a', outline:'#2a0f52', outlineWidth:7,
+                   pacG:'#c08bff', pacGD:'#4a1f8a', pacO:'#ffd83d', pacOD:'#a97c00' };
+const ASC_VARIANTS = {};
+for (const k in ASCEND) {
+  ASC_VARIANTS[k] = Object.assign({}, VARIANTS[k], ASC_TRIM, { wide:true, halo:true });
+}
+/* each one keeps a little of its own path colour so a maxed Ninja still
+   reads as a Ninja and not as a generic purple Jaxon */
+Object.assign(ASC_VARIANTS.basic,   { suitLite:'#ffe9a8', suit:'#ffcf4a', suitDark:'#b8860b', arm:'#c08bff', armDark:'#4a1f8a' });
+Object.assign(ASC_VARIANTS.bedtime, { suitLite:'#d9c6ff', suit:'#9a6bff', suitDark:'#4a1f8a', arm:'#ffe9a8', armDark:'#a97c00' });
+Object.assign(ASC_VARIANTS.ninja,   { suitLite:'#bfe6ff', suit:'#5fa8e0', suitDark:'#1a3f6b', arm:'#c08bff', armDark:'#4a1f8a' });
+Object.assign(ASC_VARIANTS.rainbow, { rainbow:true, arm:'#c08bff', armDark:'#4a1f8a' });
+Object.assign(ASC_VARIANTS.goldeng, { suitLite:'#fff4b8', suit:'#ffd21e', suitDark:'#a87a00', arm:'#c08bff', armDark:'#4a1f8a' });
+Object.assign(ASC_VARIANTS.mirror,  { shards:true, suitLite:'#f8f2ff', suit:'#d9c6ff', suitDark:'#8f6bc4' });
+const ASC_KEY = k => 'asc_' + k;
+for (const k in ASC_VARIANTS) VARIANTS[ASC_KEY(k)] = ASC_VARIANTS[k];
+
 const PORTRAIT = {};
 for (const k in VARIANTS) PORTRAIT[k] = svgURL(jaxonSVG(VARIANTS[k], 'p' + k));
 
@@ -3113,7 +3360,11 @@ for (const k in VARIANTS) {
   const h = VARIANTS[k].wide ? T_H * (BODY_SCALE[k] || 1.7) / WIDE_FILL : T_H;
   SPRITE[k] = { w: h * (b.w / b.h), h, feet: (FOOT_Y - b.y) / b.h };
 }
+/* an Ascended Jaxon draws with his own sprite, everyone else with theirs */
+const artOf = t => (t && t.asc && SPRITE[ASC_KEY(t.type)] ? ASC_KEY(t.type) : (t && t.type) || t);
 const spriteW = k => SPRITE[k].w, spriteH = k => SPRITE[k].h;
+/* amber is power, cyan is utility, violet is the third way */
+const PATH_COL = { A:'#ffd83d', B:'#7fe9ff', C:'#c08bff' };
 /* every Jaxon, whatever its size, plants its feet on the same ground line */
 const spriteTop = k => T_H*0.44 - SPRITE[k].h * SPRITE[k].feet;
 
@@ -3217,7 +3468,7 @@ const S = {
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
-  camV:{x:0,y:0}, look:null,
+  camV:{x:0,y:0}, look:null, fuse:null,
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
@@ -3557,7 +3808,7 @@ function setPlacingBanner() {
   if (!S.placing) { el.classList.remove('on'); return; }
   $('placingImg').src = PORTRAIT[S.placing];
   const what = S.dupe
-    ? 'Copy of ' + TOWERS[S.placing].name + ' · ' + S.dupe.upA + '-' + S.dupe.upB
+    ? 'Copy of ' + TOWERS[S.placing].name + ' · ' + S.dupe.upA + '-' + S.dupe.upB + '-' + (S.dupe.upC || 0)
     : TOWERS[S.placing].name;
   $('placingTxt').textContent = (MOBILE ? 'Tap the grass · ' : 'Placing ') + what;
   el.querySelector('em').textContent = MOBILE ? 'Tap here to cancel' : 'Esc to cancel';
@@ -3588,7 +3839,7 @@ function startDuplicate(t) {
     beep(150, 0.08, 'square', 0.03);
     return;
   }
-  S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, cost, range:SP(t).range };
+  S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0, cost, range:SP(t).range };
   S.placing = t.type;
   deselect();
   syncShelf(); setPlacingBanner();
@@ -3633,7 +3884,7 @@ function reset() {
   S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
-  S.shield=0; S.cut=null; S.dying=0; S.lastLeak=null; S.bestAtStart = bestOf(S.mode);
+  S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.bestAtStart = bestOf(S.mode);
   S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
   $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
@@ -6068,6 +6319,7 @@ function update(dt) {
   S.gusts = S.gusts.filter(g => !g.dead);
 
   if (S.cut) { S.cut.t -= dt; if (S.cut.t <= 0) S.cut = null; }
+  if (S.fuse) { S.fuse.t += dt; if (S.fuse.t >= S.fuse.dur) S.fuse = null; }
 
   /* soundwaves — grow outward, damage each enemy exactly once */
   for (const w of S.waves) {
@@ -6325,6 +6577,95 @@ function endGame() {
   syncHUD();
 }
 
+/* ------------------------------------------------------ the fusion ------
+   A trio is three ordinary Jaxons of one type, none of them already
+   Ascended, carrying a maxed A, a maxed B and a maxed C between them. The
+   Jaxon whose panel is open is always part of his own trio if he qualifies,
+   so the button appears where the player is already looking. */
+function ascTrio(t) {
+  if (!t || t.asc || !canAscend(t.type)) return null;
+  const pool = S.towers.filter(o => o.type === t.type && !o.asc);
+  const pick = {};
+  /* seat the open Jaxon first so he is never the one left out */
+  const mine = ['A','B','C'].find(p => upOf(t, p) >= 3);
+  if (!mine) return null;
+  pick[mine] = t;
+  for (const p of ['A','B','C']) {
+    if (pick[p]) continue;
+    const o = pool.find(x => x !== pick.A && x !== pick.B && x !== pick.C && upOf(x, p) >= 3);
+    if (!o) return null;
+    pick[p] = o;
+  }
+  return [pick.A, pick.B, pick.C];
+}
+const ascCount = k => S.towers.filter(o => o.asc && o.type === k).length;
+/* why the button is not offered, in words the player can act on */
+function ascWhy(t) {
+  if (!canAscend(t.type)) return null;
+  if (t.asc) return 'ascended';
+  if (ascCount(t.type) >= ASC_MAX) return 'Two Ascended ' + TOWERS[t.type].name + 's already — that is the limit';
+  if (ascTrio(t)) return null;
+  const pool = S.towers.filter(o => o.type === t.type && !o.asc);
+  const have = ['A','B','C'].filter(p => pool.some(o => upOf(o, p) >= 3));
+  const up = UPGRADES[t.type];
+  const missing = ['A','B','C'].filter(p => !have.includes(p)).map(p => up[p].name);
+  if (missing.length) return 'Needs a maxed ' + missing.join(' and a maxed ');
+  return 'Needs three separate Jaxons, one for each maxed path';
+}
+
+/* the fusion: three pull in, flash, one walks out */
+function startAscend(t) {
+  const trio = ascTrio(t);
+  if (!trio) { toast(ascWhy(t) || 'No trio ready'); return; }
+  if (ascCount(t.type) >= ASC_MAX) { toast('Already two Ascended of that Jaxon'); return; }
+  const cost = ascCost(t.type);
+  if (!afford(cost)) { toast('Ascension costs $' + cost.toLocaleString()); beep(150, 0.08, 'square', 0.03); return; }
+  spend(cost);
+  /* the survivor is the one the player had open, standing where he stands */
+  const keep = trio.includes(t) ? t : trio[0];
+  const others = trio.filter(o => o !== keep);
+  S.fuse = { x:keep.x, y:keep.y, t:0, dur:1.15, type:keep.type,
+             from:others.map(o => ({ x:o.x, y:o.y, type:o.type, upA:o.upA, upB:o.upB, upC:o.upC })) };
+  S.towers = S.towers.filter(o => !others.includes(o));
+  keep.asc = true; keep.upA = keep.upB = keep.upC = 3;
+  keep._spec = null; keep._sv = -1;
+  keep.cds = (SP(keep).weapons || []).map(w => w.cd);
+  deselect();
+  shakeScreen(18, 1.1);
+  flashScreen(0.34);
+  banner('ASCENDED', ASCEND[keep.type].name, '#c08bff');
+  beep(70, 1.4, 'sawtooth', 0.07, 340);
+  for (let i = 0; i < 4; i++) setTimeout(() => beep(300 + i*260, 0.2, 'triangle', 0.05), 240 + i*110);
+  toast(ASCEND[keep.type].name + ' — three became one');
+  syncHUD(); syncShelf();
+}
+
+/* the short pull-in, drawn over the field while it runs */
+function drawFuse() {
+  const f = S.fuse;
+  if (!f) return;
+  const k = Math.min(1, f.t/f.dur);
+  const ease = k*k*(3 - 2*k);
+  ctx.save();
+  for (const o of f.from) {
+    const x = o.x + (f.x - o.x)*ease, y = o.y + (f.y - o.y)*ease;
+    ctx.globalAlpha = Math.max(0, 1 - k*k);
+    drawTower({ type:o.type, x, y, face:1, upA:o.upA, upB:o.upB, upC:o.upC }, true);
+    ctx.globalAlpha = 0.5*(1 - k);
+    ctx.strokeStyle = '#c08bff'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(x, y - 20); ctx.lineTo(f.x, f.y - 20); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  ctx.globalCompositeOperation = 'lighter';
+  const r = 30 + ease*120, fade = k < 0.72 ? k : Math.max(0, 1 - (k - 0.72)/0.28);
+  const g = ctx.createRadialGradient(f.x, f.y - 20, 2, f.x, f.y - 20, r);
+  g.addColorStop(0, 'rgba(255,255,255,' + (0.9*fade) + ')');
+  g.addColorStop(0.45, 'rgba(192,139,255,' + (0.55*fade) + ')');
+  g.addColorStop(1, 'rgba(192,139,255,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(f.x, f.y - 20, r, 0, 7); ctx.fill();
+  ctx.restore();
+}
+
 /* ------------------------------------------------------------ tooltip ---- */
 function hideTip() { $('ttip').classList.remove('on'); S.hovered = null; }
 
@@ -6524,6 +6865,9 @@ function drawPanel() {
   const dcost = dupeCost(t);
   const rng = sp.range === Infinity ? '∞' : Math.round(sp.range);
 
+  const paths = PATHS(t);
+  const trio = ascTrio(t), why = ascWhy(t);
+  const acost = ascCost(t.type);
   const col = (path) => {
     const P = up[path];
     let h = `<div class="col ${path.toLowerCase()}"><div class="plab">${P.name}</div>`;
@@ -6546,15 +6890,16 @@ function drawPanel() {
   el.innerHTML = `
     <div class="phead">
       <div class="pic"><img src="${PORTRAIT[t.type]}" alt=""></div>
-      <div><div class="nm">${base.name}</div>
-           <div class="sub">Placed wave ${t.placedWave} · ${t.upA||0}-${t.upB||0}</div></div>
+      <div><div class="nm">${t.asc ? ASCEND[t.type].name : base.name}</div>
+           <div class="sub">Placed wave ${t.placedWave} · ${paths.map(p => upOf(t, p)).join('-')}${t.asc ? ' · ASCENDED' : ''}</div></div>
     </div>
     <div class="pstats">
       <div><div class="k">Damage</div><div class="v">${Math.round(t.dmg).toLocaleString()}</div></div>
       <div><div class="k">Pops</div><div class="v">${t.pops}</div></div>
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
-    <div class="paths">${col('A')}${col('B')}</div>
+    <div class="paths${paths.length === 3 ? ' three' : ''}">${paths.map(col).join('')}</div>
+    ${ascBtn(t, trio, why, acost)}
     <button class="dupe${afford(dcost) ? '' : ' poor'}" id="pDupe">
       <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
       <span class="ds">Copies this Jaxon with all upgrades</span>
@@ -6563,7 +6908,8 @@ function drawPanel() {
       <button class="sell" id="pSell">Sell &nbsp;+$${refund.toLocaleString()}</button>
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
-    <div class="hint">A tier 3 locks the other path at tier 2</div>`;
+    <div class="hint">${t.asc ? ASCEND[t.type].blurb
+        : 'A tier 3 locks the other paths at tier 2'}</div>`;
 
   el.classList.add('on');
   el._for = t;
@@ -6576,8 +6922,24 @@ function drawPanel() {
     bt.onmouseleave = () => hideTip();
   });
   $('pDupe').onclick = ev => { ev.stopPropagation(); startDuplicate(t); };
+  const ab = $('pAsc');
+  if (ab) ab.onclick = ev => { ev.stopPropagation(); startAscend(t); };
   $('pSell').onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
+}
+
+/* The purple button, and only when there is something to press it for. */
+function ascBtn(t, trio, why, cost) {
+  if (!canAscend(t.type) || t.asc) return '';
+  /* at the cap there is nothing to press, whatever is standing around */
+  if (!trio || ascCount(t.type) >= ASC_MAX) {
+    return why ? '<div class="ascWhy">' + why + '</div>' : '';
+  }
+  const poor = !afford(cost);
+  return '<button class="asc' + (poor ? ' poor' : '') + '" id="pAsc">' +
+         '<span class="an">Ascend &nbsp;$' + cost.toLocaleString() + '</span>' +
+         '<span class="as">Fuses three maxed ' + TOWERS[t.type].name + 's into one</span>' +
+         '</button>';
 }
 
 /* Cheap per-frame pass: numbers and button states only, never innerHTML, so
@@ -7241,9 +7603,10 @@ function drawBoss(bs) {
 function drawTower(t, ghost) {
   const rec = (t.recoil || 0)*3;
   const bob = ghost ? 0 : Math.sin(S.t*2.4 + t.x)*1.2;
-  const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0);
-  const grow = 1 + tiers*0.03;                         // every upgrade puffs him up a little
-  const sw = spriteW(t.type)*grow, sh = spriteH(t.type)*grow;
+  const art = artOf(t);
+  const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
+  const grow = (1 + tiers*0.03) * (t.asc ? 1.1 : 1);   // every upgrade puffs him up a little
+  const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
   ctx.save();
   /* jammed by the Static Sovereign: he flickers and stops firing */
@@ -7271,29 +7634,48 @@ function drawTower(t, ghost) {
   ctx.translate(t.x, t.y + bob);
   if (t.face === -1) ctx.scale(-1, 1);
   ctx.translate(0, rec*0.5);
-  ctx.drawImage(IMG[t.type], -sw/2, spriteTop(t.type)*grow, sw, sh);
+  ctx.drawImage(IMG[art] || IMG[t.type], -sw/2, spriteTop(art)*grow, sw, sh);
   ctx.restore();
+
+  if (t.asc && !ghost) {                         // a standing violet halo
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const puls = 0.5 + Math.sin(S.t*2.2 + t.x*0.02)*0.16;
+    const hg = ctx.createRadialGradient(t.x, t.y - 8, 6, t.x, t.y - 8, 78);
+    hg.addColorStop(0, 'rgba(192,139,255,' + (0.26*puls) + ')');
+    hg.addColorStop(0.6, 'rgba(150,90,255,' + (0.13*puls) + ')');
+    hg.addColorStop(1, 'rgba(150,90,255,0)');
+    ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(t.x, t.y - 8, 78, 0, 7); ctx.fill();
+    /* three motes, one for each Jaxon that went into him */
+    for (let i = 0; i < 3; i++) {
+      const a = S.t*1.5 + i*2.094;
+      const ox = t.x + Math.cos(a)*44, oy = t.y - 26 + Math.sin(a)*15;
+      ctx.globalAlpha = 0.5 + Math.sin(a*2)*0.25;
+      ctx.fillStyle = i === 0 ? '#ffd83d' : i === 1 ? '#7fe9ff' : '#c08bff';
+      ctx.beginPath(); ctx.arc(ox, oy, 3.4, 0, 7); ctx.fill();
+    }
+    ctx.restore();
+  }
 
   if (ghost || !tiers) return;
   /* tier pips under the feet: amber for the power path, cyan for utility */
   ctx.save();
-  const py = t.y + T_H*0.44 + 4, tot = (t.upA||0) + (t.upB||0);
+  const py = t.y + T_H*0.44 + 4;
+  const paths = PATHS(t), tot = paths.reduce((a, p) => a + upOf(t, p), 0);
   let px = t.x - (tot - 1)*4.5;
-  for (let i = 0; i < (t.upA||0); i++, px += 9) {
-    ctx.fillStyle = '#ffd83d'; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(px, py-3); ctx.lineTo(px+3.2, py); ctx.lineTo(px, py+3); ctx.lineTo(px-3.2, py);
-    ctx.closePath(); ctx.fill(); ctx.stroke();
+  for (const p of paths) {
+    ctx.fillStyle = PATH_COL[p]; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 1.6;
+    for (let i = 0; i < upOf(t, p); i++, px += 9) {
+      ctx.beginPath(); ctx.moveTo(px, py-3); ctx.lineTo(px+3.2, py); ctx.lineTo(px, py+3); ctx.lineTo(px-3.2, py);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
   }
-  for (let i = 0; i < (t.upB||0); i++, px += 9) {
-    ctx.fillStyle = '#7fe9ff'; ctx.strokeStyle = 'rgba(0,0,0,.55)'; ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(px, py-3); ctx.lineTo(px+3.2, py); ctx.lineTo(px, py+3); ctx.lineTo(px-3.2, py);
-    ctx.closePath(); ctx.fill(); ctx.stroke();
-  }
-  if ((t.upA||0) === 3 || (t.upB||0) === 3) {          // capstone glow
+  const cap = paths.find(p => upOf(t, p) === 3);
+  if (cap) {                                           // capstone glow
     ctx.globalCompositeOperation = 'lighter';
     ctx.globalAlpha = 0.14 + Math.sin(S.t*2.6 + t.x)*0.05;
     const cg = ctx.createRadialGradient(t.x, t.y, 4, t.x, t.y, 52);
-    cg.addColorStop(0, (t.upA||0) === 3 ? '#ffd83d' : '#7fe9ff');
+    cg.addColorStop(0, PATH_COL[cap]);
     cg.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = cg; ctx.beginPath(); ctx.arc(t.x, t.y, 52, 0, 7); ctx.fill();
   }
@@ -8020,7 +8402,8 @@ function render() {
     if (m.in) {
       if (!ok) { ctx.save(); ctx.filter = 'grayscale(1)'; }
       drawTower({ type:S.placing, x:m.x, y:m.y, face:1,
-                  upA:S.dupe ? S.dupe.upA : 0, upB:S.dupe ? S.dupe.upB : 0 }, true);
+                  upA:S.dupe ? S.dupe.upA : 0, upB:S.dupe ? S.dupe.upB : 0,
+                  upC:S.dupe ? S.dupe.upC : 0 }, true);
       if (!ok) ctx.restore();
     }
   }
@@ -8370,6 +8753,7 @@ function render() {
   for (const e of S.enemies) drawEnemy(e);
   for (const B of S.bosses) drawBoss(B);
   for (const s of S.shots) drawShot(s);
+  if (S.fuse) drawFuse();
 
   for (const f of S.fx) {
     if (f.k === 'p') {
@@ -8657,7 +9041,7 @@ function tryPlaceAt(x, y, silent) {
   const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
-              upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, _spec:null, _sv:-1,
+              upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, upC:dup ? dup.upC : 0, _spec:null, _sv:-1,
               rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
               lastFired:null, copied:null, copyFlash:0,
               placedWave:S.wave, dmg:0, pops:0, shots:0 };
@@ -9172,6 +9556,8 @@ window.JTD = S;   // handy for tinkering from the console
 
 
 
+
+
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
 /* The mode cards ARE the main menu, so they get built right here rather than
    inside the image-preload callback. Their art is data-URL portraits that
@@ -9188,7 +9574,8 @@ function syncHelp() {
        <div><kbd>Place</kbd><span>Tap the grass to drop him &mdash; or drag to lay down a whole row.</span></div>
        <div><kbd>Upgrade</kbd><span>Tap a placed Jaxon to open his two upgrade paths and the sell button.</span></div>
        <div><kbd>Aim</kbd><span>Press and hold anywhere on the field to aim every Jaxon at your finger.</span></div>
-       <div><kbd>Look</kbd><span>Pinch to zoom, and drag with two fingers to look around the park.</span></div>`
+       <div><kbd>Look</kbd><span>Pinch to zoom, and drag with two fingers to look around the park.</span></div>
+       <div><kbd>Ascend</kbd><span>Ten Jaxons have a third path. Max all three on three separate copies and they fuse into one <b>Ascended</b> Jaxon.</span></div>`
     : `<div><kbd>Shop</kbd><span>Press the arrow tab at the bottom to slide the shop open, and again to close it.</span></div>
        <div><kbd>Click</kbd><span>Click a placed Jaxon for his upgrade paths, live stats and sell price.</span></div>
        <div><kbd>Hold</kbd><span>Hold the mouse on the field to override auto-aim at your cursor.</span></div>
