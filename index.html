@@ -566,6 +566,43 @@
     cursor:not-allowed;animation:none;box-shadow:none;
   }
   #panel .asc.poor .as{color:#5c6874}
+  #panel .asc.dbl{
+    background:linear-gradient(180deg,rgba(255,180,255,.3),rgba(150,60,200,.3));
+    border-color:rgba(255,216,255,.7);color:#fff0ff;
+  }
+  #panel .asc.dbl:hover:not(.poor){
+    background:linear-gradient(180deg,rgba(255,200,255,.48),rgba(170,80,225,.42));
+  }
+  #panel .asc.dbl .as{color:#e8c6f0}
+  #panel .ascWhy.dbl{color:#e3b8ee;border-color:rgba(255,216,255,.3)}
+  /* ---------------------------------------------- the Admin Jaxon's levels */
+  .admLv{
+    border:1px solid rgba(255,43,43,.35);border-radius:12px;padding:9px 10px;
+    background:rgba(255,43,43,.07);font-family:"Consolas","Courier New",monospace;
+  }
+  .admLv .lvTop{display:flex;justify-content:space-between;align-items:baseline;
+                font-size:12px;font-weight:800;color:#ffbcbc;letter-spacing:.6px}
+  .admLv .lvTop b{color:#ff5a3c;font-size:11px}
+  .admLv .lvBar{height:6px;border-radius:99px;background:rgba(0,0,0,.5);margin:6px 0 3px;overflow:hidden}
+  .admLv .lvBar i{display:block;height:100%;background:linear-gradient(90deg,#7a0000,#ff2b2b)}
+  .admLv .lvXp{font-size:8.5px;color:#a8776f;letter-spacing:.7px;margin-bottom:6px}
+  .admLv .lvUn{display:flex;justify-content:space-between;font-size:9.5px;color:#7e6560;padding:2px 0}
+  .admLv .lvUn.on{color:#ff8a5a}
+  .admLv .lvUn.on span::before{content:'✓ '}
+  .admLv .lvRow{display:flex;gap:6px;margin-top:8px}
+  .admLv .lvRow input{
+    width:62px;background:#140506;border:1px solid rgba(255,43,43,.4);border-radius:7px;
+    color:#ffbcbc;font:inherit;font-size:12px;padding:6px 8px;
+  }
+  .admLv .lvRow button{
+    flex:1;font:inherit;font-size:11px;font-weight:800;cursor:pointer;border-radius:7px;
+    background:rgba(255,43,43,.2);border:1px solid rgba(255,43,43,.5);color:#ffd9d4;transition:.12s;
+  }
+  .admLv .lvRow button:hover{background:rgba(255,43,43,.36);color:#fff}
+  body.mobile .admLv .lvTop{font-size:19px}
+  body.mobile .admLv .lvXp{font-size:13px}
+  body.mobile .admLv .lvUn{font-size:15px}
+  body.mobile .admLv .lvRow input,body.mobile .admLv .lvRow button{font-size:17px;min-height:var(--tap)}
   #panel .ascWhy{
     margin-top:9px;padding:7px 9px;border-radius:9px;text-align:center;
     font-size:8.5px;letter-spacing:.4px;color:#b79ce0;
@@ -858,6 +895,143 @@
   #help kbd{flex:none}
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
+  /* -------------------------------------------------------- abilities ---- */
+  #abils{
+    position:absolute;left:14px;bottom:16px;display:none;gap:10px;z-index:12;
+    align-items:flex-end;
+  }
+  #abils.on{display:flex}
+  .abil{
+    position:relative;width:56px;height:56px;border-radius:50%;cursor:pointer;padding:0;
+    background:radial-gradient(circle at 36% 30%,rgba(30,42,56,.96),rgba(10,15,21,.96));
+    border:1px solid var(--line);backdrop-filter:blur(8px);
+    transition:transform .11s cubic-bezier(.2,1.3,.4,1),border-color .13s,box-shadow .13s;
+    display:grid;place-items:center;
+  }
+  .abil .ic{width:26px;height:26px;fill:#5d6b7b;transition:fill .14s;pointer-events:none}
+  .abil .ring{position:absolute;inset:6px;width:auto;height:auto;transform:rotate(-90deg);pointer-events:none}
+  .abil .ring circle{fill:none;stroke:var(--ac);stroke-width:3;opacity:.85;stroke-linecap:round}
+  .abil .cd{
+    position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;
+    font:inherit;font-size:16px;font-weight:800;color:#dbe4ee;
+    text-shadow:0 2px 5px rgba(0,0,0,.8);
+  }
+  .abil .nm{
+    position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);white-space:nowrap;
+    font-size:8.5px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+    color:#6c7f8f;pointer-events:none;transition:color .14s;
+  }
+  .abil.ready{border-color:var(--ac);box-shadow:0 0 18px -4px var(--ac)}
+  .abil.ready .ic{fill:var(--ac)}
+  .abil.ready .nm{color:var(--ac)}
+  .abil.ready::after{
+    content:'';position:absolute;inset:-4px;border-radius:50%;pointer-events:none;
+    border:1px solid var(--ac);opacity:.55;animation:abilReady 1.9s ease-out infinite;
+  }
+  @keyframes abilReady{
+    0%{transform:scale(1);opacity:.55} 70%{transform:scale(1.22);opacity:0} 100%{opacity:0}
+  }
+  .abil:hover{transform:translateY(-3px)}
+  .abil:active{transform:translateY(1px)}
+  @media (prefers-reduced-motion: reduce){ .abil.ready::after{animation:none} }
+  body.mobile #abils{left:18px;bottom:calc(var(--tap) * 1.25);gap:16px}
+  body.mobile .abil{width:var(--tap);height:var(--tap)}
+  body.mobile .abil .ic{width:38px;height:38px}
+  body.mobile .abil .cd{font-size:24px}
+  body.mobile .abil .nm{font-size:13px;bottom:-20px}
+
+  /* ----------------------------------------------------- admin panel ---- */
+  #admDot{
+    position:absolute;display:none;width:46px;height:46px;border-radius:50%;cursor:pointer;
+    border:2px solid #6b4a1e;background:radial-gradient(circle at 34% 30%,#8a6231,#4a3218);
+    box-shadow:0 4px 12px rgba(0,0,0,.6), 0 0 0 0 rgba(255,43,43,.5);
+    z-index:15;padding:0;transition:transform .12s;
+    animation:admBreathe 2.6s ease-in-out infinite;
+  }
+  #admDot.on{display:block}
+  #admDot:hover{transform:scale(1.12)}
+  #admDot::after{
+    content:'';position:absolute;inset:11px;border-radius:50%;
+    background:repeating-linear-gradient(0deg,rgba(255,43,43,.55) 0 2px,transparent 2px 4px);
+  }
+  @keyframes admBreathe{
+    0%,100%{box-shadow:0 4px 12px rgba(0,0,0,.6),0 0 0 0 rgba(255,43,43,.45)}
+    50%{box-shadow:0 4px 12px rgba(0,0,0,.6),0 0 0 9px rgba(255,43,43,0)}
+  }
+  body.mobile #admDot{width:74px;height:74px}
+
+  #ovAdmin{z-index:33;background:radial-gradient(900px 600px at 50% 40%,rgba(24,2,4,.93),rgba(4,2,2,.98))}
+  #admWrap{
+    position:relative;z-index:1;width:min(560px,94%);max-height:86%;overflow-y:auto;
+    background:linear-gradient(180deg,rgba(26,10,12,.97),rgba(10,4,5,.98));
+    border:1px solid #7a0000;border-radius:18px;padding:16px 18px 18px;
+    box-shadow:0 24px 64px rgba(0,0,0,.7),0 0 40px -18px #ff2b2b;
+    font-family:"Consolas","Courier New",monospace;
+  }
+  #admWrap h2{
+    font-size:15px;letter-spacing:3.4px;color:#ff5a3c;margin-bottom:2px;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  #admWrap .warn{font-size:9.5px;color:#8a5a52;letter-spacing:1.4px;margin-bottom:12px}
+  .admRow{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+  .admRow label{flex:1;font-size:11.5px;color:#e6c9c4;letter-spacing:.6px}
+  .admRow input[type=number],.admRow input[type=text]{
+    width:132px;background:#140506;border:1px solid #7a0000;border-radius:7px;
+    color:#ffbcbc;font:inherit;font-size:12px;padding:7px 9px;
+  }
+  .admRow input:focus{outline:none;border-color:#ff2b2b}
+  .admRow button{
+    font:inherit;font-size:11px;font-weight:700;cursor:pointer;padding:7px 13px;border-radius:7px;
+    background:rgba(255,43,43,.16);border:1px solid #7a0000;color:#ffbcbc;transition:.12s;
+  }
+  .admRow button:hover{background:rgba(255,43,43,.32);color:#fff}
+  #admWrap h4{
+    font-size:9.5px;letter-spacing:2.4px;color:#ff5a3c;margin:14px 0 7px;
+    border-top:1px solid rgba(255,43,43,.22);padding-top:10px;
+  }
+  #admBuy{
+    display:flex;align-items:center;gap:13px;width:100%;cursor:pointer;font:inherit;text-align:left;
+    background:rgba(255,43,43,.1);border:1px solid #7a0000;border-radius:14px;padding:11px;
+    transition:.13s;color:#ffd9d4;
+  }
+  #admBuy:hover{background:rgba(255,43,43,.24);border-color:#ff2b2b}
+  #admBuy .circ{
+    width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;position:relative;
+    border:2px solid #ff2b2b;background:#1c0205;display:grid;place-items:center;
+  }
+  #admBuy .circ img{width:52px;height:56px;object-fit:contain;position:relative;z-index:1}
+  #admBuy .circ::before{
+    content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(0deg,rgba(255,43,43,.5) 0 2px,transparent 2px 5px);
+    animation:admRain 1.1s linear infinite;
+  }
+  @keyframes admRain{to{transform:translateY(5px)}}
+  #admBuy .nm{font-size:13px;font-weight:800;letter-spacing:.6px}
+  #admBuy .ds{font-size:10px;color:#b58a84;line-height:1.45;margin-top:3px}
+  .admX{
+    font:inherit;font-size:14px;cursor:pointer;width:30px;height:30px;border-radius:8px;
+    background:rgba(255,255,255,.05);border:1px solid #7a0000;color:#b58a84;
+  }
+  .admX:hover{color:#fff;background:rgba(255,43,43,.3)}
+  #admCode{
+    display:flex;gap:8px;align-items:center;justify-content:center;flex-direction:column;
+  }
+  #admCode input{
+    width:190px;text-align:center;letter-spacing:9px;font-size:20px;
+    background:#140506;border:1px solid #7a0000;border-radius:9px;color:#ffbcbc;
+    font-family:inherit;padding:11px;
+  }
+  #admCode input:focus{outline:none;border-color:#ff2b2b}
+  #admCode .msg{font-size:10.5px;color:#8a5a52;letter-spacing:1.6px;min-height:14px}
+  #admCode .msg.bad{color:#ff5a3c}
+  body.mobile #admWrap{width:min(760px,96%)}
+  body.mobile #admWrap h2{font-size:23px}
+  body.mobile .admRow label{font-size:17px}
+  body.mobile .admRow input,body.mobile .admRow button{font-size:17px;min-height:var(--tap)}
+  body.mobile #admBuy .nm{font-size:19px}
+  body.mobile #admBuy .ds{font-size:14px}
+  body.mobile #admCode input{font-size:28px;width:280px}
+
   /* ------------------------------------------------------- guidebook ---- */
   /* The book hovers above the whole menu on its own dock, so the float
      animation and the button's own hover never fight over transform. */
@@ -1311,6 +1485,12 @@
       </div>
       <button class="bigbtn" id="againBtn">PLAY AGAIN</button>
       <button id="endModes">Change gamemode</button>
+    </div>
+
+    <div id="abils"></div>
+    <button id="admDot" aria-label="?"></button>
+    <div class="overlay" id="ovAdmin">
+      <div id="admWrap"></div>
     </div>
 
     <div class="overlay" id="ovBook">
@@ -2148,6 +2328,14 @@ VARIANTS.tipjar = { suitLite:'#ffe3f2', suit:'#ffa8d8', suitDark:'#c4589c', arm:
                     outline:'#b34a8c', outlineWidth:6,
                     pacG:'#ffa8d8', pacGD:'#b34a8c', pacO:'#ffd83d', pacOD:'#a97c00' };
 
+/* He is not painted, he is rendered: the body is a hole in the screen with
+   ACCESS DENIED running down it. The variant only carries the face, the
+   arms and the pacifier — drawTower paints the rest. */
+VARIANTS.admin = { suitLite:'#2a0407', suit:'#180204', suitDark:'#0a0102', arm:'#ff2b2b', armDark:'#7a0000',
+                    belt:'#ff2b2b', beltDark:'#7a0000', goggles:true, wide:true,
+                    outline:'#ff5a3c', outlineWidth:7,
+                    pacG:'#ff2b2b', pacGD:'#7a0000', pacO:'#ffbcbc', pacOD:'#8a1017' };
+
 VARIANTS.recycler = { suitLite:'#9fe6b4', suit:'#4ea86c', suitDark:'#236a41', arm:'#5a6472', armDark:'#232b36',
                     belt:'#c9d4e2', beltDark:'#6d7d92', goggles:true, hammer:true, anvil:true, wide:true,
                     hammerH:'#5a6472', hammerHD:'#232b36', hammerHead:'#4ea86c', hammerHeadD:'#12693f',
@@ -2445,6 +2633,10 @@ const UPGRADES = {
         mod:{"set":{"carBoost":2.9},"cd":0.66,"dmg":1.4} }
     ] }
   },
+  /* levels instead of paths — see ADM below. The entry exists so every
+     roster table stays the same shape; nothing ever reads these. */
+  admin: { levels:true,
+    A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   tipjar: {
     A: { name:"Fuller Jar", tiers:[
       { name:"Bigger Jar", blurb:"Two to five coins a tip instead of one to three.", cost:300,
@@ -2947,7 +3139,8 @@ const upOf = (t, p) => (p === 'A' ? t.upA : p === 'B' ? t.upB : t.upC) || 0;
 const setUp = (t, p, v) => { if (p === 'A') t.upA = v; else if (p === 'B') t.upB = v; else t.upC = v; };
 
 function SP(t) {
-  const ver = (t.upA || 0)*16 + (t.upB || 0)*4 + (t.upC || 0) + (t.asc ? 1024 : 0);
+  const ver = (t.upA || 0)*16 + (t.upB || 0)*4 + (t.upC || 0) + (t.asc ? 1024 : 0)
+            + (t.dbl ? 2048 : 0) + (t.lvl || 0)*4096;
   if (t._spec && t._sv === ver) return t._spec;
   const base = TOWERS[t.type];
   const sp = Object.assign({}, base);
@@ -2961,6 +3154,21 @@ function SP(t) {
   }
   /* An Ascended Jaxon carries every path at once and then some — see ASCEND */
   if (t.asc) ascendSpec(sp, t.type);
+  if (t.dbl) dblSpec(sp, t.type);
+  /* the Admin Jaxon's numbers come from his level, not from the tables */
+  if (sp.ammo === 'admin') {
+    const lv = admLevel(t);
+    sp.lvl = lv;
+    sp.dmg = Math.round(admDmg(lv));
+    sp.splash = Math.round(sp.dmg*0.028) || 1;
+    sp.admCars  = lv >= ADM.cars.at;
+    sp.admBuild = lv >= ADM.build.at;
+    sp.admField = lv >= ADM.field.at;
+    /* the cars scale from their level-30 baseline the same way he does */
+    sp.carDmg = Math.round(ADM.cars.dmg * (admDmg(lv)/admDmg(ADM.cars.at)));
+    sp.carHp  = Math.round(ADM.build.carHp * (admDmg(lv)/admDmg(ADM.build.at)));
+    if (sp.admField) sp.range = Math.max(sp.range, ADM.field.range);
+  }
   t._spec = sp; t._sv = ver;
   return sp;
 }
@@ -2977,6 +3185,7 @@ const upSpent = t => {
   let n = 0;
   for (const p of PATHS(t)) for (let i = 0; i < upOf(t, p); i++) n += up[p].tiers[i].cost;
   if (t.asc) n += ascCost(t.type);            // the fusion fee is part of what he is worth
+  if (t.dbl) n += dblCost(t.type);
   return n;
 };
 /* BTD rule: a tier 3 needs the other path parked at 2 or lower */
@@ -3047,8 +3256,78 @@ const ASCEND = {
            mods:{ dmg:5.4, cd:0.45, range:1.4 },
            blurb:'Every divine path folded into one. The cars, the cone, the aura and the ultimates, all of it, always.' }
 };
+/* Two Jaxons in the whole game go further than Ascended. Fuse two Ascended
+   ones of the same type and you get the last form there is — one only, and
+   the fee is the biggest number in the game on purpose. */
+const DOUBLE = {
+  mirror: { name:'Double Ascended Mirror Jaxon', cost:1400000,
+            mods:{ dmg:3.2, cd:0.6, range:1.3, extra:{ add:{ echo:8 }, mul:{ boost:1.6 } } },
+            blurb:'Two corridors of glass facing each other. Anything a friendly Jaxon fires comes back a dozen times over and brighter every time.' },
+  truegod: { name:'Double Ascended True God Jaxon', cost:2200000,
+            mods:{ dmg:3.4, cd:0.55, range:1.3 },
+            blurb:'There is nothing after this one. Every divine path, twice over, on a clock that barely stops to breathe.' }
+};
+const DBL_MAX = 1;                     // one of each, ever
+const canDouble = k => !!DOUBLE[k];
+const dblCost = k => Math.round((DOUBLE[k] ? DOUBLE[k].cost : 0) * M().cost);
+const dblCount = k => S.towers.filter(o => o.dbl && o.type === k).length;
+/* the pair: two Ascended of this type, neither already doubled */
+function dblPair(t) {
+  if (!t || t.dbl || !t.asc || !canDouble(t.type)) return null;
+  const pool = S.towers.filter(o => o.type === t.type && o.asc && !o.dbl);
+  if (pool.length < 2) return null;
+  const other = pool.find(o => o !== t);
+  return other ? [t, other] : null;
+}
+function dblWhy(t) {
+  if (!canDouble(t.type) || !t.asc || t.dbl) return null;
+  if (dblCount(t.type) >= DBL_MAX) return 'There can only be one ' + DOUBLE[t.type].name;
+  if (dblPair(t)) return null;
+  return 'Needs a second Ascended ' + TOWERS[t.type].name + ' on the field';
+}
+function startDouble(t) {
+  const pair = dblPair(t);
+  if (!pair) { toast(dblWhy(t) || 'No pair ready'); return; }
+  if (dblCount(t.type) >= DBL_MAX) { toast('There can only be one'); return; }
+  const cost = dblCost(t.type);
+  if (!afford(cost)) { toast('Double Ascension costs $' + cost.toLocaleString()); beep(150, 0.08, 'square', 0.03); return; }
+  spend(cost);
+  const keep = t, other = pair.find(o => o !== t);
+  S.fuse = { x:keep.x, y:keep.y, t:0, dur:1.5, type:keep.type,
+             from:[{ x:other.x, y:other.y, type:other.type, asc:true,
+                     upA:other.upA, upB:other.upB, upC:other.upC }] };
+  S.towers = S.towers.filter(o => o !== other);
+  keep.dbl = true;
+  keep._spec = null; keep._sv = -1;
+  keep.cds = (SP(keep).weapons || []).map(w => w.cd);
+  deselect();
+  shakeScreen(28, 1.7); flashScreen(0.55);
+  banner('DOUBLE ASCENDED', DOUBLE[keep.type].name, '#ffd8ff');
+  beep(52, 1.8, 'sawtooth', 0.08, 300);
+  for (let i = 0; i < 6; i++) setTimeout(() => beep(260 + i*230, 0.22, 'triangle', 0.055), 260 + i*120);
+  toast(DOUBLE[keep.type].name + ' — there is nothing after this');
+  syncHUD(); syncShelf();
+}
+
 const ascCost = k => Math.round((ASCEND[k] ? ASCEND[k].cost : 0) * M().cost);
 const canAscend = k => !!ASCEND[k];
+/* the second fusion multiplies the Ascended form, which is already sane */
+function dblSpec(sp, type) {
+  const D = DOUBLE[type];
+  if (!D) return;
+  const k = D.mods;
+  if (typeof sp.dmg === 'number') sp.dmg = Math.round(sp.dmg*(k.dmg || 1));
+  if (typeof sp.cd === 'number') sp.cd = sp.cd*(k.cd || 1);
+  if (typeof sp.range === 'number' && isFinite(sp.range)) sp.range = Math.round(sp.range*(k.range || 1));
+  if (sp.weapons) sp.weapons.forEach(w => {
+    for (const key of ['dmg','dmgMin','dmgMax','splash','boltDmg','carHp']) {
+      if (typeof w[key] === 'number') w[key] = Math.round(w[key]*(k.dmg || 1));
+    }
+    if (typeof w.cd === 'number') w.cd = w.cd*(k.cd || 1);
+  });
+  if (k.extra) applyMod(sp, k.extra);
+}
+
 /* One maxed path, the best of the three, as the yardstick everything about
    an Ascended Jaxon is measured against. Worked out once per type. */
 const SOLO = {};
@@ -3457,6 +3736,12 @@ const TOWERS = {
              caddyBase:70, caddyWave:9,
              blurb:'Carries the bag and settles up at the end of every round. A flat $70 on each wave clear, plus $9 for every wave you have already survived. Nothing at all mid-wave.',
              tags:[['Income','t-fast'],['Wave Bonus','t-rain'],['No Damage','']] },
+  /* Not in the shop. He is bought from the Admin Panel and he does not
+     take upgrade paths — he takes levels. */
+  admin:   { name:'Admin Jaxon', cost:500, range:620, cd:0.1, dmg:125, ammo:'admin',
+             splash:3.5, splashR:110, secret:true,
+             blurb:'ACCESS DENIED. A laser every 0.1s for 125, bursting like a Rainbow. He has no upgrade paths — he takes levels, and every thirtieth one hands him something new.',
+             tags:[['Admin','t-rain'],['Levels','t-fast'],['Beam','t-single']] },
   recycler:{ name:'Recycler Jaxon', cost:450, range:300, dmg:0, ammo:'recycle',
              refund:0.25, salvage:6,
              blurb:'Sell any Jaxon standing in his ring and he digs 25% more out of the scrap. He also scrapes a consolation coin out of every life the nursery loses. No damage at all.',
@@ -3492,7 +3777,7 @@ const ROLE = {
   engineer:['builders'],              goldeng:['builders'],
   factory:['builders'],               towtruck:['builders'],
   mechanic:['builders','support'],    tipjar:['income'],
-  caddy:['income'],
+  caddy:['income'],                   admin:[],
   pinwheel:['support'],               boombox:['support'],
   lunchbox:['support'],               forge:['support'],
   yoyo:['dps'],                       tablet:['dps'],
@@ -3506,12 +3791,13 @@ const ROLE = {
 };
 /* The shelf runs cheapest first, whatever category is showing. ORDER is the
    curated roster; this is the same list put strictly in price order. */
-const SHELF = () => ORDER.slice().sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
-const inCat = (k, c) => c === 'all' || (ROLE[k] || []).includes(c);
+const SHELF = () => ORDER.filter(k => !TOWERS[k].secret)
+                         .sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
+const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).includes(c));
 
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
-               'tipjar','factory','towtruck','caddy','mechanic',
+               'tipjar','factory','towtruck','caddy','mechanic','admin',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -3525,7 +3811,57 @@ const VALUE = {
                 titantablet:100, stormcloud:104, eclipse:100, upgradedlaser:100, titanmax:89,
                 blackholelaser:89, director:100, mirror:100, truegod:89,
                 piggybank:100, recycler:100, tax:100, merchant:100,
-                factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100 };
+                factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100 };
+
+/* ------------------------------------------------------ Admin Jaxon ----
+   He does not buy upgrades, he buys levels. Damage compounds hard for the
+   first fifteen and gently after that, and every thirtieth level hands him
+   a whole new weapon rather than a bigger number. */
+const ADM = {
+  dmgEarly:1.15, dmgLate:1.05, breakAt:15,
+  xpPerLevel:3,                       // xp needed per level, times the level
+  cost0:260, costPow:1.35,            // a curve, not a compounding rate
+  cars:{ at:30, cd:1.0, dmg:2500, splashR:330, pierce:7 },
+  build:{ at:60, cd:3.0, carHp:110000 },
+  field:{ at:100, dmg:4.5, rate:4.5, range:520 }
+};
+/* damage at a level, against the 125 he starts with */
+function admDmg(lvl) {
+  let d = TOWERS.admin.dmg;
+  for (let i = 2; i <= lvl; i++) d *= (i <= ADM.breakAt ? ADM.dmgEarly : ADM.dmgLate);
+  return d;
+}
+const admLevel = t => Math.max(1, t.lvl || 1);
+/* the price of the next level, and of a run of them */
+/* A compounding rate put level 60 past every coin in the game; this is a
+   steep curve that still lands somewhere a long run can actually reach. */
+const admLevelCost = lvl => Math.round(ADM.cost0 * Math.pow(lvl, ADM.costPow));
+function admBuyCost(t, count) {
+  let sum = 0, lvl = admLevel(t);
+  for (let i = 0; i < count; i++) sum += admLevelCost(lvl + i);
+  return sum;
+}
+/* the XP bar: enough of it and the next level is free to take */
+const admNeed = t => ADM.xpPerLevel * admLevel(t);
+function admGainXp(t, amount) {
+  t.xp = (t.xp || 0) + amount;
+  let gained = 0;
+  while (t.xp >= admNeed(t)) { t.xp -= admNeed(t); t.lvl = admLevel(t) + 1; gained++; }
+  if (gained) admLevelled(t, gained);
+  return gained;
+}
+function admLevelled(t, by) {
+  t._spec = null; t._sv = -1;
+  const lv = admLevel(t);
+  const hit = [ADM.cars.at, ADM.build.at, ADM.field.at].filter(a => a > lv - by && a <= lv);
+  for (const a of hit) {
+    const what = a === ADM.cars.at ? 'ADMIN CARS ONLINE'
+               : a === ADM.build.at ? 'CAR FACTORY ONLINE' : 'SUPPORT FIELD ONLINE';
+    banner(what, 'Admin Jaxon · level ' + a, '#ff5a3c');
+    flashScreen(0.3); shakeScreen(14, 0.9);
+    beep(70, 1.1, 'sawtooth', 0.07, 300);
+  }
+}
 
 const T_H = 88;
 const T_W = T_H * (660/720);
@@ -3537,7 +3873,8 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      bubble:1.05, whistle:1.05, pinwheel:1.05, lunchbox:1.05, yoyo:1.05,
                      stormcloud:1.3, director:1.2,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
-                     factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05 };
+                     factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
+                     admin:1.2 };
 const WIDE_FILL = 0.791;              // share of the wide box the body actually fills
 const FOOT_Y = 700;                   // where the legs end inside the drawing box
 const SPRITE = {};
@@ -3547,7 +3884,7 @@ for (const k in VARIANTS) {
   SPRITE[k] = { w: h * (b.w / b.h), h, feet: (FOOT_Y - b.y) / b.h };
 }
 /* an Ascended Jaxon draws with his own sprite, everyone else with theirs */
-const artOf = t => (t && t.asc && SPRITE[ASC_KEY(t.type)] ? ASC_KEY(t.type) : (t && t.type) || t);
+const artOf = t => (t && (t.asc || t.dbl) && SPRITE[ASC_KEY(t.type)] ? ASC_KEY(t.type) : (t && t.type) || t);
 const spriteW = k => SPRITE[k].w, spriteH = k => SPRITE[k].h;
 /* amber is power, cyan is utility, violet is the third way */
 const PATH_COL = { A:'#ffd83d', B:'#7fe9ff', C:'#c08bff' };
@@ -3654,7 +3991,7 @@ const S = {
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
-  camV:{x:0,y:0}, look:null, fuse:null,
+  camV:{x:0,y:0}, look:null, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
@@ -3727,6 +4064,7 @@ function noteBest(w) {
 /* Hard ceilings. Enemies are capped at the spawner (see LIVE_CAP); these
    catch everything else so one silly frame cannot snowball. */
 const FX_CAP = [900, 420, 170], SHOT_CAP = 700, CAR_CAP = 70, FLOAT_CAP = 36;
+const ADMIN_CAR_CAP = 600;            // the Admin line is uncapped in spirit only
 
 /* -------------------------------------------------------------- audio ---- */
 let AC = null;
@@ -3885,7 +4223,7 @@ for (const k in TOWERS) TOWERS[k].key = k;
 let shopCat = 'all';
 function buildCats() {
   $('cats').innerHTML = CATS.map(([c, label]) => {
-    const k = c === 'all' ? ORDER.length : ORDER.filter(x => inCat(x, c)).length;
+    const k = SHELF().filter(x => inCat(x, c)).length;
     return '<button role="tab" data-c="' + c + '"' + (c === shopCat ? ' class="on" aria-selected="true"' : '') +
            '>' + label + '<i>' + k + '</i></button>';
   }).join('');
@@ -4024,7 +4362,12 @@ const dupeCost = t => costOf(t.type) + upSpent(t);
 function startDuplicate(t) {
   const cost = dupeCost(t);
   /* copying an Ascended one still counts against the two you may have */
-  if (t.asc && ascCount(t.type) >= ASC_MAX) {
+  if (t.dbl && dblCount(t.type) >= DBL_MAX) {
+    toast('There can only be one ' + DOUBLE[t.type].name);
+    beep(150, 0.08, 'square', 0.03);
+    return;
+  }
+  if (t.asc && !t.dbl && ascCount(t.type) >= ASC_MAX) {
     toast('Already ' + ASC_MAX + ' Ascended ' + TOWERS[t.type].name + 's — that is the limit');
     beep(150, 0.08, 'square', 0.03);
     return;
@@ -4036,7 +4379,7 @@ function startDuplicate(t) {
     return;
   }
   S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0,
-             asc:!!t.asc, cost, range:SP(t).range };
+             asc:!!t.asc, dbl:!!t.dbl, lvl:t.lvl, cost, range:SP(t).range };
   S.placing = t.type;
   deselect();
   syncShelf(); setPlacingBanner();
@@ -4081,7 +4424,8 @@ function reset() {
   S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
-  S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.bestAtStart = bestOf(S.mode);
+  S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
+  S.abilCd={}; S.overdrive=0; abilKey=''; S.bestAtStart = bestOf(S.mode);
   S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
   $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
@@ -4099,6 +4443,7 @@ function reset() {
   S.sbOpen = false; sbHint();
   if (SB()) { S.sbTab = 'spawn'; sbRender(); }
   hideTip(); setPlacingBanner(); setShop(true); syncHUD();
+  abilKey = ''; buildAbilityBar();
 }
 
 /* ------------------------------------------------------ gamemode flow ----
@@ -4806,6 +5151,8 @@ function enemyFill(e) {
    crit all just scale whatever damage is passing through. Doing it here means
    they apply to every weapon in the game without touching any of them. */
 function amplify(dmg, owner, e) {
+  if (S.dmgMul !== 1) dmg *= S.dmgMul;          // the Admin Panel's dial
+  if (owner && owner.admField) dmg *= 1 + ADM.field.dmg;
   if (owner) {
     if (owner.dmgBuff > 0) dmg *= 1 + owner.dmgBuffAmt;
     if (owner.crit > 0 && Math.random() < owner.crit) {
@@ -4950,6 +5297,86 @@ function fire(t, tx, ty) {
                   trap:spec.trap||0, reach:spec.range, wp:null, at:S.t };
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
   beep(t.type === 'ninja' ? 900 : (t.type === 'laser' ? 1250 : (t.type === 'rainbow' ? 1500 : 420)), 0.03, 'square', 0.014);
+}
+
+/* ------------------------------------------------------ Admin Jaxon ----
+   Three weapons on three clocks, each one switched on by a level. */
+function adminTick(t, spec, dt, mul, override) {
+  /* 1. the beam, every 0.1s, bursting like a Rainbow */
+  t.cd -= dt;
+  if (t.cd <= 0) {
+    const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+    if (aim) {
+      t.cd = spec.cd * mul;
+      t.face = aim.x < t.x ? -1 : 1;
+      t.flash = 1; t.shots++;
+      adminBurst(t, aim.x, aim.y, spec.dmg, spec.splash, spec.splashR, '#ff2b2b');
+      beep(1500, 0.02, 'square', 0.01);
+    } else t.cd = Math.min(t.cd, 0);
+  }
+
+  /* 2. level 30: admin cars, thrown down the trail with real pierce */
+  if (spec.admCars) {
+    t.admCarCd = (t.admCarCd || 0) - dt;
+    if (t.admCarCd <= 0) {
+      t.admCarCd = ADM.cars.cd * mul;
+      const aim = targetFor(t);
+      if (aim) {
+        S.shots.push({ x:t.x, y:t.y - spriteH(t.type)*0.4, tx:aim.x, ty:aim.y,
+                       vx:(aim.x - t.x), vy:(aim.y - (t.y - 30)), a:0, spin:0, hue:0,
+                       r:15, life:3, dmg:spec.carDmg, splash:Math.round(spec.carDmg*0.4),
+                       splashR:ADM.cars.splashR, pierce:ADM.cars.pierce, hitSet:new Set(),
+                       ammo:'admincar', owner:t, dead:false, slow:0, trap:0,
+                       reach:Infinity, wp:null, at:S.t });
+        const L = Math.hypot(aim.x - t.x, aim.y - (t.y - 30)) || 1;
+        const sp2 = S.shots[S.shots.length - 1];
+        sp2.vx = sp2.vx/L*900; sp2.vy = sp2.vy/L*900;
+        t.shots++;
+        beep(180, 0.14, 'square', 0.035, 380);
+      }
+    }
+  }
+
+  /* 3. level 60: a car factory with no ceiling on the line */
+  if (spec.admBuild) {
+    t.admBuildCd = (t.admBuildCd || 0) - dt;
+    if (t.admBuildCd <= 0) {
+      t.admBuildCd = ADM.build.cd * mul;
+      S.cars.push({ d:PATH_LEN - 6, hp:spec.carHp, max:spec.carHp, kind:'admincar',
+                    fwd:false, push:0, tow:false, admin:true,
+                    owner:t, hitSet:new Set(), bob:Math.random()*6 });
+      beep(120, 0.18, 'square', 0.035, 300);
+    }
+  }
+
+  /* 4. level 100: everyone standing near him works far harder */
+  t.lit = true;
+}
+
+/* his beam lands as a burst, the same shape a Rainbow leaves behind */
+function adminBurst(t, x, y, dmg, splash, splashR, col) {
+  let hit = null, hd = 1e9;
+  for (const e of S.enemies) {
+    if (e.dead) continue;
+    const p = enemyPos(e), d = Math.hypot(p.x - x, p.y - y);
+    if (d < hd) { hd = d; hit = e; }
+  }
+  if (hit && hd < 34) hurtEnemy(hit, dmg, t);
+  for (const e of S.enemies) {
+    if (e.dead || e === hit) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - x, p.y - y) <= splashR) hurtEnemy(e, splash, t);
+  }
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    const d = Math.hypot(p.x - x, p.y - y);
+    if (d <= B.def.r + 12) hurtBoss(dmg, t, B);
+    else if (d <= splashR + B.def.r) hurtBoss(splash, t, B);
+  }
+  S.fx.push({ k:'boom', x, y, life:0.28, max:0.28, r:splashR });
+  if (!S.perf) burst(x, y, col, 7, 0.7);
+  /* the beam itself, drawn for a frame */
+  S.fx.push({ k:'admbeam', x, y, sx:t.x, sy:t.y - spriteH(t.type)*0.4, life:0.09, max:0.09 });
 }
 
 /* Engineer's build: black car spawned at the exit, driving back up the trail. */
@@ -5979,6 +6406,17 @@ function update(dt) {
   /* Forge hammers in fire rate; the Director hands out crit. Both are worked
      out once a frame here rather than per shot. */
   for (const t of S.towers) if (t.dmgBuff > 0) t.dmgBuff -= dt;
+  /* an Admin Jaxon at level 100 turns everyone around him up to eleven */
+  for (const t of S.towers) t.admField = 0;
+  for (const a of S.towers) {
+    if (TOWERS[a.type].ammo !== 'admin') continue;
+    const asp = SP(a);
+    if (!asp.admField) continue;
+    for (const t of S.towers) {
+      if (t === a) continue;
+      if (Math.hypot(t.x - a.x, t.y - a.y) <= ADM.field.range) t.admField = 1;
+    }
+  }
   /* This is an O(towers x buffers) sweep and its answer only changes when
      something is bought, sold or moved — 8 Hz is plenty, and it is one of
      the few costs that scales with a big board rather than a big crowd. */
@@ -6009,7 +6447,10 @@ function update(dt) {
   for (const t of S.towers) {
     const spec = SP(t);
     if (t.fireSlow > 0) t.fireSlow -= dt;                // a Jammer elite is standing nearby
-    const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1);
+    /* the Admin Jaxon's field is the other half of amplify() */
+    const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1)
+              * (t.admField ? 1/(1 + ADM.field.rate) : 1)
+              * (S.overdrive > 0 ? 0.5 : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     t.copyFlash = Math.max(0, (t.copyFlash || 0) - dt*2);
 
@@ -6040,6 +6481,11 @@ function update(dt) {
         bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
         syncHUD();
       }
+      continue;
+    }
+    /* Admin Jaxon — a beam that bursts, plus whatever his level unlocked */
+    if (spec.ammo === 'admin') {
+      adminTick(t, spec, dt, mul, override);
       continue;
     }
     /* Tax Jaxon — pure aura, the cut is taken in hurtEnemy */
@@ -6518,6 +6964,8 @@ function update(dt) {
 
   if (S.cut) { S.cut.t -= dt; if (S.cut.t <= 0) S.cut = null; }
   if (S.fuse) { S.fuse.t += dt; if (S.fuse.t >= S.fuse.dur) S.fuse = null; }
+  if (S.overdrive > 0) S.overdrive = Math.max(0, S.overdrive - dt);
+  for (const k in S.abilCd) if (S.abilCd[k] > 0) S.abilCd[k] = Math.max(0, S.abilCd[k] - dt);
 
   /* soundwaves — grow outward, damage each enemy exactly once */
   for (const w of S.waves) {
@@ -6595,6 +7043,34 @@ function update(dt) {
       const sp = Math.hypot(s.vx, s.vy);
       s.vx = Math.cos(s.a)*sp; s.vy = Math.sin(s.a)*sp;
       if (Math.hypot(s.tx - s.x, s.ty - s.y) < 28) { openHole(s.x, s.y, s.wp, s.owner); s.dead = true; continue; }
+    }
+    if (s.ammo === 'admincar') {                        // pierces a whole queue
+      s.spin += sdt*6;
+      for (const e of S.enemies) {
+        if (e.dead || s.hitSet.has(e.id)) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) < E_R + 20) {
+          s.hitSet.add(e.id);
+          hurtEnemy(e, s.dmg, s.owner);
+          for (const o of S.enemies) {
+            if (o.dead || o === e) continue;
+            const q = enemyPos(o);
+            if (Math.hypot(q.x - p.x, q.y - p.y) <= s.splashR) hurtEnemy(o, s.splash, s.owner);
+          }
+          S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.34, max:0.34, r:s.splashR });
+          if (s.hitSet.size > s.pierce) { s.dead = true; break; }
+        }
+      }
+      for (const B of S.bosses) {
+        if (bSeen(s, B)) continue;
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 20) {
+          bMark(s, B); hurtBoss(s.dmg, s.owner, B);
+          S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.34, max:0.34, r:s.splashR });
+        }
+      }
+      if (s.life <= 0 || s.x < -60 || s.x > W + 60 || s.y < -60 || s.y > H + 60) s.dead = true;
+      continue;
     }
     if (s.ammo === 'disc') {                            // coasts to the spot, then settles
       if (Math.hypot(s.tx - s.x, s.ty - s.y) < 22 || s.life <= 0) {
@@ -6697,7 +7173,15 @@ function update(dt) {
   const fxCap = FX_CAP[S.perf];
   if (S.fx.length     > fxCap)     S.fx.splice(0, S.fx.length - fxCap);
   if (S.shots.length  > SHOT_CAP)  S.shots.splice(0, S.shots.length - SHOT_CAP);
-  if (S.cars.length   > CAR_CAP)   S.cars.splice(0, S.cars.length - CAR_CAP);
+  /* The Admin Jaxon's line is explicitly uncapped, so his cars are counted
+     apart from everyone else's — with a far higher ceiling that exists only
+     so a level-100 board cannot walk the frame rate off a cliff. */
+  const plain = S.cars.filter(c => !c.admin);
+  if (plain.length > CAR_CAP) {
+    const drop = new Set(plain.slice(0, plain.length - CAR_CAP));
+    S.cars = S.cars.filter(c => !drop.has(c));
+  }
+  if (S.cars.length > ADMIN_CAR_CAP) S.cars.splice(0, S.cars.length - ADMIN_CAR_CAP);
   if (S.floats.length > FLOAT_CAP) S.floats.splice(0, S.floats.length - FLOAT_CAP);
 
   if (S.health <= 0 && S.phase !== 'over' && S.dying <= 0) {
@@ -6727,6 +7211,13 @@ function update(dt) {
         S.money += pay; m.earned = (m.earned || 0) + pay;
         S.floats.push({ x:m.x, y:m.y - 54, txt:'+$' + pay, color:'#ffd83d', life:1.9, big:true });
       }
+    }
+    /* the Admin Jaxon banks a wave's experience */
+    for (const a of S.towers) {
+      if (TOWERS[a.type].ammo !== 'admin') continue;
+      const got = admGainXp(a, 1 + Math.floor(S.wave/5));
+      if (got) S.floats.push({ x:a.x, y:a.y - 60, txt:'LVL ' + admLevel(a),
+                               color:'#ff5a3c', life:1.8, big:true });
     }
     const caddy = caddyPayout();                    // Caddy Jaxon settles the round
     S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + (reward + caddy), color:'#ffd83d', life:1.6, big:true });
@@ -7021,6 +7512,8 @@ function showShopTip(key, el) {
        <div><div class="n">${spec.name}</div><div class="s">$${costOf(spec.key)}</div></div></div>
      ${tagHTML(spec.tags)}
      <div class="r" style="padding-bottom:7px">${spec.blurb}</div>
+     ${ASCEND[key] ? '<div class="r" style="padding-bottom:7px;color:#c9b0ee">Can ascend: three maxed ' +
+        spec.name + 's, one per path, fuse into ' + ASCEND[key].name + '.</div>' : ''}
      ${statRows(spec, null)}`;
   const r = el.getBoundingClientRect(), sr = stage.getBoundingClientRect();
   const sc = uiScale || Math.min(stage.clientWidth/W, stage.clientHeight/H);
@@ -7088,16 +7581,20 @@ function drawPanel() {
   el.innerHTML = `
     <div class="phead">
       <div class="pic"><img src="${PORTRAIT[t.type]}" alt=""></div>
-      <div><div class="nm">${t.asc ? ASCEND[t.type].name : base.name}</div>
-           <div class="sub">Placed wave ${t.placedWave} · ${paths.map(p => upOf(t, p)).join('-')}${t.asc ? ' · ASCENDED' : ''}</div></div>
+      <div><div class="nm">${t.dbl ? DOUBLE[t.type].name : t.asc ? ASCEND[t.type].name : base.name}</div>
+           <div class="sub">Placed wave ${t.placedWave} · ${TOWERS[t.type].ammo === 'admin'
+             ? 'level ' + admLevel(t) : paths.map(p => upOf(t, p)).join('-')}${
+             t.dbl ? ' · DOUBLE ASCENDED' : t.asc ? ' · ASCENDED' : ''}</div></div>
     </div>
     <div class="pstats">
       <div><div class="k">Damage</div><div class="v">${Math.round(t.dmg).toLocaleString()}</div></div>
       <div><div class="k">Pops</div><div class="v">${t.pops}</div></div>
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
-    <div class="paths${paths.length === 3 ? ' three' : ''}">${paths.map(col).join('')}</div>
+    ${t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
+        : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
     ${ascBtn(t, trio, why, acost)}
+    ${dblBtn(t)}
     <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
       <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
       <span class="ds">${t.asc ? 'Builds a second Ascended one, fee and all'
@@ -7107,7 +7604,8 @@ function drawPanel() {
       <button class="sell" id="pSell">Sell &nbsp;+$${refund.toLocaleString()}</button>
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
-    <div class="hint">${t.asc ? ASCEND[t.type].blurb
+    <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
+        : TOWERS[t.type].ammo === 'admin' ? 'Levels are bought or earned. He has no paths.'
         : 'A tier 3 locks the other paths at tier 2'}</div>`;
 
   el.classList.add('on');
@@ -7123,8 +7621,58 @@ function drawPanel() {
   $('pDupe').onclick = ev => { ev.stopPropagation(); startDuplicate(t); };
   const ab = $('pAsc');
   if (ab) ab.onclick = ev => { ev.stopPropagation(); startAscend(t); };
+  const db = $('pDbl');
+  if (db) db.onclick = ev => { ev.stopPropagation(); startDouble(t); };
+  const lg = $('pLvGo');
+  if (lg) {
+    $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
+    const price = () => admBuyCost(t, Math.max(1, Math.round(+$('pLvN').value || 1)));
+    $('pLvN').oninput = () => { lg.textContent = 'Buy $' + price().toLocaleString(); };
+    lg.onclick = ev => {
+      ev.stopPropagation();
+      const cnt = Math.max(1, Math.round(+$('pLvN').value || 1)), cost = admBuyCost(t, cnt);
+      if (!afford(cost)) { toast('Need $' + cost.toLocaleString() + ' for ' + cnt + ' level' + (cnt === 1 ? '' : 's')); return; }
+      spend(cost);
+      t.lvl = admLevel(t) + cnt;
+      admLevelled(t, cnt);
+      S.floats.push({ x:t.x, y:t.y - 60, txt:'LVL ' + admLevel(t), color:'#ff5a3c', life:2, big:true });
+      syncHUD(); drawPanel();
+    };
+  }
   $('pSell').onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
+}
+
+/* The Admin Jaxon shows levels where everyone else shows paths. */
+function admPanelRows(t) {
+  const lv = admLevel(t), sp = SP(t);
+  const next = admLevelCost(lv);
+  const bar = Math.max(0, Math.min(1, (t.xp || 0)/admNeed(t)));
+  const unlocks = [[ADM.cars.at, 'Admin cars'], [ADM.build.at, 'Car factory'], [ADM.field.at, 'Support field']];
+  return '<div class="admLv">' +
+    '<div class="lvTop"><span>Level ' + lv + '</span><b>' + shortHp(Math.round(sp.dmg)) + ' / 0.1s</b></div>' +
+    '<div class="lvBar"><i style="width:' + (bar*100).toFixed(1) + '%"></i></div>' +
+    '<div class="lvXp">' + (t.xp || 0) + ' / ' + admNeed(t) + ' XP &middot; one a wave</div>' +
+    unlocks.map(([at, nm]) =>
+      '<div class="lvUn' + (lv >= at ? ' on' : '') + '"><span>' + nm + '</span><b>lvl ' + at + '</b></div>').join('') +
+    '<div class="lvRow">' +
+      '<input type="number" id="pLvN" min="1" max="500" value="1">' +
+      '<button id="pLvGo">Buy $' + next.toLocaleString() + '</button>' +
+    '</div></div>';
+}
+
+/* The other purple button: only Mirror and True God ever see it. */
+function dblBtn(t) {
+  if (!canDouble(t.type) || !t.asc || t.dbl) return '';
+  const pair = dblPair(t), why = dblWhy(t);
+  if (!pair || dblCount(t.type) >= DBL_MAX) {
+    return why ? '<div class="ascWhy dbl">' + why + '</div>' : '';
+  }
+  const cost = dblCost(t.type);
+  return '<button class="asc dbl' + (afford(cost) ? '' : ' poor') + '" id="pDbl">' +
+         '<span class="an">Double Ascend &nbsp;$' + cost.toLocaleString() + '</span>' +
+         '<span class="as">Fuses two Ascended ' + TOWERS[t.type].name + 's. There can only be one.</span>' +
+         '</button>';
 }
 
 /* The purple button, and only when there is something to press it for. */
@@ -7804,7 +8352,7 @@ function drawTower(t, ghost) {
   const bob = ghost ? 0 : Math.sin(S.t*2.4 + t.x)*1.2;
   const art = artOf(t);
   const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
-  const grow = (1 + tiers*0.03) * (t.asc ? 1.1 : 1);   // every upgrade puffs him up a little
+  const grow = (1 + tiers*0.03) * (t.asc ? 1.1 : 1) * (t.dbl ? 1.34 : 1);   // every upgrade puffs him up a little
   const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
   ctx.save();
@@ -7836,7 +8384,35 @@ function drawTower(t, ghost) {
   ctx.drawImage(IMG[art] || IMG[t.type], -sw/2, spriteTop(art)*grow, sw, sh);
   ctx.restore();
 
-  if (t.asc && !ghost) {                         // a standing violet halo
+  if (TOWERS[t.type].ammo === 'admin') drawAdminBody(t, art, grow, ghost);
+  if (!ghost) drawTierArt(t, art);
+
+  if (t.dbl && !ghost) {                         // the last form: a double ring
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 2; i++) {
+      const rr = 96 + i*26, a = (0.3 - i*0.11)*(0.6 + Math.sin(S.t*1.8 + i)*0.25);
+      const g2 = ctx.createRadialGradient(t.x, t.y - 10, 8, t.x, t.y - 10, rr);
+      g2.addColorStop(0, 'rgba(255,216,255,' + a + ')');
+      g2.addColorStop(0.55, 'rgba(192,139,255,' + (a*0.6) + ')');
+      g2.addColorStop(1, 'rgba(150,90,255,0)');
+      ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(t.x, t.y - 10, rr, 0, 7); ctx.fill();
+    }
+    /* six motes, two rings, turning opposite ways */
+    for (let i = 0; i < 6; i++) {
+      const ring = i < 3 ? 1 : -1;
+      const a2 = S.t*1.35*ring + (i % 3)*2.094;
+      const rad = i < 3 ? 52 : 74;
+      ctx.globalAlpha = 0.5 + Math.sin(a2*2)*0.28;
+      ctx.fillStyle = i < 3 ? ['#ffd83d','#7fe9ff','#c08bff'][i] : '#ffd8ff';
+      ctx.beginPath();
+      ctx.arc(t.x + Math.cos(a2)*rad, t.y - 30 + Math.sin(a2)*rad*0.34, 4, 0, 7);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  if (t.asc && !t.dbl && !ghost) {               // a standing violet halo
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
     const puls = 0.5 + Math.sin(S.t*2.2 + t.x*0.02)*0.16;
@@ -7881,6 +8457,84 @@ function drawTower(t, ghost) {
   ctx.restore();
 }
 
+/* ACCESS DENIED, running down him the way it runs down a boss. The rain
+   is clipped to his silhouette's bounding oval, which is enough to read as
+   "the body is a hole in the screen" without a per-pixel mask. */
+function drawAdminBody(t, art, grow, ghost) {
+  const th = BOSS_THEME.denied;
+  const w = spriteW(art)*grow*0.34, h = spriteH(art)*grow*0.36;
+  const cy = t.y + spriteTop(art)*grow + h*1.15;
+  if (!t.rainCols) t.rainCols = makeRain({ r:Math.max(28, w) });
+  ctx.save();
+  ctx.beginPath(); ctx.ellipse(t.x, cy, w, h, 0, 0, 7); ctx.clip();
+  ctx.translate(t.x, cy);
+  ctx.globalAlpha = ghost ? 0.5 : 1;
+  drawRain(ctx, { r:Math.max(w, h), theme:'denied' }, th, Math.max(w, h), S.t, t.rainCols);
+  ctx = FIELD_CTX;
+  ctx.restore();
+  /* the outline that keeps him readable against the trail */
+  ctx.save();
+  ctx.globalAlpha = ghost ? 0.5 : (0.75 + Math.sin(S.t*4 + t.x)*0.2);
+  ctx.strokeStyle = th.ring2; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.ellipse(t.x, cy, w, h, 0, 0, 7); ctx.stroke();
+  ctx.restore();
+}
+
+function drawTierArt(t, art) {
+  if (TOWERS[t.type].ammo === 'admin') {
+    const lv = admLevel(t);
+    ctx.save();
+    ctx.font = '900 12px "Consolas","Courier New",monospace';
+    ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(0,0,0,.75)';
+    ctx.strokeText('LVL ' + lv, t.x, t.y + T_H*0.44 + 10);
+    ctx.fillStyle = '#ff5a3c'; ctx.fillText('LVL ' + lv, t.x, t.y + T_H*0.44 + 10);
+    ctx.restore();
+    return;
+  }
+  if (S.perf > 1 || t.asc) return;
+  const paths = PATHS(t);
+  const tiers = paths.reduce((a, p) => a + upOf(t, p), 0);
+  if (!tiers) return;
+  /* one arc per path under his feet, thicker the deeper you went */
+  const rr = spriteW(art)*0.44 + 4;
+  ctx.save();
+  ctx.globalAlpha = 0.7;
+  let a0 = -Math.PI/2;
+  const span = Math.PI*2/paths.length;
+  for (const p of paths) {
+    const lv = upOf(t, p);
+    if (lv) {
+      ctx.strokeStyle = PATH_COL[p];
+      ctx.lineWidth = 1 + lv*1.3;
+      ctx.beginPath();
+      ctx.ellipse(t.x, t.y + T_H*0.44, rr, rr*0.34, 0, a0 + 0.09, a0 + span - 0.09);
+      ctx.stroke();
+    }
+    a0 += span;
+  }
+  ctx.restore();
+
+  /* a capped path earns a crest above the head */
+  const cap = paths.find(p => upOf(t, p) === 3);
+  if (!cap) return;
+  const col = PATH_COL[cap];
+  const hy = t.y + spriteTop(art) - 7;
+  ctx.save();
+  ctx.globalAlpha = 0.92;
+  ctx.fillStyle = col;
+  ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  for (let i = -1; i <= 1; i++) {
+    const cx = t.x + i*7;
+    ctx.moveTo(cx - 4.5, hy + 4);
+    ctx.lineTo(cx, hy - (i === 0 ? 8 : 5));
+    ctx.lineTo(cx + 4.5, hy + 4);
+  }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.restore();
+}
+
 function drawRange(x, y, r, ok) {
   if (r === Infinity) return;
   ctx.save();
@@ -7907,6 +8561,18 @@ function orb(c1, c2, r, tail) {
 }
 
 function drawShot(s) {
+  if (s.ammo === 'admincar') {
+    const im = IMG.blackcar;
+    ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.spin*0.4);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.5;
+    ctx.fillStyle = '#ff2b2b';
+    ctx.beginPath(); ctx.arc(0, 0, 20, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
+    if (im && im.width) ctx.drawImage(im, -22, -13, 44, 26);
+    ctx.restore();
+    return;
+  }
   ctx.save(); ctx.translate(s.x, s.y);
   switch (s.ammo) {
     case 'shuriken':
@@ -8070,6 +8736,12 @@ function drawCar(c) {
   const vx = -p.dx;
   if (Math.abs(vx) > 0.01) c.face = vx < 0 ? -1 : 1;
   const img = c.kind === 'goldcar' ? IMG.goldcar : (c.kind === 'diamondcar' ? IMG.diamondcar : IMG.blackcar);
+  if (c.admin) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 0.55;
+    ctx.fillStyle = '#ff2b2b';
+    ctx.beginPath(); ctx.ellipse(p.x, p.y, 30, 17, 0, 0, 7); ctx.fill();
+    ctx.restore();
+  }
   ctx.save(); ctx.translate(p.x, p.y + Math.sin(S.t*9 + c.bob)*1.4);
   ctx.fillStyle = 'rgba(0,0,0,.3)';
   ctx.beginPath(); ctx.ellipse(0, 14, 24, 7, 0, 0, 7); ctx.fill();
@@ -9007,6 +9679,19 @@ function render() {
       ctx.strokeStyle = '#bfeeff'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(f.x, f.y, 12 + k*20, 0, 7); ctx.stroke();
       ctx.restore();
+    } else if (f.k === 'admbeam') {
+      const k = f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = k;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#7a0000'; ctx.lineWidth = 9;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      ctx.strokeStyle = '#ff2b2b'; ctx.lineWidth = 4.5;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      ctx.strokeStyle = '#ffbcbc'; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      ctx.restore();
     } else if (f.k === 'bolt') {
       const k = 1 - f.life/f.max;
       ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
@@ -9245,7 +9930,9 @@ function tryPlaceAt(x, y, silent) {
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
               upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, upC:dup ? dup.upC : 0,
-              asc:!!(dup && dup.asc), _spec:null, _sv:-1,
+              asc:!!(dup && dup.asc), dbl:!!(dup && dup.dbl),
+              lvl:dup && dup.lvl !== undefined ? dup.lvl : (spec.ammo === 'admin' ? 1 : undefined),
+              xp:0, _spec:null, _sv:-1,
               rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
               lastFired:null, copied:null, copyFlash:0,
               placedWave:S.wave, dmg:0, pops:0, shots:0 };
@@ -9376,6 +10063,7 @@ window.addEventListener('keydown', ev => {
     toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
     return;
   }
+  if (ADM_UI.open) { if (ev.key === 'Escape') closeAdmin(); return; }
   if ($('ovBook').classList.contains('on')) {
     if (ev.key === 'Escape') { closeBook(); return; }
     if (ev.key === 'ArrowRight') { bookGo(BOOK.page + 1); return; }
@@ -9541,6 +10229,7 @@ $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); }
 $('bookBtn').onclick = () => openBook('menu');
 $('pmBook').onclick = () => openBook('pause');
 $('bkClose').onclick = closeBook;
+$('admDot').onclick = openAdmin;
 $('bkPrev').onclick = () => bookGo(BOOK.page - 1);
 $('bkNext').onclick = () => bookGo(BOOK.page + 1);
 $('pmResume').onclick = () => setPause(false);
@@ -9587,6 +10276,300 @@ function syncChips() {
   $('sndBtn').classList.toggle('on', S.sound);
   $('perfBtn').textContent = 'Graphics ' + (S.perfLock === null ? 'Auto' : S.perfLock === 0 ? 'High' : 'Fast');
   $('perfBtn').classList.toggle('on', S.perfLock !== 2);
+}
+
+/* ================================================== active abilities ====
+   A handful of Jaxons carry something you fire yourself. Own one and its
+   icon appears bottom-left; the ring around it drains while it cools. They
+   are all things the game could already do — this is the button. */
+const ABILITIES = [
+  { id:'cut', ammo:'cut', name:'CUT!', cd:26, col:'#ffd83d',
+    tip:'Freezes the whole board and doubles the next hit on everything.',
+    icon:'M5 4h14v3H5zm0 6.5h14v3H5zM5 17h14v3H5z',
+    fire(t) {
+      const sp = SP(t);
+      directorCut(t, sp);
+      return true;
+    } },
+  { id:'bass', ammo:'stun', name:'Bass Drop', cd:18, col:'#8fe4ff',
+    tip:'A pulse across the whole map that freezes everything solid.',
+    icon:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 1 0 10 5 5 0 0 1 0-10z',
+    fire(t) {
+      const sp = SP(t);
+      S.pulses.push({ x:t.x, y:t.y, r:20, max:2400, owner:t, hitSet:new Set(),
+                      bHit:null, kind:'stun', spec:{ stun:sp.stun*1.8, dmg:sp.dmg*3 } });
+      shakeScreen(12, 0.6);
+      beep(70, 0.6, 'sawtooth', 0.07, 40);
+      return true;
+    } },
+  { id:'overdrive', ammo:'buff', name:'Overdrive', cd:34, col:'#ff8a5a',
+    tip:'Every Jaxon on the board fires twice as fast for eight seconds.',
+    icon:'M13 2 4 14h6l-1 8 9-12h-6z',
+    fire() {
+      S.overdrive = 8;
+      banner('OVERDRIVE', 'every Jaxon, twice the rate', '#ff8a5a');
+      flashScreen(0.16);
+      beep(300, 0.5, 'square', 0.05, 900);
+      return true;
+    } },
+  { id:'judgment', ammo:'multi', only:'truegod', name:'Judgment', cd:44, col:'#c08bff',
+    tip:'Calls down the singularity: heavy damage to everything on the trail.',
+    icon:'M12 2 3 7v6c0 5 3.8 8.4 9 9 5.2-.6 9-4 9-9V7z',
+    fire(t) {
+      const sp = SP(t), dmg = Math.round((sp.dmg || 400) * 9);
+      for (const e of S.enemies) if (!e.dead) hurtEnemy(e, dmg, t);
+      for (const B of S.bosses) hurtBoss(dmg*2, t, B);
+      for (let i = 0; i < 5; i++) {
+        const x = W*0.16 + Math.random()*W*0.7, y = H*0.2 + Math.random()*H*0.6;
+        S.fx.push({ k:'boom', x, y, life:0.5, max:0.5, r:180 });
+      }
+      banner('JUDGMENT', 'the whole trail answers for it', '#c08bff');
+      flashScreen(0.4); shakeScreen(22, 1.2);
+      beep(60, 1.3, 'sawtooth', 0.08, 300);
+      return true;
+    } },
+  { id:'lockdown', ammo:'admin', name:'Lockdown', cd:30, col:'#ff2b2b',
+    tip:'ACCESS DENIED: the trail stops dead and takes the Admin beam all at once.',
+    icon:'M6 10V7a6 6 0 1 1 12 0v3h1v11H5V10zm3 0h6V7a3 3 0 0 0-6 0z',
+    fire(t) {
+      const sp = SP(t), dmg = Math.round(sp.dmg*14);
+      for (const e of S.enemies) {
+        if (e.dead) continue;
+        e.stun = Math.max(e.stun || 0, 2.2);
+        hurtEnemy(e, dmg, t);
+      }
+      for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, 1.2); hurtBoss(dmg*2, t, B); }
+      banner('LOCKDOWN', 'ACCESS DENIED', '#ff2b2b');
+      flashScreen(0.42); shakeScreen(20, 1.1);
+      beep(58, 1.2, 'square', 0.08, 200);
+      return true;
+    } }
+];
+/* which of them the board currently supports, and who provides it */
+function abilityOwner(a) {
+  let best = null;
+  for (const t of S.towers) {
+    if (a.only ? t.type !== a.only : TOWERS[t.type].ammo !== a.ammo) continue;
+    if (!best || SP(t).dmg > SP(best).dmg) best = t;
+  }
+  return best;
+}
+function liveAbilities() {
+  const out = [];
+  for (const a of ABILITIES) {
+    const t = abilityOwner(a);
+    if (t) out.push({ a, t });
+  }
+  return out;
+}
+function fireAbility(id) {
+  const a = ABILITIES.find(x => x.id === id);
+  if (!a) return;
+  if (S.phase !== 'wave' && S.phase !== 'build') return;
+  const t = abilityOwner(a);
+  if (!t) return;
+  if ((S.abilCd[id] || 0) > 0) {
+    toast(a.name + ' — ' + Math.ceil(S.abilCd[id]) + 's');
+    beep(150, 0.07, 'square', 0.026);
+    return;
+  }
+  if (a.fire(t)) {
+    S.abilCd[id] = a.cd;
+    t.shots++;
+    buildAbilityBar();
+  }
+}
+/* the bar itself, rebuilt only when the set of abilities changes */
+let abilKey = '';
+function buildAbilityBar() {
+  const bar = $('abils');
+  if (!bar) return;
+  const live = liveAbilities();
+  const key = live.map(x => x.a.id).join(',');
+  if (key !== abilKey) {
+    abilKey = key;
+    bar.innerHTML = live.map(({ a }) =>
+      '<button class="abil" data-a="' + a.id + '" style="--ac:' + a.col + '" ' +
+      'title="' + a.name + ' — ' + a.tip + '">' +
+        '<svg viewBox="0 0 24 24" class="ic"><path d="' + a.icon + '"/></svg>' +
+        '<svg viewBox="0 0 44 44" class="ring"><circle cx="22" cy="22" r="20"/></svg>' +
+        '<span class="cd"></span>' +
+        '<span class="nm">' + a.name + '</span>' +
+      '</button>').join('');
+    bar.querySelectorAll('.abil').forEach(b => {
+      b.onclick = ev => { ev.stopPropagation(); unlockAudio(); fireAbility(b.dataset.a); };
+    });
+  }
+  syncAbilityBar();
+}
+function syncAbilityBar() {
+  const bar = $('abils');
+  if (!bar) return;
+  bar.classList.toggle('on', bar.children.length > 0 && S.phase !== 'menu' && S.phase !== 'over');
+  for (const b of bar.children) {
+    const a = ABILITIES.find(x => x.id === b.dataset.a);
+    const left = S.abilCd[b.dataset.a] || 0;
+    const ready = left <= 0;
+    b.classList.toggle('ready', ready);
+    b.querySelector('.cd').textContent = ready ? '' : Math.ceil(left);
+    const c = b.querySelector('.ring circle');
+    const C = 2*Math.PI*20;
+    c.style.strokeDasharray = C;
+    c.style.strokeDashoffset = ready ? 0 : C*(left/a.cd);
+  }
+}
+
+/* ==================================================== the admin panel ===
+   It is not in any menu. Pull the camera back far enough that the lawn is
+   only part of what you can see, and a small brown button appears out in
+   the grass. It asks for a code, and it does not hint at the code. */
+const ADMIN_CODE = '231236';
+const ADM_UI = { open:false, ok:false, buy:1 };
+
+/* the button lives out in the park, north-west of the lawn */
+function syncAdmDot() {
+  const el = $('admDot');
+  if (!el) return;
+  const show = !S.titan && S.phase !== 'menu' && S.cam.z <= 0.62;
+  el.classList.toggle('on', show);
+  if (!show) return;
+  const p = toScreen(-330, -190);
+  const sc = S.cam.z;
+  el.style.left = (p.x - 23) + 'px';
+  el.style.top  = (p.y - 23) + 'px';
+  el.style.transform = 'scale(' + Math.max(0.7, Math.min(1.6, 1/Math.max(0.35, sc))*0.55) + ')';
+}
+
+function openAdmin() {
+  ADM_UI.open = true;
+  $('ovAdmin').classList.add('on');
+  admRender();
+  beep(90, 0.3, 'square', 0.05, 240);
+}
+function closeAdmin() {
+  ADM_UI.open = false;
+  $('ovAdmin').classList.remove('on');
+  beep(200, 0.1, 'square', 0.03, 90);
+}
+
+function admRender() {
+  const w = $('admWrap');
+  if (!ADM_UI.ok) {
+    w.innerHTML =
+      '<h2>ACCESS RESTRICTED<button class="admX" id="admClose">&times;</button></h2>' +
+      '<div class="warn">AUTHORISATION REQUIRED</div>' +
+      '<div id="admCode">' +
+      '<input id="admIn" type="text" inputmode="numeric" maxlength="6" placeholder="------" autocomplete="off">' +
+      '<div class="msg" id="admMsg">ENTER CODE</div>' +
+      '<button class="admX" id="admGo" style="width:auto;padding:0 18px;height:36px">SUBMIT</button>' +
+      '</div>';
+    const go = () => {
+      const v = ($('admIn').value || '').trim();
+      if (v === ADMIN_CODE) {
+        ADM_UI.ok = true;
+        beep(880, 0.16, 'triangle', 0.05, 1400);
+        admRender();
+      } else {
+        const m = $('admMsg');
+        m.textContent = 'DENIED'; m.classList.add('bad');
+        $('admIn').value = '';
+        beep(90, 0.3, 'sawtooth', 0.06, 50);
+        shakeScreen(9, 0.4);
+      }
+    };
+    $('admGo').onclick = go;
+    $('admIn').addEventListener('keydown', ev => {
+      ev.stopPropagation();
+      if (ev.key === 'Enter') go();
+    });
+    $('admClose').onclick = closeAdmin;
+    setTimeout(() => { try { $('admIn').focus(); } catch (e) {} }, 30);
+    return;
+  }
+
+  const t = S.towers.find(x => TOWERS[x.type].ammo === 'admin');
+  w.innerHTML =
+    '<h2>ADMIN PANEL<button class="admX" id="admClose">&times;</button></h2>' +
+    '<div class="warn">SESSION AUTHORISED &middot; ' + M().name.toUpperCase() + '</div>' +
+
+    '<h4>Economy</h4>' +
+    '<div class="admRow"><label>Coins</label>' +
+      '<input type="number" id="admMoney" value="' + Math.floor(S.money) + '" min="0" step="1000">' +
+      '<button id="admMoneyGo">SET</button></div>' +
+    '<div class="admRow"><label>Lives</label>' +
+      '<input type="number" id="admLives" value="' + Math.max(0, Math.round(S.health)) + '" min="1">' +
+      '<button id="admLivesGo">SET</button></div>' +
+
+    '<h4>Board</h4>' +
+    '<div class="admRow"><label>Wave</label>' +
+      '<input type="number" id="admWave" value="' + S.wave + '" min="1" max="200">' +
+      '<button id="admWaveGo">JUMP</button></div>' +
+    '<div class="admRow"><label>Global damage &times;</label>' +
+      '<input type="number" id="admDmg" value="' + (S.dmgMul || 1) + '" min="0.1" max="1000" step="0.5">' +
+      '<button id="admDmgGo">APPLY</button></div>' +
+    '<div class="admRow"><label>Clear the trail</label>' +
+      '<button id="admClear">WIPE</button>' +
+      '<button id="admKill">KILL BOSSES</button></div>' +
+
+    '<h4>Deployment</h4>' +
+    '<button id="admBuy">' +
+      '<span class="circ"><img src="' + PORTRAIT.admin + '" alt=""></span>' +
+      '<span><span class="nm">Admin Jaxon &middot; $' + costOf('admin').toLocaleString() + '</span>' +
+      '<span class="ds">No upgrade paths. He earns levels every wave, and every ' +
+      'thirtieth one hands him a new weapon.' +
+      (t ? '<br>On the field: level ' + admLevel(t) + '.' : '') + '</span></span>' +
+    '</button>' +
+    (t ? '<h4>Admin Jaxon &middot; level ' + admLevel(t) + '</h4>' +
+      '<div class="admRow"><label>Buy levels</label>' +
+        '<input type="number" id="admLv" value="' + ADM_UI.buy + '" min="1" max="500">' +
+        '<button id="admLvGo">BUY $' + admBuyCost(t, ADM_UI.buy).toLocaleString() + '</button></div>' +
+      '<div class="admRow"><label>Damage now</label>' +
+        '<input type="text" value="' + shortHp(Math.round(SP(t).dmg)) + ' / 0.1s" readonly></div>'
+     : '');
+
+  $('admClose').onclick = closeAdmin;
+  const num = id => Math.max(0, Math.round(+$(id).value || 0));
+  $('admMoneyGo').onclick = () => { S.money = num('admMoney'); syncHUD(); syncShelf(); toast('Coins set'); };
+  $('admLivesGo').onclick = () => { S.health = Math.max(1, num('admLives')); syncHUD(); toast('Lives set'); };
+  $('admWaveGo').onclick = () => { jumpToWave(num('admWave')); admRender(); };
+  $('admDmgGo').onclick = () => {
+    S.dmgMul = Math.max(0.1, Math.min(1000, +$('admDmg').value || 1));
+    toast('Global damage ×' + S.dmgMul);
+  };
+  $('admClear').onclick = () => {
+    const k = S.enemies.length;
+    S.enemies = []; S.spawnQueue = 0; S.plan = [];
+    toast('Cleared ' + k + ' enemies');
+  };
+  $('admKill').onclick = () => { const k = S.bosses.length; clearBosses(); toast(k + ' bosses removed'); };
+  $('admBuy').onclick = () => {
+    const cost = costOf('admin');
+    if (!afford(cost)) { toast('Need $' + cost.toLocaleString()); return; }
+    S.placing = 'admin'; S.dupe = null;
+    closeAdmin();
+    setShop(false); setPlacingBanner(); syncShelf();
+    toast('Place the Admin Jaxon on the grass');
+  };
+  if (t) {
+    $('admLv').addEventListener('keydown', ev => ev.stopPropagation());
+    $('admLv').oninput = () => {
+      ADM_UI.buy = Math.max(1, Math.min(500, Math.round(+$('admLv').value || 1)));
+      $('admLvGo').textContent = 'BUY $' + admBuyCost(t, ADM_UI.buy).toLocaleString();
+    };
+    $('admLvGo').onclick = () => {
+      const cnt = ADM_UI.buy, cost = admBuyCost(t, cnt);
+      if (!afford(cost)) { toast('Need $' + cost.toLocaleString() + ' for ' + cnt + ' levels'); return; }
+      spend(cost);
+      const was = admLevel(t);
+      t.lvl = was + cnt;
+      admLevelled(t, cnt);
+      S.floats.push({ x:t.x, y:t.y - 60, txt:'LVL ' + admLevel(t), color:'#ff5a3c', life:2, big:true });
+      toast('Admin Jaxon is level ' + admLevel(t));
+      syncHUD(); admRender();
+    };
+  }
+  for (const id of ['admMoney','admLives','admWave','admDmg'])
+    $(id).addEventListener('keydown', ev => ev.stopPropagation());
 }
 
 /* ===================================================== the guidebook =====
@@ -10362,6 +11345,7 @@ function frame(now) {
   if (fpsAcc >= 0.5) { fpsAvg = fpsN/fpsAcc; fpsAcc = 0; fpsN = 0; setPerf(); }
   camKeys(dt);
   if (S.shakeT > 0) { S.shakeT = Math.max(0, S.shakeT - dt*2.6); if (!S.shakeT) S.shakeAmp = 0; }
+  syncAdmDot();
   if (S.flash > 0) { S.flash = Math.max(0, S.flash - dt*2.2); $('flash').style.opacity = S.flash; }
   if (S.paused) { render(); requestAnimationFrame(frame); return; }
   /* the leak that ends the run plays out in slow motion before the screen */
@@ -10373,6 +11357,7 @@ function frame(now) {
   if (S.phase === 'wave' || S.phase === 'build') {
     for (let i = 0; i < S.speed; i++) update(dt);
     if (S.hovered && S.towers.includes(S.hovered)) fillTip(S.hovered);   // live stats
+    buildAbilityBar();
     if (S.selected && ++panelTick % 6 === 0) refreshPanel();             // keep costs/affordability fresh
   } else {
     S.t += dt;
@@ -10384,6 +11369,12 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
 
 
 
