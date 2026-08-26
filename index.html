@@ -850,6 +850,120 @@
   #help kbd{flex:none}
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
+  /* ------------------------------------------------------- guidebook ---- */
+  #bookBtn{
+    display:flex;align-items:center;gap:9px;cursor:pointer;font:inherit;
+    padding:10px 22px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.6px;
+    color:#0d1f12;background:linear-gradient(180deg,#7dffb4,#22e02a);
+    border:0;box-shadow:0 5px 0 #128a17,0 12px 26px rgba(0,0,0,.45);
+    transition:transform .1s cubic-bezier(.2,1.3,.4,1),filter .12s;
+  }
+  #bookBtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
+  #bookBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #128a17}
+  #bookBtn svg{flex:none}
+  body.mobile #bookBtn{font-size:21px;padding:16px 34px;min-height:var(--tap);gap:12px}
+
+  /* the book opens over the pause menu, so it has to sit above it */
+  #ovBook{z-index:34;padding:0;gap:0;justify-content:flex-start;
+          background:radial-gradient(1100px 700px at 50% 30%,rgba(8,14,20,.93),rgba(3,6,9,.98))}
+  #bookWrap{
+    position:relative;z-index:1;width:min(1080px,96%);height:min(88%,760px);margin:auto;
+    display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(17,25,34,.96),rgba(9,14,20,.98));
+    border:1px solid var(--line);border-radius:20px;overflow:hidden;
+    box-shadow:0 26px 70px rgba(0,0,0,.66);
+  }
+  #bookWrap::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,transparent,rgba(34,224,42,.9),transparent);
+  }
+  .bkHead{
+    flex:none;display:flex;align-items:center;gap:12px;padding:13px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .bkHead .t{font-size:15px;font-weight:800;letter-spacing:2.6px;text-transform:uppercase;color:var(--accent)}
+  .bkHead .sub{flex:1;font-size:11px;color:var(--dim);letter-spacing:.5px}
+  .bkX{
+    font:inherit;font-size:15px;font-weight:800;cursor:pointer;line-height:1;
+    width:32px;height:32px;border-radius:9px;color:var(--dim);
+    background:rgba(255,255,255,.05);border:1px solid var(--line);transition:.12s;
+  }
+  .bkX:hover{color:#fff;background:rgba(229,72,77,.24);border-color:rgba(229,72,77,.5)}
+  .bkMain{flex:1;display:flex;min-height:0}
+  .bkRail{
+    flex:none;width:186px;padding:10px 8px;overflow-y:auto;border-right:1px solid var(--line);
+    scrollbar-width:thin;scrollbar-color:rgba(34,224,42,.4) transparent;
+  }
+  .bkRail button{
+    display:block;width:100%;text-align:left;font:inherit;font-size:11.5px;font-weight:700;
+    cursor:pointer;padding:9px 11px;border-radius:10px;margin-bottom:4px;
+    color:var(--dim);background:transparent;border:1px solid transparent;transition:.12s;
+  }
+  .bkRail button:hover{color:var(--ink);background:rgba(255,255,255,.06)}
+  .bkRail button.on{
+    color:#0a1f0c;background:linear-gradient(180deg,#5ef064,#1fce27);border-color:#1fce27;
+  }
+  .bkRail button i{display:block;font-style:normal;font-size:9px;opacity:.72;margin-top:2px;font-weight:600}
+  .bkPage{flex:1;display:flex;flex-direction:column;min-width:0;padding:14px 18px 0}
+  .bkPage h3{font-size:22px;font-weight:800;letter-spacing:-.4px;margin-bottom:3px}
+  .bkPage .ch{font-size:9.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--accent);font-weight:800}
+  .bkArt{
+    flex:none;height:clamp(180px,34vh,262px);margin:11px 0;border-radius:14px;overflow:hidden;
+    border:1px solid var(--line);background:radial-gradient(circle at 50% 62%,#16202b,#080c11);
+    position:relative;
+  }
+  .bkArt canvas{position:absolute;inset:0;width:100%;height:100%}
+  .bkBody{
+    flex:1;min-height:0;overflow-y:auto;font-size:13.5px;line-height:1.62;color:#c2ced9;
+    padding-bottom:10px;scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+  }
+  .bkBody b{color:var(--ink)}
+  .bkBody .k{
+    display:inline-block;background:rgba(255,255,255,.09);border:1px solid var(--line);
+    border-bottom-width:2px;border-radius:5px;padding:0 6px;font-size:11.5px;color:var(--ink);font-weight:700;
+  }
+  .bkFoot{
+    flex:none;display:flex;align-items:center;gap:10px;padding:10px 0 14px;
+    border-top:1px solid var(--line);margin-top:auto;
+  }
+  .bkFoot button{
+    font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:11px 22px;border-radius:11px;
+    color:var(--ink);background:rgba(255,255,255,.06);border:1px solid var(--line);transition:.12s;
+  }
+  .bkFoot button:hover:not(:disabled){background:rgba(255,255,255,.13);border-color:var(--accent)}
+  .bkFoot button:disabled{opacity:.34;cursor:not-allowed}
+  .bkFoot .dots{flex:1;display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
+  .bkFoot .dots i{
+    width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.18);cursor:pointer;
+    transition:.14s;flex:none;
+  }
+  .bkFoot .dots i:hover{background:rgba(255,255,255,.4)}
+  .bkFoot .dots i.on{background:var(--accent);box-shadow:0 0 8px rgba(34,224,42,.7);width:16px;border-radius:99px}
+  body.mobile #bookWrap{width:97%;height:92%;border-radius:26px}
+  body.mobile .bkHead .t{font-size:22px}
+  body.mobile .bkHead .sub{display:none}
+  body.mobile .bkX{width:52px;height:52px;font-size:22px}
+  body.mobile .bkRail{width:250px}
+  body.mobile .bkRail button{font-size:17px;padding:14px;min-height:var(--tap)}
+  body.mobile .bkRail button i{font-size:13px}
+  body.mobile .bkPage h3{font-size:30px}
+  body.mobile .bkPage .ch{font-size:14px}
+  body.mobile .bkBody{font-size:19px}
+  body.mobile .bkBody .k{font-size:16px}
+  body.mobile .bkFoot button{font-size:19px;padding:16px 30px;min-height:var(--tap)}
+  body.mobile .bkFoot .dots i{width:11px;height:11px}
+  body.mobile .bkFoot .dots i.on{width:24px}
+  /* a phone in portrait has no room for a rail beside the page */
+  @media (max-aspect-ratio: 1/1){
+    body.mobile .bkMain{flex-direction:column}
+    body.mobile .bkRail{
+      width:auto;display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;
+      border-right:0;border-bottom:1px solid var(--line);padding:9px;
+    }
+    body.mobile .bkRail button{flex:none;width:auto;white-space:nowrap;margin:0}
+    body.mobile .bkRail button i{display:none}
+  }
+
   /* ------------------------------------------------------ pause menu ---- */
   #ovPause{gap:14px;background:radial-gradient(900px 620px at 50% 45%,rgba(8,13,19,.78),rgba(3,6,9,.95))}
   #ovPause .ptag{font-size:11px;letter-spacing:3.4px;text-transform:uppercase;color:var(--dim);font-weight:700}
@@ -1123,6 +1237,12 @@
     <div class="overlay on" id="ovMenu">
       <div id="menuFx"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
         <div id="menuRain"></div><div id="menuBolt"></div></div>
+      <button id="bookBtn">
+        <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="#0d1f12" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
+        </svg>
+        Guidebook
+      </button>
       <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
@@ -1152,12 +1272,37 @@
       <button id="endModes">Change gamemode</button>
     </div>
 
+    <div class="overlay" id="ovBook">
+      <div id="bookWrap">
+        <div class="bkHead">
+          <span class="t">Guidebook</span>
+          <span class="sub" id="bkSub"></span>
+          <button class="bkX" id="bkClose" aria-label="Close the guidebook">&times;</button>
+        </div>
+        <div class="bkMain">
+          <div class="bkRail" id="bkRail"></div>
+          <div class="bkPage">
+            <div class="ch" id="bkCh"></div>
+            <h3 id="bkTitle"></h3>
+            <div class="bkArt"><canvas id="bkArt"></canvas></div>
+            <div class="bkBody" id="bkText"></div>
+            <div class="bkFoot">
+              <button id="bkPrev">&larr; Back</button>
+              <div class="dots" id="bkDots"></div>
+              <button id="bkNext">Next &rarr;</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="overlay" id="ovPause">
       <div class="ptag" id="pauseTag">Medium &middot; wave 1</div>
       <h1>PAUSED</h1>
       <div id="setPanel"></div>
       <div class="pmBtns" id="pauseBtns">
         <button id="pmResume">Resume</button>
+        <button id="pmBook">Guidebook</button>
         <button id="pmSettings">Settings</button>
         <button id="pmRestart">Restart run</button>
         <button class="warn" id="pmQuit">Main menu</button>
@@ -3518,6 +3663,7 @@ function loadSave() {
   if (typeof j.vol === 'number' && isFinite(j.vol)) S.vol = Math.max(0, Math.min(1, j.vol));
   if (typeof j.shake === 'boolean') S.shake = j.shake;
   if (typeof j.cbCues === 'boolean') S.cbCues = j.cbCues;
+  if (typeof j.book === 'number' && j.book >= 0) BOOK.page = Math.floor(j.book);
   if (MODES[j.sbDiff] && !MODES[j.sbDiff].sandbox) S.sbDiff = j.sbDiff;
   if (Array.isArray(j.customs)) S.customs = j.customs.filter(c => c && c.name).slice(0, 60);
   S.tutorialDone = !!j.tutorial;
@@ -3528,7 +3674,7 @@ function saveNow() {
       bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
       sbDiff:S.sbDiff, customs:S.customs,
-      vol:S.vol, shake:S.shake, cbCues:S.cbCues
+      vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
@@ -9172,6 +9318,12 @@ window.addEventListener('keydown', ev => {
     toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
     return;
   }
+  if ($('ovBook').classList.contains('on')) {
+    if (ev.key === 'Escape') { closeBook(); return; }
+    if (ev.key === 'ArrowRight') { bookGo(BOOK.page + 1); return; }
+    if (ev.key === 'ArrowLeft')  { bookGo(BOOK.page - 1); return; }
+    return;                                   // the book has the keyboard
+  }
   if (ev.key === 'Escape') {
     if (S.paused) { setPause(false); return; }
     if (S.sbPick) { S.sbPick = null; sbHint(); if (S.sbOpen) sbRender(); return; }
@@ -9327,6 +9479,11 @@ $('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.m
 $('endModes').onclick = showModes;
 $('pauseBtn').onclick = () => setPause(!S.paused);
 $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); };
+$('bookBtn').onclick = () => openBook('menu');
+$('pmBook').onclick = () => openBook('pause');
+$('bkClose').onclick = closeBook;
+$('bkPrev').onclick = () => bookGo(BOOK.page - 1);
+$('bkNext').onclick = () => bookGo(BOOK.page + 1);
 $('pmResume').onclick = () => setPause(false);
 $('pmSettings').onclick = () => openSettings();
 $('pmRestart').onclick = () => { setPause(false); startMode(S.mode); };
@@ -9371,6 +9528,633 @@ function syncChips() {
   $('sndBtn').classList.toggle('on', S.sound);
   $('perfBtn').textContent = 'Graphics ' + (S.perfLock === null ? 'Auto' : S.perfLock === 0 ? 'High' : 'Fast');
   $('perfBtn').classList.toggle('on', S.perfLock !== 2);
+}
+
+/* ===================================================== the guidebook =====
+   One topic a page, and every page draws its own picture with the same
+   routines the menu previews use, so a diagram here looks like the game
+   rather than like a manual bolted onto it. */
+
+/* --------------------------------------------------- drawing furniture -- */
+function gbPanel(g, x, y, w, h, r, fill, line) {
+  g.save();
+  g.beginPath(); g.roundRect(x, y, w, h, r || 9);
+  g.fillStyle = fill || 'rgba(12,18,26,.9)'; g.fill();
+  g.lineWidth = 1.4; g.strokeStyle = line || 'rgba(255,255,255,.16)'; g.stroke();
+  g.restore();
+}
+function gbText(g, txt, x, y, size, col, align, weight) {
+  g.save();
+  g.font = (weight || 800) + ' ' + size + 'px "Segoe UI", system-ui, sans-serif';
+  g.textAlign = align || 'left'; g.textBaseline = 'middle';
+  g.fillStyle = col || '#dbe4ee';
+  g.fillText(txt, x, y);
+  g.restore();
+}
+function gbBtn(g, x, y, w, h, label, col, dark) {
+  g.save();
+  g.beginPath(); g.roundRect(x, y, w, h, h/2);
+  const gr = g.createLinearGradient(0, y, 0, y + h);
+  gr.addColorStop(0, col); gr.addColorStop(1, dark || col);
+  g.fillStyle = gr; g.fill();
+  g.restore();
+  gbText(g, label, x + w/2, y + h/2 + 0.5, Math.min(12, h*0.5), '#08210c', 'center');
+}
+function gbPill(g, x, y, label, value, col) {
+  const w = 74, h = 30;
+  gbPanel(g, x, y, w, h, 9, 'rgba(10,15,21,.82)');
+  g.save();
+  g.fillStyle = col; g.beginPath(); g.arc(x + 14, y + h/2, 6.5, 0, 7); g.fill();
+  g.restore();
+  gbText(g, label, x + 26, y + 10, 7.5, '#7e8c9c', 'left', 700);
+  gbText(g, value, x + 26, y + 20, 12, '#f2f6fb', 'left');
+  return w;
+}
+/* the mouse, with an optional click ping */
+function gbCursor(g, x, y, press) {
+  g.save();
+  if (press) {
+    g.globalAlpha = Math.max(0, 1 - press);
+    g.strokeStyle = '#7dffb4'; g.lineWidth = 2.4;
+    g.beginPath(); g.arc(x, y, 5 + press*17, 0, 7); g.stroke();
+    g.globalAlpha = 1;
+  }
+  g.translate(x, y);
+  g.beginPath();
+  g.moveTo(0, 0); g.lineTo(0, 15); g.lineTo(4, 11.5); g.lineTo(7, 17.5);
+  g.lineTo(9.6, 16.2); g.lineTo(6.6, 10.4); g.lineTo(11.5, 10);
+  g.closePath();
+  g.fillStyle = '#fff'; g.fill();
+  g.lineWidth = 1.6; g.strokeStyle = '#101820'; g.stroke();
+  g.restore();
+}
+/* a curved arrow that points at the thing being talked about */
+function gbArrow(g, x1, y1, x2, y2, col, bend) {
+  const mx = (x1 + x2)/2 + (y2 - y1)*(bend === undefined ? 0.24 : bend);
+  const my = (y1 + y2)/2 - (x2 - x1)*(bend === undefined ? 0.24 : bend);
+  g.save();
+  g.strokeStyle = col || '#7dffb4'; g.lineWidth = 2.4; g.setLineDash([6, 5]);
+  g.beginPath(); g.moveTo(x1, y1); g.quadraticCurveTo(mx, my, x2, y2); g.stroke();
+  g.setLineDash([]);
+  const a = Math.atan2(y2 - my, x2 - mx);
+  g.translate(x2, y2); g.rotate(a);
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(-9, -5); g.lineTo(-9, 5); g.closePath();
+  g.fillStyle = col || '#7dffb4'; g.fill();
+  g.restore();
+}
+/* a stretch of the trail, for pages about the field */
+function gbTrail(g, w, y) {
+  g.save();
+  g.lineCap = 'round';
+  g.strokeStyle = '#6d3f03'; g.lineWidth = 26;
+  g.beginPath(); g.moveTo(-8, y); g.lineTo(w + 8, y); g.stroke();
+  g.strokeStyle = '#a05f05'; g.lineWidth = 20;
+  g.beginPath(); g.moveTo(-8, y); g.lineTo(w + 8, y); g.stroke();
+  g.restore();
+}
+function gbLawn(g, w, h) {
+  pvGround(g, w, h, '#0d3a1e', '#071d10');
+}
+/* a little upgrade column, the shape the real panel uses */
+function gbCol(g, x, y, w, tiers, owned, col, label) {
+  gbText(g, label, x + w/2, y - 8, 8, col, 'center');
+  for (let i = 0; i < tiers; i++) {
+    const ty = y + i*26, on = i < owned;
+    gbPanel(g, x, ty, w, 22, 7,
+      on ? 'rgba(34,224,42,.16)' : 'rgba(255,255,255,.05)',
+      on ? 'rgba(34,224,42,.5)' : 'rgba(255,255,255,.14)');
+    g.save();
+    g.beginPath(); g.roundRect(x + 4, ty + 5, 12, 12, 4);
+    g.fillStyle = on ? col : 'rgba(255,255,255,.12)'; g.fill();
+    g.restore();
+    gbText(g, on ? '✓' : String(i + 1), x + 10, ty + 11.5, 8.5,
+           on ? '#08210c' : '#7e8c9c', 'center');
+    gbText(g, on ? 'owned' : 'tier ' + (i + 1), x + 21, ty + 11.5, 8.5,
+           on ? '#8bf59a' : '#93a2b2', 'left', 700);
+  }
+}
+
+/* ------------------------------------------------------------- pages ---- */
+const GUIDE = [
+{ ch:'Basics', title:'Put a Jaxon on the grass',
+  text:'Blobs walk the brown trail from the left. Your job is to line it with <b>Jaxons</b> who knock them out before they reach the door.<br><br>Open the shop, click a Jaxon to pick him up, then click the <b>grass</b> to set him down. You cannot build on the trail itself — the ghost turns red when a spot will not take him.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.5);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.66);
+    const gx = w*0.30, gy = h*0.36;
+    /* the ghost drifts down and plants itself */
+    const drop = Math.min(1, p*2.2);
+    g.save(); g.globalAlpha = p < 0.46 ? 0.6 : 1;
+    pvJaxon(g, 'basic', gx, gy + drop*h*0.14, h*0.34, false);
+    g.restore();
+    if (p < 0.46) gbCursor(g, gx + 16, gy + drop*h*0.14 + 6, 0);
+    else gbCursor(g, gx + 16, gy + h*0.14 + 6, Math.min(1, (p - 0.46)*4));
+    /* a bad spot, marked out on the trail */
+    const bx = w*0.68, by = h*0.66;
+    g.save(); g.globalAlpha = 0.5; g.filter = 'grayscale(1)';
+    pvJaxon(g, 'basic', bx, by + 6, h*0.3, false);
+    g.restore();
+    g.save();
+    g.strokeStyle = '#ff5a4a'; g.lineWidth = 3.4;
+    g.beginPath(); g.arc(bx, by - 12, 26, 0, 7); g.stroke();
+    g.beginPath(); g.moveTo(bx - 18, by + 6); g.lineTo(bx + 18, by - 30); g.stroke();
+    g.restore();
+    gbText(g, 'grass: yes', gx, h*0.9, 11, '#7dffb4', 'center');
+    gbText(g, 'trail: no', bx, h*0.9, 11, '#ff8b8e', 'center');
+  } },
+
+{ ch:'Basics', title:'Start the wave',
+  text:'Nothing moves until you say so. Press <span class="k">Start Wave</span> at the top of the screen — or tap <span class="k">Space</span> — and the next crowd walks in.<br><br>Between waves you get as long as you like to build and upgrade. Turn on <b>Auto-Skip</b> in the chips if you would rather they came without asking.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.68);
+    gbBtn(g, w/2 - 66, h*0.17, 132, 34, p < 0.4 ? 'Start Wave 5' : 'Wave 5 running', '#5ef064', '#1fce27');
+    if (p < 0.4) gbCursor(g, w/2 + 12, h*0.17 + 26, p > 0.3 ? (p - 0.3)*10 : 0);
+    if (p >= 0.4) {
+      for (let i = 0; i < 4; i++) {
+        const u = frac((p - 0.4)/0.6 + i*0.22);
+        pvBlob(g, -20 + u*(w + 40), h*0.68 - 8, 11, 1 + (i % 3), false);
+      }
+    }
+    pvJaxon(g, 'ninja', w*0.26, h*0.52, h*0.3, false);
+    pvJaxon(g, 'laser', w*0.72, h*0.52, h*0.3, true);
+  } },
+
+{ ch:'Basics', title:'Lives and coins',
+  text:'Every blob that walks past the door costs you <b>lives</b>. Run out and the run is over.<br><br>Popping blobs earns <b>coins</b>, and so does clearing a wave. Coins are the only thing you spend — on new Jaxons, on upgrades, and on the big fusions later.<br><br>The <b>Wave</b> counter tells you how deep you are. <b>Best</b> remembers your record for the difficulty you are playing.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4);
+    gbLawn(g, w, h);
+    let x = w*0.5 - 158;
+    const y = h*0.34;
+    x += gbPill(g, x, y, 'Lives', p > 0.55 ? '46' : '50', '#e5484d') + 8;
+    x += gbPill(g, x, y, 'Coins', p > 0.3 ? '$412' : '$365', '#ffd83d') + 8;
+    x += gbPill(g, x, y, 'Wave', '12', '#22e02a') + 8;
+    gbPill(g, x, y, 'Best', '31', '#8fe4ff');
+    if (p > 0.3 && p < 0.5) gbText(g, '+$47', w*0.5 - 76, y - 14 - (p - 0.3)*40, 13, '#ffd83d', 'center');
+    if (p > 0.55 && p < 0.75) gbText(g, '-4', w*0.5 - 150, y - 14 - (p - 0.55)*40, 13, '#ff6b6b', 'center');
+    gbText(g, 'coins in, lives out', w/2, h*0.74, 12, '#93a2b2', 'center', 700);
+  } },
+
+{ ch:'Shop', title:'The shop drawer',
+  text:'The shop lives at the bottom of the screen. Click the arrow tab — or press <span class="k">Tab</span> — to slide it open, and again to close it.<br><br>Every Jaxon shows his portrait, his name, his price and a couple of <b>role tags</b>. Ones you cannot afford yet are dimmed; they light up the moment you can.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.5);
+    gbLawn(g, w, h);
+    const open = Math.min(1, Math.max(0, (p - 0.18)*3.4));
+    const dy = h*0.98 - open*h*0.5;
+    gbPanel(g, 0, dy, w, h*0.6, 12, 'rgba(12,18,26,.96)');
+    g.save();
+    g.fillStyle = 'rgba(34,224,42,.85)'; g.fillRect(0, dy, w, 2);
+    g.restore();
+    const keys = ['basic','ninja','laser','rainbow','tablet'];
+    keys.forEach((k, i) => {
+      const cx = w*0.12 + i*w*0.19;
+      const poor = i >= 3;
+      g.save(); g.globalAlpha = open * (poor ? 0.4 : 1);
+      pvJaxon(g, k, cx, dy + h*0.29, h*0.24, false);
+      g.restore();
+      g.globalAlpha = open;
+      gbText(g, '$' + costOf(k), cx, dy + h*0.4, 9.5, poor ? '#7e8c9c' : '#ffd83d', 'center');
+      g.globalAlpha = 1;
+    });
+    /* the tab itself */
+    gbBtn(g, w/2 - 40, dy - 22, 80, 22, 'Shop', '#5ef064', '#1fce27');
+    if (p < 0.3) gbCursor(g, w/2 + 10, dy - 6, p > 0.14 ? (p - 0.14)*7 : 0);
+  } },
+
+{ ch:'Shop', title:'Filter by what they do',
+  text:'Thirty-seven Jaxons is a lot to scroll. The chips along the top of the drawer cut the shelf down to one job at a time.<br><br><b>Starters</b> are the cheap early ones. <b>DPS</b> hits one thing hard, <b>Splash</b> hits crowds, <b>Support</b> slows and buffs, <b>Builders</b> send cars down the trail, <b>Income</b> makes money, and <b>Late game</b> is what you save up for.<br><br>The number keys <span class="k">1</span>&ndash;<span class="k">9</span> always mean the first nine you can actually see.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    const cats = ['All','Starters','DPS','Splash','Support','Income'];
+    const on = Math.floor(p*cats.length) % cats.length;
+    let x = w*0.04;
+    cats.forEach((c, i) => {
+      const bw = 20 + c.length*7.4;
+      if (i === on) gbBtn(g, x, h*0.12, bw, 24, c, '#5ef064', '#1fce27');
+      else { gbPanel(g, x, h*0.12, bw, 24, 12); gbText(g, c, x + bw/2, h*0.12 + 12.5, 10, '#93a2b2', 'center', 700); }
+      x += bw + 7;
+    });
+    const sets = [['basic','ninja','laser','rainbow','tablet'],
+                  ['basic','bubble','ninja','nurse','whistle'],
+                  ['ninja','laser','yoyo','tablet','titan'],
+                  ['bedtime','laser','rainbow','stormcloud','eclipse'],
+                  ['bubble','nurse','whistle','forge','boombox'],
+                  ['piggybank','tipjar','recycler','tax','caddy']];
+    (sets[on] || sets[0]).forEach((k, i) => {
+      pvJaxon(g, k, w*0.14 + i*w*0.18, h*0.78, h*0.31, false);
+    });
+  } },
+
+{ ch:'Upgrades', title:'Open a Jaxon’s panel',
+  text:'Click any Jaxon you have placed and his panel opens on the right. It shows his portrait, how much damage he has done, how many blobs he has popped, his range, and every upgrade he can still buy.<br><br>At the bottom are <b>Duplicate</b> — a fresh copy with the same upgrades — and <b>Sell</b>, which tells you the exact refund before you press it.<br><br><span class="k">Esc</span> closes the panel.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.5);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.82);
+    pvJaxon(g, 'laser', w*0.2, h*0.66, h*0.36, false);
+    g.save();
+    g.strokeStyle = 'rgba(127,233,255,.5)'; g.lineWidth = 2; g.setLineDash([6,5]);
+    g.beginPath(); g.ellipse(w*0.2, h*0.66, 52, 20, 0, 0, 7); g.stroke();
+    g.restore();
+    if (p < 0.3) gbCursor(g, w*0.2 + 14, h*0.55, p > 0.15 ? (p - 0.15)*7 : 0);
+    const px = w*0.44, pw = w*0.5;
+    g.save(); g.globalAlpha = Math.min(1, Math.max(0, (p - 0.26)*5));
+    gbPanel(g, px, h*0.08, pw, h*0.82, 12, 'rgba(14,21,30,.97)');
+    pvJaxon(g, 'laser', px + 30, h*0.28, h*0.17, false);
+    gbText(g, 'Laser Jaxon', px + 54, h*0.16, 12, '#f2f6fb');
+    gbText(g, 'Placed wave 6 · 2-1-0', px + 54, h*0.22, 8.5, '#7e8c9c', 'left', 700);
+    ['Damage 8,410','Pops 214','Range 341'].forEach((s2, i) => {
+      gbPanel(g, px + 10 + i*(pw - 20)/3, h*0.34, (pw - 26)/3, 26, 7);
+      gbText(g, s2, px + 10 + i*(pw - 20)/3 + (pw - 26)/6, h*0.34 + 13, 8.5, '#c2ced9', 'center', 700);
+    });
+    gbCol(g, px + 12, h*0.52, (pw - 44)/3, 3, 2, '#ffd83d', 'Power');
+    gbCol(g, px + 18 + (pw - 44)/3, h*0.52, (pw - 44)/3, 3, 1, '#7fe9ff', 'Reach');
+    gbCol(g, px + 24 + 2*(pw - 44)/3, h*0.52, (pw - 44)/3, 3, 0, '#c08bff', 'Third');
+    g.restore();
+  } },
+
+{ ch:'Upgrades', title:'Paths, tiers and the capstone',
+  text:'Each Jaxon has two upgrade <b>paths</b> — ten of them have three — and each path has three <b>tiers</b>. Buy them in order, cheapest first.<br><br>The catch is the <b>capstone rule</b>: the moment one path reaches tier 3, every other path is capped at tier 2. So one Jaxon can only ever be brilliant at one thing.<br><br>That is why you often want two of the same Jaxon taken down different paths.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    const owned = Math.min(3, Math.floor(p*4.4));
+    const cw = w*0.24;
+    gbCol(g, w*0.09, h*0.24, cw, 3, owned, '#ffd83d', 'Path A');
+    gbCol(g, w*0.38, h*0.24, cw, 3, owned >= 3 ? 2 : 1, '#7fe9ff', 'Path B');
+    gbCol(g, w*0.67, h*0.24, cw, 3, 0, '#c08bff', 'Path C');
+    if (owned >= 3) {
+      g.save();
+      g.strokeStyle = '#ff5a4a'; g.lineWidth = 2.6;
+      [w*0.38, w*0.67].forEach(x => {
+        g.beginPath(); g.roundRect(x, h*0.24 + 52, cw, 22, 7); g.stroke();
+        g.beginPath(); g.moveTo(x + 6, h*0.24 + 68); g.lineTo(x + cw - 6, h*0.24 + 58); g.stroke();
+      });
+      g.restore();
+      gbText(g, 'tier 3 taken — the others stop at 2', w/2, h*0.9, 11, '#ff8b8e', 'center', 700);
+    } else {
+      gbText(g, 'buy a path in order, cheapest first', w/2, h*0.9, 11, '#93a2b2', 'center', 700);
+    }
+  } },
+
+{ ch:'Ascended', title:'Three become one',
+  text:'Ten Jaxons can <b>Ascend</b>. They are the ones with a third path: Basic, Bedtime, Ninja, Rainbow, Golden Engineer, Upgraded Laser, Titan Max, Black Hole Laser, Mirror and True God.<br><br>Build <b>three of the same Jaxon</b> and max a <b>different path on each one</b> — one with A maxed, one with B, one with C. That is the whole requirement.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    const cols = ['#ffd83d','#7fe9ff','#c08bff'], labels = ['Path A maxed','Path B maxed','Path C maxed'];
+    for (let i = 0; i < 3; i++) {
+      const x = w*0.22 + i*w*0.28, y = h*0.62;
+      pvJaxon(g, 'ninja', x, y, h*0.34, false);
+      /* the crest a capped path earns */
+      g.save();
+      g.fillStyle = cols[i]; g.strokeStyle = 'rgba(0,0,0,.6)'; g.lineWidth = 1.4;
+      g.beginPath();
+      for (let j = -1; j <= 1; j++) {
+        const cx = x + j*7;
+        g.moveTo(cx - 4.5, y - h*0.34 - 2); g.lineTo(cx, y - h*0.34 - (j === 0 ? 12 : 9));
+        g.lineTo(cx + 4.5, y - h*0.34 - 2);
+      }
+      g.closePath(); g.fill(); g.stroke();
+      g.globalAlpha = 0.6 + Math.sin(t*3 + i)*0.18;
+      g.strokeStyle = cols[i]; g.lineWidth = 2.4;
+      g.beginPath(); g.ellipse(x, y, 26, 9, 0, 0, 7); g.stroke();
+      g.restore();
+      gbText(g, labels[i], x, h*0.83, 10, cols[i], 'center');
+    }
+    const pulse = 0.5 + Math.sin(p*Math.PI*2)*0.5;
+    gbText(g, 'one Jaxon per path — never three of the same', w/2, h*0.16, 11,
+           'rgba(192,139,255,' + (0.55 + pulse*0.45) + ')', 'center', 700);
+  } },
+
+{ ch:'Ascended', title:'The purple button',
+  text:'When a valid trio is standing on the field, a purple <b>Ascend</b> button appears in the panel of any of them. It shows the fee up front and greys out if you cannot pay.<br><br>Press it and the three pull together, flash, and one <b>Ascended Jaxon</b> walks out where the one you had open was standing. The other two are gone.<br><br>He keeps every path’s tricks at once and hits several times harder. You may have <b>two</b> Ascended of any one type — after that the button stops appearing.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5.2);
+    gbLawn(g, w, h);
+    const cx = w*0.5, cy = h*0.6;
+    if (p < 0.42) {
+      /* three standing, and the button */
+      for (let i = 0; i < 3; i++) {
+        pvJaxon(g, 'ninja', w*0.22 + i*w*0.28, cy + h*0.12, h*0.28, false);
+      }
+      const bw = w*0.5;
+      const poor = false;
+      g.save();
+      g.beginPath(); g.roundRect(cx - bw/2, h*0.16, bw, 34, 10);
+      const gr = g.createLinearGradient(0, h*0.16, 0, h*0.16 + 34);
+      gr.addColorStop(0, 'rgba(150,90,255,.55)'); gr.addColorStop(1, 'rgba(96,44,190,.5)');
+      g.fillStyle = gr; g.fill();
+      g.lineWidth = 1.6; g.strokeStyle = 'rgba(192,139,255,' + (0.7 + Math.sin(t*4)*0.3) + ')'; g.stroke();
+      g.restore();
+      gbText(g, 'Ascend  $45,000', cx, h*0.16 + 14, 12, '#f0e2ff', 'center');
+      gbText(g, 'Fuses three maxed Ninja Jaxons into one', cx, h*0.16 + 26, 8, '#c9b0ee', 'center', 700);
+      if (p > 0.28) gbCursor(g, cx + 14, h*0.16 + 24, (p - 0.28)*7);
+    } else if (p < 0.66) {
+      /* the pull-in */
+      const k = (p - 0.42)/0.24, e = k*k*(3 - 2*k);
+      for (let i = 0; i < 3; i++) {
+        const sx = w*0.22 + i*w*0.28;
+        const x = sx + (cx - sx)*e;
+        g.save(); g.globalAlpha = 1 - k*k;
+        pvJaxon(g, 'ninja', x, cy + h*0.12, h*0.28, false);
+        g.restore();
+        g.save();
+        g.globalAlpha = 0.6*(1 - k); g.strokeStyle = '#c08bff'; g.lineWidth = 2.6;
+        g.beginPath(); g.moveTo(x, cy); g.lineTo(cx, cy); g.stroke();
+        g.restore();
+      }
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      const r = 20 + e*90;
+      const gg = g.createRadialGradient(cx, cy, 2, cx, cy, r);
+      gg.addColorStop(0, 'rgba(255,255,255,' + (0.85*k) + ')');
+      gg.addColorStop(0.45, 'rgba(192,139,255,' + (0.5*k) + ')');
+      gg.addColorStop(1, 'rgba(192,139,255,0)');
+      g.fillStyle = gg; g.beginPath(); g.arc(cx, cy, r, 0, 7); g.fill();
+      g.restore();
+    } else {
+      /* the survivor */
+      const k = Math.min(1, (p - 0.66)/0.14);
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      const gg = g.createRadialGradient(cx, cy, 4, cx, cy, 74);
+      const a = 0.3 + Math.sin(t*2.2)*0.08;
+      gg.addColorStop(0, 'rgba(192,139,255,' + a + ')');
+      gg.addColorStop(1, 'rgba(150,90,255,0)');
+      g.fillStyle = gg; g.beginPath(); g.arc(cx, cy, 74, 0, 7); g.fill();
+      g.restore();
+      pvJaxon(g, ASC_KEY('ninja'), cx, cy + h*0.12, h*0.34*(0.7 + k*0.3), false);
+      for (let i = 0; i < 3; i++) {
+        const a2 = t*1.5 + i*2.094;
+        g.save();
+        g.globalAlpha = 0.55 + Math.sin(a2*2)*0.25;
+        g.fillStyle = ['#ffd83d','#7fe9ff','#c08bff'][i];
+        g.beginPath(); g.arc(cx + Math.cos(a2)*44, cy - 6 + Math.sin(a2)*15, 3.6, 0, 7); g.fill();
+        g.restore();
+      }
+      gbText(g, 'Ascended Ninja Jaxon', cx, h*0.18, 13, '#e2ccff', 'center');
+    }
+  } },
+
+{ ch:'Camera', title:'Zoom in, look around',
+  text:'The camera is yours to move and it never changes the fight.<br><br><b>Scroll wheel</b> zooms toward your cursor, from a fifth of the way out to five times in. <b>Right-drag</b> or <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> looks around; on a phone, <b>pinch</b> to zoom and drag with <b>two fingers</b> to pan. One finger is still aiming.<br><br>The camera eases up to speed and coasts to a stop, so panning looks like a film crane rather than a jump cut. <span class="k">R</span> puts the view back.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    const z = 0.55 + (0.5 + Math.sin(p*Math.PI*2)*0.5)*1.5;
+    g.save();
+    gbLawn(g, w, h);
+    g.translate(w/2, h/2); g.scale(z, z); g.translate(-w/2, -h/2);
+    /* the lawn, with a park of trees around it */
+    g.fillStyle = '#046b32'; g.fillRect(-w, -h, w*3, h*3);
+    let seed = 7;
+    const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
+    for (let i = 0; i < 40; i++) {
+      const tx = -w*0.7 + rnd()*w*2.4, ty = -h*0.5 + rnd()*h*2;
+      if (tx > w*0.1 && tx < w*0.9 && ty > h*0.1 && ty < h*0.9) continue;
+      const r = 6 + rnd()*7;
+      g.fillStyle = '#4a3218'; g.fillRect(tx - 1.6, ty - r*0.8, 3.2, r*0.9);
+      g.fillStyle = 'hsl(' + (104 + rnd()*30) + ',52%,30%)';
+      g.beginPath(); g.arc(tx, ty - r*1.1, r, 0, 7); g.fill();
+    }
+    g.fillStyle = '#0a8a3f'; g.fillRect(w*0.12, h*0.16, w*0.76, h*0.68);
+    g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 2/z;
+    g.strokeRect(w*0.12, h*0.16, w*0.76, h*0.68);
+    gbTrail(g, w*0.9, h*0.55);
+    pvJaxon(g, 'truegod', w*0.34, h*0.5, h*0.2, false);
+    pvBlob(g, w*0.62, h*0.55 - 6, 8, 3, false);
+    g.restore();
+    gbPanel(g, w*0.03, h*0.04, 92, 24, 8);
+    gbText(g, 'zoom ' + z.toFixed(2) + '×', w*0.03 + 46, h*0.04 + 12.5, 10, '#7dffb4', 'center');
+    gbText(g, 'HUD never shrinks — only the world does', w/2, h*0.92, 11, '#93a2b2', 'center', 700);
+  } },
+
+{ ch:'Combat', title:'Hold to aim',
+  text:'Jaxons pick their own targets, and they usually pick well — whatever is furthest along the trail.<br><br>When you want to overrule them, <b>hold the mouse button down</b> anywhere on the field and every Jaxon who can will aim at your cursor instead. Faint white lines show who is listening.<br><br>While you are holding, tooltips and range rings stay out of the way. Let go and they come back.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.78);
+    const mx = w*0.5 + Math.sin(t*1.6)*w*0.22, my = h*0.42;
+    const guns = [[w*0.16, h*0.66,'ninja'], [w*0.42, h*0.6,'laser'], [w*0.74, h*0.66,'rainbow']];
+    g.save();
+    g.strokeStyle = 'rgba(255,255,255,.3)'; g.lineWidth = 1.4;
+    for (const [gx, gy] of guns) { g.beginPath(); g.moveTo(gx, gy - 14); g.lineTo(mx, my); g.stroke(); }
+    g.restore();
+    for (const [gx, gy, k] of guns) pvJaxon(g, k, gx, gy, h*0.3, mx > gx);
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p + i/3);
+      pvBlob(g, -14 + u*(w + 28), h*0.78 - 8, 10, 2 + (i % 2), false);
+    }
+    gbCursor(g, mx, my, 0.35 + Math.sin(t*5)*0.12);
+    gbText(g, 'hold anywhere — everyone follows your cursor', w/2, h*0.12, 11, '#7dffb4', 'center', 700);
+  } },
+
+{ ch:'Combat', title:'A boss every ten waves',
+  text:'Waves 10, 20, 30 and on up to 100 each bring a <b>boss</b>: one enormous blob with its own health bar across the top of the screen.<br><br>They do not just walk. Wave 80 jams your Jaxons with static, wave 90 steals coins and hurries everything along, and wave 100 splits in half and drags every shot on the map into slow motion.<br><br>A boss that reaches the door takes a lot of lives with it. Bank a big Jaxon before the tens.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.72);
+    /* the bar */
+    const bw = w*0.62, bx = w/2 - bw/2;
+    gbPanel(g, bx, h*0.08, bw, 30, 9, 'rgba(6,8,12,.9)', '#4a2229');
+    gbText(g, 'RED HACKER BOSS', bx + 10, h*0.08 + 10, 9, '#ff8a5a');
+    gbText(g, String(Math.round(2000*(1 - p*0.7))), bx + bw - 10, h*0.08 + 10, 9, '#ff7b6b', 'right');
+    g.save();
+    g.fillStyle = '#2a1418'; g.fillRect(bx + 8, h*0.08 + 18, bw - 16, 7);
+    const gr = g.createLinearGradient(bx, 0, bx + bw, 0);
+    gr.addColorStop(0, '#ff2d2d'); gr.addColorStop(1, '#ff8a5a');
+    g.fillStyle = gr; g.fillRect(bx + 8, h*0.08 + 18, (bw - 16)*(1 - p*0.7), 7);
+    g.restore();
+    pvBoss(g, 'gbBoss', 'red', w*0.55, h*0.6, h*0.2, t, undefined);
+    pvJaxon(g, 'titanmax', w*0.16, h*0.78, h*0.34, false);
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p*3 + i/3);
+      g.save();
+      g.globalAlpha = 1 - u;
+      g.fillStyle = '#ff5a3c';
+      g.beginPath(); g.arc(w*0.2 + u*w*0.32, h*0.62, 4, 0, 7); g.fill();
+      g.restore();
+    }
+  } },
+
+{ ch:'Combat', title:'Selling and duplicating',
+  text:'A Jaxon in the wrong place is not a lost cause. <b>Sell</b> him from his panel and you get a slice of everything you put in — the Jaxon and every upgrade. How big a slice depends on the difficulty.<br><br><b>Duplicate</b> builds a fresh copy carrying the same upgrades, for the full price of building it that way. It saves the clicking, not the coins, and the copy starts on cooldown.<br><br><b>Recycler Jaxon</b> pays extra on anything sold inside his ring.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.5);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.84);
+    const x1 = w*0.26, x2 = w*0.66, y = h*0.6;
+    pvJaxon(g, 'tablet', x1, y, h*0.34, false);
+    g.save(); g.globalAlpha = Math.min(1, Math.max(0, (p - 0.35)*3));
+    pvJaxon(g, 'tablet', x2, y, h*0.34, false);
+    g.restore();
+    if (p > 0.35) gbArrow(g, x1 + 34, y - h*0.16, x2 - 34, y - h*0.16, '#7dffb4', 0.3);
+    gbBtn(g, w*0.1, h*0.14, 100, 26, 'Sell  +$596', '#ff8b8e', '#c4494d');
+    gbBtn(g, w*0.58, h*0.14, 118, 26, 'Duplicate  $1,290', '#5ef064', '#1fce27');
+    gbText(g, 'same upgrades, full price', x2, h*0.86, 10, '#93a2b2', 'center', 700);
+  } },
+
+{ ch:'Difficulty', title:'Four ways to play',
+  text:'The card you pick on the menu changes almost every number in the run.<br><br><b>Easy</b> hands you more lives and more coins and sends softer crowds — the place to learn a Jaxon. <b>Medium</b> is the game as designed. <b>Hard</b> pays less and hits harder. <b>Nightmare</b> is purple rain and elites arriving six waves early, and it keeps its own high score.<br><br>Every difficulty remembers your best wave separately, so a Nightmare 30 stays a Nightmare 30.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    gbLawn(g, w, h);
+    const names = ['Easy','Medium','Hard','Nightmare'];
+    const cols = ['#3ddc6a','#ffd83d','#ff5a3c','#a86bff'];
+    const on = Math.floor(p*4) % 4;
+    for (let i = 0; i < 4; i++) {
+      const x = w*0.045 + i*w*0.238, cw = w*0.212;
+      const live = i === on;
+      gbPanel(g, x, h*0.18 + (live ? -6 : 0), cw, h*0.6, 11,
+        live ? 'rgba(255,255,255,.07)' : 'rgba(12,18,26,.85)',
+        live ? cols[i] : 'rgba(255,255,255,.13)');
+      gbText(g, names[i], x + cw/2, h*0.28 + (live ? -6 : 0), 13, live ? cols[i] : '#93a2b2', 'center');
+      for (let j = 0; j < 4; j++) {
+        g.save();
+        g.fillStyle = j <= i ? cols[i] : 'rgba(255,255,255,.14)';
+        g.beginPath(); g.roundRect(x + cw/2 - 26 + j*13, h*0.35 + (live ? -6 : 0), 10, 5, 2.5);
+        g.fill(); g.restore();
+      }
+      const rows = [['lives', ['75','50','40','30'][i]], ['coins', ['150','120','85','60'][i]],
+                    ['boss HP', ['0.75×','1×','1.4×','1.9×'][i]]];
+      rows.forEach(([k, v], j) => {
+        gbText(g, k, x + 10, h*0.46 + j*18 + (live ? -6 : 0), 9, '#7e8c9c', 'left', 700);
+        gbText(g, v, x + cw - 10, h*0.46 + j*18 + (live ? -6 : 0), 9.5, live ? '#f2f6fb' : '#c2ced9', 'right');
+      });
+    }
+    if (on === 3) pvRainfall(g, w, h, t, 0.22);
+  } },
+
+{ ch:'Sandbox', title:'The workshop',
+  text:'<b>Sandbox</b> is the fifth card on the menu. Coins and lives are infinite, nothing you build costs anything, and a leak takes nothing from you.<br><br>A drawer opens on the right with four sections. <b>Spawn</b> drops any blob, elite or boss straight onto the trail. <b>Enemy</b> and <b>Boss</b> are makers — name it, set its health, size, colour and speed, and save it to your inventory. <b>Tools</b> jumps to any wave, clears the board or resets the run.<br><br>You still pick a difficulty inside Sandbox, so you can test against real Nightmare numbers.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.62);
+    const dw = w*0.34, dx = w - dw;
+    gbPanel(g, dx, 0, dw, h, 0, 'rgba(12,18,26,.96)');
+    g.save(); g.fillStyle = 'rgba(224,184,119,.9)'; g.fillRect(dx, 0, 2, h); g.restore();
+    gbText(g, 'SANDBOX', dx + 12, h*0.1, 11, '#e0b877');
+    ['Spawn','Enemy','Boss','Tools'].forEach((s2, i) => {
+      const bw = (dw - 30)/4;
+      if (i === Math.floor(p*4) % 4) gbBtn(g, dx + 12 + i*(bw + 2), h*0.19, bw, 18, s2, '#e0b877', '#c49a55');
+      else { gbPanel(g, dx + 12 + i*(bw + 2), h*0.19, bw, 18, 6);
+             gbText(g, s2, dx + 12 + i*(bw + 2) + bw/2, h*0.19 + 9.5, 7.5, '#93a2b2', 'center', 700); }
+    });
+    ['Tier 5 blob','Cobalt elite','Wave 60 Boss','My Boss'].forEach((s2, i) => {
+      gbPanel(g, dx + 12, h*0.3 + i*h*0.11, dw - 24, h*0.09, 7);
+      g.save(); g.fillStyle = ['#8fd3ff','#3a6ee0','#ff5a3c','#e0b877'][i];
+      g.beginPath(); g.arc(dx + 26, h*0.3 + i*h*0.11 + h*0.045, 7, 0, 7); g.fill(); g.restore();
+      gbText(g, s2, dx + 40, h*0.3 + i*h*0.11 + h*0.045, 9, '#dbe4ee', 'left', 700);
+    });
+    gbPill(g, w*0.04, h*0.08, 'Lives', '∞', '#e5484d');
+    gbPill(g, w*0.04 + 82, h*0.08, 'Coins', '∞', '#ffd83d');
+    const u = frac(p*2);
+    pvBlob(g, w*0.1 + u*w*0.42, h*0.62 - 8, 12, 5, false);
+  } },
+
+{ ch:'Menu', title:'Pause, settings and this book',
+  text:'<span class="k">Esc</span> or <span class="k">P</span> pauses a run wherever it stands. The board keeps painting so you can read it, but nothing moves and no timer runs down.<br><br>From pause you can resume, restart, go back to the menu, open <b>Settings</b>, or open this guidebook again.<br><br>Settings hold sound and volume, your default game speed, auto-skip, graphics, screen shake and colour-blind cues, which tag every elite with a letter as well as a colour. All of it is remembered for next time.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    gbLawn(g, w, h);
+    g.save(); g.globalAlpha = 0.35;
+    gbTrail(g, w, h*0.8);
+    pvJaxon(g, 'ninja', w*0.2, h*0.72, h*0.24, false);
+    pvBlob(g, w*0.6, h*0.8 - 8, 10, 3, false);
+    g.restore();
+    gbText(g, 'PAUSED', w/2, h*0.2, 22, '#f2f6fb', 'center');
+    const items = ['Resume','Guidebook','Settings','Restart run','Main menu'];
+    const on = Math.floor(p*items.length) % items.length;
+    items.forEach((s2, i) => {
+      const y = h*0.32 + i*h*0.12, bw = w*0.38;
+      gbPanel(g, w/2 - bw/2, y, bw, h*0.1, 8,
+        i === on ? 'rgba(255,255,255,.1)' : 'rgba(20,28,38,.9)',
+        i === on ? '#22e02a' : 'rgba(255,255,255,.14)');
+      gbText(g, s2, w/2, y + h*0.05, 11, i === on ? '#f2f6fb' : '#93a2b2', 'center');
+    });
+  } }
+];
+
+/* --------------------------------------------------------- the reader -- */
+const BOOK = { page:0, raf:0, t0:0, from:'menu' };
+function bookChapters() {
+  const out = [];
+  GUIDE.forEach((p, i) => {
+    const last = out[out.length - 1];
+    if (last && last.ch === p.ch) last.pages.push(i);
+    else out.push({ ch:p.ch, pages:[i] });
+  });
+  return out;
+}
+function openBook(from) {
+  BOOK.from = from || 'menu';
+  $('ovBook').classList.add('on');
+  bookRender();
+  bookLoop();
+  beep(660, 0.07, 'triangle', 0.03);
+}
+function closeBook() {
+  $('ovBook').classList.remove('on');
+  cancelAnimationFrame(BOOK.raf); BOOK.raf = 0;
+  saveNow();
+  beep(440, 0.06, 'triangle', 0.025);
+}
+function bookGo(i) {
+  BOOK.page = Math.max(0, Math.min(GUIDE.length - 1, i));
+  bookRender();
+  $('bkText').scrollTop = 0;
+  beep(560, 0.05, 'triangle', 0.026);
+}
+function bookRender() {
+  const i = BOOK.page, p = GUIDE[i], chs = bookChapters();
+  $('bkCh').textContent = p.ch;
+  $('bkTitle').textContent = p.title;
+  $('bkText').innerHTML = p.text;
+  $('bkSub').textContent = 'Page ' + (i + 1) + ' of ' + GUIDE.length;
+  $('bkRail').innerHTML = chs.map(c =>
+    '<button data-p="' + c.pages[0] + '">' + c.ch +
+    '<i>' + c.pages.length + (c.pages.length === 1 ? ' page' : ' pages') + '</i></button>').join('');
+  $('bkRail').querySelectorAll('button').forEach(b => {
+    const first = +b.dataset.p;
+    const c = chs.find(x => x.pages[0] === first);
+    b.classList.toggle('on', c.pages.includes(i));
+    b.onclick = () => bookGo(first);
+  });
+  $('bkDots').innerHTML = GUIDE.map((_, j) =>
+    '<i data-p="' + j + '" class="' + (j === i ? 'on' : '') + '"></i>').join('');
+  $('bkDots').querySelectorAll('i').forEach(el => el.onclick = () => bookGo(+el.dataset.p));
+  $('bkPrev').disabled = i === 0;
+  $('bkNext').disabled = i === GUIDE.length - 1;
+}
+/* the picture is a live canvas, same idea as the menu card previews */
+function bookLoop() {
+  cancelAnimationFrame(BOOK.raf);
+  BOOK.t0 = performance.now();
+  const tick = now => {
+    const cvs = $('bkArt');
+    if (!cvs || !$('ovBook').classList.contains('on')) return;
+    BOOK.raf = requestAnimationFrame(tick);
+    const w = cvs.clientWidth, h = cvs.clientHeight;
+    if (!w || !h) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cvs.width !== Math.round(w*dpr)) { cvs.width = Math.round(w*dpr); cvs.height = Math.round(h*dpr); }
+    const g = cvs.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h);
+    const page = GUIDE[BOOK.page];
+    try { page.art(g, w, h, (now - BOOK.t0)/1000); }
+    catch (e) { /* a picture is never worth taking the book down for */ }
+    finally { ctx = FIELD_CTX; }          // pvBoss borrows the field context
+  };
+  BOOK.raf = requestAnimationFrame(tick);
 }
 
 /* ------------------------------------------------------------- pause ----
@@ -9541,6 +10325,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
