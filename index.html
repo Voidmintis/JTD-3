@@ -3016,35 +3016,35 @@ const ASC_MAX = 2;                       // never more than two of a type on the
    of the best maxed ordinary one", which is what the fee is buying.
    'extra' is what only the Ascended form has at all. */
 const ASCEND = {
-  basic: { name:'Ascended Basic Jaxon', cost:32000,
-           mods:{ dmg:2.8, cd:0.6, range:1.3, extra:{ add:{ pierce:3 } } },
+  basic: { name:'Ascended Basic Jaxon', cost:18000,
+           mods:{ dmg:6.2, cd:0.5, range:1.4, extra:{ add:{ pierce:4 } } },
            blurb:'The starter, taken all the way. A blur of heavy toy cars that punch through the queue.' },
-  bedtime: { name:'Ascended Bedtime Jaxon', cost:40000,
-           mods:{ dmg:3.0, cd:0.6, range:1, extra:{ add:{ markAmp:0.5, waveStun:0.4 } } },
+  bedtime: { name:'Ascended Bedtime Jaxon', cost:22000,
+           mods:{ dmg:6.0, cd:0.5, range:1, extra:{ add:{ markAmp:0.7, waveStun:0.55 } } },
            blurb:'The lullaby is a siren now — the whole map stops, and everything on it takes more from everyone.' },
-  ninja: { name:'Ascended Ninja Jaxon', cost:45000,
-           mods:{ dmg:2.9, cd:0.58, range:1.35, extra:{ add:{ pierce:3 }, set:{ slow:0.4 } } },
+  ninja: { name:'Ascended Ninja Jaxon', cost:26000,
+           mods:{ dmg:6.0, cd:0.5, range:1.45, extra:{ add:{ pierce:4 }, set:{ slow:0.34 } } },
            blurb:'A standing storm of frozen steel. Nothing crosses him at speed and nothing crosses him whole.' },
-  rainbow: { name:'Ascended Rainbow Jaxon', cost:65000,
-           mods:{ dmg:3.0, cd:0.6, range:1.3, extra:{ splash:1.8, add:{ pierce:5 } } },
+  rainbow: { name:'Ascended Rainbow Jaxon', cost:42000,
+           mods:{ dmg:5.8, cd:0.5, range:1.4, extra:{ splash:2.2, add:{ pierce:7 } } },
            blurb:'Every colour at once, straight through the line, and the wall behind it goes up as well.' },
-  goldeng: { name:'Ascended Golden Engineer', cost:75000,
-           mods:{ dmg:3.2, cd:0.55, range:1, extra:{ add:{ carBoom:900, goldBonus:0.5 } } },
+  goldeng: { name:'Ascended Golden Engineer', cost:55000,
+           mods:{ dmg:6.4, cd:0.5, range:1, extra:{ add:{ carBoom:1500, goldBonus:0.7 } } },
            blurb:'A works team of solid gold. His cars are armour, they pay, and they take the junction with them.' },
   upgradedlaser: { name:'Ascended Laser Jaxon', cost:150000,
-           mods:{ dmg:3.0, cd:0.55, range:1.28 },
+           mods:{ dmg:5.0, cd:0.5, range:1.35 },
            blurb:'The beam never stops and the shockwave never softens. A permanent red line down the trail.' },
   titanmax: { name:'Ascended Titan Jaxon', cost:200000,
-           mods:{ dmg:3.0, cd:0.55, range:1.28 },
+           mods:{ dmg:5.0, cd:0.5, range:1.35 },
            blurb:'Ice, fire, drill and shredder all at once, over a collapse that barely lets go of the ground.' },
   blackholelaser: { name:'Ascended Black Hole Jaxon', cost:260000,
-           mods:{ dmg:3.2, cd:0.55, range:1.28 },
+           mods:{ dmg:5.2, cd:0.5, range:1.35 },
            blurb:'A void that fires as fast as it swallows. What it holds, it keeps, and what it keeps, it grinds.' },
   mirror: { name:'Ascended Mirror Jaxon', cost:280000,
-           mods:{ dmg:2.4, cd:0.5, range:1.3, extra:{ add:{ echo:4 }, mul:{ boost:1.5 } } },
+           mods:{ dmg:4.4, cd:0.45, range:1.4, extra:{ add:{ echo:6 }, mul:{ boost:1.8 } } },
            blurb:'A corridor of glass. One friendly shot goes in and a barrage of brighter ones comes back out.' },
   truegod: { name:'Ascended True God Jaxon', cost:400000,
-           mods:{ dmg:3.4, cd:0.5, range:1.3 },
+           mods:{ dmg:5.4, cd:0.45, range:1.4 },
            blurb:'Every divine path folded into one. The cars, the cone, the aura and the ultimates, all of it, always.' }
 };
 const ascCost = k => Math.round((ASCEND[k] ? ASCEND[k].cost : 0) * M().cost);
@@ -3993,9 +3993,11 @@ function setShop(open) {
 function setPlacingBanner() {
   const el = $('placing');
   if (!S.placing) { el.classList.remove('on'); return; }
-  $('placingImg').src = PORTRAIT[S.placing];
+  const asc = !!(S.dupe && S.dupe.asc);
+  $('placingImg').src = PORTRAIT[asc ? ASC_KEY(S.placing) : S.placing] || PORTRAIT[S.placing];
   const what = S.dupe
-    ? 'Copy of ' + TOWERS[S.placing].name + ' · ' + S.dupe.upA + '-' + S.dupe.upB + '-' + (S.dupe.upC || 0)
+    ? (asc ? 'Copy of ' + ASCEND[S.placing].name
+           : 'Copy of ' + TOWERS[S.placing].name + ' · ' + S.dupe.upA + '-' + S.dupe.upB + '-' + (S.dupe.upC || 0))
     : TOWERS[S.placing].name;
   $('placingTxt').textContent = (MOBILE ? 'Tap the grass · ' : 'Placing ') + what;
   el.querySelector('em').textContent = MOBILE ? 'Tap here to cancel' : 'Esc to cancel';
@@ -4021,12 +4023,20 @@ const dupeCost = t => costOf(t.type) + upSpent(t);
 
 function startDuplicate(t) {
   const cost = dupeCost(t);
-  if (!afford(cost)) {
-    toast('Need $' + cost.toLocaleString() + ' to duplicate ' + TOWERS[t.type].name);
+  /* copying an Ascended one still counts against the two you may have */
+  if (t.asc && ascCount(t.type) >= ASC_MAX) {
+    toast('Already ' + ASC_MAX + ' Ascended ' + TOWERS[t.type].name + 's — that is the limit');
     beep(150, 0.08, 'square', 0.03);
     return;
   }
-  S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0, cost, range:SP(t).range };
+  if (!afford(cost)) {
+    toast('Need $' + cost.toLocaleString() + ' to duplicate ' +
+          (t.asc ? ASCEND[t.type].name : TOWERS[t.type].name));
+    beep(150, 0.08, 'square', 0.03);
+    return;
+  }
+  S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0,
+             asc:!!t.asc, cost, range:SP(t).range };
   S.placing = t.type;
   deselect();
   syncShelf(); setPlacingBanner();
@@ -7088,9 +7098,10 @@ function drawPanel() {
     </div>
     <div class="paths${paths.length === 3 ? ' three' : ''}">${paths.map(col).join('')}</div>
     ${ascBtn(t, trio, why, acost)}
-    <button class="dupe${afford(dcost) ? '' : ' poor'}" id="pDupe">
+    <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
       <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
-      <span class="ds">Copies this Jaxon with all upgrades</span>
+      <span class="ds">${t.asc ? 'Builds a second Ascended one, fee and all'
+                              : 'Copies this Jaxon with all upgrades'}</span>
     </button>
     <div class="prow">
       <button class="sell" id="pSell">Sell &nbsp;+$${refund.toLocaleString()}</button>
@@ -8591,7 +8602,7 @@ function render() {
       if (!ok) { ctx.save(); ctx.filter = 'grayscale(1)'; }
       drawTower({ type:S.placing, x:m.x, y:m.y, face:1,
                   upA:S.dupe ? S.dupe.upA : 0, upB:S.dupe ? S.dupe.upB : 0,
-                  upC:S.dupe ? S.dupe.upC : 0 }, true);
+                  upC:S.dupe ? S.dupe.upC : 0, asc:!!(S.dupe && S.dupe.asc) }, true);
       if (!ok) ctx.restore();
     }
   }
@@ -9225,11 +9236,16 @@ function tryPlaceAt(x, y, silent) {
   const cost = dup ? dup.cost : costOf(S.placing);
   if (!afford(cost)) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
+  if (dup && dup.asc && ascCount(S.placing) >= ASC_MAX) {
+    if (!silent) toast('Already ' + ASC_MAX + ' Ascended ' + TOWERS[S.placing].name + 's');
+    cancelPlacing(); return false;
+  }
   spend(cost);
   const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
-              upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, upC:dup ? dup.upC : 0, _spec:null, _sv:-1,
+              upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, upC:dup ? dup.upC : 0,
+              asc:!!(dup && dup.asc), _spec:null, _sv:-1,
               rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
               lastFired:null, copied:null, copyFlash:0,
               placedWave:S.wave, dmg:0, pops:0, shots:0 };
@@ -10368,6 +10384,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 
 
