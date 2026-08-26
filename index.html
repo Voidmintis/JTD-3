@@ -337,8 +337,46 @@
   }
   #drawer.open .sheen{animation:sheen 1.1s .12s ease-out}
   @keyframes sheen{to{transform:translateX(100%)}}
+  /* -------------------------------------------------- shop categories ---
+     One row of chips above the shelf. The shelf keeps its own scroll, so
+     the chips never move off the top of the drawer. */
+  #cats{
+    position:absolute;top:0;left:0;right:0;height:var(--catH,46px);z-index:2;
+    display:flex;align-items:center;gap:6px;padding:0 12px;
+    overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
+    scrollbar-width:none;-ms-overflow-style:none;
+    border-bottom:1px solid rgba(255,255,255,.07);
+    background:linear-gradient(180deg,rgba(14,20,28,.86),rgba(14,20,28,0));
+  }
+  #cats::-webkit-scrollbar{display:none}
+  #cats button{
+    flex:none;font:inherit;font-size:11px;font-weight:700;letter-spacing:.5px;cursor:pointer;
+    padding:7px 13px;border-radius:999px;white-space:nowrap;
+    background:var(--glass);border:1px solid var(--line);color:var(--dim);
+    backdrop-filter:blur(8px);display:flex;align-items:center;gap:6px;
+    transition:transform .1s cubic-bezier(.2,1.3,.4,1),background .12s,border-color .12s,color .12s;
+  }
+  #cats button:hover{color:var(--ink);border-color:rgba(255,255,255,.3);transform:translateY(-1px)}
+  #cats button:active{transform:translateY(1px)}
+  #cats button.on{
+    color:#0a1f0c;background:linear-gradient(180deg,#5ef064,#1fce27);border-color:#1fce27;
+  }
+  #cats button i{
+    font-style:normal;font-size:9.5px;font-weight:800;opacity:.72;
+    font-variant-numeric:tabular-nums;
+  }
+  .med.hide{display:none}
+  .med .rt{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;max-width:104px}
+  .med .rt .tag{font-size:7px;letter-spacing:.4px;padding:1.5px 4.5px;border-radius:4px}
+  body.mobile{--catH:64px}
+  body.mobile #cats{gap:9px;padding:0 14px}
+  body.mobile #cats button{font-size:17px;padding:12px 20px;min-height:var(--tap)}
+  body.mobile #cats button i{font-size:14px}
+  body.mobile .med .rt{max-width:150px}
+  body.mobile .med .rt .tag{font-size:11px;padding:2px 7px}
+
   #shelf{
-    position:absolute;inset:0;display:flex;align-items:center;align-content:flex-start;
+    position:absolute;inset:var(--catH,46px) 0 0;display:flex;align-items:center;align-content:flex-start;
     justify-content:center;flex-wrap:wrap;gap:5px 6px;padding:14px 10px 12px;
     max-width:1190px;margin:0 auto;
     /* 32 Jaxons no longer fit in one drawer-height, so the shelf scrolls.
@@ -360,6 +398,7 @@
     opacity:0;transform:translateY(26px) scale(.86);
   }
   #drawer.open .med{animation:medIn .5s cubic-bezier(.2,1.3,.4,1) forwards;animation-delay:calc(var(--i)*22ms + 40ms)}
+  #drawer.open #shelf.settled .med{animation:none;opacity:1;transform:none}
   @keyframes medIn{to{opacity:1;transform:translateY(0) scale(1)}}
   .med .ring{
     position:relative;width:62px;height:62px;border-radius:50%;
@@ -381,6 +420,7 @@
     background:rgba(255,216,61,.12);border:1px solid rgba(255,216,61,.3);
     border-radius:999px;padding:2px 8px;transition:.15s;
   }
+  .med .key:empty{display:none}
   .med .key{
     position:absolute;top:-3px;right:12px;width:17px;height:17px;border-radius:5px;
     background:rgba(255,255,255,.1);border:1px solid var(--line);
@@ -1003,6 +1043,7 @@
 
     <div id="drawer">
       <div class="sheen"></div>
+      <div id="cats" role="tablist" aria-label="Shop categories"></div>
       <div id="shelf"></div>
     </div>
     <button id="shopTab">
@@ -2364,20 +2405,20 @@ const UPGRADES = {
 
   piggybank: {
     A: { name:"Fatter Pig", tiers:[
-      { name:"Bigger Slot", blurb:"Drops a noticeably fatter coin each time.", cost:280,
-        mod:{"set":{"income":46}} },
-      { name:"Piggy Feast", blurb:"Pays out far more, and a little faster.", cost:900,
-        mod:{"set":{"income":95},"cd":0.8} },
-      { name:"Golden Hog", blurb:"A fortune every two and a half seconds.", cost:3400,
-        mod:{"set":{"income":240},"cd":0.78} }
+      { name:"Bigger Slot", blurb:"Drops a noticeably fatter coin each time.", cost:260,
+        mod:{"set":{"income":26}} },
+      { name:"Piggy Feast", blurb:"Pays out far more, and a little faster.", cost:1100,
+        mod:{"set":{"income":48},"cd":0.85} },
+      { name:"Golden Hog", blurb:"A fat coin every three and a bit seconds.", cost:3800,
+        mod:{"set":{"income":95},"cd":0.8} }
     ] },
-    B: { name:"Compound Interest", tiers:[
-      { name:"Savings Account", blurb:"Also pays 1% of whatever you are already sitting on.", cost:400,
-        mod:{"set":{"interest":0.01}} },
-      { name:"Investments", blurb:"2.5% interest on every payout.", cost:1600,
-        mod:{"set":{"interest":0.025}} },
-      { name:"Hedge Fund", blurb:"5% of your entire wallet, over and over. Money makes money.", cost:6500,
-        mod:{"set":{"interest":0.05},"cd":0.85} }
+    B: { name:"Savings Plan", tiers:[
+      { name:"Savings Account", blurb:"Adds a sliver of interest — 0.4% of your bank, never more than the cap.", cost:380,
+        mod:{"set":{"interest":0.004}} },
+      { name:"Investments", blurb:"0.8% interest per payout, still under the cap.", cost:1500,
+        mod:{"set":{"interest":0.008}} },
+      { name:"Hedge Fund", blurb:"1.2% per payout and a slightly faster clock. The cap still has the last word.", cost:6000,
+        mod:{"set":{"interest":0.012},"cd":0.9} }
     ] }
   },
   tax: {
@@ -2834,9 +2875,9 @@ const TOWERS = {
 
   /* ---- the money Jaxons. None of them deal a point of damage; they are
      bought instead of a gun, and they have to pay for that gun later. ---- */
-  piggybank:{ name:'Piggybank Jaxon', cost:300, range:Infinity, cd:4.0, dmg:0, ammo:'bank',
-             income:26, interest:0,
-             blurb:'Shakes his piggybank loose every 4s for $26 — but only while a wave is actually running. Upgrades fatten the coin or start paying interest on whatever you are already holding.',
+  piggybank:{ name:'Piggybank Jaxon', cost:220, range:Infinity, cd:4.0, dmg:0, ammo:'bank',
+             income:14, interest:0,
+             blurb:'Shakes his piggybank loose every 4s for $14 — but only while a wave is actually running. Upgrades fatten the coin; interest is real but tightly capped, so he stays a steady helper rather than a printing press.',
              tags:[['Income','t-fast'],['No Damage',''],['Economy','t-rain']] },
   recycler:{ name:'Recycler Jaxon', cost:450, range:300, dmg:0, ammo:'recycle',
              refund:0.25, salvage:6,
@@ -2850,6 +2891,43 @@ const TOWERS = {
              blurb:'Keeps the books. At every wave clear he settles up: $0.90 for every blob that died while he was on the board, plus $8 per wave number as a standing fee. The banker fantasy, fully realised.',
              tags:[['Wave Payout','t-fast'],['Scales With Waves','t-rain'],['No Damage','']] }
 };
+/* ------------------------------------------------------------- roles ----
+   What each Jaxon is FOR, which is what the shop filters on. A Jaxon can
+   wear more than one: the laser is both a damage dealer and a splash, and
+   every late-game monster is still whatever it was to begin with. */
+const CATS = [
+  ['all',      'All'],
+  ['starters', 'Starters'],
+  ['dps',      'DPS'],
+  ['splash',   'Splash'],
+  ['support',  'Support'],
+  ['builders', 'Builders'],
+  ['income',   'Income'],
+  ['late',     'Late game']
+];
+const ROLE = {
+  basic:['starters','builders'],      slingshot:['starters','dps'],
+  bubble:['starters','support'],      bedtime:['starters','splash'],
+  ninja:['starters','dps'],           nurse:['starters','support'],
+  bandaid:['starters','support'],     whistle:['starters','support'],
+  laser:['starters','dps','splash'],  rainbow:['dps','splash'],
+  engineer:['builders'],              goldeng:['builders'],
+  pinwheel:['support'],               boombox:['support'],
+  lunchbox:['support'],               forge:['support'],
+  yoyo:['dps'],                       tablet:['dps'],
+  piggybank:['income'],               recycler:['income'],
+  tax:['income'],                     merchant:['income'],
+  titan:['dps','late'],               titantablet:['dps','late'],
+  stormcloud:['splash','late'],       eclipse:['splash','late'],
+  upgradedlaser:['dps','splash','late'], titanmax:['dps','late'],
+  director:['support','late'],        blackholelaser:['dps','splash','late'],
+  mirror:['dps','splash','late'],     truegod:['dps','splash','late']
+};
+/* The shelf runs cheapest first, whatever category is showing. ORDER is the
+   curated roster; this is the same list put strictly in price order. */
+const SHELF = () => ORDER.slice().sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
+const inCat = (k, c) => c === 'all' || (ROLE[k] || []).includes(c);
+
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'lunchbox','forge','yoyo','tablet','merchant',
@@ -3213,13 +3291,55 @@ function tagHTML(tags) {
 /* ---------------------------------------------------------------- shop --- */
 for (const k in TOWERS) TOWERS[k].key = k;
 
+/* which category the shelf is showing; the shop always opens on All */
+let shopCat = 'all';
+function buildCats() {
+  $('cats').innerHTML = CATS.map(([c, label]) => {
+    const k = c === 'all' ? ORDER.length : ORDER.filter(x => inCat(x, c)).length;
+    return '<button role="tab" data-c="' + c + '"' + (c === shopCat ? ' class="on" aria-selected="true"' : '') +
+           '>' + label + '<i>' + k + '</i></button>';
+  }).join('');
+  $('cats').querySelectorAll('button').forEach(b => b.onclick = () => {
+    setShopCat(b.dataset.c);
+    beep(560, 0.05, 'triangle', 0.028);
+  });
+}
+function setShopCat(c) {
+  shopCat = c;
+  $('cats').querySelectorAll('button').forEach(b => {
+    const on = b.dataset.c === c;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on ? 'true' : 'false');
+  });
+  applyShopCat();
+  $('shelf').scrollTop = 0;
+}
+/* Hiding rows also renumbers the hotkeys: 1-9 always mean the first nine
+   Jaxons you can actually see. */
+function applyShopCat() {
+  let seen = 0;
+  visibleShop.length = 0;
+  $('shelf').querySelectorAll('.med').forEach(el => {
+    const show = inCat(el.dataset.key, shopCat);
+    el.classList.toggle('hide', !show);
+    const kb = el.querySelector('.key');
+    if (!show) { if (kb) kb.textContent = ''; return; }
+    visibleShop.push(el.dataset.key);
+    seen++;
+    if (kb) kb.textContent = seen <= 9 ? String(seen) : '';
+  });
+}
+const visibleShop = [];
+
 function buildShelf() {
-  $('shelf').innerHTML = ORDER.map((k, i) => {
+  $('shelf').innerHTML = SHELF().map((k, i) => {
     const t = TOWERS[k];
     return `<button class="med" data-key="${k}"${VARIANTS[k].wide ? ' data-wide' : ''} style="--i:${i}">
         <div class="ring"><span class="glow"></span><img src="${PORTRAIT[k]}" alt="${t.name}"></div>
-        ${i < 9 ? `<span class="key">${i+1}</span>` : ''}
+        <span class="key">${i < 9 ? i+1 : ''}</span>
         <div class="nm">${t.name}</div>
+        <div class="rt">${(t.tags || []).filter(g => g[0]).slice(0, 2).map(g =>
+          `<span class="tag ${g[1]}">${g[0]}</span>`).join('')}</div>
         <div class="pr">$${costOf(k)}</div>
       </button>`;
   }).join('');
@@ -3244,6 +3364,8 @@ function buildShelf() {
     });
     el.addEventListener('pointercancel', () => hideTip());
   });
+  buildCats();
+  applyShopCat();
   syncShelf();
 }
 
@@ -3266,8 +3388,15 @@ function setShop(open) {
   $('drawer').classList.toggle('open', open);
   $('shopTab').classList.toggle('open', open);
   $('shopTab').classList.toggle('nudge', !open && S.towers.length === 0 && S.phase !== 'menu');
-  if (open) { S.placing = null; S.dupe = null; setPlacingBanner(); syncShelf(); beep(660, 0.06, 'triangle', 0.03); }
-  else beep(440, 0.06, 'triangle', 0.025);
+  clearTimeout(setShop._t);
+  if (open) {
+    S.placing = null; S.dupe = null; setPlacingBanner(); syncShelf();
+    beep(660, 0.06, 'triangle', 0.03);
+    setShop._t = setTimeout(() => $('shelf').classList.add('settled'), 900);
+  } else {
+    $('shelf').classList.remove('settled');
+    beep(440, 0.06, 'triangle', 0.025);
+  }
   hideTip();
 }
 
@@ -4004,6 +4133,10 @@ const tierSpeed = tier => WAVE_SPEED / (tier + 5) * waveRamp();
    multiplier that decays, never the enemy's own value.                  */
 const COIN_BASE = 6.0, COIN_DECAY = 0.135;
 const coinCurve  = () => 1 / (1 + Math.max(0, S.wave - 1) * COIN_DECAY);
+/* The hard ceiling on one Piggybank pulse: a little over the flat coin, so
+   upgrading the coin raises it and holding a fortune does not. */
+const bankCap = spec => Math.round(spec.income*1.6 + 12);
+
 const enemyWorth = e => (e.cust ? 1.4
                        : e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
@@ -5206,15 +5339,22 @@ function update(dt) {
     /* Forge Jaxon — no attack at all, he just makes the neighbours faster */
     if (spec.ammo === 'buff') { t.lit = true; continue; }
 
-    /* Piggybank Jaxon — prints coins, but only while a wave is on the board
-       so you cannot idle on the build screen and farm him. */
+    /* Piggybank Jaxon — pays out on a clock, but only while a wave is on
+       the board so you cannot idle on the build screen and farm him.
+
+       The income is FLAT. Interest exists, but it is a garnish on top of
+       the flat coin and the whole payout is capped just above what the
+       flat coin is worth, so a fat wallet can never compound into an
+       infinite one — the cap bites long before the percentage does. */
     if (spec.ammo === 'bank') {
       t.lit = true;
+      if (SB()) continue;               // sandbox coins are infinite; the ticks are noise
       if (S.phase !== 'wave') { t.cd = Math.min(t.cd, spec.cd); continue; }
       t.cd -= dt;
       if (t.cd <= 0) {
         t.cd = spec.cd * mul;
-        const gain = Math.max(1, Math.round(spec.income + S.money*(spec.interest || 0)));
+        const gain = Math.max(1, Math.min(bankCap(spec),
+                              Math.round(spec.income + S.money*(spec.interest || 0))));
         S.money += gain; t.shots++; t.earned = (t.earned || 0) + gain;
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+$' + gain, color:'#ffd83d', life:1.3 });
         bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
@@ -5957,6 +6097,7 @@ function statRows(spec, t) {
                : spec.ammo === 'snack'  ? 'Snacks handed out'
                : spec.ammo === 'cut'    ? 'Takes called'
                : spec.ammo === 'storm'  ? 'Lightning ticks'
+               : spec.ammo === 'bank'   ? 'Payouts made'
                : spec.ammo === 'mirror' ? 'Shots copied'
                : spec.ammo === 'multi'  ? 'Attacks fired' : 'Shots fired';
     if (spec.ammo === 'buff') {
@@ -6017,6 +6158,12 @@ function statRows(spec, t) {
   } else if (spec.ammo === 'mirror') {
     rows += `<div class="r"><span>Copy power</span><b>${spec.boost}&times;</b></div>
              <div class="r"><span>Rate</span><b>${rateStr(spec.cd)}</b></div>`;
+  } else if (spec.ammo === 'bank') {
+    rows += `<div class="r"><span>Payout</span><b>$${spec.income} every ${spec.cd}s</b></div>
+             <div class="r"><span>Interest</span><b>${spec.interest
+               ? (spec.interest*100).toFixed(1) + '% of your bank' : 'none'}</b></div>
+             <div class="r"><span>Cap per payout</span><b>$${bankCap(spec)}</b></div>
+             <div class="r"><span>Pays</span><b>only during a wave</b></div>`;
   } else if (spec.ammo === 'aura') {
     rows += `<div class="r"><span>Damage</span><b>${spec.dmg} / sec</b></div>
              <div class="r"><span>Slow</span><b>${Math.round((1 - spec.slow)*100)}%</b></div>`;
@@ -8242,7 +8389,10 @@ window.addEventListener('keydown', ev => {
   if (ev.key === 'Tab') { ev.preventDefault(); setShop(!S.shopOpen); }
   if (ev.key === ' ' && S.phase === 'build') { ev.preventDefault(); startWave(); }
   const n = parseInt(ev.key, 10);
-  if (n >= 1 && n <= 9 && n <= ORDER.length) pick(ORDER[n-1]);
+  if (n >= 1 && n <= 9) {
+    const list = visibleShop.length ? visibleShop : ORDER;
+    if (n <= list.length) pick(list[n-1]);
+  }
 });
 
 /* ------------------------------------------------------ siege camera ----
@@ -8557,6 +8707,10 @@ window.JTD = S;   // handy for tinkering from the console
 
 
 
+
+
+
+
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
 /* The mode cards ARE the main menu, so they get built right here rather than
    inside the image-preload callback. Their art is data-URL portraits that
@@ -8582,10 +8736,13 @@ const _syncMode = syncMode;
 syncMode = function () { _syncMode(); syncHelp(); };
 
 loadSave();
-loadImages(() => {
-  fitAll(); syncHelp(); makeGrass(); buildShelf();
-  syncChips(); syncHUD(); requestAnimationFrame(frame);
-});
+/* The game does not wait on pictures. Everything below is synchronous, so
+   a single slow portrait can never leave the shop empty or the loop
+   unstarted; the canvas simply draws nothing for art that has not landed
+   yet, and the shelf refreshes once it has. */
+fitAll(); syncHelp(); makeGrass(); buildShelf();
+syncChips(); syncHUD(); requestAnimationFrame(frame);
+loadImages(() => { syncShelf(); });
 </script>
 </body>
 </html>
