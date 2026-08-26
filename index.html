@@ -4935,10 +4935,13 @@ function startWave() {
   syncHUD();
 }
 
+/* B.dense packs in more columns than the radius would normally warrant —
+   the Admin Jaxon wants a far-away wall of code, not a boss's big glyphs. */
 function makeRain(B) {
-  const cols = [], n = Math.max(7, Math.round(B.r / 7));
+  const cols = [], n = Math.max(7, Math.round(B.r / 7 * (B.dense || 1)));
+  const span = B.span === undefined ? 1 : B.span;
   for (let i = 0; i < n; i++) {
-    cols.push({ x:(i + 0.5) / n * 2 - 1, off:Math.random()*400,
+    cols.push({ x:((i + 0.5) / n * 2 - 1) * span, off:Math.random()*400,
                 spd:34 + Math.random()*70, len:5 + Math.floor(Math.random()*7),
                 sz:0.7 + Math.random()*0.7, seed:Math.floor(Math.random()*9973) });
   }
@@ -8168,7 +8171,9 @@ function drawRain(g, B, th, r, t, cols) {
   ctx.save();
   ctx.beginPath(); ctx.arc(0, 0, r - 3, 0, 7); ctx.clip();
   ctx.fillStyle = th.bg; ctx.fillRect(-r, -r, r*2, r*2);
-  const base = Math.max(9, r * 0.19);
+  /* B.zoom pulls the camera back off the glyphs: 1 is a boss's face-size
+     code, and smaller is finer text seen from further away. */
+  const base = Math.max(4.5, r * 0.19 * (B.zoom || 1));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   for (const c of cols) {
     const cx = c.x * r * 0.94;
@@ -8415,10 +8420,21 @@ function drawTower(t, ghost) {
   ctx.translate(t.x, t.y + bob);
   if (t.face === -1) ctx.scale(-1, 1);
   ctx.translate(0, rec*0.5);
-  ctx.drawImage(IMG[art] || IMG[t.type], -sw/2, spriteTop(art)*grow, sw, sh);
+  if (TOWERS[t.type].ammo === 'admin') {
+    /* his cloth is the code rain, so the ordinary sheet is never painted —
+       it is only the stencil that cuts the rain to his shape. Both go down
+       inside this transform, which is what makes the rain bob, lean and
+       recoil with him instead of hanging in the air behind him. */
+    const sheet = adminSheet(t, art, sw, sh);
+    if (sheet) ctx.drawImage(sheet, -sw/2, spriteTop(art)*grow, sw, sh);
+    if (IMG.admin_face && IMG.admin_face.width)
+      ctx.drawImage(IMG.admin_face, -sw/2, spriteTop(art)*grow, sw, sh);
+  } else {
+    ctx.drawImage(IMG[art] || IMG[t.type], -sw/2, spriteTop(art)*grow, sw, sh);
+  }
   ctx.restore();
 
-  if (TOWERS[t.type].ammo === 'admin') drawAdminBody(t, art, grow, ghost);
+  if (TOWERS[t.type].ammo === 'admin' && !ghost) drawAdminBeam(t, art, grow);
   if (!ghost) drawTierArt(t, art);
 
   if (t.dbl && !ghost) {                         // the last form: a double ring
@@ -8505,63 +8521,71 @@ function admBuffer(w, h) {
   }
   return ADM_BUF;
 }
-function drawAdminBody(t, art, grow, ghost) {
+/* The cloth: rain on an offscreen canvas, cut down to his exact silhouette
+   by his own sprite. Returns the canvas for drawTower to lay down inside
+   his transform. Drawn at a heavy zoom-out so it reads as a wall of code a
+   long way off rather than a handful of fat letters. */
+function adminSheet(t, art, sw, sh) {
   const th = BOSS_THEME.denied;
-  const im = IMG[art], face = IMG.admin_face;
-  const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
-  const top = spriteTop(art)*grow;
-  if (!im || !im.width) return;
-  if (!t.rainCols) t.rainCols = makeRain({ r:Math.max(30, sw*0.6) });
+  const im = IMG[art];
+  if (!im || !im.width) return null;
+  /* the rain field is far larger than the window we cut out of it, which is
+     what makes the glyphs small relative to him */
+  /* The field is the size of him and the glyphs are tiny inside it, which
+     is what "zoomed out" means here: a lot of small code rather than a few
+     big letters. Columns are held to the width actually on screen so none
+     of the work lands outside the sheet. */
+  const FIELD = Math.max(sw, sh);
+  if (!t.rainCols) {
+    t.rainCols = makeRain({ r:FIELD, dense:0.8, span:(sw*0.62)/(FIELD*0.94) });
+  }
 
   const B = admBuffer(sw, sh);
   const g = B.g;
   g.setTransform(1, 0, 0, 1, 0, 0);
   g.clearRect(0, 0, B.w, B.h);
-  /* the rain, over the whole box */
   g.save();
   g.translate(B.w/2, B.h/2);
-  drawRain(g, { r:Math.max(B.w, B.h), theme:'denied' }, th, Math.max(B.w, B.h), S.t, t.rainCols);
+  /* the whole field drifts, so the code moves across him as well as down */
+  g.translate(Math.sin(S.t*0.5 + t.x*0.01)*3, 0);
+  drawRain(g, { r:FIELD, theme:'denied', zoom:0.28 }, th, FIELD, S.t, t.rainCols);
   ctx = FIELD_CTX;
   g.restore();
-  /* stencil it down to exactly the shape of him */
   g.save();
   g.globalCompositeOperation = 'destination-in';
   g.drawImage(im, 0, 0, B.w, B.h);
   g.restore();
+  return B.c;
+}
 
+/* the beam lives in world space, so it is drawn after his transform */
+function drawAdminBeam(t, art, grow) {
+  const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
+  const top = spriteTop(art)*grow;
+  if (!t.beamOn || !t.beamTo) return;
+  const bob = Math.sin(S.t*2.4 + t.x)*1.2;
+  const sx = t.x + (t.face === -1 ? -1 : 1)*sw*0.16, sy = t.y + bob + top + sh*0.42;
+  const jit = Math.sin(S.t*46)*0.9;
   ctx.save();
-  ctx.globalAlpha = ghost ? 0.6 : 1;
-  if (t.face === -1) { ctx.translate(t.x, 0); ctx.scale(-1, 1); ctx.translate(-t.x, 0); }
-  ctx.drawImage(B.c, t.x - sw/2, t.y + top, sw, sh);
-  /* the face, the pacifier and the outlines, over the cloth */
-  if (face && face.width) ctx.drawImage(face, t.x - sw/2, t.y + top, sw, sh);
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.lineCap = 'round';
+  ctx.globalAlpha = 0.55;
+  ctx.strokeStyle = '#7a0000'; ctx.lineWidth = 11 + jit;
+  ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+  ctx.globalAlpha = 0.95;
+  ctx.strokeStyle = '#ff2b2b'; ctx.lineWidth = 5 + jit;
+  ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+  ctx.strokeStyle = '#ffdede'; ctx.lineWidth = 1.7;
+  ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
+  /* where it lands */
+  const puls = 9 + Math.abs(Math.sin(S.t*13))*5;
+  const rg = ctx.createRadialGradient(t.beamTo.x, t.beamTo.y, 1, t.beamTo.x, t.beamTo.y, puls*2.2);
+  rg.addColorStop(0, 'rgba(255,255,255,.9)');
+  rg.addColorStop(0.4, 'rgba(255,43,43,.6)');
+  rg.addColorStop(1, 'rgba(255,43,43,0)');
+  ctx.fillStyle = rg;
+  ctx.beginPath(); ctx.arc(t.beamTo.x, t.beamTo.y, puls*2.2, 0, 7); ctx.fill();
   ctx.restore();
-
-  /* the beam, held on the target rather than fired in pulses */
-  if (!ghost && t.beamOn && t.beamTo) {
-    const sx = t.x + (t.face === -1 ? -1 : 1)*sw*0.16, sy = t.y + top + sh*0.42;
-    const jit = Math.sin(S.t*46)*0.9;
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.lineCap = 'round';
-    ctx.globalAlpha = 0.55;
-    ctx.strokeStyle = '#7a0000'; ctx.lineWidth = 11 + jit;
-    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
-    ctx.globalAlpha = 0.95;
-    ctx.strokeStyle = '#ff2b2b'; ctx.lineWidth = 5 + jit;
-    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
-    ctx.strokeStyle = '#ffdede'; ctx.lineWidth = 1.7;
-    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(t.beamTo.x, t.beamTo.y); ctx.stroke();
-    /* where it lands */
-    const puls = 9 + Math.abs(Math.sin(S.t*13))*5;
-    const rg = ctx.createRadialGradient(t.beamTo.x, t.beamTo.y, 1, t.beamTo.x, t.beamTo.y, puls*2.2);
-    rg.addColorStop(0, 'rgba(255,255,255,.9)');
-    rg.addColorStop(0.4, 'rgba(255,43,43,.6)');
-    rg.addColorStop(1, 'rgba(255,43,43,0)');
-    ctx.fillStyle = rg;
-    ctx.beginPath(); ctx.arc(t.beamTo.x, t.beamTo.y, puls*2.2, 0, 7); ctx.fill();
-    ctx.restore();
-  }
 }
 
 function drawTierArt(t, art) {
@@ -11517,6 +11541,12 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
 
 
 
