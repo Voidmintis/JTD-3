@@ -543,6 +543,25 @@
   #panel .dupe.poor{
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
   }
+  /* ------------------------------------------------------- targeting --- */
+  .aimRow{display:flex;align-items:center;gap:4px;margin-top:9px}
+  .aimRow .al{
+    font-size:8.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);
+    margin-right:2px;flex:none;font-weight:800;
+  }
+  .aimB{
+    flex:1;font:inherit;font-size:10px;font-weight:800;cursor:pointer;padding:6px 2px;
+    border-radius:8px;border:1px solid var(--line);background:rgba(255,255,255,.045);
+    color:var(--dim);transition:.12s;min-width:0;
+  }
+  .aimB:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  .aimB.on{
+    color:#06210a;background:linear-gradient(180deg,#5ef064,#1fce27);border-color:#1fce27;
+  }
+  body.mobile .aimRow{gap:6px;margin-top:12px}
+  body.mobile .aimRow .al{font-size:13px}
+  body.mobile .aimB{font-size:15px;padding:12px 2px;min-height:var(--tap)}
+
   /* -------------------------------------------------------- Ascension --- */
   #panel .asc{
     width:100%;display:block;text-align:center;font:inherit;cursor:pointer;margin-top:9px;
@@ -940,6 +959,81 @@
   body.mobile .abil .cd{font-size:24px}
   body.mobile .abil .nm{font-size:13px;bottom:-20px}
 
+  /* ------------------------------------------------------ stats board ---- */
+  #ovStats{z-index:32;background:radial-gradient(900px 620px at 50% 40%,rgba(8,13,19,.9),rgba(3,6,9,.97))}
+  #statWrap{
+    position:relative;z-index:1;width:min(860px,96%);max-height:88%;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(17,25,34,.97),rgba(9,14,20,.98));
+    border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    box-shadow:0 24px 64px rgba(0,0,0,.66);
+  }
+  .stHead{
+    flex:none;display:flex;align-items:center;gap:12px;padding:13px 15px;
+    border-bottom:1px solid var(--line);
+  }
+  .stHead .t{font-size:14px;font-weight:800;letter-spacing:2.6px;text-transform:uppercase;color:var(--accent)}
+  .stHead .sub{flex:1;font-size:11px;color:var(--dim)}
+  .stSort{flex:none;display:flex;gap:5px;padding:10px 15px;border-bottom:1px solid var(--line);
+          overflow-x:auto;scrollbar-width:none}
+  .stSort::-webkit-scrollbar{display:none}
+  .stSort button{
+    flex:none;font:inherit;font-size:11px;font-weight:800;cursor:pointer;padding:7px 14px;
+    border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.045);
+    color:var(--dim);transition:.12s;
+  }
+  .stSort button:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  .stSort button.on{color:#06210a;background:linear-gradient(180deg,#5ef064,#1fce27);border-color:#1fce27}
+  .stList{flex:1;min-height:0;overflow-y:auto;padding:9px 11px 14px;
+          scrollbar-width:thin;scrollbar-color:rgba(34,224,42,.4) transparent}
+  .stEmpty{padding:34px 20px;text-align:center;color:var(--dim);font-size:13px}
+  .stRow{
+    display:flex;align-items:center;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;
+    background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:11px;
+    padding:8px 11px;margin-bottom:5px;cursor:pointer;transition:.12s;
+  }
+  .stRow:hover{background:rgba(255,255,255,.09);border-color:var(--accent)}
+  .stRow .rk{
+    width:22px;flex:none;text-align:center;font-size:11px;font-weight:800;color:var(--dim);
+    font-variant-numeric:tabular-nums;
+  }
+  .stRow .pic{
+    width:38px;height:38px;flex:none;border-radius:10px;background:rgba(255,255,255,.05);
+    display:grid;place-items:center;overflow:hidden;
+  }
+  .stRow .pic img{width:30px;height:32px;object-fit:contain}
+  .stRow .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .stRow .who .nm{font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .stRow .who .sub{font-size:9px;color:var(--dim);display:flex;align-items:center;gap:5px}
+  .stRow .bar{display:block;height:3px;border-radius:99px;background:rgba(255,255,255,.09);overflow:hidden}
+  .stRow .bar i{display:block;height:100%;background:linear-gradient(90deg,#1fce27,#7dffb4)}
+  .stRow .bd{
+    font-style:normal;font-size:7.5px;font-weight:800;letter-spacing:1px;padding:1px 5px;border-radius:4px;
+  }
+  .stRow .bd.asc{background:rgba(192,139,255,.22);color:#d9c0ff}
+  .stRow .bd.dbl{background:rgba(255,216,255,.24);color:#fff0ff}
+  .stRow .bd.adm{background:rgba(255,43,43,.2);color:#ffbcbc}
+  .stRow .v{
+    width:62px;flex:none;text-align:right;font-size:11px;color:var(--dim);
+    font-variant-numeric:tabular-nums;
+  }
+  .stRow .v.on{color:var(--ink);font-weight:800}
+  body.mobile #statWrap{width:97%;max-height:92%}
+  body.mobile .stHead .t{font-size:21px}
+  body.mobile .stHead .sub{font-size:15px}
+  body.mobile .stSort button{font-size:16px;padding:12px 20px;min-height:var(--tap)}
+  body.mobile .stRow{padding:13px;gap:13px}
+  body.mobile .stRow .pic{width:58px;height:58px}
+  body.mobile .stRow .pic img{width:46px;height:50px}
+  body.mobile .stRow .who .nm{font-size:18px}
+  body.mobile .stRow .who .sub{font-size:13px}
+  body.mobile .stRow .v{font-size:16px;width:84px}
+  body.mobile .stRow .rk{font-size:16px;width:30px}
+  /* the phone shows the column being sorted on and nothing else */
+  @media (max-aspect-ratio: 1/1){
+    body.mobile .stRow .v{display:none}
+    body.mobile .stRow .v.on{display:block}
+  }
+
   /* ----------------------------------------------------- admin panel ---- */
   #admDot{
     position:absolute;display:none;width:46px;height:46px;border-radius:50%;cursor:pointer;
@@ -1035,15 +1129,32 @@
   /* ------------------------------------------------------- guidebook ---- */
   /* The book hovers above the whole menu on its own dock, so the float
      animation and the button's own hover never fight over transform. */
+  /* It sits in the middle band against the left edge, in the margin beside
+     the mode cards — near the wave/mode furniture without covering a card. */
   #bookDock{
-    position:absolute;top:12px;left:50%;z-index:4;
+    position:absolute;top:50%;left:20px;z-index:6;
     animation:bookFloat 3.6s ease-in-out infinite;
-    filter:drop-shadow(0 14px 16px rgba(0,0,0,.55));
+    filter:drop-shadow(0 16px 20px rgba(0,0,0,.6));
   }
   @keyframes bookFloat{
-    0%,100%{transform:translate(-50%,0)}
-    50%{transform:translate(-50%,-9px)}
+    0%,100%{transform:translate(0,-50%)}
+    50%{transform:translate(0,calc(-50% - 10px))}
   }
+  /* everything else on the menu goes dark until the book has been opened */
+  #menuDim{
+    position:absolute;inset:0;z-index:5;pointer-events:none;
+    background:rgba(2,5,8,.74);opacity:0;transition:opacity .7s ease;
+  }
+  #menuDim.on{opacity:1}
+  #bookNudge{
+    position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%);
+    white-space:nowrap;font-size:12px;font-weight:800;letter-spacing:1.6px;
+    text-transform:uppercase;color:#7dffb4;opacity:0;transition:opacity .5s ease;
+    pointer-events:none;text-shadow:0 2px 10px rgba(0,0,0,.9);
+  }
+  body.bookNudge #bookNudge{opacity:1;animation:nudgePulse 1.8s ease-in-out infinite}
+  @keyframes nudgePulse{0%,100%{opacity:.55}50%{opacity:1}}
+  body.mobile #bookNudge{font-size:18px}
   /* the marching outline: a real rounded ring, so it hugs the pill */
   #bookBtn .ants{
     position:absolute;left:-8px;top:-8px;width:calc(100% + 16px);height:calc(100% + 16px);
@@ -1061,17 +1172,38 @@
   }
   #bookBtn{
     position:relative;
-    display:flex;align-items:center;gap:9px;cursor:pointer;font:inherit;
-    padding:10px 22px;border-radius:999px;font-size:14px;font-weight:800;letter-spacing:.6px;
-    color:#0d1f12;background:linear-gradient(180deg,#7dffb4,#22e02a);
-    border:0;box-shadow:0 5px 0 #128a17,0 12px 26px rgba(0,0,0,.45);
-    transition:transform .1s cubic-bezier(.2,1.3,.4,1),filter .12s;
+    display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;font:inherit;
+    padding:16px 20px 14px;border-radius:22px;font-size:16px;font-weight:800;letter-spacing:1.2px;
+    text-transform:uppercase;width:132px;
+    color:#0b2113;background:linear-gradient(180deg,#a9ffcf,#22e02a 62%,#15b81d);
+    border:0;box-shadow:0 6px 0 #128a17,0 14px 30px rgba(0,0,0,.5);
+    transition:transform .1s cubic-bezier(.2,1.3,.4,1),filter .12s,box-shadow .2s;
+  }
+  #bookBtn em{
+    font-style:normal;font-size:9px;letter-spacing:1.4px;opacity:.72;font-weight:700;
   }
   #bookBtn:hover{transform:translateY(-2px);filter:brightness(1.07)}
   #bookBtn:active{transform:translateY(2px);box-shadow:0 2px 0 #128a17}
+  /* while the menu is dimmed he is the only thing lit */
+  body.bookNudge #bookBtn{
+    box-shadow:0 6px 0 #128a17, 0 0 34px 4px rgba(125,255,180,.55), 0 16px 40px rgba(0,0,0,.6);
+    animation:bookGlow 1.7s ease-in-out infinite;
+  }
+  @keyframes bookGlow{
+    0%,100%{box-shadow:0 6px 0 #128a17,0 0 26px 2px rgba(125,255,180,.45),0 16px 40px rgba(0,0,0,.6)}
+    50%{box-shadow:0 6px 0 #128a17,0 0 46px 8px rgba(190,255,215,.85),0 16px 40px rgba(0,0,0,.6)}
+  }
+  @media (prefers-reduced-motion: reduce){
+    body.bookNudge #bookBtn{animation:none}
+    body.bookNudge #bookNudge{animation:none}
+  }
   #bookBtn svg{flex:none}
-  body.mobile #bookBtn{font-size:21px;padding:14px 30px;min-height:var(--tap);gap:12px}
-  body.mobile #bookBtn .ants rect{rx:32px;ry:32px}
+  #bookBtn > svg:first-of-type{width:34px;height:34px}
+  body.mobile #bookBtn{font-size:22px;padding:20px 16px 18px;width:180px;gap:8px}
+  body.mobile #bookBtn em{font-size:13px}
+  body.mobile #bookBtn > svg:first-of-type{width:48px;height:48px}
+  body.mobile #bookBtn .ants rect{rx:30px;ry:30px}
+  body.mobile #bookDock{left:14px}
 
   /* the book opens over the pause menu, so it has to sit above it */
   #ovBook{z-index:34;padding:0;gap:0;justify-content:flex-start;
@@ -1405,6 +1537,7 @@
       <button class="chip on" id="spdBtn">Speed 1&times;</button>
       <button class="chip on" id="sndBtn">Sound</button>
       <button class="chip on" id="perfBtn">Graphics Auto</button>
+      <button class="chip" id="statsBtn">Stats</button>
       <button class="chip" id="pauseBtn">Pause</button>
       <button class="chip cam" id="camChip">Reset view <span class="hint">R</span></button>
     </div>
@@ -1449,14 +1582,17 @@
     <div class="overlay on" id="ovMenu">
       <div id="menuFx"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
         <div id="menuRain"></div><div id="menuBolt"></div></div>
+      <div id="menuDim"></div>
       <div id="bookDock">
         <button id="bookBtn">
-          <svg width="19" height="19" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#0d1f12" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
+          <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true">
+            <path fill="#0b2113" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
           </svg>
           Guidebook
+          <em>How to play</em>
           <svg class="ants" aria-hidden="true"><rect/></svg>
         </button>
+        <span id="bookNudge">start here &rarr;</span>
       </div>
       <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
@@ -1493,6 +1629,8 @@
       <div id="admWrap"></div>
     </div>
 
+    <div class="overlay" id="ovStats"><div id="statWrap"></div></div>
+
     <div class="overlay" id="ovBook">
       <div id="bookWrap">
         <div class="bkHead">
@@ -1523,6 +1661,7 @@
       <div id="setPanel"></div>
       <div class="pmBtns" id="pauseBtns">
         <button id="pmResume">Resume</button>
+        <button id="pmStats">Stats</button>
         <button id="pmBook">Guidebook</button>
         <button id="pmSettings">Settings</button>
         <button id="pmRestart">Restart run</button>
@@ -4012,7 +4151,7 @@ const S = {
      with a floor from the wave number so deep runs never start heavy. */
   perf:0, perfToasted:false, auraT:0, dupe:null,
   /* null = let the frame rate decide, 0/2 = the player has decided for us */
-  perfLock:null, tutorialDone:false,
+  perfLock:null, tutorialDone:false, bookSeen:false,
   mode:'normal', bests:{}, titanBest:null, titan:null,
   sbDiff:'normal', sbOpen:false, sbTab:'spawn', sbPick:null, sbQty:1, customs:[],
   cam:{ x:W/2, y:H/2, z:1, min:1, max:1 }, keys:{}, pan:null, pinch:null, pathPts:PATH
@@ -4054,6 +4193,7 @@ function loadSave() {
   if (typeof j.shake === 'boolean') S.shake = j.shake;
   if (typeof j.cbCues === 'boolean') S.cbCues = j.cbCues;
   if (typeof j.book === 'number' && j.book >= 0) BOOK.page = Math.floor(j.book);
+  S.bookSeen = !!j.bookSeen;
   if (MODES[j.sbDiff] && !MODES[j.sbDiff].sandbox) S.sbDiff = j.sbDiff;
   if (Array.isArray(j.customs)) S.customs = j.customs.filter(c => c && c.name).slice(0, 60);
   S.tutorialDone = !!j.tutorial;
@@ -4064,7 +4204,7 @@ function saveNow() {
       bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
       sbDiff:S.sbDiff, customs:S.customs,
-      vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page
+      vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
@@ -4391,7 +4531,7 @@ function startDuplicate(t) {
     return;
   }
   S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0,
-             asc:!!t.asc, dbl:!!t.dbl, lvl:t.lvl, cost, range:SP(t).range };
+             asc:!!t.asc, dbl:!!t.dbl, lvl:t.lvl, aim:AIM_OF(t), cost, range:SP(t).range };
   S.placing = t.type;
   deselect();
   syncShelf(); setPlacingBanner();
@@ -4450,6 +4590,7 @@ function reset() {
   if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
   syncChips();
   S.sbPick = null;
+  bookNudge(false);
   if (S.paused) setPause(false);
   document.body.classList.toggle('sandbox', SB());
   $('sbPanel').classList.remove('open'); $('sbTab').classList.remove('open');
@@ -4466,6 +4607,7 @@ function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0;
 
 function showModes() {
   setTimeout(fitMenu, 0);
+  setTimeout(maybeNudge, 240);
   $('ovEnd').classList.remove('on');
   $('ovMenu').classList.add('on');
   buildModeCards();
@@ -5262,7 +5404,11 @@ function hurtBoss(dmg, owner, b) {
       const c = Math.floor(S.titan.coinAcc); S.titan.coinAcc -= c; S.money += c;
     }
   }
-  if (owner) owner.dmg += Math.min(dmg, Math.max(0, before));
+  if (owner) {
+    const real = Math.min(dmg, Math.max(0, before));
+    owner.dmg += real;
+    owner.bdmg = (owner.bdmg || 0) + real;      // what he has done to bosses alone
+  }
   if (before > 0 && b.hp <= 0) {
     let bounty = COIN_BASE * (b.max/13) * coinCurve() * M().coin;   // bosses are the payday
     if (b.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
@@ -5779,6 +5925,21 @@ function bestCluster(t, range, r) {
   return best;
 }
 
+/* Four ways to pick, the way every tower defence does it. First is what
+   every Jaxon did before this existed, so nothing changes until asked. */
+const AIMS = [
+  ['first',  'First',  'Whatever is furthest along the trail'],
+  ['last',   'Last',   'Whatever just walked in'],
+  ['strong', 'Strong', 'Whatever has the most health left'],
+  ['close',  'Close',  'Whatever is nearest to him']
+];
+const AIM_OF = t => (t && t.aim) || 'first';
+function cycleAim(t, by) {
+  const i = AIMS.findIndex(a => a[0] === AIM_OF(t));
+  t.aim = AIMS[(i + (by || 1) + AIMS.length) % AIMS.length][0];
+  return t.aim;
+}
+
 function targetFor(t) {
   const range = SP(t).range;
   const onBoss = () => {
@@ -5794,12 +5955,19 @@ function targetFor(t) {
      every Jaxon would stare at the hill while the summons strolled into the
      base. Here the Titan is what you shoot once the lane is clear. */
   if (S.bosses.length && !S.titan) { const p = onBoss(); if (p) return p; }
-  let best = null, bestD = -1;
+  const mode = AIM_OF(t);
+  let best = null, score = -Infinity;
   for (const e of S.enemies) {
     if (e.dead) continue;
     const p = enemyPos(e);
-    if (Math.hypot(p.x - t.x, p.y - t.y) > range) continue;
-    if (e.d > bestD) { bestD = e.d; best = p; }
+    const d = Math.hypot(p.x - t.x, p.y - t.y);
+    if (d > range) continue;
+    /* every mode is "the biggest number wins", so they share one loop */
+    const v = mode === 'last'   ? -e.d
+            : mode === 'strong' ? e.hp
+            : mode === 'close'  ? -d
+            : e.d;
+    if (v > score) { score = v; best = p; }
   }
   return best || onBoss();
 }
@@ -7000,6 +7168,7 @@ function update(dt) {
   if (S.cut) { S.cut.t -= dt; if (S.cut.t <= 0) S.cut = null; }
   if (S.fuse) { S.fuse.t += dt; if (S.fuse.t >= S.fuse.dur) S.fuse = null; }
   if (S.overdrive > 0) S.overdrive = Math.max(0, S.overdrive - dt);
+  sampleDps(dt);
   syncOmen();
   for (const k in S.abilCd) if (S.abilCd[k] > 0) S.abilCd[k] = Math.max(0, S.abilCd[k] - dt);
 
@@ -7629,6 +7798,7 @@ function drawPanel() {
     </div>
     ${t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
         : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
+    ${aimRow(t)}
     ${ascBtn(t, trio, why, acost)}
     ${dblBtn(t)}
     <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
@@ -7659,6 +7829,12 @@ function drawPanel() {
   if (ab) ab.onclick = ev => { ev.stopPropagation(); startAscend(t); };
   const db = $('pDbl');
   if (db) db.onclick = ev => { ev.stopPropagation(); startDouble(t); };
+  el.querySelectorAll('.aimB').forEach(b => b.onclick = ev => {
+    ev.stopPropagation();
+    t.aim = b.dataset.aim;
+    el.querySelectorAll('.aimB').forEach(x => x.classList.toggle('on', x === b));
+    beep(620, 0.05, 'triangle', 0.026);
+  });
   const lg = $('pLvGo');
   if (lg) {
     $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
@@ -7677,6 +7853,17 @@ function drawPanel() {
   }
   $('pSell').onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
+}
+
+/* Who he shoots at. Support Jaxons that never pick a target do not ask. */
+const AIMLESS = ['buff','heal','aid','bank','tax','ledger','recycle','tipjar','caddy','build','scream','cut'];
+function aimRow(t) {
+  if (AIMLESS.includes(TOWERS[t.type].ammo)) return '';
+  const cur = AIM_OF(t);
+  return '<div class="aimRow"><span class="al">Targets</span>' +
+    AIMS.map(([id, label, tip]) =>
+      '<button class="aimB' + (id === cur ? ' on' : '') + '" data-aim="' + id + '" title="' + tip + '">' +
+      label + '</button>').join('') + '</div>';
 }
 
 /* The Admin Jaxon shows levels where everyone else shows paths. */
@@ -10173,7 +10360,7 @@ function tryPlaceAt(x, y, silent) {
               upA:dup ? dup.upA : 0, upB:dup ? dup.upB : 0, upC:dup ? dup.upC : 0,
               asc:!!(dup && dup.asc), dbl:!!(dup && dup.dbl),
               lvl:dup && dup.lvl !== undefined ? dup.lvl : (spec.ammo === 'admin' ? 1 : undefined),
-              xp:0, _spec:null, _sv:-1,
+              xp:0, aim:(dup && dup.aim) || 'first', _spec:null, _sv:-1,
               rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
               lastFired:null, copied:null, copyFlash:0,
               placedWave:S.wave, dmg:0, pops:0, shots:0 };
@@ -10302,12 +10489,21 @@ window.addEventListener('keydown', ev => {
     S.keys[lk] = true; ev.preventDefault(); return;      // WASD pans, it does not pick
   }
   if (lk === 'r' && !S.titan) { camReset(); toast('View reset'); return; }
+  if (lk === 't' && S.selected && !AIMLESS.includes(TOWERS[S.selected.type].ammo)) {
+    const id = cycleAim(S.selected, ev.shiftKey ? -1 : 1);
+    const label = (AIMS.find(a => a[0] === id) || [])[1];
+    toast(TOWERS[S.selected.type].name + ' targets ' + label);
+    beep(620, 0.05, 'triangle', 0.026);
+    drawPanel();
+    return;
+  }
   if (S.titan && (lk === 'f' || lk === 'r')) {           // focus the Titan / the base
     const to = lk === 'f' ? SG.titan : { x:SG.base.x + SG.base.w/2, y:SG.base.y + SG.base.h/2 };
     S.cam.x = to.x; S.cam.y = to.y; camClamp();
     toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
     return;
   }
+  if (STAT.open) { if (ev.key === 'Escape') closeStats(); return; }
   if (ADM_UI.open) { if (ev.key === 'Escape') closeAdmin(); return; }
   if ($('ovBook').classList.contains('on')) {
     if (ev.key === 'Escape') { closeBook(); return; }
@@ -10480,6 +10676,8 @@ $('bookBtn').onclick = () => openBook('menu');
 $('pmBook').onclick = () => openBook('pause');
 $('bkClose').onclick = closeBook;
 $('admDot').onclick = openAdmin;
+$('statsBtn').onclick = () => openStats();
+$('pmStats').onclick = () => openStats();
 $('bkPrev').onclick = () => bookGo(BOOK.page - 1);
 $('bkNext').onclick = () => bookGo(BOOK.page + 1);
 $('pmResume').onclick = () => setPause(false);
@@ -10667,6 +10865,108 @@ function syncAbilityBar() {
     c.style.strokeDasharray = C;
     c.style.strokeDashoffset = ready ? 0 : C*(left/a.cd);
   }
+}
+
+/* =================================================== the stats board ====
+   Who is actually carrying the run. Every placed Jaxon, sorted by whatever
+   you want to sort by, and a row is a way to jump to him. */
+const STAT_COLS = [
+  ['dmg',    'Damage',      t => t.dmg || 0],
+  ['dps',    'DPS',         t => t.dps || 0],
+  ['pops',   'Pops',        t => t.pops || 0],
+  ['bdmg',   'Boss dmg',    t => t.bdmg || 0],
+  ['earned', 'Income',      t => t.earned || 0]
+];
+const STAT = { sort:'dmg', open:false };
+
+/* recent damage, sampled once a second so the column means something */
+let dpsT = 0;
+function sampleDps(dt) {
+  dpsT += dt;
+  if (dpsT < 1) return;
+  const k = dpsT; dpsT = 0;
+  for (const t of S.towers) {
+    const now = t.dmg || 0;
+    t.dps = Math.max(0, (now - (t.dmgWas || 0)) / k);
+    t.dmgWas = now;
+  }
+}
+
+function openStats() {
+  STAT.open = true;
+  $('ovStats').classList.add('on');
+  statsRender();
+  beep(660, 0.06, 'triangle', 0.03);
+}
+function closeStats() {
+  STAT.open = false;
+  $('ovStats').classList.remove('on');
+  beep(440, 0.06, 'triangle', 0.025);
+}
+function statsRender() {
+  const wrap = $('statWrap');
+  const get = STAT_COLS.find(c => c[0] === STAT.sort)[2];
+  const rows = S.towers.slice().sort((a, b) => get(b) - get(a));
+  const total = rows.reduce((n, t) => n + (t.dmg || 0), 0) || 1;
+
+  let h = '<div class="stHead"><span class="t">Jaxons</span>' +
+          '<span class="sub">' + rows.length + ' on the board &middot; ' +
+          shortHp(Math.round(total)) + ' damage between them</span>' +
+          '<button class="bkX" id="stClose" aria-label="Close">&times;</button></div>' +
+          '<div class="stSort">' + STAT_COLS.map(([id, label]) =>
+            '<button data-s="' + id + '"' + (id === STAT.sort ? ' class="on"' : '') + '>' +
+            label + '</button>').join('') + '</div>';
+
+  if (!rows.length) {
+    h += '<div class="stEmpty">Nothing built yet. Open the shop and put someone on the grass.</div>';
+    wrap.innerHTML = h;
+    $('stClose').onclick = closeStats;
+    wrap.querySelectorAll('.stSort button').forEach(b => b.onclick = () => {
+      STAT.sort = b.dataset.s; statsRender();
+    });
+    return;
+  }
+
+  h += '<div class="stList">' + rows.map((t, i) => {
+    const sp = SP(t);
+    const share = (t.dmg || 0)/total;
+    const badge = t.dbl ? '<i class="bd dbl">DOUBLE</i>'
+                : t.asc ? '<i class="bd asc">ASCENDED</i>'
+                : TOWERS[t.type].ammo === 'admin' ? '<i class="bd adm">LVL ' + admLevel(t) + '</i>'
+                : '';
+    const paths = TOWERS[t.type].ammo === 'admin' ? ''
+                : PATHS(t).map(p => upOf(t, p)).join('-');
+    const name = t.dbl ? DOUBLE[t.type].name : t.asc ? ASCEND[t.type].name : TOWERS[t.type].name;
+    return '<button class="stRow" data-i="' + S.towers.indexOf(t) + '">' +
+      '<span class="rk">' + (i + 1) + '</span>' +
+      '<span class="pic"><img src="' + PORTRAIT[artOf(t)] + '" alt=""></span>' +
+      '<span class="who"><span class="nm">' + name + '</span>' +
+        '<span class="sub">' + (paths ? 'wave ' + t.placedWave + ' &middot; ' + paths : 'wave ' + t.placedWave) +
+        ' ' + badge + '</span>' +
+        '<span class="bar"><i style="width:' + (share*100).toFixed(1) + '%"></i></span></span>' +
+      STAT_COLS.map(([id, , g]) =>
+        '<span class="v' + (id === STAT.sort ? ' on' : '') + '">' +
+        (id === 'earned' || id === 'dmg' || id === 'bdmg' || id === 'dps'
+          ? (id === 'earned' ? '$' : '') + shortHp(Math.round(g(t)))
+          : g(t)) + '</span>').join('') +
+      '</button>';
+  }).join('') + '</div>';
+
+  wrap.innerHTML = h;
+  $('stClose').onclick = closeStats;
+  wrap.querySelectorAll('.stSort button').forEach(b => b.onclick = () => {
+    STAT.sort = b.dataset.s; statsRender(); beep(560, 0.05, 'triangle', 0.026);
+  });
+  wrap.querySelectorAll('.stRow').forEach(b => b.onclick = () => {
+    const t = S.towers[+b.dataset.i];
+    if (!t) return;
+    closeStats();
+    selectTower(t);
+    /* a soft nudge rather than a jump — the view leans toward him */
+    const c = S.cam;
+    c.x += (t.x - c.x)*0.55; c.y += (t.y - c.y)*0.55;
+    camClamp();
+  });
 }
 
 /* ==================================================== the admin panel ===
@@ -11456,8 +11756,26 @@ function bookChapters() {
   });
   return out;
 }
+/* First visit only: the menu goes dark around the book so it cannot be
+   missed. Ignore it and the dark eases off by itself after five seconds;
+   open it once and it never does this again. */
+let nudgeT = 0;
+function bookNudge(on) {
+  clearTimeout(nudgeT);
+  document.body.classList.toggle('bookNudge', on);
+  $('menuDim').classList.toggle('on', on);
+  if (on) nudgeT = setTimeout(() => bookNudge(false), 5200);
+}
+function maybeNudge() {
+  if (S.bookSeen) return;
+  if (!$('ovMenu').classList.contains('on')) return;
+  bookNudge(true);
+}
+
 function openBook(from) {
   BOOK.from = from || 'menu';
+  if (!S.bookSeen) { S.bookSeen = true; saveNow(); }
+  bookNudge(false);
   $('ovBook').classList.add('on');
   bookRender();
   bookLoop();
@@ -11629,7 +11947,7 @@ function banner(title, sub, color) {
 function flashScreen(a) { S.flash = Math.max(S.flash, a); }
 
 /* --------------------------------------------------------------- loop ---- */
-let panelTick = 0;
+let panelTick = 0, statTick = 0;
 let hidden = false;
 document.addEventListener('visibilitychange', () => {
   hidden = document.hidden;
@@ -11678,7 +11996,8 @@ function frame(now) {
     for (let i = 0; i < S.speed; i++) update(dt);
     if (S.hovered && S.towers.includes(S.hovered)) fillTip(S.hovered);   // live stats
     buildAbilityBar();
-    if (S.selected && ++panelTick % 6 === 0) refreshPanel();             // keep costs/affordability fresh
+    if (S.selected && ++panelTick % 6 === 0) refreshPanel();
+    if (STAT.open && ++statTick % 20 === 0) statsRender();             // keep costs/affordability fresh
   } else {
     S.t += dt;
     for (const f of S.fx) f.life -= dt;
@@ -11736,6 +12055,8 @@ window.JTD = S;   // handy for tinkering from the console
 
 
 
+
+
 $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWERS[k].name}">`).join('');
 /* The mode cards ARE the main menu, so they get built right here rather than
    inside the image-preload callback. Their art is data-URL portraits that
@@ -11743,6 +12064,7 @@ $('menuCast').innerHTML = ORDER.map(k => `<img src="${PORTRAIT[k]}" alt="${TOWER
    empty for as long as a single image stalled. */
 buildModeCards();
 fitMenu();
+setTimeout(maybeNudge, 500);
 /* the front page explains whichever set of controls this device has */
 /* ------------------------------------------------------- menu fitting ---
    The front page is one screen with no scrollbar, which means it has to
