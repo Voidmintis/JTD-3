@@ -279,6 +279,8 @@
   .bossbar .row b{color:#ff7b6b;font-variant-numeric:tabular-nums}
   .bosstrack{height:12px;background:#2a1418;border-radius:99px;overflow:hidden;border:1px solid #4a2229}
   .bossfill{height:100%;width:100%;background:linear-gradient(90deg,#ff2d2d,#ff8a5a);box-shadow:0 0 14px rgba(255,60,60,.55)}
+  .bossbar.armoured{box-shadow:0 0 0 2px rgba(143,228,255,.5), 0 0 22px -6px #8fe4ff}
+  .bossbar.armoured .bossfill{filter:saturate(.5) brightness(.8)}
   .bossbar.hacked{font-family:"Consolas","Courier New",monospace}
   .bossbar.hacked .bossLabel{animation:glitchTxt 3.1s steps(1) infinite}
   .bossbar.hacked .bossNum{animation:glitchTxt 2.3s steps(1) infinite}
@@ -852,8 +854,8 @@
   /* The front page is a fixed screen, not a document: everything is sized
      to fit 1600x900 at once, so there is nothing to scroll and no bar. */
   #ovMenu{
-    gap:10px;justify-content:center;overflow:hidden;
-    padding:62px 30px 16px;
+    gap:9px;justify-content:center;overflow:hidden;
+    padding:50px 30px 14px;
   }
   /* the mood layer sits behind everything the menu says */
   #menuFx{position:absolute;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -914,6 +916,29 @@
   #help kbd{flex:none}
   kbd{background:rgba(255,255,255,.08);border:1px solid var(--line);border-bottom-width:2px;
       border-radius:4px;padding:1px 6px;font-family:inherit;font-size:10px;color:var(--ink)}
+  /* ----------------------------------------------------------- combo ---- */
+  #combo{
+    position:absolute;left:14px;bottom:86px;width:168px;display:none;z-index:12;
+    background:var(--glass);border:1px solid var(--line);border-radius:11px;
+    padding:7px 10px 8px;backdrop-filter:blur(8px);
+  }
+  #combo.on{display:block}
+  #combo .lab{
+    font-size:9px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--dim);
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  #combo .lab b{font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+  #combo .trk{height:6px;border-radius:99px;background:rgba(0,0,0,.45);margin-top:5px;overflow:hidden}
+  #combo .trk i{display:block;height:100%;width:0;border-radius:99px;
+                background:linear-gradient(90deg,#ffd83d,#ff8a5a);transition:width .12s}
+  #combo.hot{border-color:#ffd83d;box-shadow:0 0 20px -5px #ffd83d}
+  #combo.hot .lab b{color:#ffd83d}
+  #combo.hot .trk i{width:100%!important;background:linear-gradient(90deg,#7dffb4,#ffd83d)}
+  body.mobile #combo{width:250px;bottom:calc(var(--tap) * 1.25 + 70px);padding:11px 14px 12px}
+  body.mobile #combo .lab{font-size:14px}
+  body.mobile #combo .lab b{font-size:21px}
+  body.mobile #combo .trk{height:10px}
+
   /* -------------------------------------------------------- abilities ---- */
   #abils{
     position:absolute;left:14px;bottom:16px;display:none;gap:10px;z-index:12;
@@ -958,6 +983,56 @@
   body.mobile .abil .ic{width:38px;height:38px}
   body.mobile .abil .cd{font-size:24px}
   body.mobile .abil .nm{font-size:13px;bottom:-20px}
+
+  /* ------------------------------------------------------- challenges ---- */
+  #chalRow{
+    display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
+    max-width:min(1240px,100%);
+  }
+  #chalRow .cl{
+    font-size:9px;font-weight:800;letter-spacing:2.2px;text-transform:uppercase;
+    color:var(--dim);margin-right:3px;
+  }
+  .chalB{
+    font:inherit;font-size:11px;font-weight:800;cursor:pointer;padding:6px 14px;border-radius:999px;
+    border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--dim);transition:.12s;
+  }
+  .chalB:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  .chalB.on{
+    color:#2a1206;background:linear-gradient(180deg,#ffd08a,#ff9a3c);border-color:#ff9a3c;
+    box-shadow:0 0 16px -4px #ff9a3c;
+  }
+  body.mobile #chalRow .cl{font-size:14px}
+  body.mobile .chalB{font-size:16px;padding:11px 20px;min-height:var(--tap)}
+
+  /* ------------------------------------------------------ bests board ---- */
+  #ovBests{z-index:32;background:radial-gradient(900px 620px at 50% 40%,rgba(8,13,19,.9),rgba(3,6,9,.97))}
+  #bestWrap{
+    position:relative;z-index:1;width:min(640px,95%);max-height:88%;display:flex;flex-direction:column;
+    background:linear-gradient(180deg,rgba(17,25,34,.97),rgba(9,14,20,.98));
+    border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    box-shadow:0 24px 64px rgba(0,0,0,.66);
+  }
+  .bsList{flex:1;min-height:0;overflow-y:auto;padding:11px 13px 16px;scrollbar-width:thin}
+  .bsMode{
+    border:1px solid var(--line);border-left:3px solid var(--mc);border-radius:12px;
+    padding:10px 12px;margin-bottom:8px;background:rgba(255,255,255,.03);
+  }
+  .bsTop{display:flex;align-items:center;gap:9px}
+  .bsTop .nm{font-size:14px;font-weight:800;color:var(--mc);flex:none}
+  .bsTop .pips{display:flex;gap:3px;flex:1}
+  .bsTop .pips i{width:13px;height:5px;border-radius:3px;background:rgba(255,255,255,.14)}
+  .bsTop .pips i.on{background:var(--mc)}
+  .bsTop b{font-size:13px;font-variant-numeric:tabular-nums}
+  .bsChal{
+    display:flex;justify-content:space-between;gap:10px;margin-top:6px;padding-top:6px;
+    border-top:1px solid rgba(255,255,255,.07);font-size:11px;color:var(--dim);
+  }
+  .bsChal b{color:#ffd08a;font-variant-numeric:tabular-nums}
+  body.mobile #bestWrap{width:96%}
+  body.mobile .bsTop .nm{font-size:21px}
+  body.mobile .bsTop b{font-size:19px}
+  body.mobile .bsChal{font-size:16px}
 
   /* ------------------------------------------------------ stats board ---- */
   #ovStats{z-index:32;background:radial-gradient(900px 620px at 50% 40%,rgba(8,13,19,.9),rgba(3,6,9,.97))}
@@ -1199,7 +1274,7 @@
   }
   #bookBtn svg{flex:none}
   #bookBtn > svg:first-of-type{width:34px;height:34px}
-  body.mobile #bookBtn{font-size:22px;padding:20px 16px 18px;width:180px;gap:8px}
+  body.mobile #bookBtn{font-size:19px;padding:17px 12px 15px;width:146px;gap:7px}
   body.mobile #bookBtn em{font-size:13px}
   body.mobile #bookBtn > svg:first-of-type{width:48px;height:48px}
   body.mobile #bookBtn .ants rect{rx:30px;ry:30px}
@@ -1462,16 +1537,16 @@
     border:0;border-radius:999px;padding:8px 22px;font:inherit;font-weight:800;font-size:13px;
     color:#06120a;background:var(--mc);box-shadow:0 4px 0 rgba(0,0,0,.42);pointer-events:none;
   }
-  #endModes,#modeBack,#playBtn,#menuSettings{
+  #endModes,#modeBack,#playBtn,#menuSettings,#bestsBtn{
     border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim);
     border-radius:999px;padding:9px 26px;font:inherit;font-weight:700;font-size:13px;cursor:pointer;
   }
-  #endModes:hover,#modeBack:hover,#playBtn:hover,#menuSettings:hover{color:var(--ink);background:rgba(255,255,255,.1)}
-  body.mobile #modeGrid{grid-template-columns:repeat(3,minmax(0,1fr));width:min(1300px,100%);gap:12px}
+  #endModes:hover,#modeBack:hover,#playBtn:hover,#menuSettings:hover,#bestsBtn:hover{color:var(--ink);background:rgba(255,255,255,.1)}
+  body.mobile #modeGrid{grid-template-columns:repeat(3,minmax(0,1fr));width:min(1180px,100%);gap:12px}
   body.mobile .mcard{padding:14px;border-radius:20px;gap:9px}
   body.mobile #ovMenu h1{font-size:min(52px,6vw)}
   body.mobile #ovMenu .cast{display:none}
-  body.mobile #ovMenu{padding:78px 18px 14px}
+  body.mobile #ovMenu{padding:56px 18px 12px}
   body.mobile #ovMenu p#menuSub{display:none}
   body.mobile #ovMenu #help{font-size:15px;bottom:96px}
   body.mobile .mcard .art{height:var(--artH,96px)}
@@ -1599,7 +1674,9 @@
       <div class="cast" id="menuCast"></div>
       <p id="menuSub">Thirty-two Jaxons, a boss every tenth wave, and a colossus in the rain. Pick your fight.</p>
       <div id="modeGrid"></div>
+      <div id="chalRow"></div>
       <div id="menuRow">
+        <button id="bestsBtn">Bests</button>
         <button id="playBtn">How to play</button>
         <button id="menuSettings">Settings</button>
       </div>
@@ -1623,6 +1700,10 @@
       <button id="endModes">Change gamemode</button>
     </div>
 
+    <div id="combo">
+      <div class="lab">Combo <b id="comboN">0</b></div>
+      <div class="trk"><i id="comboFill"></i></div>
+    </div>
     <div id="abils"></div>
     <button id="admDot" aria-label="?"></button>
     <div class="overlay" id="ovAdmin">
@@ -1630,6 +1711,7 @@
     </div>
 
     <div class="overlay" id="ovStats"><div id="statWrap"></div></div>
+    <div class="overlay" id="ovBests"><div id="bestWrap"></div></div>
 
     <div class="overlay" id="ovBook">
       <div id="bookWrap">
@@ -3634,6 +3716,35 @@ const MODES = {
    damage, elite weighting and boss health all read M() live, so they
    switch on the spot; enemy health is baked at spawn, so blobs already on
    the trail keep the health they were born with. */
+/* ---------------------------------------------------------- challenges --
+   Extra rules laid on top of a difficulty. They stack, they are chosen
+   before the run starts, and each combination keeps its own best. */
+const CHALLENGES = [
+  { id:'nosell',   name:'No Sell',       blurb:'Nothing can be sold or refunded. Place carefully.' },
+  { id:'noincome', name:'No Income',     blurb:'The money Jaxons are off the shelf. Kills only.' },
+  { id:'onelife',  name:'One Life',      blurb:'A single leak ends it. No shields, no cushion.' },
+  { id:'starters', name:'Starters Only', blurb:'Only the nine cheap Jaxons. No late game at all.' }
+];
+const hasChal = id => !!(S.chal && S.chal[id]);
+const chalList = () => CHALLENGES.filter(c => hasChal(c.id)).map(c => c.id);
+/* the key a best is filed under: the mode, plus whatever rules were on */
+const runKey = () => {
+  const c = chalList();
+  return S.mode + (c.length ? '|' + c.join('+') : '');
+};
+const chalName = key => {
+  const [m, c] = key.split('|');
+  const md = MODES[m];
+  return (md ? md.name : m) + (c ? ' · ' + c.split('+')
+    .map(id => (CHALLENGES.find(x => x.id === id) || {}).name || id).join(' + ') : '');
+};
+/* a Jaxon the current rules will not let you buy */
+function chalBlocks(k) {
+  if (hasChal('noincome') && (ROLE[k] || []).includes('income')) return 'No Income';
+  if (hasChal('starters') && !(ROLE[k] || []).includes('starters')) return 'Starters Only';
+  return null;
+}
+
 const SB = () => S.mode === 'sandbox';
 let _mCache = null, _mKey = '';
 const M = () => {
@@ -4142,7 +4253,8 @@ const S = {
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
-  omen:null, bossDone:0, waveTotal:0,
+  omen:null, bossDone:0, waveTotal:0, chal:{},
+  combo:{ n:0, t:0, boost:0, flash:0 },
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
@@ -4196,6 +4308,9 @@ function loadSave() {
   S.bookSeen = !!j.bookSeen;
   if (MODES[j.sbDiff] && !MODES[j.sbDiff].sandbox) S.sbDiff = j.sbDiff;
   if (Array.isArray(j.customs)) S.customs = j.customs.filter(c => c && c.name).slice(0, 60);
+  if (j.chal && typeof j.chal === 'object') {
+    for (const c of CHALLENGES) if (j.chal[c.id]) S.chal[c.id] = true;
+  }
   S.tutorialDone = !!j.tutorial;
 }
 function saveNow() {
@@ -4203,20 +4318,58 @@ function saveNow() {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
-      sbDiff:S.sbDiff, customs:S.customs,
+      sbDiff:S.sbDiff, customs:S.customs, chal:S.chal,
       vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
 /* the best run is worth writing the moment it changes, not at game over */
 function noteBest(w) {
-  if (w <= bestOf(S.mode)) { S.best = bestOf(S.mode); return; }
-  S.bests[S.mode] = w; S.best = w; saveNow(); syncHUD();
+  const key = runKey();
+  if (w <= bestOf(key)) { S.best = bestOf(key); return; }
+  S.bests[key] = w; S.best = w; saveNow(); syncHUD();
 }
 /* Hard ceilings. Enemies are capped at the spawner (see LIVE_CAP); these
    catch everything else so one silly frame cannot snowball. */
 const FX_CAP = [900, 420, 170], SHOT_CAP = 700, CAR_CAP = 70, FLOAT_CAP = 36;
 const ADMIN_CAR_CAP = 600;            // the Admin line is uncapped in spirit only
+
+/* ------------------------------------------------------------- combo ---
+   Pops in quick succession stack up. Fill the bar and it pays out once —
+   a small purse and a short burst of fire rate — then resets. It is a
+   reward for clean multi-pops, deliberately too small to replace an
+   income Jaxon: the cash is capped and the burst is brief. */
+const COMBO = { window:2.2, need:24, rate:0.6, dur:5, cash:90, capWave:14 };
+function comboPop() {
+  if (SB()) return;
+  S.combo.n++;
+  S.combo.t = COMBO.window;
+  if (S.combo.n < COMBO.need) return;
+  /* the payout, small and flat, with a cap that stops late waves printing */
+  const cash = Math.min(COMBO.cash, 18 + S.wave*4);
+  S.money += cash;
+  S.combo.n = 0;
+  S.combo.boost = COMBO.dur;
+  S.combo.flash = 1;
+  S.floats.push({ x:W/2, y:H*0.34, txt:'COMBO  +$' + cash, color:'#ffd83d', life:1.5, big:true });
+  bump('moneyBox','gain');
+  beep(900, 0.12, 'triangle', 0.04, 1500);
+  syncHUD();
+}
+function comboTick(dt) {
+  const c = S.combo;
+  if (c.t > 0) { c.t -= dt; if (c.t <= 0) c.n = 0; }
+  if (c.boost > 0) c.boost = Math.max(0, c.boost - dt);
+  if (c.flash > 0) c.flash = Math.max(0, c.flash - dt*2);
+  const el = $('combo');
+  if (!el) return;
+  const on = !SB() && (c.n > 0 || c.boost > 0) && S.phase !== 'menu' && S.phase !== 'over';
+  el.classList.toggle('on', on);
+  if (!on) return;
+  el.classList.toggle('hot', c.boost > 0);
+  $('comboFill').style.width = Math.min(100, c.n/COMBO.need*100) + '%';
+  $('comboN').textContent = c.boost > 0 ? Math.ceil(c.boost) + 's' : c.n;
+}
 
 /* -------------------------------------------------------------- audio ---- */
 let AC = null;
@@ -4451,7 +4604,7 @@ function buildShelf() {
 
 function syncShelf() {
   document.querySelectorAll('.med').forEach(el => {
-    const key = el.dataset.key, can = afford(costOf(key));
+    const key = el.dataset.key, can = afford(costOf(key)) && !chalBlocks(key);
     if (can && S.affordable[key] === false) { el.classList.add('newly'); setTimeout(() => el.classList.remove('newly'), 820); }
     S.affordable[key] = can;
     el.classList.toggle('locked', !can);
@@ -4495,6 +4648,8 @@ function setPlacingBanner() {
 }
 
 function pick(key) {
+  const block = chalBlocks(key);
+  if (block) { toast(TOWERS[key].name + ' is locked by ' + block); beep(150,0.08,'square',0.03); return; }
   if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
   S.dupe = null;
   S.placing = key;
@@ -4572,13 +4727,14 @@ function reset() {
   S.phase='build'; S.wave=1; S.pops=0;
   /* the sandbox's numbers are only ever cosmetic; nothing can spend them
      down and nothing can knock them out */
-  S.health = SB() ? 9999 : md.lives;
+  S.health = SB() ? 9999 : (hasChal('onelife') ? 1 : md.lives);
   S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey='';
-  S.omen=null; S.bossDone=0; S.waveTotal=0; S.bestAtStart = bestOf(S.mode);
+  S.omen=null; S.bossDone=0; S.waveTotal=0;
+  S.combo = { n:0, t:0, boost:0, flash:0 }; S.bestAtStart = bestHere();
   S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
   $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
@@ -4604,6 +4760,8 @@ function reset() {
    PLAY opens the picker, a card starts that mode. Bests are kept per mode:
    the number on the HUD is always this mode's number. */
 function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0; }
+/* the best for the run as it is actually being played */
+const bestHere = () => bestOf(runKey());
 
 function showModes() {
   setTimeout(fitMenu, 0);
@@ -4616,7 +4774,7 @@ function showModes() {
 function startMode(k) {
   pvStop(); setMenuMood(null); PV.picked = null;
   S.mode = MODES[k] ? k : 'normal';
-  S.best = bestOf(S.mode);
+  S.best = bestHere();
   $('ovMenu').classList.remove('on');
   if (S.mode === 'titan') { startTitan(); return; }
   reset();
@@ -4951,9 +5109,77 @@ function pvScene(key, g, w, h, t) {
 /* Cards, built from the mode table so a new mode is a table entry. */
 const MENU_MODES = () => Object.keys(MODES).filter(k => MODES[k].menu);
 
+/* ------------------------------------------------------ the chip row ---
+   The rules ride on top of whichever card you pick, so they live under the
+   cards rather than on them. */
+function buildChalRow() {
+  const el = $('chalRow');
+  if (!el) return;
+  el.innerHTML = '<span class="cl">Challenge</span>' + CHALLENGES.map(c =>
+    '<button class="chalB' + (hasChal(c.id) ? ' on' : '') + '" data-c="' + c.id + '" title="' +
+    c.blurb + '">' + c.name + '</button>').join('');
+  el.querySelectorAll('.chalB').forEach(b => b.onclick = () => {
+    const id = b.dataset.c;
+    S.chal[id] = !S.chal[id];
+    b.classList.toggle('on', !!S.chal[id]);
+    saveNow();
+    buildModeCards();                     // the cards show the best for these rules
+    beep(S.chal[id] ? 640 : 380, 0.05, 'triangle', 0.028);
+  });
+}
+
+/* ------------------------------------------------------- the bests -----
+   Every mode, and every set of rules ever beaten under it, in one place. */
+function openBests() {
+  $('ovBests').classList.add('on');
+  bestsRender();
+  beep(660, 0.06, 'triangle', 0.03);
+}
+function closeBests() { $('ovBests').classList.remove('on'); beep(440, 0.06, 'triangle', 0.025); }
+function bestsRender() {
+  const wrap = $('bestWrap');
+  const keys = Object.keys(S.bests).filter(k => S.bests[k] > 0);
+  const byMode = {};
+  for (const k of keys) {
+    const m = k.split('|')[0];
+    (byMode[m] = byMode[m] || []).push(k);
+  }
+  let h = '<div class="stHead"><span class="t">Best runs</span>' +
+          '<span class="sub">' + (keys.length || 'no') + ' recorded</span>' +
+          '<button class="bkX" id="bsClose" aria-label="Close">&times;</button></div><div class="bsList">';
+  const order = MENU_MODES().filter(m => m !== 'sandbox');
+  let any = false;
+  for (const m of order) {
+    const md = MODES[m];
+    const rows = (byMode[m] || []).sort((a, b) => S.bests[b] - S.bests[a]);
+    h += '<div class="bsMode" style="--mc:' + md.mc + '">' +
+         '<div class="bsTop"><span class="nm">' + md.name + '</span>' +
+         '<span class="pips">' + [1,2,3,4].map(i =>
+           '<i class="' + (i <= md.pips ? 'on' : '') + '"></i>').join('') + '</span>' +
+         '<b>' + (S.bests[m] ? 'wave ' + S.bests[m] : '—') + '</b></div>';
+    const chal = rows.filter(k => k !== m);
+    if (chal.length) {
+      any = true;
+      h += chal.map(k => '<div class="bsChal"><span>' +
+        k.split('|')[1].split('+').map(id =>
+          (CHALLENGES.find(x => x.id === id) || {}).name || id).join(' + ') +
+        '</span><b>wave ' + S.bests[k] + '</b></div>').join('');
+    }
+    if (S.bests[m]) any = true;
+    h += '</div>';
+  }
+  if (!any) h += '<div class="stEmpty">Nothing yet. Clear a wave and it lands here.</div>';
+  h += '</div>';
+  wrap.innerHTML = h;
+  $('bsClose').onclick = closeBests;
+}
+
 function buildModeCards() {
   const card = k => {
-    const m = MODES[k], best = bestOf(k);
+    const m = MODES[k];
+    /* with rules on, the card shows the best under THOSE rules */
+    const c = chalList();
+    const best = bestOf(k + (c.length && k !== 'sandbox' ? '|' + c.join('+') : ''));
     const pips = m.pips
       ? [1,2,3,4].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('')
       : '<span class="freeform">free&nbsp;play</span>';
@@ -4969,6 +5195,7 @@ function buildModeCards() {
       </button>`;
   };
   $('modeGrid').innerHTML = MENU_MODES().map(card).join('');
+  buildChalRow();
   $('modeGrid').querySelectorAll('.mcard').forEach(el => {
     const k = el.dataset.m, pv = el.dataset.pv;
     /* Pointer and keyboard both light the card up and shift the whole menu. */
@@ -5058,7 +5285,7 @@ function startWave() {
   sweepStrays();
   S.phase = 'wave';
   /* Band-Aid Jaxon tapes a fresh plaster over the nursery door each wave */
-  S.shield = S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
+  S.shield = hasChal('onelife') ? 0 : S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
   /* the wave is a threat budget now, not a body count — see buildWavePlan */
   S.plan = buildWavePlan(S.wave);
   S.spawnQueue = S.plan.length;
@@ -5082,6 +5309,28 @@ function startWave() {
 
 /* B.dense packs in more columns than the radius would normally warrant —
    the Admin Jaxon wants a far-away wall of code, not a boss's big glyphs. */
+/* ------------------------------------------------------- boss armour ---
+   Past wave 50 a boss arrives wearing plates. While any are up it barely
+   feels a shot — the way through is control: freeze it, mark it, drag it
+   into a void, or hit it with an ability. Each of those strips one plate.
+   It gives every Jaxon that does not deal damage a job on a health bar
+   with six figures on it. */
+const ARMOR = { from:60, soak:0.82, per:16 };
+const armorFor = wave => (wave < ARMOR.from ? 0 : Math.min(6, 1 + Math.floor((wave - ARMOR.from) / ARMOR.per)));
+/* the things that count as breaking a plate, and nothing else does */
+function crackArmor(b, why) {
+  if (!b || !b.plates) return false;
+  b.plates--;
+  b.crack = 1;
+  S.floats.push({ x:pointAt(b.d).x, y:pointAt(b.d).y - b.def.r - 18,
+                  txt:b.plates ? 'PLATE BROKEN' : 'ARMOUR DOWN',
+                  color:'#8fe4ff', life:1.4, big:!b.plates });
+  beep(b.plates ? 380 : 220, 0.3, 'square', 0.05, 120);
+  shakeScreen(b.plates ? 7 : 14, b.plates ? 0.3 : 0.8);
+  if (!b.plates) banner('ARMOUR DOWN', b.def.name, '#8fe4ff');
+  return true;
+}
+
 function makeRain(B) {
   const cols = [], n = Math.max(7, Math.round(B.r / 7 * (B.dense || 1)));
   const span = B.span === undefined ? 1 : B.span;
@@ -5099,7 +5348,8 @@ function addBoss(def, extra) {
   const b = Object.assign({
     d:0, hp:def.hp, max:def.hp, hit:0, def, cols:makeRain(def), glitch:0,
     mark:0, markMul:1, dbl:false, stun:0,
-    pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9, bar:null
+    pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9, bar:null,
+    plates:armorFor(def.at || S.wave), crack:0
   }, extra || {});
   S.bosses.push(b);
   const el = document.createElement('div');
@@ -5361,6 +5611,7 @@ function hurtEnemy(e, dmg, owner) {
     const p = enemyPos(e);
     burst(p.x, p.y, enemyFill({ elite:e.elite, hp:before }), e.elite >= 0 ? 26 : 13);
     e.dead = true; S.pops++;
+    comboPop();
     if (owner) owner.pops++;
     if (S.titan && e.siege) {
       S.titan.killed++;
@@ -5392,6 +5643,7 @@ function hurtBoss(dmg, owner, b) {
     return;
   }
   dmg = amplify(dmg, owner, null);
+  if (b.plates > 0) dmg *= (1 - ARMOR.soak);   // the plates take most of it
   if (b.mark > 0) dmg *= b.markMul;
   if (b.dbl) { dmg *= 2; b.dbl = false; }
   const before = b.hp;
@@ -5893,7 +6145,7 @@ function directorCut(t, spec) {
     e.stun = Math.max(e.stun || 0, spec.freeze);
     e.dbl = true;
   }
-  for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, spec.freeze*0.5); B.dbl = true; }
+  for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, spec.freeze*0.5); B.dbl = true; crackArmor(B, 'cut'); }
   t.shots++;
   toast('CUT!');
   beep(200, 0.5, 'square', 0.06, 60);
@@ -6598,7 +6850,9 @@ function update(dt) {
       toast('The boss got through!');
     } else if (B.bar) {
       B.barFill.style.width = Math.max(0, B.hp/B.max*100) + '%';
-      B.barNum.textContent = shortHp(Math.max(0, Math.ceil(B.hp)));
+      B.barNum.textContent = shortHp(Math.max(0, Math.ceil(B.hp)))
+        + (B.plates > 0 ? '  \u25EF' + B.plates : '');
+      B.bar.classList.toggle('armoured', B.plates > 0);
     }
   }
 
@@ -6653,7 +6907,8 @@ function update(dt) {
     /* the Admin Jaxon's field is the other half of amplify() */
     const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1)
               * (t.admField ? 1/(1 + ADM.field.rate) : 1)
-              * (S.overdrive > 0 ? 0.5 : 1);
+              * (S.overdrive > 0 ? 0.5 : 1)
+              * (S.combo.boost > 0 ? 1/(1 + COMBO.rate) : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     t.copyFlash = Math.max(0, (t.copyFlash || 0) - dt*2);
 
@@ -6819,7 +7074,7 @@ function update(dt) {
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+' + spec.heal + ' life', color:'#7dffb4', life:1.5 });
         if (spec.xtra.markAura) {                    // Triage: paint every blob on the board
           for (const e of S.enemies) if (!e.dead) { e.mark = Math.max(e.mark||0, 4); e.markMul = Math.max(e.markMul||1, 1.3); }
-          for (const B of S.bosses) { B.mark = 4; B.markMul = Math.max(B.markMul||1, 1.3); }
+          for (const B of S.bosses) { B.mark = 4; B.markMul = Math.max(B.markMul||1, 1.3); crackArmor(B, 'mark'); }
         }
         bump('hpBox','gain'); beep(880, 0.14, 'sine', 0.032, 1250);
         syncHUD();
@@ -6990,7 +7245,10 @@ function update(dt) {
       }
       for (const B of S.bosses) {
         const p = pointAt(B.d);
-        if (Math.hypot(p.x - h.x, p.y - h.y) <= h.r + B.def.r) hurtBoss(h.dmg + Math.floor(Math.random()*(h.dmg*0.2 + 1)), h.owner, B);
+        if (Math.hypot(p.x - h.x, p.y - h.y) <= h.r + B.def.r) {
+          if (!h.cracked) { h.cracked = true; crackArmor(B, 'void'); }
+          hurtBoss(h.dmg + Math.floor(Math.random()*(h.dmg*0.2 + 1)), h.owner, B);
+        }
       }
     }
     if (h.t <= 0) h.dead = true;
@@ -7131,8 +7389,8 @@ function update(dt) {
       const p = pointAt(B.d), d = Math.hypot(p.x - w.x, p.y - w.y);
       if (d <= w.r + B.def.r) {
         bMark(w, B);
-        if (w.kind === 'whistle') { B.mark = w.spec.dur; B.markMul = 1 + w.spec.amp; }
-        else hurtBoss(w.spec.dmg, w.owner, B);
+        if (w.kind === 'whistle') { B.mark = w.spec.dur; B.markMul = 1 + w.spec.amp; crackArmor(B, 'mark'); }
+        else { crackArmor(B, 'stun'); hurtBoss(w.spec.dmg, w.owner, B); }
       }
     }
     if (w.r > w.max) w.dead = true;
@@ -7169,6 +7427,7 @@ function update(dt) {
   if (S.fuse) { S.fuse.t += dt; if (S.fuse.t >= S.fuse.dur) S.fuse = null; }
   if (S.overdrive > 0) S.overdrive = Math.max(0, S.overdrive - dt);
   sampleDps(dt);
+  comboTick(dt);
   syncOmen();
   for (const k in S.abilCd) if (S.abilCd[k] > 0) S.abilCd[k] = Math.max(0, S.abilCd[k] - dt);
 
@@ -7400,7 +7659,7 @@ function update(dt) {
   }
 
   if (S.phase === 'wave' && S.spawnQueue === 0 && S.enemies.length === 0 && !S.boss) {
-    const cleared = S.wave, bestBefore = bestOf(S.mode);
+    const cleared = S.wave, bestBefore = bestOf(runKey());
     noteBest(S.wave);
     S.wave++;                                       // original: change Level by 1
     const reward = Math.round((25 + S.wave*10) * M().waveReward);   // round-end bonus, mode-scaled
@@ -7452,13 +7711,13 @@ function update(dt) {
 }
 
 function endGame() {
-  const survived = Math.max(0, S.wave - 1), best = Math.max(bestOf(S.mode), survived);
+  const survived = Math.max(0, S.wave - 1), best = Math.max(bestHere(), survived);
   const isBest = survived > S.bestAtStart && !SB();
   $('endTitle').textContent = 'NURSERY OVERRUN';
   $('endText').textContent =
     'Base overrun on wave ' + S.wave +
     (S.lastLeak ? ' — ' + S.lastLeak + ' walked through the nursery door.' : '.') +
-    ' ' + M().name + ' best: wave ' + best + '.';
+    ' ' + chalName(runKey()) + ' best: wave ' + best + '.';
   $('scoreRow').innerHTML =
     '<div><div class="k">Waves survived</div><div class="v">' + survived + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
@@ -7807,7 +8066,8 @@ function drawPanel() {
                               : 'Copies this Jaxon with all upgrades'}</span>
     </button>
     <div class="prow">
-      <button class="sell" id="pSell">Sell &nbsp;+$${refund.toLocaleString()}</button>
+      ${hasChal('nosell') ? '<button class="sell poor" disabled>No Sell</button>'
+        : '<button class="sell" id="pSell">Sell &nbsp;+$' + refund.toLocaleString() + '</button>'}
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
     <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
@@ -7851,7 +8111,8 @@ function drawPanel() {
       syncHUD(); drawPanel();
     };
   }
-  $('pSell').onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
+  const sb2 = $('pSell');
+  if (sb2) sb2.onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
 }
 
@@ -8701,6 +8962,22 @@ function drawBoss(bs) {
     ctx.restore();
   }
 
+  if (bs.plates > 0) {                         // the plates, one arc each
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    const gap = 0.16;
+    for (let i = 0; i < bs.plates; i++) {
+      const a0 = -Math.PI/2 + i*(Math.PI*2/bs.plates);
+      const a1 = a0 + Math.PI*2/bs.plates - gap;
+      ctx.lineWidth = 7;
+      ctx.strokeStyle = bs.crack > 0 ? '#ffffff' : '#8fe4ff';
+      ctx.beginPath(); ctx.arc(0, 0, r + 12, a0, a1); ctx.stroke();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(10,30,45,.9)';
+      ctx.beginPath(); ctx.arc(0, 0, r + 12, a0, a1); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  if (bs.crack > 0) bs.crack = Math.max(0, bs.crack - 0.04);
   if (bs.hit > 0) { ctx.globalAlpha = bs.hit*0.5; ctx.fillStyle = '#fff';
     ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); }
   ctx.restore();
@@ -10320,6 +10597,7 @@ function canvasPos(ev) {
   return { x:(sx - W/2)/c.z + c.x, y:(sy - H/2)/c.z + c.y };
 }
 function sellTower(t) {
+  if (hasChal('nosell')) { toast('No Sell — he stays where he is'); beep(150,0.08,'square',0.03); return; }
   const refund = refundOf(t);
   /* Recycler Jaxon digs a little extra out of anything scrapped beside him.
      Best single rate only — stacking Recyclers would print money. */
@@ -10503,6 +10781,7 @@ window.addEventListener('keydown', ev => {
     toast(lk === 'f' ? 'Camera on the Titan' : 'Camera on the base');
     return;
   }
+  if ($('ovBests').classList.contains('on')) { if (ev.key === 'Escape') closeBests(); return; }
   if (STAT.open) { if (ev.key === 'Escape') closeStats(); return; }
   if (ADM_UI.open) { if (ev.key === 'Escape') closeAdmin(); return; }
   if ($('ovBook').classList.contains('on')) {
@@ -10675,6 +10954,7 @@ $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); }
 $('bookBtn').onclick = () => openBook('menu');
 $('pmBook').onclick = () => openBook('pause');
 $('bkClose').onclick = closeBook;
+$('bestsBtn').onclick = openBests;
 $('admDot').onclick = openAdmin;
 $('statsBtn').onclick = () => openStats();
 $('pmStats').onclick = () => openStats();
@@ -10766,7 +11046,7 @@ const ABILITIES = [
     fire(t) {
       const sp = SP(t), dmg = Math.round((sp.dmg || 400) * 9);
       for (const e of S.enemies) if (!e.dead) hurtEnemy(e, dmg, t);
-      for (const B of S.bosses) hurtBoss(dmg*2, t, B);
+      for (const B of S.bosses) { crackArmor(B, 'ability'); hurtBoss(dmg*2, t, B); }
       for (let i = 0; i < 5; i++) {
         const x = W*0.16 + Math.random()*W*0.7, y = H*0.2 + Math.random()*H*0.6;
         S.fx.push({ k:'boom', x, y, life:0.5, max:0.5, r:180 });
@@ -10786,7 +11066,7 @@ const ABILITIES = [
         e.stun = Math.max(e.stun || 0, 2.2);
         hurtEnemy(e, dmg, t);
       }
-      for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, 1.2); hurtBoss(dmg*2, t, B); }
+      for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, 1.2); crackArmor(B, 'ability'); hurtBoss(dmg*2, t, B); }
       banner('LOCKDOWN', 'ACCESS DENIED', '#ff2b2b');
       flashScreen(0.42); shakeScreen(20, 1.1);
       beep(58, 1.2, 'square', 0.08, 200);
@@ -11564,6 +11844,231 @@ const GUIDE = [
     }
   } },
 
+{ ch:'Combat', title:'Tell him what to shoot',
+  text:'Every Jaxon who picks a target picks it the same way by default: whatever is <b>furthest along the trail</b>. Four buttons in his panel change that.<br><br><b>First</b> is that default — kill it before it reaches the door. <b>Last</b> takes whatever just walked in, which is how you stop a queue forming. <b>Strong</b> goes for the fattest health bar in reach, which is how you make a Jaxon deal with elites instead of chaff. <b>Close</b> takes whatever is nearest to him.<br><br><span class="k">T</span> cycles the selected one, <span class="k">Shift</span>+<span class="k">T</span> goes back. Holding the mouse still overrules everything while you hold it.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5.6);
+    const which = Math.floor(p*4) % 4;
+    const names = ['First','Last','Strong','Close'];
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.66);
+    const jx = w*0.5, jy = h*0.42;
+    /* four blobs along the trail, one of them fat */
+    const blobs = [
+      { x:w*0.86, y:h*0.66, r:10, tier:2, tag:'first' },
+      { x:w*0.66, y:h*0.66, r:16, tier:6, tag:'strong' },
+      { x:w*0.46, y:h*0.66, r:10, tier:3, tag:'close' },
+      { x:w*0.12, y:h*0.66, r:10, tier:1, tag:'last' }
+    ];
+    const pick = blobs.find(b => b.tag === names[which].toLowerCase());
+    g.save();
+    g.strokeStyle = 'rgba(255,255,255,.16)'; g.lineWidth = 1.2; g.setLineDash([4,4]);
+    g.beginPath(); g.ellipse(jx, jy + 8, w*0.42, h*0.3, 0, 0, 7); g.stroke();
+    g.restore();
+    for (const b of blobs) pvBlob(g, b.x, b.y - 8, b.r, b.tier, false);
+    /* the shot */
+    g.save();
+    g.strokeStyle = '#ff5a3c'; g.lineWidth = 3; g.lineCap = 'round';
+    g.globalAlpha = 0.5 + Math.abs(Math.sin(t*8))*0.5;
+    g.beginPath(); g.moveTo(jx, jy); g.lineTo(pick.x, pick.y - 8); g.stroke();
+    g.restore();
+    g.save();
+    g.strokeStyle = '#ffd83d'; g.lineWidth = 2.6;
+    g.beginPath(); g.arc(pick.x, pick.y - 8, pick.r + 7, 0, 7); g.stroke();
+    g.restore();
+    pvJaxon(g, 'laser', jx, jy + 26, h*0.3, pick.x < jx);
+    /* the four buttons */
+    let bx = w*0.5 - 150;
+    names.forEach((nm, i) => {
+      if (i === which) gbBtn(g, bx, h*0.1, 72, 24, nm, '#5ef064', '#1fce27');
+      else { gbPanel(g, bx, h*0.1, 72, 24, 8);
+             gbText(g, nm, bx + 36, h*0.1 + 12.5, 10, '#93a2b2', 'center', 700); }
+      bx += 76;
+    });
+  } },
+
+{ ch:'Combat', title:'Who is carrying the run',
+  text:'The <b>Stats</b> chip on the HUD — and the same button in the pause menu — opens a board of every Jaxon you have placed.<br><br>Sort it by <b>damage</b>, <b>DPS</b>, <b>pops</b>, <b>boss damage</b> or <b>income</b>. The bar under each name is his share of everything dealt this run, so you can see at a glance whether the expensive one is really pulling his weight or whether a cheap line at the front is doing all the work.<br><br>Tap any row to select that Jaxon and lean the camera toward him.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    const on = Math.floor(p*4) % 4;
+    const cols = ['Damage','DPS','Pops','Income'];
+    gbLawn(g, w, h);
+    gbPanel(g, w*0.06, h*0.06, w*0.88, h*0.88, 12, 'rgba(14,21,30,.97)');
+    let bx = w*0.1;
+    cols.forEach((c, i) => {
+      const bw = 22 + c.length*7;
+      if (i === on) gbBtn(g, bx, h*0.13, bw, 21, c, '#5ef064', '#1fce27');
+      else { gbPanel(g, bx, h*0.13, bw, 21, 10);
+             gbText(g, c, bx + bw/2, h*0.13 + 11, 9, '#93a2b2', 'center', 700); }
+      bx += bw + 6;
+    });
+    const sets = [
+      [['truegod','51k'],['ninja','8.8k'],['laser','4.2k'],['piggybank','0']],
+      [['truegod','1.9k'],['laser','420'],['ninja','380'],['piggybank','0']],
+      [['ninja','402'],['laser','120'],['truegod','88'],['piggybank','0']],
+      [['piggybank','$3.1k'],['truegod','$0'],['ninja','$0'],['laser','$0']]
+    ];
+    sets[on].forEach(([k, v], i) => {
+      const y = h*0.28 + i*h*0.155;
+      gbPanel(g, w*0.1, y, w*0.8, h*0.13, 9);
+      gbText(g, String(i + 1), w*0.13, y + h*0.065, 9.5, '#7e8c9c', 'center');
+      pvJaxon(g, k, w*0.19, y + h*0.115, h*0.11, false);
+      gbText(g, TOWERS[k].name, w*0.245, y + h*0.05, 10, '#dbe4ee');
+      /* the share bar */
+      const bw2 = w*0.42, share = [0.78, 0.14, 0.06, 0.02][i];
+      g.fillStyle = 'rgba(255,255,255,.1)';
+      g.fillRect(w*0.245, y + h*0.088, bw2, 3);
+      g.fillStyle = '#1fce27';
+      g.fillRect(w*0.245, y + h*0.088, bw2*share, 3);
+      gbText(g, v, w*0.87, y + h*0.065, 11, '#f2f6fb', 'right');
+    });
+  } },
+
+{ ch:'Combat', title:'The combo meter',
+  text:'Pops that land close together stack up on a meter in the bottom-left corner. Fill it and it pays out once: a <b>small purse</b> and a <b>short burst of fire rate</b> for every Jaxon on the board.<br><br>It is deliberately small. The purse is capped, the burst is only a few seconds, and the meter empties if you go a couple of seconds without a kill. It rewards a clean multi-pop — a Rainbow into a packed queue, a boss finally bursting — without ever standing in for a proper income Jaxon.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.4);
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.6);
+    const filled = Math.min(1, p*1.5);
+    const popped = p > 0.66;
+    for (let i = 0; i < 7; i++) {
+      const u = frac(p*1.6 + i/7);
+      const x = w*0.06 + u*w*0.9;
+      if (u < 0.62 || !popped) pvBlob(g, x, h*0.6 - 8, 9, 1 + (i % 4), false);
+      else pvPop(g, x, h*0.6 - 8, (u - 0.62)/0.2, '#ffd83d');
+    }
+    pvJaxon(g, 'rainbow', w*0.2, h*0.52, h*0.28, false);
+    /* the meter */
+    const mw = 160, mx = w*0.06, my = h*0.12;
+    gbPanel(g, mx, my, mw, 40, 10, popped ? 'rgba(255,216,61,.16)' : 'rgba(10,15,21,.85)',
+            popped ? '#ffd83d' : 'rgba(255,255,255,.16)');
+    gbText(g, 'COMBO', mx + 11, my + 13, 8.5, popped ? '#ffd83d' : '#7e8c9c', 'left');
+    gbText(g, popped ? '5s' : String(Math.round(filled*24)), mx + mw - 11, my + 13, 12,
+           popped ? '#ffd83d' : '#f2f6fb', 'right');
+    g.fillStyle = 'rgba(0,0,0,.45)';
+    g.beginPath(); g.roundRect(mx + 11, my + 23, mw - 22, 6, 3); g.fill();
+    g.fillStyle = popped ? '#7dffb4' : '#ffd83d';
+    g.beginPath(); g.roundRect(mx + 11, my + 23, (mw - 22)*(popped ? 1 : filled), 6, 3); g.fill();
+    if (popped) gbText(g, 'COMBO  +$90', w*0.62, h*0.26, 17, '#ffd83d', 'center');
+  } },
+
+{ ch:'Bosses', title:'The boss you can already see',
+  text:'Zoom all the way out during a run and the <b>next boss is already there</b>, out past the grass, walking in.<br><br>Its whole journey is the stretch of waves between the last boss and its own, so it steps onto the spawn gate exactly as its wave is called. A third of the way through those waves and it is a third of the way across the park. The plate over its head says which wave it is coming for.<br><br>It moves with the run, not with a clock: it stops where it stands while you are building between waves, and it keeps pace when you play at 2× or 3×. Beat it and the one after it appears at the far edge and sets off.',
+  art:(g, w, h, t) => {
+    const p = frac(t/7);
+    gbLawn(g, w, h);
+    /* the park, then the lawn as a small bright square */
+    g.save();
+    let seed = 91;
+    const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
+    for (let i = 0; i < 26; i++) {
+      const tx = rnd()*w, ty = h*0.1 + rnd()*h*0.85;
+      if (tx > w*0.42 && tx < w*0.95 && ty > h*0.3 && ty < h*0.82) continue;
+      const r = 5 + rnd()*5;
+      g.fillStyle = '#4a3218'; g.fillRect(tx - 1.4, ty - r*0.8, 2.8, r*0.9);
+      g.fillStyle = 'hsl(' + (104 + rnd()*28) + ',52%,28%)';
+      g.beginPath(); g.arc(tx, ty - r*1.1, r, 0, 7); g.fill();
+    }
+    g.restore();
+    g.fillStyle = '#0a8a3f'; g.fillRect(w*0.42, h*0.3, w*0.53, h*0.52);
+    g.strokeStyle = 'rgba(255,255,255,.2)'; g.lineWidth = 1.6;
+    g.strokeRect(w*0.42, h*0.3, w*0.53, h*0.52);
+    gbTrail(g, w*0.5, h*0.5);
+    g.save(); g.beginPath(); g.rect(w*0.42, h*0.3, w*0.53, h*0.52); g.clip();
+    g.strokeStyle = '#a05f05'; g.lineWidth = 9;
+    g.beginPath(); g.moveTo(w*0.42, h*0.5); g.lineTo(w*0.95, h*0.5); g.stroke();
+    g.restore();
+    /* the march */
+    const x = w*0.05 + p*(w*0.42 - w*0.05), y = h*0.5;
+    g.save();
+    g.globalAlpha = 0.34 + p*0.5;
+    g.strokeStyle = 'rgba(20,10,6,.45)'; g.lineWidth = 11; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(w*0.05, y); g.lineTo(x, y); g.stroke();
+    pvBoss(g, 'gbOmen', 'red', x, y, 15, t, undefined);
+    g.restore();
+    gbPanel(g, x - 62, y - 48, 124, 26, 8, 'rgba(8,10,14,.9)', '#ff5a3c');
+    gbText(g, 'INCOMING · WAVE 30', x, y - 40, 8, '#7e8c9c', 'center');
+    gbText(g, 'RED HACKER BOSS', x, y - 30, 9.5, '#ff8a5a', 'center');
+    gbText(g, 'the lawn', w*0.685, h*0.86, 10, '#93a2b2', 'center', 700);
+    gbText(g, Math.round(p*100) + '% of the way in', w*0.2, h*0.16, 11, '#ffd83d', 'center');
+  } },
+
+{ ch:'Bosses', title:'Armour plates',
+  text:'From wave 60 a boss arrives wearing <b>armour plates</b> — the rings around its body, and a count on its health bar.<br><br>While a plate is up it shrugs off almost everything: less than a fifth of your damage gets through. Raw firepower will not do it.<br><br>What breaks a plate is <b>control</b>. Freeze it with a Boombox or a bass drop, mark it with a Whistle or a Nurse, drag it into a Black Hole, or hit it with an <b>active ability</b>. Each of those strips exactly one plate. Break them all and it takes full damage again.<br><br>This is what the Jaxons who deal no damage are for.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5.2);
+    const plates = p < 0.3 ? 3 : p < 0.5 ? 2 : p < 0.7 ? 1 : 0;
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.7);
+    const cx = w*0.55, cy = h*0.52, r = h*0.19;
+    pvBoss(g, 'gbArm', 'blue', cx, cy, r, t, 1 - p*0.35);
+    /* the plates */
+    if (plates) {
+      g.save();
+      g.translate(cx, cy);
+      for (let i = 0; i < plates; i++) {
+        const a0 = -Math.PI/2 + i*(Math.PI*2/plates), a1 = a0 + Math.PI*2/plates - 0.18;
+        g.lineWidth = 6; g.strokeStyle = '#8fe4ff';
+        g.beginPath(); g.arc(0, 0, r + 10, a0, a1); g.stroke();
+        g.lineWidth = 2; g.strokeStyle = 'rgba(10,30,45,.9)';
+        g.beginPath(); g.arc(0, 0, r + 10, a0, a1); g.stroke();
+      }
+      g.restore();
+    }
+    gbText(g, plates ? plates + ' plates up' : 'ARMOUR DOWN', cx, cy + r + 26, 12,
+           plates ? '#8fe4ff' : '#7dffb4', 'center');
+    gbText(g, plates ? 'only 18% of your damage lands' : 'full damage again', cx, cy + r + 42, 9.5,
+           plates ? '#93a2b2' : '#7dffb4', 'center', 700);
+    /* the Jaxons that do the breaking */
+    ['boombox','whistle','blackholelaser'].forEach((k, i) => {
+      const x = w*0.1 + i*w*0.11;
+      pvJaxon(g, k, x, h*0.92, h*0.22, false);
+    });
+    gbText(g, 'control, not damage', w*0.21, h*0.16, 11, '#8fe4ff', 'center');
+    if (plates < 3) {
+      g.save();
+      g.globalAlpha = Math.max(0, 1 - frac(p*5)*1.4);
+      gbText(g, 'PLATE BROKEN', cx, cy - r - 22, 13, '#ffffff', 'center');
+      g.restore();
+    }
+  } },
+
+{ ch:'Difficulty', title:'Challenges',
+  text:'Under the mode cards is a row of optional <b>rules</b>. Switch any of them on and they stack on top of whichever difficulty you pick.<br><br><b>No Sell</b> — nothing can be sold or refunded, so every placement is final. <b>No Income</b> — the money Jaxons are off the shelf and you live on kills. <b>One Life</b> — a single leak ends the run, and Band-Aid’s plaster is off too. <b>Starters Only</b> — just the nine cheap Jaxons, no late game at all.<br><br>Every combination keeps its <b>own best wave</b>, so beating Nightmare and beating Nightmare with No Sell are two different records. The <b>Bests</b> button on the menu lists all of them.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    const on = Math.floor(p*4) % 4;
+    const names = ['No Sell','No Income','One Life','Starters Only'];
+    gbLawn(g, w, h);
+    let bx = w*0.5 - 190;
+    names.forEach((nm, i) => {
+      const bw = 22 + nm.length*8;
+      if (i === on) gbBtn(g, bx, h*0.14, bw, 26, nm, '#ffd08a', '#ff9a3c');
+      else { gbPanel(g, bx, h*0.14, bw, 26, 13);
+             gbText(g, nm, bx + bw/2, h*0.14 + 13, 10, '#93a2b2', 'center', 700); }
+      bx += bw + 7;
+    });
+    /* what it does to the board */
+    const shows = [
+      () => { pvJaxon(g, 'tablet', w*0.5, h*0.72, h*0.34, false);
+              gbBtn(g, w*0.5 - 52, h*0.8, 104, 24, 'No Sell', '#6a7684', '#4a5460'); },
+      () => { ['piggybank','tax','merchant'].forEach((k, i) => {
+                g.save(); g.globalAlpha = 0.32;
+                pvJaxon(g, k, w*0.3 + i*w*0.2, h*0.74, h*0.3, false); g.restore();
+                g.save(); g.strokeStyle = '#ff5a4a'; g.lineWidth = 3;
+                g.beginPath(); g.moveTo(w*0.3 + i*w*0.2 - 20, h*0.68);
+                g.lineTo(w*0.3 + i*w*0.2 + 20, h*0.5); g.stroke(); g.restore(); }); },
+      () => { gbPill(g, w*0.5 - 37, h*0.6, 'Lives', '1', '#e5484d');
+              gbText(g, 'one leak and it is over', w*0.5, h*0.8, 12, '#ff8b8e', 'center'); },
+      () => { ['basic','bubble','ninja','nurse'].forEach((k, i) =>
+                pvJaxon(g, k, w*0.22 + i*w*0.19, h*0.8, h*0.28, false));
+              gbText(g, 'the nine cheap ones, and nothing else', w*0.5, h*0.9, 10, '#93a2b2', 'center', 700); }
+    ];
+    shows[on]();
+  } },
+
 { ch:'Camera', title:'Zoom in, look around',
   text:'The camera is yours to move and it never changes the fight.<br><br><b>Scroll wheel</b> zooms toward your cursor, from a fifth of the way out to five times in. <b>Right-drag</b> or <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> looks around; on a phone, <b>pinch</b> to zoom and drag with <b>two fingers</b> to pan. One finger is still aiming.<br><br>The camera eases up to speed and coasts to a stop, so panning looks like a film crane rather than a jump cut. <span class="k">R</span> puts the view back.',
   art:(g, w, h, t) => {
@@ -11747,12 +12252,14 @@ const GUIDE = [
 
 /* --------------------------------------------------------- the reader -- */
 const BOOK = { page:0, raf:0, t0:0, from:'menu' };
+/* One rail button per chapter NAME, not per run of pages — a chapter that
+   picked up a page somewhere else in the book is still one chapter. */
 function bookChapters() {
-  const out = [];
+  const out = [], by = {};
   GUIDE.forEach((p, i) => {
-    const last = out[out.length - 1];
-    if (last && last.ch === p.ch) last.pages.push(i);
-    else out.push({ ch:p.ch, pages:[i] });
+    if (by[p.ch]) { by[p.ch].pages.push(i); return; }
+    by[p.ch] = { ch:p.ch, pages:[i] };
+    out.push(by[p.ch]);
   });
   return out;
 }
@@ -12008,6 +12515,12 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
 
 
 
