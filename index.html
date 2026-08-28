@@ -2342,9 +2342,208 @@ const BOX_DEFAULT = { x:0, y:0, w:660, h:720 };
 const BOX_WIDE    = { x:-200, y:-150, w:800, h:900 };
 const boxOf = v => (v.wide ? BOX_WIDE : BOX_DEFAULT);
 
+/* ==================================================== the ultra bodies ===
+   Nothing below reuses the Jaxon template. Each of the five is drawn from
+   scratch on the wide 800x900 box, with its own silhouette, its own gear
+   and its own moving parts. The only thing they keep is the pacifier,
+   because that is the badge every Jaxon wears. */
+function pacifier(x, y, s, ring, ringD, teat, teatD) {
+  return `<g transform="translate(${x} ${y}) scale(${s})">
+    <ellipse rx="52" ry="40" fill="${ring}" stroke="${ringD}" stroke-width="9"/>
+    <ellipse rx="27" ry="20" fill="${ringD}" opacity=".55"/>
+    <path d="M-16 30 q16 34 32 0 q-4 30 -16 34 q-12 -4 -16 -34 Z" fill="${teat}" stroke="${teatD}" stroke-width="7"/>
+  </g>`;
+}
+
+const ULTRA_SVG = {
+  /* ---------------------------------------------------- BOSS CRUSHER ----
+     A squat industrial rig on tracks with a piston arm and a wrecking
+     ball on a chain. No head, no hood, no legs: a machine. */
+  crusher(uid) {
+    const g = n => uid + '-' + n;
+    return `<defs>
+      <linearGradient id="${g('h')}" x1="0" y1="0" x2="0.2" y2="1">
+        <stop offset="0" stop-color="#5a6270"/><stop offset="1" stop-color="#232a35"/></linearGradient>
+      <linearGradient id="${g('o')}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#ffd0a8"/><stop offset="1" stop-color="#ff7a2e"/></linearGradient>
+    </defs>
+    <g stroke="#12161d" stroke-width="11" stroke-linejoin="round">
+      <path d="M-70 690 L470 690 L500 620 L-100 620 Z" fill="#2b323d"/>
+      <ellipse cx="-40" cy="655" rx="52" ry="52" fill="#1a1f28"/>
+      <ellipse cx="200" cy="655" rx="60" ry="60" fill="#1a1f28"/>
+      <ellipse cx="430" cy="655" rx="52" ry="52" fill="#1a1f28"/>
+      <ellipse cx="-40" cy="655" rx="20" ry="20" fill="#5a6270"/>
+      <ellipse cx="200" cy="655" rx="24" ry="24" fill="#5a6270"/>
+      <ellipse cx="430" cy="655" rx="20" ry="20" fill="#5a6270"/>
+      <path d="M20 620 L400 620 L430 380 L-10 380 Z" fill="url(#${g('h')})"/>
+      <rect x="60" y="200" width="300" height="200" rx="26" fill="#39424f"/>
+      <rect x="96" y="236" width="228" height="112" rx="14" fill="url(#${g('o')})" stroke="#8a3200" stroke-width="8"/>
+      <path d="M120 260 L300 260 L288 324 L132 324 Z" fill="#2b1200" stroke="none"/>
+      <rect x="360" y="150" width="52" height="120" rx="16" fill="#39424f"/>
+      <rect x="30" y="120" width="52" height="150" rx="16" fill="#39424f"/>
+      <path d="M-120 300 L60 300 L60 360 L-120 360 Z" fill="#39424f"/>
+    </g>
+    <g stroke="#12161d" stroke-width="9">
+      <path d="M-120 330 L-260 470" stroke="#6d7d92" stroke-width="16" stroke-linecap="round"/>
+      <circle cx="-300" cy="520" r="96" fill="#1a1f28" stroke="#12161d" stroke-width="12"/>
+      <g fill="#ff7a2e" stroke="#8a3200" stroke-width="6">
+        <path d="M-300 400 l26 46 l-52 0 Z"/><path d="M-300 640 l26 -46 l-52 0 Z"/>
+        <path d="M-420 520 l46 26 l0 -52 Z"/><path d="M-180 520 l-46 26 l0 -52 Z"/>
+      </g>
+      <circle cx="-300" cy="520" r="42" fill="#ff7a2e" opacity=".85" stroke="none"/>
+    </g>
+    <g fill="#ffd0a8" opacity=".9" stroke="none">
+      <rect x="44" y="96" width="24" height="34" rx="8"/><rect x="374" y="126" width="24" height="34" rx="8"/>
+    </g>
+    ${pacifier(210, 470, 1.05, '#ff7a2e', '#8a3200', '#ffd0a8', '#a83c00')}`;
+  },
+
+  /* ---------------------------------------------------- POWER BOOST -----
+     A floating reactor: no body at all, a suspended core inside three
+     gimbal rings with a broadcast mast above it. */
+  booster(uid) {
+    const g = n => uid + '-' + n;
+    return `<defs>
+      <radialGradient id="${g('c')}" cx="0.4" cy="0.35">
+        <stop offset="0" stop-color="#ffffff"/><stop offset="0.45" stop-color="#d8ffe6"/>
+        <stop offset="1" stop-color="#1f9c58"/></radialGradient>
+    </defs>
+    <ellipse cx="230" cy="690" rx="150" ry="34" fill="#000" opacity=".3"/>
+    <g fill="none" stroke="#16794a" stroke-width="16" stroke-linecap="round">
+      <path d="M120 640 L230 560 L340 640"/>
+      <path d="M230 560 L230 470"/>
+    </g>
+    <g fill="#6bf0a4" stroke="#16794a" stroke-width="9">
+      <path d="M80 620 L180 620 L200 664 L60 664 Z"/>
+      <path d="M280 620 L380 620 L400 664 L260 664 Z"/>
+    </g>
+    <g fill="none" stroke-width="15" stroke-linecap="round">
+      <ellipse cx="230" cy="330" rx="200" ry="66" stroke="#16794a"/>
+      <ellipse cx="230" cy="330" rx="70" ry="190" stroke="#1f9c58"/>
+      <ellipse cx="230" cy="330" rx="150" ry="150" stroke="#6bf0a4" opacity=".7"/>
+    </g>
+    <circle cx="230" cy="330" r="96" fill="url(#${g('c')})" stroke="#16794a" stroke-width="10"/>
+    <g fill="#ffd83d" stroke="#a97c00" stroke-width="7">
+      <path d="M230 60 L262 150 L230 130 L198 150 Z"/>
+      <rect x="216" y="130" width="28" height="90" rx="12"/>
+      <circle cx="230" cy="52" r="22"/>
+    </g>
+    <g fill="none" stroke="#ffd83d" stroke-width="8" opacity=".85" stroke-linecap="round">
+      <path d="M120 190 q110 -70 220 0"/>
+      <path d="M150 140 q80 -52 160 0"/>
+    </g>
+    ${pacifier(230, 330, 0.86, '#ffd83d', '#a97c00', '#ffffff', '#16794a')}`;
+  },
+
+  /* ---------------------------------------------------- ELITE SLAYER ----
+     A tall hunter on one knee behind a mounted rail lance, cloaked, with
+     a bank of optics where a face would be. */
+  slayer(uid) {
+    const g = n => uid + '-' + n;
+    return `<defs>
+      <linearGradient id="${g('k')}" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0" stop-color="#a86bff"/><stop offset="1" stop-color="#2a0f52"/></linearGradient>
+    </defs>
+    <ellipse cx="230" cy="694" rx="170" ry="30" fill="#000" opacity=".32"/>
+    <g stroke="#1b0838" stroke-width="11" stroke-linejoin="round">
+      <path d="M100 694 L120 470 L250 440 L300 694 Z" fill="url(#${g('k')})"/>
+      <path d="M250 440 L340 470 L400 694 L300 694 Z" fill="#4a1f8a"/>
+      <path d="M120 470 q-70 90 -46 224 l58 0 Z" fill="#2a0f52"/>
+      <path d="M150 300 q90 -70 180 0 l-14 156 q-76 34 -152 0 Z" fill="url(#${g('k')})"/>
+      <path d="M164 296 q76 -56 152 0 l-12 60 q-64 -34 -128 0 Z" fill="#160630"/>
+    </g>
+    <g fill="#ff2d5a" stroke="#8a0020" stroke-width="5">
+      <circle cx="196" cy="326" r="17"/><circle cx="240" cy="318" r="12"/><circle cx="278" cy="328" r="9"/>
+    </g>
+    <g stroke="#1b0838" stroke-width="10" stroke-linejoin="round">
+      <path d="M-80 402 L360 356 L370 408 L-70 452 Z" fill="#39424f"/>
+      <path d="M-150 414 L-70 404 L-64 448 L-146 458 Z" fill="#e8d0ff"/>
+      <rect x="120" y="330" width="72" height="46" rx="12" fill="#a86bff"/>
+      <path d="M300 300 L360 356 L330 380 L280 340 Z" fill="#4a1f8a"/>
+    </g>
+    <g fill="none" stroke="#e8d0ff" stroke-width="7" opacity=".9" stroke-linecap="round">
+      <path d="M-140 388 L-40 378"/><path d="M-136 470 L-36 460"/>
+    </g>
+    ${pacifier(238, 372, 0.78, '#a86bff', '#3a1070', '#ff2d5a', '#8a0020')}`;
+  },
+
+  /* ---------------------------------------------------- WAVE WIPER ------
+     A wide hover-platform with twin ducted turbines and a saw magazine
+     slung underneath. Reads as a machine that sweeps. */
+  wiper(uid) {
+    const g = n => uid + '-' + n;
+    return `<defs>
+      <linearGradient id="${g('b')}" x1="0" y1="0" x2="0.2" y2="1">
+        <stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#12508f"/></linearGradient>
+    </defs>
+    <ellipse cx="230" cy="700" rx="230" ry="36" fill="#000" opacity=".3"/>
+    <g fill="none" stroke="#3fa8ff" stroke-width="12" opacity=".55" stroke-linecap="round">
+      <path d="M40 660 q190 44 380 0"/><path d="M80 692 q150 34 300 0"/>
+    </g>
+    <g stroke="#0d3c6e" stroke-width="12" stroke-linejoin="round">
+      <path d="M-40 520 L500 520 L440 620 L20 620 Z" fill="url(#${g('b')})"/>
+      <path d="M60 360 L400 360 L440 520 L20 520 Z" fill="#1a6ba8"/>
+      <rect x="140" y="230" width="180" height="140" rx="30" fill="#e8f6ff"/>
+      <path d="M170 262 L290 262 L280 340 L180 340 Z" fill="#0d3c6e"/>
+      <circle cx="-40" cy="430" r="104" fill="#39424f"/>
+      <circle cx="500" cy="430" r="104" fill="#39424f"/>
+      <circle cx="-40" cy="430" r="66" fill="#0d3c6e"/>
+      <circle cx="500" cy="430" r="66" fill="#0d3c6e"/>
+    </g>
+    <g fill="#bfe6ff" stroke="#0d3c6e" stroke-width="7">
+      <path d="M-40 364 l22 52 l-44 0 Z"/><path d="M-40 496 l22 -52 l-44 0 Z"/>
+      <path d="M-106 430 l52 22 l0 -44 Z"/><path d="M26 430 l-52 22 l0 -44 Z"/>
+      <path d="M500 364 l22 52 l-44 0 Z"/><path d="M500 496 l22 -52 l-44 0 Z"/>
+      <path d="M434 430 l52 22 l0 -44 Z"/><path d="M566 430 l-52 22 l0 -44 Z"/>
+    </g>
+    <g fill="#ffffff" stroke="#0d3c6e" stroke-width="6" opacity=".95">
+      <circle cx="150" cy="596" r="34"/><circle cx="230" cy="606" r="34"/><circle cx="310" cy="596" r="34"/>
+    </g>
+    ${pacifier(230, 300, 0.8, '#3fa8ff', '#0d3c6e', '#ffffff', '#9dabc0')}`;
+  },
+
+  /* ---------------------------------------------------- INFINITY MIRROR -
+     Deliberately still a Mirror: a tall standing pane in a frame, with
+     smaller panes hung around it and no body behind the glass. */
+  infmirror(uid) {
+    const g = n => uid + '-' + n;
+    return `<defs>
+      <linearGradient id="${g('m')}" x1="0" y1="0" x2="0.7" y2="1">
+        <stop offset="0" stop-color="#ffffff"/><stop offset="0.4" stop-color="#e8e0ff"/>
+        <stop offset="0.65" stop-color="#c08bff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
+      <linearGradient id="${g('f')}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#f4f8ff"/><stop offset="1" stop-color="#8f6bc4"/></linearGradient>
+    </defs>
+    <ellipse cx="230" cy="700" rx="150" ry="30" fill="#000" opacity=".3"/>
+    <g stroke="#5a4a7a" stroke-width="10" stroke-linejoin="round">
+      <path d="M130 700 L330 700 L300 640 L160 640 Z" fill="url(#${g('f')})"/>
+      <path d="M120 640 L340 640 L316 120 q-86 -66 -172 0 Z" fill="url(#${g('f')})"/>
+      <path d="M152 616 L308 616 L288 150 q-58 -44 -116 0 Z" fill="url(#${g('m')})"/>
+    </g>
+    <g fill="#ffffff" opacity=".55" stroke="none">
+      <path d="M176 590 L214 168 L246 168 L206 590 Z"/>
+      <path d="M250 590 L276 200 L292 200 L268 590 Z"/>
+    </g>
+    <g stroke="#8f6bc4" stroke-width="8" stroke-linejoin="round">
+      <path d="M-40 300 L40 250 L70 330 L-10 380 Z" fill="url(#${g('m')})" opacity=".95"/>
+      <path d="M400 260 L490 300 L466 386 L378 348 Z" fill="url(#${g('m')})" opacity=".95"/>
+      <path d="M60 470 L128 446 L146 512 L78 536 Z" fill="url(#${g('m')})" opacity=".8"/>
+      <path d="M330 460 L400 484 L384 548 L316 524 Z" fill="url(#${g('m')})" opacity=".8"/>
+    </g>
+    <g fill="none" stroke="#c08bff" stroke-width="6" opacity=".8">
+      <ellipse cx="230" cy="120" rx="120" ry="34"/>
+      <ellipse cx="230" cy="120" rx="70" ry="20"/>
+    </g>
+    ${pacifier(230, 400, 0.92, '#e8e0ff', '#8f6bc4', '#ffffff', '#c08bff')}`;
+  }
+};
+
 function jaxonSVG(v, uid) {
   const b = boxOf(v);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x} ${b.y} ${b.w} ${b.h}" width="${b.w}" height="${b.h}">${jaxonBody(v, uid)}</svg>`;
+  /* an ultra is not a Jaxon with different paint on it: it is drawn from
+     nothing by its own routine */
+  const body = v.ultra && ULTRA_SVG[v.ultra] ? ULTRA_SVG[v.ultra](uid) : jaxonBody(v, uid);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x} ${b.y} ${b.w} ${b.h}" width="${b.w}" height="${b.h}">${body}</svg>`;
 }
 
 /* -------------------------------------------------------- projectiles ---- */
@@ -2553,28 +2752,24 @@ VARIANTS.tipjar = { suitLite:'#ffe3f2', suit:'#ffa8d8', suitDark:'#c4589c', arm:
    ACCESS DENIED running down it. The variant only carries the face, the
    arms and the pacifier — drawTower paints the rest. */
 /* ---- the ultra tier: money buys them, nothing else gates them ---- */
-VARIANTS.crusher = { suitLite:'#ffd0a8', suit:'#ff7a2e', suitDark:'#a83c00', arm:'#3a3f4a', armDark:'#161b22',
-                    belt:'#1a1f28', beltDark:'#000000', hammer:true, anvil:true, wide:true,
-                    hammerH:'#3a3f4a', hammerHD:'#161b22', hammerHead:'#ff7a2e', hammerHeadD:'#a83c00',
+VARIANTS.crusher = { ultra:'crusher', wide:true,
+                    suitLite:'#ffd0a8', suit:'#ff7a2e', suitDark:'#a83c00', arm:'#3a3f4a', armDark:'#161b22',
                     outline:'#8a3200', outlineWidth:7,
                     pacG:'#ff7a2e', pacGD:'#8a3200', pacO:'#ffd0a8', pacOD:'#a83c00' };
-VARIANTS.booster = { suitLite:'#d8ffe6', suit:'#6bf0a4', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00',
-                    belt:'#ffd83d', beltDark:'#a97c00', core:'#d8ffe6', coreD:'#1f9c58',
-                    tabletRing:true, wide:true,
+VARIANTS.booster = { ultra:'booster', wide:true,
+                    suitLite:'#d8ffe6', suit:'#6bf0a4', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00',
                     outline:'#16794a', outlineWidth:7,
                     pacG:'#6bf0a4', pacGD:'#16794a', pacO:'#ffd83d', pacOD:'#a97c00' };
-VARIANTS.slayer = { suitLite:'#e8d0ff', suit:'#a86bff', suitDark:'#4a1f8a', arm:'#39424f', armDark:'#161b22',
-                    belt:'#ff2d5a', beltDark:'#8a0020', visor:'blue', visorGlow:'#e8d0ff', wide:true,
+VARIANTS.slayer = { ultra:'slayer', wide:true,
+                    suitLite:'#e8d0ff', suit:'#a86bff', suitDark:'#4a1f8a', arm:'#39424f', armDark:'#161b22',
                     outline:'#3a1070', outlineWidth:7,
                     pacG:'#a86bff', pacGD:'#3a1070', pacO:'#ff2d5a', pacOD:'#8a0020' };
-VARIANTS.wiper = { suitLite:'#bfe6ff', suit:'#3fa8ff', suitDark:'#12508f', arm:'#f4f7fc', armDark:'#c3cad6',
-                    belt:'#ffffff', beltDark:'#9dabc0', split:true, splitCore:true, shredder:true, wide:true,
-                    core:'#e8f6ff', coreD:'#12508f',
+VARIANTS.wiper = { ultra:'wiper', wide:true,
+                    suitLite:'#bfe6ff', suit:'#3fa8ff', suitDark:'#12508f', arm:'#f4f7fc', armDark:'#c3cad6',
                     outline:'#0d3c6e', outlineWidth:8,
                     pacG:'#3fa8ff', pacGD:'#0d3c6e', pacO:'#ffffff', pacOD:'#9dabc0' };
-VARIANTS.infmirror = { suitLite:'#ffffff', suit:'#e6f0ff', suitDark:'#9dabc0', arm:'#c08bff', armDark:'#4a1f8a',
-                    belt:'#e8d0ff', beltDark:'#8f6bc4', shards:true, visor:'blue', visorGlow:'#ffffff',
-                    core:'#ffffff', coreD:'#8f6bc4', wide:true,
+VARIANTS.infmirror = { ultra:'infmirror', wide:true,
+                    suitLite:'#ffffff', suit:'#e6f0ff', suitDark:'#9dabc0', arm:'#c08bff', armDark:'#4a1f8a',
                     outline:'#7a6a9c', outlineWidth:7,
                     pacG:'#e6f0ff', pacGD:'#7a6a9c', pacO:'#c08bff', pacOD:'#4a1f8a' };
 
@@ -3766,11 +3961,11 @@ Object.assign(ASC_VARIANTS.ninja,   { suitLite:'#bfe6ff', suit:'#5fa8e0', suitDa
 Object.assign(ASC_VARIANTS.rainbow, { rainbow:true, arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.goldeng, { suitLite:'#fff4b8', suit:'#ffd21e', suitDark:'#a87a00', arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.mirror,  { shards:true, suitLite:'#f8f2ff', suit:'#d9c6ff', suitDark:'#8f6bc4' });
-Object.assign(ASC_VARIANTS.crusher, { suitLite:'#ffe0c0', suit:'#ff9440', suitDark:'#a83c00' });
-Object.assign(ASC_VARIANTS.booster, { suitLite:'#e8ffef', suit:'#8bffbe', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00' });
-Object.assign(ASC_VARIANTS.slayer,  { suitLite:'#f0dcff', suit:'#b98bff', suitDark:'#4a1f8a' });
-Object.assign(ASC_VARIANTS.wiper,   { split:true, splitCore:true, suitLite:'#d8f0ff', suit:'#6bc0ff', suitDark:'#12508f' });
-Object.assign(ASC_VARIANTS.infmirror, { shards:true, suitLite:'#ffffff', suit:'#f0e6ff', suitDark:'#a88fd0' });
+Object.assign(ASC_VARIANTS.crusher, { ultra:'crusher' });
+Object.assign(ASC_VARIANTS.booster, { ultra:'booster' });
+Object.assign(ASC_VARIANTS.slayer,  { ultra:'slayer' });
+Object.assign(ASC_VARIANTS.wiper,   { ultra:'wiper' });
+Object.assign(ASC_VARIANTS.infmirror, { ultra:'infmirror' });
 /* The Admin Jaxon's clothes are a hole in the screen. Two sprites make
    that work: the ordinary one is used only as a stencil for the rain, and
    this one has every scrap of cloth punched out of it, so what is left to
@@ -4156,6 +4351,7 @@ const TOWERS = {
              tags:[['Boss Killer','t-rain'],['x14 vs Bosses','t-single'],['Ultra','t-fast']] },
   booster: { name:'Power Boost Jaxon', cost:140000, range:420, cd:1.0, dmg:0, ammo:'boost',
              rate:0.55, rangeUp:0.22, surgeCd:14, surgeDur:4.5, surgeRate:1.4,
+             cellDmg:2600, cellChain:5,
              blurb:'No attack worth the name. Every Jaxon standing in his ring fires 55% faster and reaches 22% further, and it stacks with the Forge.',
              tags:[['Aura','t-fast'],['+55% Rate','t-fast'],['Ultra','t-rain']] },
   slayer:  { name:'Elite Slayer Jaxon', cost:165000, range:460, cd:1.4, dmg:1800, ammo:'slayer',
@@ -4314,7 +4510,7 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      stormcloud:1.3, director:1.2,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
                      factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
-                     crusher:1.25, booster:1.2, slayer:1.15, wiper:1.4, infmirror:1.25,
+                     crusher:1.5, booster:1.4, slayer:1.35, wiper:1.6, infmirror:1.35,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -4452,6 +4648,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
+  rollers:[], orbs:[],
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
@@ -4928,10 +5125,12 @@ function reset() {
   S.money  = SB() ? 100000 : md.money;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
+  S.rollers=[]; S.orbs=[];
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey='';
   S.omen=null; S.bossDone=0; S.waveTotal=0;
-  S.combo = { n:0, t:0, boost:0, flash:0 }; S.bestAtStart = bestHere();
+  S.combo = { n:0, t:0, boost:0, flash:0 };
+  S.rollers = []; S.orbs = []; S.bestAtStart = bestHere();
   S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
   $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
@@ -5981,76 +6180,59 @@ function adminTick(t, spec, dt, mul, override) {
   t.lit = true;
 }
 
-/* The Crusher's swing: ordinary things barely notice it, bosses and the
-   husks of old bosses very much do. */
+/* The Crusher throws the ball. It lobs on an arc, lands heavy, and the
+   landing throws a shockwave that keeps rolling down the trail. */
 function crusherSwing(t, spec, aim) {
-  const R = 70;
-  for (const e of S.enemies) {
-    if (e.dead) continue;
-    const p = enemyPos(e);
-    if (Math.hypot(p.x - aim.x, p.y - aim.y) > R) continue;
-    hurtEnemy(e, spec.dmg * (e.husk ? spec.huskMul : 1), t);
-  }
-  for (const B of S.bosses) {
-    const p = pointAt(B.d);
-    if (Math.hypot(p.x - aim.x, p.y - aim.y) <= R + B.def.r) hurtBoss(spec.dmg * spec.bossMul, t, B);
-  }
-  S.fx.push({ k:'boom', x:aim.x, y:aim.y, life:0.4, max:0.4, r:R });
-  if (!S.perf) burst(aim.x, aim.y, '#ff7a2e', 12, 1.2);
-  beep(140, 0.22, 'square', 0.05, 60);
+  const oy = t.y - spriteH(artOf(t))*0.3;
+  const a = Math.atan2(aim.y - oy, aim.x - t.x);
+  const dist = Math.hypot(aim.x - t.x, aim.y - oy);
+  noteFired(t, 'wreck', spec.dmg, spec);
+  S.shots.push({ x:t.x + Math.cos(a)*24, y:oy + Math.sin(a)*24,
+                 vx:Math.cos(a)*820, vy:Math.sin(a)*820, a, spin:0, hue:0,
+                 ammo:'wreck', dmg:spec.dmg, bossMul:spec.bossMul, huskMul:spec.huskMul,
+                 splash:Math.round(spec.dmg*0.5), splashR:110,
+                 arc:0, arcMax:Math.max(0.35, dist/820), hop:Math.min(150, dist*0.34),
+                 bounce:0, bounceR:0, trap:0, reach:spec.range*1.3,
+                 life:3, owner:t, dead:false, hitSet:new Set(), wp:null, tx:aim.x, ty:aim.y });
+  beep(150, 0.16, 'square', 0.045, 70);
 }
 
 /* The Crusher's slam: a ring of force, and anything already nearly dead
    inside it simply stops. */
+/* The slam sends a wall of broken ground DOWN THE TRAIL in both
+   directions. It is an object that travels, and anything already on its
+   knees when it arrives does not get back up. */
 function crusherSlam(t, spec) {
-  const R = spec.slamR;
-  S.pulses.push({ x:t.x, y:t.y - 14, r:14, max:R, owner:t, hitSet:new Set(), bHit:null,
-                  kind:'slam', spec:{ dur:0, amp:0, stun:0.55, dmg:Math.round(spec.dmg*1.6) } });
-  let done = 0;
-  for (const e of S.enemies) {
-    if (e.dead) continue;
-    const p = enemyPos(e);
-    if (Math.hypot(p.x - t.x, p.y - t.y) > R) continue;
-    if (e.hp <= e.max*spec.execAt) { hurtEnemy(e, e.hp, t); done++; }
-  }
-  for (const B of S.bosses) {
-    const p = pointAt(B.d);
-    if (Math.hypot(p.x - t.x, p.y - t.y) <= R + B.def.r) hurtBoss(spec.dmg*spec.bossMul*0.6, t, B);
+  const d0 = nearestPathD(t.x, t.y);
+  for (const dir of [-1, 1]) {
+    S.rollers.push({ d:d0, dir, spd:620, life:spec.slamR/620 + 0.4, max:spec.slamR/620 + 0.4,
+                     owner:t, hitSet:new Set(), bHit:null, kind:'quake',
+                     dmg:Math.round(spec.dmg*1.6), exec:spec.execAt,
+                     bossDmg:Math.round(spec.dmg*spec.bossMul*0.35), stun:0.55, col:'#ff7a2e' });
   }
   t.slamFlash = 1; t.shots++;
-  S.fx.push({ k:'slam', x:t.x, y:t.y - 10, life:0.5, max:0.5, r:R });
   beep(90, 0.5, 'sawtooth', 0.07, 40);
-  if (done) S.floats.push({ x:t.x, y:t.y - 58, txt:done + ' finished', color:'#ff7a2e', life:1.2 });
 }
 
 /* The Wiper's blast: everything along the trail near him, at once. */
+/* The wipe is a wall of water that walks the trail from his feet to the
+   spawn gate, taking everything with it on the way. It is an object with
+   a position, not a flash. */
 function wiperBlast(t, spec) {
   const d0 = nearestPathD(t.x, t.y);
-  let hit = 0;
-  for (const e of S.enemies) {
-    if (e.dead) continue;
-    if (Math.abs(e.d - d0) > spec.blastR) continue;
-    hurtEnemy(e, spec.blastDmg, t);
-    hit++;
-  }
-  for (const B of S.bosses) {
-    if (Math.abs(B.d - d0) <= spec.blastR) hurtBoss(spec.blastDmg*0.55, t, B);
-  }
-  /* the shape of it, drawn along the trail rather than as a circle */
-  const steps = S.perf > 1 ? 5 : 11;
-  for (let i = 0; i <= steps; i++) {
-    const d = d0 - spec.blastR + (i/steps)*spec.blastR*2;
-    if (d < 0 || d > PATH_LEN) continue;
-    const q = pointAt(d);
-    S.fx.push({ k:'boom', x:q.x, y:q.y, life:0.44, max:0.44, r:150 });
+  const reach = spec.blastR;
+  for (const dir of [-1, 1]) {
+    S.rollers.push({ d:d0, dir, spd:1500, life:reach/1500 + 0.2, max:reach/1500 + 0.2,
+                     owner:t, hitSet:new Set(), bHit:null, kind:'wave',
+                     dmg:spec.blastDmg, exec:0, bossDmg:Math.round(spec.blastDmg*0.55),
+                     push:60, col:'#3fa8ff' });
   }
   t.shots++;
-  /* deliberately no camera shake here — the blast fires often enough that
+  /* deliberately no camera shake: the wipe comes round often enough that
      shaking on every one of them makes the board unreadable */
-  flashScreen(0.22);
+  flashScreen(0.16);
   t.blastFlash = 1;
   beep(64, 0.9, 'sawtooth', 0.07, 240);
-  if (hit) toast('Wave Wiper — ' + hit + ' swept off the trail');
 }
 
 /* his beam lands as a burst, the same shape a Rainbow leaves behind */
@@ -6074,7 +6256,7 @@ function adminBurst(t, x, y, dmg, splash, splashR, col) {
     else if (d <= splashR + B.def.r) hurtBoss(splash, t, B);
   }
   /* the beam is drawn continuously with him; this is only the impact */
-  S.fx.push({ k:'boom', x, y, life:0.28, max:0.28, r:splashR });
+  S.fx.push({ k:'boom', x, y, life:0.28, max:0.28, r:splashR, col });
   if (!S.perf) burst(x, y, col, 5, 0.6);
 }
 
@@ -6348,6 +6530,8 @@ function bassPulse(t, spec) {
    the Infinity Mirror, whose own damage is zero, fired literally nothing. */
 function noteFired(t, ammo, dmg, spec, wp) {
   t.lastFired = { ammo, dmg,
+                  bossMul:(spec && spec.bossMul) || 0, huskMul:(spec && spec.huskMul) || 0,
+                  chain:(spec && spec.cellChain) || 0, pierce:(spec && spec.pierce) || 0,
                   speed:(wp && wp.speed) || (spec && spec.speed) || 1150,
                   splash:(wp && wp.splash) || (spec && spec.splash) || 0,
                   splashR:(wp && wp.splashR) || (spec && spec.splashR) || 0,
@@ -6376,6 +6560,7 @@ function fireMirror(t, aim, spec) {
   const speed = (src && src.speed) || 1150;
   const dmg   = Math.round((src ? src.dmg : spec.dmg) * b);
   const mx = t.x + Math.cos(a)*18, my = oy + Math.sin(a)*18;
+  const mx2 = t.x, my2 = oy;
   /* A copied shot has to bring along whatever bookkeeping its ammo type needs
      — the yo-yo's string and per-pass hit list, the bubble's trap timer, the
      pebble's ricochet — or it lands in the projectile loop half-built. */
@@ -6387,7 +6572,18 @@ function fireMirror(t, aim, spec) {
                  bounce:(src && src.bounce) || 0, bounceR:(src && src.bounceR) || 0,
                  trap:(src && src.trap) || 0,
                  reach:(src && src.reach) || spec.range, ox:mx, oy:my, ret:false,
-                 hitSet:(ammo === 'yoyo' ? new Set() : null), bossHit:false,
+                 /* the ultra shots each need their own scratch state, or
+                    they land in the projectile loop half-built */
+                 hitSet:(ammo === 'yoyo' || ammo === 'saw' || ammo === 'rail' ||
+                         ammo === 'wreck' || ammo === 'cell' || ammo === 'admincar')
+                        ? new Set() : null,
+                 bossHit:false,
+                 arc:0, arcMax:0.42, hop:90, lift:0,
+                 bossMul:(src && src.bossMul) || 6, huskMul:(src && src.huskMul) || 3,
+                 chain:(src && src.chain) || 4, chainR:230,
+                 pierce:(src && src.pierce) || 4,
+                 trail:(ammo === 'rail' ? [{ x:mx, y:my }] : null),
+                 ox:mx2, oy:my2,
                  hue:Math.random()*360, life:ammo === 'yoyo' ? 6.0 : 3.2, owner:t, mirrored:true,
                  wp:(src && src.wp) || null, tx:aim.x, ty:aim.y });
   t.copied = ammo; t.copyFlash = 1;
@@ -6397,18 +6593,23 @@ function fireMirror(t, aim, spec) {
 
 /* The Infinity Mirror is not only a parasite: it carries a lance of its
    own, fired on its own clock alongside whatever it is copying. */
-function mirrorOwn(t, aim, spec) {
+/* The Infinity Mirror's own attack: it throws a pane of glass that SPLITS
+   on its first hit into three more, fanning out to find their own targets.
+   One shot in, a corridor of them out. */
+function mirrorOwn(t, aim, spec, depth) {
   if (!spec.ownDmg) return;
-  const oy = t.y - spriteH(t.type)*0.42;
+  const oy = t.y - spriteH(artOf(t))*0.42;
   const a = Math.atan2(aim.y - oy, aim.x - t.x);
   S.shots.push({ x:t.x + Math.cos(a)*20, y:oy + Math.sin(a)*20,
                  vx:Math.cos(a)*1700, vy:Math.sin(a)*1700, a, spin:0, hue:0,
                  ammo:'prism', dmg:spec.ownDmg,
                  splash:spec.ownSplash, splashR:spec.ownR,
+                 split:depth === undefined ? 3 : depth,
                  bounce:0, bounceR:0, trap:0, reach:spec.range*1.3,
-                 life:2.2, owner:t, dead:false, hitSet:null, wp:null,
+                 life:2.2, owner:t, dead:false, hitSet:new Set(), wp:null,
                  tx:aim.x, ty:aim.y });
   t.shots++; t.copyFlash = 1;
+  noteFired(t, 'prism', spec.ownDmg, spec);
   beep(1600, 0.05, 'sine', 0.022, 2400);
 }
 
@@ -7373,7 +7574,7 @@ function update(dt) {
           if (bs.surge > 0) t.surged = 1;
         }
       }
-      if (!boosters.some(bs => bs.surge > 0)) t.surged = 0;
+      if (t.surgeT > 0) { t.surgeT -= 0.125; if (t.surgeT <= 0) t.surged = 0; }
       t.rangeUp = up;
       t.rateMul = Math.max(0.12, m);
       t.buffed = m < 1;
@@ -7454,13 +7655,35 @@ function update(dt) {
        overcharge it lets off every so often on top of it */
     if (spec.ammo === 'boost') {
       t.lit = true;
+      /* it is not only an aura: it lobs power cells that seek, chain and
+         leave whoever they pass a little faster */
+      t.cd -= dt;
+      if (t.cd <= 0) {
+        const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+        if (aim) {
+          t.cd = spec.cd * mul;
+          const oy = t.y - spriteH(artOf(t))*0.44;
+          const a = Math.atan2(aim.y - oy, aim.x - t.x);
+          S.shots.push({ x:t.x + Math.cos(a)*20, y:oy + Math.sin(a)*20,
+                         vx:Math.cos(a)*760, vy:Math.sin(a)*760, a, spin:0, hue:0,
+                         ammo:'cell', dmg:spec.cellDmg, chain:spec.cellChain,
+                         chainR:230, splash:0, splashR:0, bounce:0, bounceR:0, trap:0,
+                         reach:spec.range*1.4, life:4, owner:t, dead:false,
+                         hitSet:new Set(), wp:null, tx:aim.x, ty:aim.y });
+          t.shots++;
+          noteFired(t, 'cell', spec.cellDmg, spec);
+          beep(1250, 0.05, 'triangle', 0.024, 1900);
+        } else t.cd = Math.min(t.cd, 0);
+      }
       t.surgeCd = (t.surgeCd === undefined ? spec.surgeCd : t.surgeCd) - dt;
       if (t.surgeCd <= 0) {
         t.surgeCd = spec.surgeCd * mul;
         t.surge = spec.surgeDur;
-        S.pulses.push({ x:t.x, y:t.y - 20, r:16, max:spec.range*1.25, owner:t,
-                        hitSet:new Set(), bHit:null, kind:'surge',
-                        spec:{ dur:0, amp:0, stun:0, dmg:0 } });
+        /* the overcharge rides out on an orb that visits each Jaxon */
+        S.orbs.push({ x:t.x, y:t.y - 40, tx:t.x, ty:t.y, i:0, owner:t,
+                      list:S.towers.filter(o => o !== t &&
+                           Math.hypot(o.x - t.x, o.y - t.y) <= spec.range*1.2),
+                      life:6, dur:spec.surgeDur });
         S.floats.push({ x:t.x, y:t.y - 62, txt:'OVERCHARGE', color:'#6bf0a4', life:1.4, big:true });
         beep(520, 0.4, 'triangle', 0.05, 1500);
         t.shots++;
@@ -7491,10 +7714,19 @@ function update(dt) {
           t.volleyCd = 0;
           best.slow = Math.max(best.slow || 0, spec.slayMark);
           best.slowMul = Math.min(best.slowMul || 1, spec.slaySlow);
-          hurtEnemy(best, spec.dmg * spec.eliteMul, t);
-          S.fx.push({ k:'slayBeam', x:p.x, y:p.y, sx:t.x, sy:t.y - spriteH(t.type)*0.42,
-                      life:0.22, max:0.22 });
-          S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.3, max:0.3, r:44 });
+          /* the rail lance: a slug that leaves a beam behind it and goes
+             straight through everything in the line */
+          const oy2 = t.y - spriteH(artOf(t))*0.44;
+          const a2 = Math.atan2(p.y - oy2, p.x - t.x);
+          S.shots.push({ x:t.x + Math.cos(a2)*26, y:oy2 + Math.sin(a2)*26,
+                         vx:Math.cos(a2)*2600, vy:Math.sin(a2)*2600, a:a2, spin:0, hue:0,
+                         ammo:'rail', dmg:Math.round(spec.dmg*spec.eliteMul),
+                         splash:0, splashR:0, bounce:0, bounceR:0, trap:0,
+                         reach:spec.range*1.5, life:1.2, owner:t, dead:false,
+                         hitSet:new Set(), wp:null, tx:p.x, ty:p.y,
+                         trail:[{ x:t.x, y:oy2 }] });
+          S.fx.push({ k:'slayBeam', x:p.x, y:p.y, sx:t.x, sy:oy2, life:0.22, max:0.22 });
+          noteFired(t, 'rail', Math.round(spec.dmg*spec.eliteMul), spec);
           beep(1200, 0.07, 'square', 0.03, 300);
         } else t.cd = Math.min(t.cd, 0);
       }
@@ -7529,7 +7761,18 @@ function update(dt) {
           t.cd = spec.cd * mul;
           t.face = aim.x < t.x ? -1 : 1;
           t.flash = 1; t.shots++;
-          adminBurst(t, aim.x, aim.y, spec.dmg, spec.splash, spec.splashR, '#3fa8ff');
+          /* a saw blade, thrown flat, that cuts through a whole queue and
+             comes back to him afterwards */
+          const oy = t.y - spriteH(artOf(t))*0.34;
+          const a = Math.atan2(aim.y - oy, aim.x - t.x);
+          S.shots.push({ x:t.x + Math.cos(a)*26, y:oy + Math.sin(a)*26,
+                         vx:Math.cos(a)*1250, vy:Math.sin(a)*1250, a, spin:0, hue:0,
+                         ammo:'saw', dmg:spec.dmg, splash:spec.splash, splashR:spec.splashR, mirrored:false,
+                         bounce:0, bounceR:0, trap:0, reach:spec.range,
+                         ox:t.x, oy, ret:false, hitSet:new Set(),
+                         life:5, owner:t, dead:false, wp:null, tx:aim.x, ty:aim.y });
+          noteFired(t, 'saw', spec.dmg, spec);
+          beep(760, 0.06, 'sawtooth', 0.03, 1400);
         } else t.cd = Math.min(t.cd, 0);
       }
       t.blastCd = (t.blastCd === undefined ? spec.blastCd : t.blastCd) - dt;
@@ -8101,6 +8344,56 @@ function update(dt) {
   }
   S.cars = S.cars.filter(c => !c.dead);
 
+  /* ---------------------------------------------------------- rollers --
+     Things that travel ALONG the trail rather than across the field: the
+     Crusher's quake and the Wiper's wall of water. They have a position on
+     the path, they move, and they hit what they reach. */
+  for (const r of S.rollers) {
+    const prev = r.d;
+    r.d += r.dir*r.spd*dt;
+    r.life -= dt;
+    if (r.life <= 0 || r.d < -100 || r.d > PATH_LEN + 100) { r.dead = true; continue; }
+    const lo = Math.min(prev, r.d), hi = Math.max(prev, r.d);
+    for (const e of S.enemies) {
+      if (e.dead || r.hitSet.has(e.id)) continue;
+      if (e.d < lo - 30 || e.d > hi + 30) continue;
+      r.hitSet.add(e.id);
+      if (r.exec && e.hp <= e.max*r.exec) { hurtEnemy(e, e.hp, r.owner); }
+      else hurtEnemy(e, r.dmg, r.owner);
+      if (r.stun && !e.dead) e.stun = Math.max(e.stun || 0, r.stun);
+      if (r.push && !e.dead && !e.cap) e.d = Math.max(0, e.d - r.push);
+      const q = pointAt(e.d);
+      S.fx.push({ k:'boom', x:q.x, y:q.y, life:0.3, max:0.3, r:70, col:r.col });
+    }
+    for (const B of S.bosses) {
+      if (bSeen(r, B)) continue;
+      if (B.d < lo - 60 || B.d > hi + 60) continue;
+      bMark(r, B);
+      hurtBoss(r.bossDmg, r.owner, B);
+      if (r.stun) B.stun = Math.max(B.stun || 0, r.stun*0.5);
+    }
+  }
+  S.rollers = S.rollers.filter(r => !r.dead);
+
+  /* ------------------------------------------------------------- orbs --
+     The Power Boost overcharge, riding from Jaxon to Jaxon and lighting
+     each one up as it arrives. */
+  for (const o of S.orbs) {
+    o.life -= dt;
+    const target = o.list[o.i];
+    if (!target || o.life <= 0) { o.dead = true; continue; }
+    const dx = target.x - o.x, dy = (target.y - 30) - o.y;
+    const d = Math.hypot(dx, dy) || 1;
+    const step = 900*dt;
+    if (d <= step) {
+      o.x = target.x; o.y = target.y - 30;
+      target.surged = 1; target.surgeT = o.dur;
+      S.fx.push({ k:'boom', x:o.x, y:o.y, life:0.3, max:0.3, r:52, col:'#6bf0a4' });
+      o.i++;
+    } else { o.x += dx/d*step; o.y += dy/d*step; }
+  }
+  S.orbs = S.orbs.filter(o => !o.dead);
+
   /* projectiles */
   const sdt = S.projSlow > 0 ? dt*0.35 : dt;      // FINAL TRANSMISSION drags every shot down
   for (const s of S.shots) {
@@ -8114,6 +8407,192 @@ function update(dt) {
       const sp = Math.hypot(s.vx, s.vy);
       s.vx = Math.cos(s.a)*sp; s.vy = Math.sin(s.a)*sp;
       if (Math.hypot(s.tx - s.x, s.ty - s.y) < 28) { openHole(s.x, s.y, s.wp, s.owner); s.dead = true; continue; }
+    }
+    /* the Crusher's wrecking ball: it lobs, and where it lands it breaks
+       the ground open */
+    if (s.ammo === 'wreck') {
+      s.arc += sdt;
+      s.spin += sdt*7;
+      const k = Math.min(1, s.arc/s.arcMax);
+      s.lift = Math.sin(k*Math.PI)*s.hop;
+      let land = k >= 1;
+      for (const e of S.enemies) {
+        if (e.dead || s.hitSet.has(e.id)) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - (s.y - s.lift)) < E_R + 30) { land = true; break; }
+      }
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - (s.y - s.lift)) < B.def.r + 28) { land = true; break; }
+      }
+      if (land) {
+        const R = 120;
+        for (const e of S.enemies) {
+          if (e.dead) continue;
+          const p = enemyPos(e);
+          const dd = Math.hypot(p.x - s.x, p.y - s.y);
+          if (dd > R) continue;
+          hurtEnemy(e, (dd < 46 ? s.dmg : s.splash) * (e.husk ? s.huskMul : 1), s.owner);
+        }
+        for (const B of S.bosses) {
+          const p = pointAt(B.d);
+          if (Math.hypot(p.x - s.x, p.y - s.y) <= R + B.def.r) hurtBoss(s.dmg*s.bossMul, s.owner, B);
+        }
+        S.fx.push({ k:'crater', x:s.x, y:s.y, life:0.55, max:0.55, r:R });
+        S.fx.push({ k:'boom', x:s.x, y:s.y, life:0.36, max:0.36, r:R, col:'#ff7a2e' });
+        if (!S.perf) burst(s.x, s.y, '#ff7a2e', 14, 1.3);
+        beep(90, 0.3, 'square', 0.055, 45);
+        s.dead = true;
+      }
+      if (s.life <= 0) s.dead = true;
+      continue;
+    }
+    /* the Wiper's saw: cuts through the queue, then comes home */
+    if (s.ammo === 'saw') {
+      s.spin += sdt*26;
+      const home = Math.hypot(s.x - s.ox, s.y - s.oy);
+      if (!s.ret && home > s.reach) s.ret = true;
+      if (s.ret) {
+        const dx = s.ox - s.x, dy = s.oy - s.y, d = Math.hypot(dx, dy) || 1;
+        s.vx = dx/d*1450; s.vy = dy/d*1450;
+        if (d < 26) { s.dead = true; continue; }
+      }
+      for (const e of S.enemies) {
+        if (e.dead) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) > E_R + 22) continue;
+        const seen = s.hitSet.has(e.id);
+        if (seen && !s.ret) continue;
+        s.hitSet.add(e.id);
+        hurtEnemy(e, s.dmg, s.owner);
+        for (const o of S.enemies) {
+          if (o.dead || o === e) continue;
+          const q = enemyPos(o);
+          if (Math.hypot(q.x - p.x, q.y - p.y) <= s.splashR) hurtEnemy(o, s.splash, s.owner);
+        }
+        S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.26, max:0.26, r:s.splashR, col:'#3fa8ff' });
+      }
+      for (const B of S.bosses) {
+        if (bSeen(s, B)) continue;
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 22) { bMark(s, B); hurtBoss(s.dmg, s.owner, B); }
+      }
+      if (s.life <= 0) s.dead = true;
+      continue;
+    }
+    /* the Booster's power cell: seeks, then forks to everything nearby */
+    if (s.ammo === 'cell') {
+      const tg = nearestAnywhere(s);
+      if (tg) {
+        const want = Math.atan2(tg.y - s.y, tg.x - s.x);
+        const diff = ((want - s.a + Math.PI*3) % (Math.PI*2)) - Math.PI;
+        s.a += Math.max(-4.4*sdt, Math.min(4.4*sdt, diff));
+        s.vx = Math.cos(s.a)*760; s.vy = Math.sin(s.a)*760;
+      }
+      let hit = null;
+      for (const e of S.enemies) {
+        if (e.dead) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) < E_R + 18) { hit = e; break; }
+      }
+      let bhit = null;
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 16) { bhit = B; break; }
+      }
+      if (hit || bhit) {
+        /* the fork: it jumps from body to body and lights each one */
+        let from = hit ? enemyPos(hit) : pointAt(bhit.d);
+        const chain = [];
+        if (hit) { hurtEnemy(hit, s.dmg, s.owner); chain.push(from); }
+        if (bhit) { hurtBoss(s.dmg, s.owner, bhit); chain.push(from); }
+        const seen = new Set(hit ? [hit.id] : []);
+        for (let j = 0; j < s.chain; j++) {
+          let best = null, bd = s.chainR;
+          for (const e of S.enemies) {
+            if (e.dead || seen.has(e.id)) continue;
+            const p = enemyPos(e);
+            const dd = Math.hypot(p.x - from.x, p.y - from.y);
+            if (dd < bd) { bd = dd; best = e; }
+          }
+          if (!best) break;
+          seen.add(best.id);
+          const to = enemyPos(best);
+          hurtEnemy(best, Math.round(s.dmg*Math.pow(0.82, j + 1)), s.owner);
+          S.fx.push({ k:'fork', x:to.x, y:to.y, sx:from.x, sy:from.y, life:0.28, max:0.28 });
+          from = to;
+        }
+        S.fx.push({ k:'boom', x:s.x, y:s.y, life:0.3, max:0.3, r:70, col:'#6bf0a4' });
+        beep(1500, 0.07, 'triangle', 0.028, 2600);
+        s.dead = true;
+      }
+      if (s.life <= 0) s.dead = true;
+      continue;
+    }
+    /* the Infinity Mirror's pane: it shatters into more of itself */
+    if (s.ammo === 'prism') {
+      s.spin += sdt*4;
+      let hit = null;
+      for (const e of S.enemies) {
+        if (e.dead || (s.hitSet && s.hitSet.has(e.id))) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) < E_R + 18) { hit = e; break; }
+      }
+      let bhit = null;
+      for (const B of S.bosses) {
+        if (bSeen(s, B)) continue;
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 16) { bhit = B; break; }
+      }
+      if (hit || bhit) {
+        const px = s.x, py = s.y;
+        if (hit) { s.hitSet.add(hit.id); hurtEnemy(hit, s.dmg, s.owner); }
+        if (bhit) { bMark(s, bhit); hurtBoss(s.dmg, s.owner, bhit); }
+        for (const e of S.enemies) {
+          if (e.dead || e === hit) continue;
+          const q = enemyPos(e);
+          if (Math.hypot(q.x - px, q.y - py) <= s.splashR) hurtEnemy(e, s.splash, s.owner);
+        }
+        S.fx.push({ k:'shatter', x:px, y:py, life:0.4, max:0.4, r:s.splashR });
+        S.fx.push({ k:'boom', x:px, y:py, life:0.3, max:0.3, r:s.splashR, col:'#e8d0ff' });
+        /* and it breaks into more panes, each hunting on its own */
+        if (s.split > 0 && S.shots.length < SHOT_CAP - 8) {
+          for (let i = 0; i < 3; i++) {
+            const a2 = s.a + (i - 1)*0.6 + (Math.random() - 0.5)*0.25;
+            S.shots.push({ x:px, y:py, vx:Math.cos(a2)*1500, vy:Math.sin(a2)*1500,
+                           a:a2, spin:0, hue:0, ammo:'prism',
+                           dmg:Math.round(s.dmg*0.55), splash:Math.round(s.splash*0.5),
+                           splashR:s.splashR*0.8, split:s.split - 1,
+                           bounce:0, bounceR:0, trap:0, reach:s.reach,
+                           life:1.4, owner:s.owner, dead:false, hitSet:new Set(),
+                           wp:null, tx:px, ty:py });
+          }
+          beep(2100, 0.04, 'sine', 0.018, 3000);
+        }
+        s.dead = true;
+      }
+      if (s.life <= 0 || s.x < -60 || s.x > W + 60 || s.y < -60 || s.y > H + 60) s.dead = true;
+      continue;
+    }
+    /* the Slayer's rail slug: straight through everything in the line */
+    if (s.ammo === 'rail') {
+      s.trail.push({ x:s.x, y:s.y });
+      if (s.trail.length > 9) s.trail.shift();
+      for (const e of S.enemies) {
+        if (e.dead || s.hitSet.has(e.id)) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) > E_R + 20) continue;
+        s.hitSet.add(e.id);
+        hurtEnemy(e, s.dmg, s.owner);
+        S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.24, max:0.24, r:46, col:'#a86bff' });
+      }
+      for (const B of S.bosses) {
+        if (bSeen(s, B)) continue;
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 18) { bMark(s, B); hurtBoss(s.dmg, s.owner, B); }
+      }
+      if (s.life <= 0 || s.x < -80 || s.x > W + 80 || s.y < -80 || s.y > H + 80) s.dead = true;
+      continue;
     }
     if (s.ammo === 'admincar') {                        // pierces a whole queue
       s.spin += sdt*6;
@@ -8296,6 +8775,7 @@ function update(dt) {
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
+    S.rollers = []; S.orbs = [];
     for (const e of S.enemies) e.cap = null;
     bump('moneyBox','gain');
     beep(660, 0.12, 'triangle', 0.04); setTimeout(() => beep(880, 0.16, 'triangle', 0.04), 110);
@@ -10126,7 +10606,172 @@ function orb(c1, c2, r, tail) {
   ctx.beginPath(); ctx.ellipse(0, 0, r*0.4, r*0.25, 0, 0, 7); ctx.fill();
 }
 
+/* a thing travelling along the trail: the quake and the wall of water */
+function drawRoller(r) {
+  const p = pointAt(Math.max(0, Math.min(PATH_LEN, r.d)));
+  const k = Math.max(0, r.life/r.max);
+  const nx = -p.dy, ny = p.dx;                 // across the trail
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  if (r.kind === 'quake') {
+    /* a wall of broken ground, thrown up as it passes */
+    ctx.globalAlpha = k*0.9;
+    ctx.strokeStyle = '#ff7a2e'; ctx.lineWidth = 7;
+    ctx.beginPath();
+    for (let i = -5; i <= 5; i++) {
+      const j = (i % 2 ? 1 : -1)*(9 + Math.abs(i)*3);
+      const x = p.x + nx*i*11 + p.dx*j*0.4, y = p.y + ny*i*11 + p.dy*j*0.4;
+      i === -5 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.globalAlpha = k*0.5;
+    ctx.fillStyle = '#a83c00';
+    for (let i = 0; i < 7; i++) {
+      const off = (i - 3)*15;
+      ctx.beginPath();
+      ctx.arc(p.x + nx*off, p.y + ny*off - (1 - k)*26, 5 + k*4, 0, 7);
+      ctx.fill();
+    }
+  } else {
+    /* a wall of water, taller in the middle */
+    ctx.globalAlpha = k*0.85;
+    for (const [wd, col] of [[46, 'rgba(13,60,110,.55)'], [30, 'rgba(63,168,255,.75)'],
+                             [13, 'rgba(191,230,255,.95)']]) {
+      ctx.strokeStyle = col; ctx.lineWidth = 5;
+      ctx.beginPath();
+      for (let i = -6; i <= 6; i++) {
+        const h2 = Math.cos(i/6*1.4)*wd;
+        const x = p.x + nx*i*10 - p.dx*h2*0.3, y = p.y + ny*i*10 - p.dy*h2*0.3 - h2*0.5;
+        i === -6 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+    }
+    ctx.globalAlpha = k*0.6;
+    ctx.fillStyle = '#ffffff';
+    for (let i = 0; i < 8; i++) {
+      const off = (i - 3.5)*16;
+      ctx.beginPath();
+      ctx.arc(p.x + nx*off + (Math.random()-0.5)*8, p.y + ny*off - 30 - Math.random()*24, 3, 0, 7);
+      ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+/* the overcharge orb, on its rounds */
+function drawOrb(o) {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const puls = 1 + Math.sin(S.t*14)*0.18;
+  const g = ctx.createRadialGradient(o.x, o.y, 2, o.x, o.y, 30*puls);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(0.4, '#d8ffe6');
+  g.addColorStop(1, 'rgba(107,240,164,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(o.x, o.y, 30*puls, 0, 7); ctx.fill();
+  ctx.strokeStyle = '#ffd83d'; ctx.lineWidth = 2.4;
+  ctx.beginPath(); ctx.ellipse(o.x, o.y, 18, 8, S.t*4, 0, 7); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(o.x, o.y, 8, 18, S.t*4, 0, 7); ctx.stroke();
+  ctx.restore();
+}
+
 function drawShot(s) {
+  /* the Crusher's wrecking ball, lobbed on an arc with a chain behind it */
+  if (s.ammo === 'wreck') {
+    const y = s.y - (s.lift || 0);
+    ctx.save();
+    ctx.globalAlpha = 0.3;
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.ellipse(s.x, s.y + 8, 17, 6, 0, 0, 7); ctx.fill();
+    ctx.globalAlpha = 1;
+    ctx.translate(s.x, y); ctx.rotate(s.spin);
+    /* the spiked ball */
+    const g = ctx.createRadialGradient(-6, -7, 3, 0, 0, 20);
+    g.addColorStop(0, '#6d7d92'); g.addColorStop(0.6, '#39424f'); g.addColorStop(1, '#12161d');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(0, 0, 18, 0, 7); ctx.fill();
+    ctx.strokeStyle = '#12161d'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#ff7a2e';
+    for (let i = 0; i < 6; i++) {
+      const a = i*1.047;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(a)*16, Math.sin(a)*16);
+      ctx.lineTo(Math.cos(a + 0.22)*26, Math.sin(a + 0.22)*26);
+      ctx.lineTo(Math.cos(a - 0.22)*26, Math.sin(a - 0.22)*26);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(255,122,46,.5)';
+    ctx.beginPath(); ctx.arc(0, 0, 9, 0, 7); ctx.fill();
+    ctx.restore();
+    return;
+  }
+  /* the Wiper's saw blade, flat and spinning */
+  if (s.ammo === 'saw') {
+    ctx.save();
+    ctx.translate(s.x, s.y); ctx.rotate(s.spin);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.fillStyle = 'rgba(63,168,255,.35)';
+    ctx.beginPath(); ctx.arc(0, 0, 30, 0, 7); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#e8f6ff'; ctx.strokeStyle = '#0d3c6e'; ctx.lineWidth = 2.4;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const a = i*0.628, a2 = a + 0.314;
+      ctx.lineTo(Math.cos(a)*24, Math.sin(a)*24);
+      ctx.lineTo(Math.cos(a2)*15, Math.sin(a2)*15);
+    }
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#3fa8ff';
+    ctx.beginPath(); ctx.arc(0, 0, 7, 0, 7); ctx.fill();
+    ctx.restore();
+    return;
+  }
+  /* the Booster's power cell, a humming green core in a cage */
+  if (s.ammo === 'cell') {
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    ctx.globalCompositeOperation = 'lighter';
+    const puls = 1 + Math.sin(S.t*22)*0.16;
+    const g = ctx.createRadialGradient(0, 0, 1, 0, 0, 22*puls);
+    g.addColorStop(0, '#ffffff'); g.addColorStop(0.35, '#d8ffe6');
+    g.addColorStop(0.7, 'rgba(107,240,164,.6)'); g.addColorStop(1, 'rgba(31,156,88,0)');
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 22*puls, 0, 7); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.strokeStyle = '#ffd83d'; ctx.lineWidth = 2;
+    for (let i = 0; i < 2; i++) {
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 13, 6, S.t*(i ? -5 : 5) + i*1.57, 0, 7);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(0, 0, 5, 0, 7); ctx.fill();
+    ctx.restore();
+    return;
+  }
+  /* the Slayer's rail slug, with the line it burned on the way */
+  if (s.ammo === 'rail') {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    if (s.trail && s.trail.length > 1) {
+      ctx.lineCap = 'round';
+      for (const [wd, col, al] of [[11, '#4a1f8a', 0.4], [5, '#a86bff', 0.7], [1.8, '#ffffff', 0.9]]) {
+        ctx.globalAlpha = al; ctx.strokeStyle = col; ctx.lineWidth = wd;
+        ctx.beginPath();
+        ctx.moveTo(s.trail[0].x, s.trail[0].y);
+        for (const p of s.trail) ctx.lineTo(p.x, p.y);
+        ctx.lineTo(s.x, s.y);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+    ctx.translate(s.x, s.y); ctx.rotate(s.a);
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.moveTo(18, 0); ctx.lineTo(-10, -6); ctx.lineTo(-4, 0); ctx.lineTo(-10, 6);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ff2d5a';
+    ctx.beginPath(); ctx.arc(4, 0, 3.6, 0, 7); ctx.fill();
+    ctx.restore();
+    return;
+  }
   /* the Slayer's follow-up dart: a thin violet needle with a tail */
   if (s.ammo === 'slaydart') {
     ctx.save();
@@ -11230,6 +11875,8 @@ function render() {
   for (const c of S.cars) drawCar(c);
   for (const e of S.enemies) drawEnemy(e);
   for (const B of S.bosses) drawBoss(B);
+  for (const r of S.rollers) drawRoller(r);
+  for (const o of S.orbs) drawOrb(o);
   for (const s of S.shots) drawShot(s);
   if (S.fuse) drawFuse();
 
@@ -11371,11 +12018,83 @@ function render() {
     } else if (f.k === 'boom') {
       const k = 1 - f.life/f.max;
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      for (let i = 0; i < 6; i++) {
-        ctx.globalAlpha = (1-k)*0.5;
-        ctx.strokeStyle = `hsl(${(i*60 + S.t*220)%360},100%,62%)`;
-        ctx.lineWidth = 5;
-        ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k*(0.6 + i*0.08), 0, 7); ctx.stroke();
+      if (f.col) {
+        /* a coloured burst belongs to whoever made it: two hard rings and
+           a soft core, in one palette rather than the rainbow */
+        ctx.globalAlpha = (1-k)*0.85;
+        ctx.strokeStyle = f.col; ctx.lineWidth = 7*(1-k) + 2;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k, 0, 7); ctx.stroke();
+        ctx.globalAlpha = (1-k)*0.45;
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2.5;
+        ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k*0.66, 0, 7); ctx.stroke();
+        ctx.globalAlpha = (1-k)*0.35;
+        const g2 = ctx.createRadialGradient(f.x, f.y, 2, f.x, f.y, f.r*k);
+        g2.addColorStop(0, '#ffffff'); g2.addColorStop(0.5, f.col);
+        g2.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k, 0, 7); ctx.fill();
+      } else {
+        for (let i = 0; i < 6; i++) {
+          ctx.globalAlpha = (1-k)*0.5;
+          ctx.strokeStyle = `hsl(${(i*60 + S.t*220)%360},100%,62%)`;
+          ctx.lineWidth = 5;
+          ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k*(0.6 + i*0.08), 0, 7); ctx.stroke();
+        }
+      }
+      ctx.restore();
+    } else if (f.k === 'crater') {
+      /* where the wrecking ball landed: a ring of thrown-up ground */
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - k)*0.8;
+      ctx.strokeStyle = '#a83c00'; ctx.lineWidth = 5;
+      ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r*k, f.r*k*0.36, 0, 0, 7); ctx.stroke();
+      ctx.fillStyle = '#2b1200'; ctx.globalAlpha = Math.max(0, 0.5 - k*0.5);
+      ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r*0.4, f.r*0.16, 0, 0, 7); ctx.fill();
+      ctx.globalAlpha = Math.max(0, 1 - k)*0.9;
+      for (let i = 0; i < 9; i++) {
+        const a = i*0.698 + f.x*0.01, rr = f.r*k;
+        ctx.fillStyle = i % 2 ? '#ff7a2e' : '#5a3210';
+        ctx.beginPath();
+        ctx.arc(f.x + Math.cos(a)*rr, f.y + Math.sin(a)*rr*0.36 - k*26, 5*(1-k) + 1.5, 0, 7);
+        ctx.fill();
+      }
+      ctx.restore();
+    } else if (f.k === 'shatter') {
+      /* a pane breaking: shards thrown outward, catching the light */
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - k);
+      for (let i = 0; i < 9; i++) {
+        const a = i*0.698 + f.x*0.02, d = k*f.r*0.9;
+        ctx.save();
+        ctx.translate(f.x + Math.cos(a)*d, f.y + Math.sin(a)*d);
+        ctx.rotate(a + k*3);
+        ctx.fillStyle = i % 2 ? '#ffffff' : '#e8d0ff';
+        const sz = 9*(1 - k) + 2;
+        ctx.beginPath(); ctx.moveTo(0, -sz); ctx.lineTo(sz*0.5, 0); ctx.lineTo(0, sz); ctx.lineTo(-sz*0.5, 0);
+        ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(192,139,255,.9)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
+    } else if (f.k === 'fork') {
+      /* the power cell jumping from one body to the next */
+      const k = f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = k;
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      for (const [wd, col] of [[7, '#16794a'], [3.4, '#6bf0a4'], [1.4, '#ffffff']]) {
+        ctx.strokeStyle = col; ctx.lineWidth = wd;
+        ctx.beginPath(); ctx.moveTo(f.sx, f.sy);
+        const segs = 4;
+        for (let i = 1; i <= segs; i++) {
+          const tt = i/segs;
+          const jx = (i < segs ? (Math.random() - 0.5)*22 : 0);
+          const jy = (i < segs ? (Math.random() - 0.5)*22 : 0);
+          ctx.lineTo(f.sx + (f.x - f.sx)*tt + jx, f.sy + (f.y - f.sy)*tt + jy);
+        }
+        ctx.stroke();
       }
       ctx.restore();
     }
@@ -13583,6 +14302,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
