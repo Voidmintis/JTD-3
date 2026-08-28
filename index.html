@@ -4151,15 +4151,15 @@ const TOWERS = {
              tags:[['Income','t-fast'],['Wave Bonus','t-rain'],['No Damage','']] },
   /* ------ the ultra tier. No wave gate: if you can pay, you can buy. --- */
   crusher: { name:'Boss Crusher Jaxon', cost:110000, range:420, cd:1.1, dmg:2400, ammo:'crusher',
-             bossMul:14, huskMul:6,
+             bossMul:14, huskMul:6, slamCd:6.5, slamR:300, execAt:0.09,
              blurb:'Built for one job. He hits a boss or an ex-boss husk fourteen times as hard as anything else on the trail, and he is deliberately poor against ordinary blobs.',
              tags:[['Boss Killer','t-rain'],['x14 vs Bosses','t-single'],['Ultra','t-fast']] },
   booster: { name:'Power Boost Jaxon', cost:140000, range:420, cd:1.0, dmg:0, ammo:'boost',
-             rate:0.55, rangeUp:0.22,
+             rate:0.55, rangeUp:0.22, surgeCd:14, surgeDur:4.5, surgeRate:1.4,
              blurb:'No attack worth the name. Every Jaxon standing in his ring fires 55% faster and reaches 22% further, and it stacks with the Forge.',
              tags:[['Aura','t-fast'],['+55% Rate','t-fast'],['Ultra','t-rain']] },
   slayer:  { name:'Elite Slayer Jaxon', cost:165000, range:460, cd:1.4, dmg:1800, ammo:'slayer',
-             eliteMul:9, slayMark:3.0, slaySlow:0.55,
+             eliteMul:9, slayMark:3.0, slaySlow:0.55, volleyCd:2.2, volley:5,
              blurb:'Picks the toughest thing in range that is not a boss, paints it, and hits it nine times as hard while it crawls. Elites stop being the problem.',
              tags:[['Elite Killer','t-single'],['Marks + Slows','t-aoe'],['Ultra','t-fast']] },
   wiper:   { name:'Wave Wiper Jaxon', cost:195000, range:520, cd:0.34, dmg:1500, ammo:'wiper',
@@ -4167,7 +4167,7 @@ const TOWERS = {
              blurb:'Heavy fire between blasts, and every 9s a blast that walks the whole trail. It is the answer to a wave that simply has too much in it.',
              tags:[['Path Blast','t-aoe'],['Every 9s','t-rain'],['Ultra','t-fast']] },
   infmirror:{ name:'Infinity Mirror Jaxon', cost:210000, range:520, cd:0.5, dmg:0, ammo:'mirror',
-             boost:5.5, echo:6,
+             boost:5.5, echo:6, ownDmg:5200, ownCd:0.9, ownSplash:1500, ownR:150,
              blurb:'The Mirror line, finished. A wider room, faster copies and far brighter echoes — whatever your best Jaxon fires, this one fires a corridor of it back.',
              tags:[['Copies Allies','t-rain'],['x5.5 Echoes','t-aoe'],['Ultra','t-fast']] },
   /* Not in the shop. He is bought from the Admin Panel and he does not
@@ -4770,7 +4770,7 @@ function buildShelf() {
         <div class="nm">${t.name}</div>
         <div class="rt">${(t.tags || []).filter(g => g[0]).slice(0, 2).map(g =>
           `<span class="tag ${g[1]}">${g[0]}</span>`).join('')}</div>
-        <div class="pr">${bigCash(costOf(k))}</div>
+        <div class="pr">${tagCash(costOf(k))}</div>
       </button>`;
   }).join('');
   $('shelf').querySelectorAll('.med').forEach(el => {
@@ -5906,9 +5906,7 @@ function fire(t, tx, ty) {
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09, hue:spec.ammo==='rainbow'?0:null });
   t.shots++;
-  t.lastFired = { ammo:spec.ammo, dmg:spec.dmg, speed:spec.speed, splash:spec.splash||0,
-                  splashR:spec.splashR||0, bounce:spec.bounce||0, bounceR:spec.bounceR||0,
-                  trap:spec.trap||0, reach:spec.range, wp:null, at:S.t };
+  noteFired(t, spec.ammo, spec.dmg, spec);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
   beep(t.type === 'ninja' ? 900 : (t.type === 'laser' ? 1250 : (t.type === 'rainbow' ? 1500 : 420)), 0.03, 'square', 0.014);
 }
@@ -6002,6 +6000,29 @@ function crusherSwing(t, spec, aim) {
   beep(140, 0.22, 'square', 0.05, 60);
 }
 
+/* The Crusher's slam: a ring of force, and anything already nearly dead
+   inside it simply stops. */
+function crusherSlam(t, spec) {
+  const R = spec.slamR;
+  S.pulses.push({ x:t.x, y:t.y - 14, r:14, max:R, owner:t, hitSet:new Set(), bHit:null,
+                  kind:'slam', spec:{ dur:0, amp:0, stun:0.55, dmg:Math.round(spec.dmg*1.6) } });
+  let done = 0;
+  for (const e of S.enemies) {
+    if (e.dead) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - t.x, p.y - t.y) > R) continue;
+    if (e.hp <= e.max*spec.execAt) { hurtEnemy(e, e.hp, t); done++; }
+  }
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - t.x, p.y - t.y) <= R + B.def.r) hurtBoss(spec.dmg*spec.bossMul*0.6, t, B);
+  }
+  t.slamFlash = 1; t.shots++;
+  S.fx.push({ k:'slam', x:t.x, y:t.y - 10, life:0.5, max:0.5, r:R });
+  beep(90, 0.5, 'sawtooth', 0.07, 40);
+  if (done) S.floats.push({ x:t.x, y:t.y - 58, txt:done + ' finished', color:'#ff7a2e', life:1.2 });
+}
+
 /* The Wiper's blast: everything along the trail near him, at once. */
 function wiperBlast(t, spec) {
   const d0 = nearestPathD(t.x, t.y);
@@ -6024,8 +6045,10 @@ function wiperBlast(t, spec) {
     S.fx.push({ k:'boom', x:q.x, y:q.y, life:0.44, max:0.44, r:150 });
   }
   t.shots++;
-  shakeScreen(14, 0.7);
-  flashScreen(0.18);
+  /* deliberately no camera shake here — the blast fires often enough that
+     shaking on every one of them makes the board unreadable */
+  flashScreen(0.22);
+  t.blastFlash = 1;
   beep(64, 0.9, 'sawtooth', 0.07, 240);
   if (hit) toast('Wave Wiper — ' + hit + ' swept off the trail');
 }
@@ -6263,9 +6286,7 @@ function shoot(t, wp, tx, ty) {
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09 });
   t.shots++;
-  t.lastFired = { ammo:kind, dmg:wp.dmg, speed:wp.speed, splash:wp.splash||0,
-                  splashR:wp.splashR||0, bounce:0, bounceR:0, trap:0,
-                  reach:SP(t).range, wp, at:S.t };
+  noteFired(t, kind, wp.dmg, SP(t), wp);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
   beep(kind === 'blackhole' ? 140 : kind === 'fireball' ? 320 : 1000, 0.035, 'square', 0.014);
 }
@@ -6321,6 +6342,21 @@ function bassPulse(t, spec) {
 }
 
 /* Mirror Jaxon: steal the newest shot fired nearby and throw it back harder. */
+/* Every Jaxon that fires anything at all leaves a copyable record behind.
+   Before this only the two ordinary shot paths did, so a Mirror standing
+   next to a Tablet, a Stormcloud or an Engineer had nothing to copy — and
+   the Infinity Mirror, whose own damage is zero, fired literally nothing. */
+function noteFired(t, ammo, dmg, spec, wp) {
+  t.lastFired = { ammo, dmg,
+                  speed:(wp && wp.speed) || (spec && spec.speed) || 1150,
+                  splash:(wp && wp.splash) || (spec && spec.splash) || 0,
+                  splashR:(wp && wp.splashR) || (spec && spec.splashR) || 0,
+                  bounce:(wp && wp.bounce) || (spec && spec.bounce) || 0,
+                  bounceR:(wp && wp.bounceR) || (spec && spec.bounceR) || 0,
+                  trap:(wp && wp.trap) || (spec && spec.trap) || 0,
+                  reach:(spec && spec.range) || 400, wp:wp || null, at:S.t };
+}
+
 function fireMirror(t, aim, spec) {
   let src = null;
   for (const o of S.towers) {
@@ -6328,6 +6364,12 @@ function fireMirror(t, aim, spec) {
     if (Math.hypot(o.x - t.x, o.y - t.y) > spec.range) continue;
     if (!src || o.lastFired.at > src.at) src = o.lastFired;
   }
+  /* A copy is only worth making if it beats what this Jaxon can throw on
+     its own. Beside a Ninja the Infinity Mirror was copying a 1.5-damage
+     shuriken instead of firing its own lance, which made standing next to
+     a cheap Jaxon a downgrade. */
+  if (spec.ownDmg && (!src || src.dmg*spec.boost < spec.ownDmg)) { mirrorOwn(t, aim, spec); return; }
+  if (!src && !spec.dmg) { mirrorOwn(t, aim, spec); return; }
   const b = spec.boost, oy = t.y - spriteH(t.type)*0.18;
   const a = Math.atan2(aim.y - oy, aim.x - t.x);
   const ammo  = src ? src.ammo : 'laser';
@@ -6351,6 +6393,23 @@ function fireMirror(t, aim, spec) {
   t.copied = ammo; t.copyFlash = 1;
   t.shots++;
   beep(1350, 0.05, 'sine', 0.02, 900);
+}
+
+/* The Infinity Mirror is not only a parasite: it carries a lance of its
+   own, fired on its own clock alongside whatever it is copying. */
+function mirrorOwn(t, aim, spec) {
+  if (!spec.ownDmg) return;
+  const oy = t.y - spriteH(t.type)*0.42;
+  const a = Math.atan2(aim.y - oy, aim.x - t.x);
+  S.shots.push({ x:t.x + Math.cos(a)*20, y:oy + Math.sin(a)*20,
+                 vx:Math.cos(a)*1700, vy:Math.sin(a)*1700, a, spin:0, hue:0,
+                 ammo:'prism', dmg:spec.ownDmg,
+                 splash:spec.ownSplash, splashR:spec.ownR,
+                 bounce:0, bounceR:0, trap:0, reach:spec.range*1.3,
+                 life:2.2, owner:t, dead:false, hitSet:null, wp:null,
+                 tx:aim.x, ty:aim.y });
+  t.shots++; t.copyFlash = 1;
+  beep(1600, 0.05, 'sine', 0.022, 2400);
 }
 
 
@@ -7309,10 +7368,12 @@ function update(dt) {
         if (bs === t) continue;
         const s2 = SP(bs);
         if (Math.hypot(bs.x - t.x, bs.y - t.y) <= s2.range) {
-          m *= 1/(1 + s2.rate);
+          m *= 1/(1 + s2.rate + (bs.surge > 0 ? s2.surgeRate : 0));
           up = Math.max(up, s2.rangeUp);
+          if (bs.surge > 0) t.surged = 1;
         }
       }
+      if (!boosters.some(bs => bs.surge > 0)) t.surged = 0;
       t.rangeUp = up;
       t.rateMul = Math.max(0.12, m);
       t.buffed = m < 1;
@@ -7380,10 +7441,33 @@ function update(dt) {
           crusherSwing(t, spec, aim);
         } else t.cd = Math.min(t.cd, 0);
       }
+      /* the slam: a ring that finishes anything already on its knees */
+      t.slamCd = (t.slamCd === undefined ? spec.slamCd : t.slamCd) - dt;
+      t.slamWind = t.slamCd < 0.9 ? 1 - t.slamCd/0.9 : 0;
+      if (t.slamCd <= 0) {
+        t.slamCd = spec.slamCd * mul;
+        crusherSlam(t, spec);
+      }
       continue;
     }
-    /* Power Boost — pure aura, applied in the fire-rate sweep */
-    if (spec.ammo === 'boost') { t.lit = true; continue; }
+    /* Power Boost — the aura runs in the fire-rate sweep; this is the
+       overcharge it lets off every so often on top of it */
+    if (spec.ammo === 'boost') {
+      t.lit = true;
+      t.surgeCd = (t.surgeCd === undefined ? spec.surgeCd : t.surgeCd) - dt;
+      if (t.surgeCd <= 0) {
+        t.surgeCd = spec.surgeCd * mul;
+        t.surge = spec.surgeDur;
+        S.pulses.push({ x:t.x, y:t.y - 20, r:16, max:spec.range*1.25, owner:t,
+                        hitSet:new Set(), bHit:null, kind:'surge',
+                        spec:{ dur:0, amp:0, stun:0, dmg:0 } });
+        S.floats.push({ x:t.x, y:t.y - 62, txt:'OVERCHARGE', color:'#6bf0a4', life:1.4, big:true });
+        beep(520, 0.4, 'triangle', 0.05, 1500);
+        t.shots++;
+      }
+      if (t.surge > 0) t.surge -= dt;
+      continue;
+    }
     /* Elite Slayer — paints the fattest thing in reach that is not a boss */
     if (spec.ammo === 'slayer') {
       t.cd -= dt;
@@ -7402,13 +7486,37 @@ function update(dt) {
           t.flash = 1; t.shots++;
           best.slay = spec.slayMark;
           best.slayMul = spec.eliteMul;
+          t.volleyAt = best;                     // the follow-up knows who
+          t.volleyN = spec.volley;
+          t.volleyCd = 0;
           best.slow = Math.max(best.slow || 0, spec.slayMark);
           best.slowMul = Math.min(best.slowMul || 1, spec.slaySlow);
           hurtEnemy(best, spec.dmg * spec.eliteMul, t);
+          S.fx.push({ k:'slayBeam', x:p.x, y:p.y, sx:t.x, sy:t.y - spriteH(t.type)*0.42,
+                      life:0.22, max:0.22 });
           S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.3, max:0.3, r:44 });
           beep(1200, 0.07, 'square', 0.03, 300);
         } else t.cd = Math.min(t.cd, 0);
       }
+      /* the follow-up: darts into whatever is still wearing the mark */
+      if (t.volleyN > 0 && t.volleyAt && !t.volleyAt.dead && t.volleyAt.slay > 0) {
+        t.volleyCd = (t.volleyCd || 0) - dt;
+        if (t.volleyCd <= 0) {
+          t.volleyCd = spec.volleyCd/spec.volley;
+          t.volleyN--;
+          const q = enemyPos(t.volleyAt);
+          const oy = t.y - spriteH(t.type)*0.42;
+          const a = Math.atan2(q.y - oy, q.x - t.x);
+          S.shots.push({ x:t.x + Math.cos(a)*16, y:oy + Math.sin(a)*16,
+                         vx:Math.cos(a)*1500, vy:Math.sin(a)*1500, a, spin:0, hue:0,
+                         ammo:'slaydart', dmg:Math.round(spec.dmg*spec.eliteMul*0.45),
+                         splash:0, splashR:0, bounce:0, bounceR:0, trap:0,
+                         reach:spec.range*1.4, life:1.6, owner:t, dead:false,
+                         hitSet:null, wp:null, tx:q.x, ty:q.y });
+          t.shots++;
+          beep(1700, 0.03, 'square', 0.016, 1100);
+        }
+      } else { t.volleyN = 0; t.volleyAt = null; }
       t.lit = true;
       continue;
     }
@@ -7424,7 +7532,8 @@ function update(dt) {
           adminBurst(t, aim.x, aim.y, spec.dmg, spec.splash, spec.splashR, '#3fa8ff');
         } else t.cd = Math.min(t.cd, 0);
       }
-      t.blastCd = (t.blastCd || spec.blastCd) - dt;
+      t.blastCd = (t.blastCd === undefined ? spec.blastCd : t.blastCd) - dt;
+      t.blastWind = t.blastCd < 1.1 ? 1 - t.blastCd/1.1 : 0;   // the wind-up
       if (t.blastCd <= 0) {
         t.blastCd = spec.blastCd * mul;
         wiperBlast(t, spec);
@@ -7591,6 +7700,11 @@ function update(dt) {
       t.cd -= dt;
       if (t.cd <= 0 && live && maim) { t.cd = spec.cd * mul; t.recoil = 1; fireMirror(t, maim, spec); }
       if (t.cd < -spec.cd) t.cd = 0;
+      /* its own lance, on its own clock, whatever it is copying */
+      if (spec.ownDmg) {
+        t.ownCd = (t.ownCd === undefined ? spec.ownCd : t.ownCd) - dt;
+        if (t.ownCd <= 0 && live && maim) { t.ownCd = spec.ownCd * mul; mirrorOwn(t, maim, spec); }
+      }
       continue;
     }
 
@@ -7871,6 +7985,7 @@ function update(dt) {
       const p = enemyPos(e), d = Math.hypot(p.x - w.x, p.y - w.y);
       if (d <= w.r + E_R && d >= prev - E_R - 60) {
         w.hitSet.add(e.id);
+        if (w.kind === 'surge') continue;        // it is for the Jaxons, not the blobs
         if (w.kind === 'whistle') { e.mark = w.spec.dur; e.markMul = 1 + w.spec.amp; }
         else { e.stun = Math.max(e.stun || 0, w.spec.stun); hurtEnemy(e, w.spec.dmg, w.owner); }
       }
@@ -7880,7 +7995,8 @@ function update(dt) {
       const p = pointAt(B.d), d = Math.hypot(p.x - w.x, p.y - w.y);
       if (d <= w.r + B.def.r) {
         bMark(w, B);
-        if (w.kind === 'whistle') { B.mark = w.spec.dur; B.markMul = 1 + w.spec.amp; crackArmor(B, 'mark'); }
+        if (w.kind === 'surge') { /* a friendly wave: it does nothing to them */ }
+        else if (w.kind === 'whistle') { B.mark = w.spec.dur; B.markMul = 1 + w.spec.amp; crackArmor(B, 'mark'); }
         else { crackArmor(B, 'stun'); hurtBoss(w.spec.dmg, w.owner, B); }
       }
     }
@@ -8464,7 +8580,7 @@ function showShopTip(key, el) {
   const spec = TOWERS[key];
   $('ttip').innerHTML =
     `<div class="th"><img src="${PORTRAIT[key]}" alt="">
-       <div><div class="n">${spec.name}</div><div class="s">${bigCash(costOf(spec.key))}</div></div></div>
+       <div><div class="n">${spec.name}</div><div class="s">${tagCash(costOf(spec.key))}</div></div></div>
      ${tagHTML(spec.tags)}
      <div class="r" style="padding-bottom:7px">${spec.blurb}</div>
      ${ASCEND[key] ? '<div class="r" style="padding-bottom:7px;color:#c9b0ee">Can ascend: three maxed ' +
@@ -8522,7 +8638,7 @@ function drawPanel() {
       const rich = st === 'ok' ? ' rich' : '';
       const cost = st === 'owned' ? 'OWNED'
                  : st === 'blocked' ? 'PATH LOCKED'
-                 : bigCash(u.cost);
+                 : tagCash(u.cost);
       h += `<button class="upg ${path.toLowerCase()} ${st}${rich}" data-p="${path}" data-t="${i}">
               <span class="tier">${st === 'owned' ? '✓' : i}</span>
               <div class="un">${u.name}</div>
@@ -8552,13 +8668,13 @@ function drawPanel() {
     ${ascBtn(t, trio, why, acost)}
     ${dblBtn(t)}
     <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
-      <span class="dn">Duplicate &nbsp;$${bigNum(dcost)}</span>
+      <span class="dn">Duplicate &nbsp;${tagCash(dcost)}</span>
       <span class="ds">${t.asc ? 'Builds a second Ascended one, fee and all'
                               : 'Copies this Jaxon with all upgrades'}</span>
     </button>
     <div class="prow">
       ${hasChal('nosell') ? '<button class="sell poor" disabled>No Sell</button>'
-        : '<button class="sell" id="pSell">Sell &nbsp;+' + bigCash(refund) + '</button>'}
+        : '<button class="sell" id="pSell">Sell &nbsp;+' + tagCash(refund) + '</button>'}
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
     <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
@@ -8590,7 +8706,7 @@ function drawPanel() {
   if (lg) {
     $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
     const price = () => admBuyCost(t, Math.max(1, Math.round(+$('pLvN').value || 1)));
-    $('pLvN').oninput = () => { lg.textContent = 'Buy ' + bigCash(price()); };
+    $('pLvN').oninput = () => { lg.textContent = 'Buy ' + tagCash(price()); };
     lg.onclick = ev => {
       ev.stopPropagation();
       const cnt = Math.max(1, Math.round(+$('pLvN').value || 1)), cost = admBuyCost(t, cnt);
@@ -8632,7 +8748,7 @@ function admPanelRows(t) {
       '<div class="lvUn' + (lv >= at ? ' on' : '') + '"><span>' + nm + '</span><b>lvl ' + at + '</b></div>').join('') +
     '<div class="lvRow">' +
       '<input type="number" id="pLvN" min="1" max="500" value="1">' +
-      '<button id="pLvGo">Buy ' + bigCash(next) + '</button>' +
+      '<button id="pLvGo">Buy ' + tagCash(next) + '</button>' +
     '</div></div>';
 }
 
@@ -8645,7 +8761,7 @@ function dblBtn(t) {
   }
   const cost = dblCost(t.type);
   return '<button class="asc dbl' + (afford(cost) ? '' : ' poor') + '" id="pDbl">' +
-         '<span class="an">Double Ascend &nbsp;' + bigCash(cost) + '</span>' +
+         '<span class="an">Double Ascend &nbsp;' + tagCash(cost) + '</span>' +
          '<span class="as">Fuses two Ascended ' + TOWERS[t.type].name + 's. There can only be one.</span>' +
          '</button>';
 }
@@ -8659,7 +8775,7 @@ function ascBtn(t, trio, why, cost) {
   }
   const poor = !afford(cost);
   return '<button class="asc' + (poor ? ' poor' : '') + '" id="pAsc">' +
-         '<span class="an">Ascend &nbsp;' + bigCash(cost) + '</span>' +
+         '<span class="an">Ascend &nbsp;' + tagCash(cost) + '</span>' +
          '<span class="as">Fuses three maxed ' + TOWERS[t.type].name + 's into one</span>' +
          '</button>';
 }
@@ -8683,12 +8799,12 @@ function refreshPanel() {
     if (bt.className !== 'upg ' + want) bt.className = 'upg ' + want;
   });
   const sell = $('pSell');
-  if (sell) sell.innerHTML = 'Sell &nbsp;+' + bigCash(refundOf(t));
+  if (sell) sell.innerHTML = 'Sell &nbsp;+' + tagCash(refundOf(t));
   const dupe = $('pDupe');
   if (dupe) {
     const dc = dupeCost(t);
     const dn = dupe.querySelector('.dn');
-    if (dn) dn.innerHTML = 'Duplicate &nbsp;' + bigCash(dc);
+    if (dn) dn.innerHTML = 'Duplicate &nbsp;' + tagCash(dc);
     dupe.classList.toggle('poor', !afford(dc));
   }
 }
@@ -8720,7 +8836,7 @@ function showUpTip(t, path, tier, el) {
                  markAura:'Marks the whole map' };
   for (const g of gained) rows.push(`<div class="r"><span>New</span><b style="color:#ffd83d">${NICE[g] || g}</b></div>`);
   $('ttip').innerHTML =
-    `<div class="th"><div><div class="n">${u.name}</div><div class="s">$${bigNum(u.cost)} · ${UPGRADES[t.type][path].name} ${tier}</div></div></div>
+    `<div class="th"><div><div class="n">${u.name}</div><div class="s">${tagCash(u.cost)} · ${UPGRADES[t.type][path].name} ${tier}</div></div></div>
      <div class="r" style="padding-bottom:7px">${u.blurb}</div>
      ${rows.length ? '<div class="rows">' + rows.join('') + '</div>' : ''}`;
   const r = el.getBoundingClientRect(), sr = stage.getBoundingClientRect();
@@ -9069,6 +9185,21 @@ function bigNum(n) {
 }
 /* "$1.28 million" */
 const bigCash = n => '$' + bigNum(n);
+/* "110k", "1.2m" — the shelf and the price chips, where a word will not fit */
+function tagNum(n) {
+  n = Math.max(0, +n || 0);
+  if (!isFinite(n)) return '∞';
+  if (n < 1000) return String(Math.round(n));
+  if (n >= 1e100) {
+    const m = n/1e100;
+    if (m < 1000) return sigStr(m) + 'go';
+    const e = Math.floor(Math.log10(n));
+    return sigStr(n/Math.pow(10, e)) + 'e' + e;
+  }
+  const i = scaleOf(n);
+  return sigStr(n/Math.pow(10, i*3)) + SCALE_TAG[i].toLowerCase();
+}
+const tagCash = n => '$' + tagNum(n);
 /* "1.28M" — for numbers painted onto the board, where words will not fit */
 function shortHp(n) {
   n = Math.max(0, +n || 0);
@@ -9591,6 +9722,15 @@ function drawTower(t, ghost) {
   ctx.restore();
 
   if (TOWERS[t.type].ammo === 'admin' && !ghost) drawAdminBeam(t, art, grow);
+  if (!ghost && t.surged) {                      // riding a Power Boost overcharge
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.22 + Math.sin(S.t*8 + t.x*0.02)*0.1;
+    const gg = ctx.createRadialGradient(t.x, t.y - 6, 4, t.x, t.y - 6, 46);
+    gg.addColorStop(0, 'rgba(107,240,164,.8)'); gg.addColorStop(1, 'rgba(107,240,164,0)');
+    ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(t.x, t.y - 6, 46, 0, 7); ctx.fill();
+    ctx.restore();
+  }
   if (!ghost && t.nulled) {                      // inside the Null Prophet's reach
     ctx.save();
     ctx.globalAlpha = 0.3 + Math.sin(S.t*3 + t.x*0.01)*0.1;
@@ -9599,6 +9739,7 @@ function drawTower(t, ghost) {
     ctx.beginPath(); ctx.ellipse(t.x, t.y + T_H*0.4, T_W*0.5, T_W*0.2, 0, 0, 7); ctx.stroke();
     ctx.restore();
   }
+  if (!ghost && ULTRA_FX[t.type]) ULTRA_FX[t.type](t, art, grow);
   if (!ghost) drawTierArt(t, art);
 
   if (t.dbl && !ghost) {                         // the last form: a double ring
@@ -9752,6 +9893,159 @@ function drawAdminBeam(t, art, grow) {
   ctx.restore();
 }
 
+/* ---------------------------------------------------------- ultra idle --
+   Each of the five carries something that moves whether or not it is
+   firing, so they read as expensive from across the board. All of it is a
+   handful of shapes a frame and all of it is skipped in the leanest
+   graphics mode. */
+const ULTRA_FX = {
+  /* a pair of counter-rotating gear rings and a rising heat shimmer */
+  crusher(t, art, grow) {
+    if (S.perf > 1) return;
+    const y = t.y - spriteH(art)*grow*0.34;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const wind = t.slamWind || 0;
+    for (let g2 = 0; g2 < 2; g2++) {
+      const dir = g2 ? -1 : 1, rr = 30 + g2*11;
+      ctx.globalAlpha = 0.34 + wind*0.5;
+      ctx.strokeStyle = g2 ? '#ffd0a8' : '#ff7a2e';
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      for (let i = 0; i < 8; i++) {
+        const a = S.t*(0.9 + g2*0.5)*dir + i*0.785;
+        ctx.moveTo(t.x + Math.cos(a)*rr, y + Math.sin(a)*rr*0.42);
+        ctx.lineTo(t.x + Math.cos(a)*(rr + 6 + wind*8), y + Math.sin(a)*(rr + 6 + wind*8)*0.42);
+      }
+      ctx.stroke();
+    }
+    /* the slam charging up */
+    if (wind > 0.05) {
+      ctx.globalAlpha = wind*0.5;
+      const gg = ctx.createRadialGradient(t.x, t.y - 8, 4, t.x, t.y - 8, 60*wind);
+      gg.addColorStop(0, 'rgba(255,160,80,.9)'); gg.addColorStop(1, 'rgba(255,122,46,0)');
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(t.x, t.y - 8, 60*wind, 0, 7); ctx.fill();
+    }
+    if (t.slamFlash > 0) t.slamFlash = Math.max(0, t.slamFlash - 0.05);
+    ctx.restore();
+  },
+  /* three antenna rings breathing outward, brighter mid-overcharge */
+  booster(t, art, grow) {
+    if (S.perf > 1) return;
+    const y = t.y - spriteH(art)*grow*0.3;
+    const hot = t.surge > 0;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 3; i++) {
+      const ph = frac(S.t*(hot ? 0.9 : 0.45) + i/3);
+      ctx.globalAlpha = (1 - ph)*(hot ? 0.55 : 0.3);
+      ctx.strokeStyle = hot ? '#d8ffe6' : '#6bf0a4';
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.ellipse(t.x, y, 26 + ph*54, (26 + ph*54)*0.34, 0, 0, 7); ctx.stroke();
+    }
+    /* the dish spinning on his back */
+    ctx.globalAlpha = 0.8;
+    ctx.strokeStyle = '#ffd83d'; ctx.lineWidth = 2.6;
+    const sp = S.t*(hot ? 5 : 1.6);
+    ctx.beginPath();
+    ctx.ellipse(t.x, y - 20, 15, 15*Math.abs(Math.cos(sp))*0.85 + 2, 0, 0, 7);
+    ctx.stroke();
+    ctx.restore();
+  },
+  /* a slow scanning sweep and a lock ring on whatever wears the mark */
+  slayer(t, art, grow) {
+    if (S.perf > 1) return;
+    const oy = t.y - spriteH(art)*grow*0.42;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const sweep = frac(S.t*0.28)*Math.PI*2;
+    ctx.globalAlpha = 0.16;
+    const gg = ctx.createRadialGradient(t.x, oy, 6, t.x, oy, SP(t).range);
+    gg.addColorStop(0, 'rgba(168,107,255,.5)'); gg.addColorStop(1, 'rgba(168,107,255,0)');
+    ctx.fillStyle = gg;
+    ctx.beginPath(); ctx.moveTo(t.x, oy);
+    ctx.arc(t.x, oy, SP(t).range, sweep, sweep + 0.5);
+    ctx.closePath(); ctx.fill();
+    /* the contract, hanging over whoever is marked */
+    if (t.volleyAt && !t.volleyAt.dead && t.volleyAt.slay > 0) {
+      const q = enemyPos(t.volleyAt);
+      ctx.globalAlpha = 0.7 + Math.sin(S.t*9)*0.25;
+      ctx.strokeStyle = '#ff2d5a'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(q.x, q.y, 20, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.arc(q.x, q.y, 27, S.t*2, S.t*2 + 2.2); ctx.stroke();
+    }
+    ctx.restore();
+  },
+  /* two turbine rotors and the charge building for the next sweep */
+  wiper(t, art, grow) {
+    if (S.perf > 1) return;
+    const y = t.y - spriteH(art)*grow*0.32;
+    const wind = t.blastWind || 0;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let side = -1; side <= 1; side += 2) {
+      const cx = t.x + side*22;
+      ctx.globalAlpha = 0.4 + wind*0.5;
+      ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 2.6;
+      for (let i = 0; i < 3; i++) {
+        const a = S.t*(6 + wind*22)*side + i*2.094;
+        ctx.beginPath();
+        ctx.moveTo(cx - Math.cos(a)*13, y - Math.sin(a)*13);
+        ctx.lineTo(cx + Math.cos(a)*13, y + Math.sin(a)*13);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 0.25 + wind*0.4;
+      ctx.strokeStyle = '#3fa8ff'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(cx, y, 15, 0, 7); ctx.stroke();
+    }
+    if (wind > 0.15) {                       // the sweep gathering along the trail
+      const d0 = nearestPathD(t.x, t.y);
+      ctx.globalAlpha = (wind - 0.15)*0.5;
+      ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 4 + wind*10;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      for (let i = 0; i <= 10; i++) {
+        const d = d0 - 700*wind + (i/10)*1400*wind;
+        if (d < 0 || d > PATH_LEN) continue;
+        const q = pointAt(d);
+        i ? ctx.lineTo(q.x, q.y) : ctx.moveTo(q.x, q.y);
+      }
+      ctx.stroke();
+    }
+    if (t.blastFlash > 0) t.blastFlash = Math.max(0, t.blastFlash - 0.04);
+    ctx.restore();
+  },
+  /* panes of glass orbiting him, catching the light */
+  infmirror(t, art, grow) {
+    if (S.perf > 1) return;
+    const y = t.y - spriteH(art)*grow*0.36;
+    ctx.save();
+    for (let i = 0; i < 6; i++) {
+      const a = S.t*0.7 + i*1.047;
+      const px = t.x + Math.cos(a)*40, py = y + Math.sin(a)*15;
+      const face = 0.35 + Math.abs(Math.cos(a))*0.65;
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(Math.sin(a)*0.5);
+      ctx.globalAlpha = 0.28 + face*0.5;
+      ctx.fillStyle = i % 2 ? 'rgba(232,224,255,.9)' : 'rgba(255,255,255,.85)';
+      ctx.beginPath();
+      ctx.moveTo(0, -13*face); ctx.lineTo(6*face, 0); ctx.lineTo(0, 13*face); ctx.lineTo(-6*face, 0);
+      ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(192,139,255,.8)'; ctx.lineWidth = 1.2; ctx.stroke();
+      ctx.restore();
+    }
+    if (t.copyFlash > 0) {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = t.copyFlash*0.4;
+      const gg = ctx.createRadialGradient(t.x, y, 4, t.x, y, 66);
+      gg.addColorStop(0, 'rgba(255,255,255,.9)'); gg.addColorStop(1, 'rgba(192,139,255,0)');
+      ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(t.x, y, 66, 0, 7); ctx.fill();
+    }
+    ctx.restore();
+  }
+};
+
 function drawTierArt(t, art) {
   if (TOWERS[t.type].ammo === 'admin') {
     const lv = admLevel(t);
@@ -9833,6 +10127,44 @@ function orb(c1, c2, r, tail) {
 }
 
 function drawShot(s) {
+  /* the Slayer's follow-up dart: a thin violet needle with a tail */
+  if (s.ammo === 'slaydart') {
+    ctx.save();
+    ctx.translate(s.x, s.y); ctx.rotate(s.a);
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = 'rgba(168,107,255,.55)'; ctx.lineWidth = 7; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(6, 0); ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#e8d0ff';
+    ctx.beginPath(); ctx.moveTo(11, 0); ctx.lineTo(-5, -4); ctx.lineTo(-2, 0); ctx.lineTo(-5, 4);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#ff2d5a'; ctx.lineWidth = 1.4; ctx.stroke();
+    ctx.restore();
+    return;
+  }
+  /* the Infinity Mirror's own lance: a pane of glass thrown edge-on */
+  if (s.ammo === 'prism') {
+    ctx.save();
+    ctx.translate(s.x, s.y); ctx.rotate(s.a);
+    ctx.globalCompositeOperation = 'lighter';
+    const g = ctx.createLinearGradient(-30, 0, 16, 0);
+    g.addColorStop(0, 'rgba(192,139,255,0)');
+    g.addColorStop(0.6, 'rgba(232,208,255,.7)');
+    g.addColorStop(1, 'rgba(255,255,255,.95)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.moveTo(16, 0); ctx.lineTo(-6, -9); ctx.lineTo(-30, 0); ctx.lineTo(-6, 9);
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.4; ctx.stroke();
+    /* the second and third panes trailing it */
+    for (let i = 1; i <= 2; i++) {
+      ctx.globalAlpha = 0.34/i;
+      ctx.beginPath();
+      ctx.moveTo(16 - i*13, 0); ctx.lineTo(-6 - i*13, -7 + i); ctx.lineTo(-26 - i*13, 0); ctx.lineTo(-6 - i*13, 7 - i);
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+    return;
+  }
   if (s.ammo === 'admincar') {
     const im = IMG.blackcar;
     ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.spin*0.4);
@@ -10953,6 +11285,52 @@ function render() {
       ctx.save(); ctx.globalAlpha = (1-k)*0.9;
       ctx.strokeStyle = '#bfeeff'; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(f.x, f.y, 12 + k*20, 0, 7); ctx.stroke();
+      ctx.restore();
+    } else if (f.k === 'slam') {
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.max(0, 1 - k)*0.85;
+      ctx.lineWidth = 16*(1 - k) + 3;
+      ctx.strokeStyle = '#ff7a2e';
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k, 0, 7); ctx.stroke();
+      ctx.globalAlpha *= 0.5; ctx.lineWidth = 3;
+      ctx.strokeStyle = '#ffd0a8';
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k*0.82, 0, 7); ctx.stroke();
+      /* the ground cracking under it */
+      ctx.globalAlpha = Math.max(0, 0.5 - k*0.5);
+      ctx.strokeStyle = '#a83c00'; ctx.lineWidth = 3;
+      for (let i = 0; i < 7; i++) {
+        const a = i*0.897 + f.x;
+        ctx.beginPath();
+        ctx.moveTo(f.x + Math.cos(a)*18, f.y + Math.sin(a)*7);
+        ctx.lineTo(f.x + Math.cos(a)*f.r*k*0.9, f.y + Math.sin(a)*f.r*k*0.36);
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else if (f.k === 'slayBeam') {
+      const k = f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = k;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = '#4a1f8a'; ctx.lineWidth = 10;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      ctx.strokeStyle = '#a86bff'; ctx.lineWidth = 4.5;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      /* the crosshair it leaves on the mark */
+      ctx.globalAlpha = k*0.9;
+      ctx.strokeStyle = '#ff2d5a'; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.arc(f.x, f.y, 16 + (1-k)*10, 0, 7); ctx.stroke();
+      for (let i = 0; i < 4; i++) {
+        const a = i*1.5708 + (1-k)*0.6;
+        ctx.beginPath();
+        ctx.moveTo(f.x + Math.cos(a)*10, f.y + Math.sin(a)*10);
+        ctx.lineTo(f.x + Math.cos(a)*24, f.y + Math.sin(a)*24);
+        ctx.stroke();
+      }
       ctx.restore();
     } else if (f.k === 'bolt') {
       const k = 1 - f.life/f.max;
@@ -13205,6 +13583,12 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
 
 
 
