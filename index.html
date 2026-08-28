@@ -2342,207 +2342,203 @@ const BOX_DEFAULT = { x:0, y:0, w:660, h:720 };
 const BOX_WIDE    = { x:-200, y:-150, w:800, h:900 };
 const boxOf = v => (v.wide ? BOX_WIDE : BOX_DEFAULT);
 
-/* ==================================================== the ultra bodies ===
-   Nothing below reuses the Jaxon template. Each of the five is drawn from
-   scratch on the wide 800x900 box, with its own silhouette, its own gear
-   and its own moving parts. The only thing they keep is the pacifier,
-   because that is the badge every Jaxon wears. */
-function pacifier(x, y, s, ring, ringD, teat, teatD) {
-  return `<g transform="translate(${x} ${y}) scale(${s})">
-    <ellipse rx="52" ry="40" fill="${ring}" stroke="${ringD}" stroke-width="9"/>
-    <ellipse rx="27" ry="20" fill="${ringD}" opacity=".55"/>
-    <path d="M-16 30 q16 34 32 0 q-4 30 -16 34 q-12 -4 -16 -34 Z" fill="${teat}" stroke="${teatD}" stroke-width="7"/>
-  </g>`;
-}
+/* ==================================================== the ultra kits ====
+   An ultra is a Jaxon in a lot of gear, not a machine with a Jaxon logo.
+   Every one of them is the ordinary jaxonBody — same shape, same face,
+   same diaper, same pacifier — with a layer of kit drawn behind him and a
+   layer drawn over him. Cover the gear and a Jaxon is still standing
+   there, which is the whole test.
 
-const ULTRA_SVG = {
-  /* ---------------------------------------------------- BOSS CRUSHER ----
-     A squat industrial rig on tracks with a piston arm and a wrecking
-     ball on a chain. No head, no hood, no legs: a machine. */
-  crusher(uid) {
-    const g = n => uid + '-' + n;
-    return `<defs>
-      <linearGradient id="${g('h')}" x1="0" y1="0" x2="0.2" y2="1">
-        <stop offset="0" stop-color="#5a6270"/><stop offset="1" stop-color="#232a35"/></linearGradient>
-      <linearGradient id="${g('o')}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#ffd0a8"/><stop offset="1" stop-color="#ff7a2e"/></linearGradient>
-    </defs>
-    <g stroke="#12161d" stroke-width="11" stroke-linejoin="round">
-      <path d="M-70 690 L470 690 L500 620 L-100 620 Z" fill="#2b323d"/>
-      <ellipse cx="-40" cy="655" rx="52" ry="52" fill="#1a1f28"/>
-      <ellipse cx="200" cy="655" rx="60" ry="60" fill="#1a1f28"/>
-      <ellipse cx="430" cy="655" rx="52" ry="52" fill="#1a1f28"/>
-      <ellipse cx="-40" cy="655" rx="20" ry="20" fill="#5a6270"/>
-      <ellipse cx="200" cy="655" rx="24" ry="24" fill="#5a6270"/>
-      <ellipse cx="430" cy="655" rx="20" ry="20" fill="#5a6270"/>
-      <path d="M20 620 L400 620 L430 380 L-10 380 Z" fill="url(#${g('h')})"/>
-      <rect x="60" y="200" width="300" height="200" rx="26" fill="#39424f"/>
-      <rect x="96" y="236" width="228" height="112" rx="14" fill="url(#${g('o')})" stroke="#8a3200" stroke-width="8"/>
-      <path d="M120 260 L300 260 L288 324 L132 324 Z" fill="#2b1200" stroke="none"/>
-      <rect x="360" y="150" width="52" height="120" rx="16" fill="#39424f"/>
-      <rect x="30" y="120" width="52" height="150" rx="16" fill="#39424f"/>
-      <path d="M-120 300 L60 300 L60 360 L-120 360 Z" fill="#39424f"/>
-    </g>
-    <g stroke="#12161d" stroke-width="9">
-      <path d="M-120 330 L-260 470" stroke="#6d7d92" stroke-width="16" stroke-linecap="round"/>
-      <circle cx="-300" cy="520" r="96" fill="#1a1f28" stroke="#12161d" stroke-width="12"/>
-      <g fill="#ff7a2e" stroke="#8a3200" stroke-width="6">
-        <path d="M-300 400 l26 46 l-52 0 Z"/><path d="M-300 640 l26 -46 l-52 0 Z"/>
-        <path d="M-420 520 l46 26 l0 -52 Z"/><path d="M-180 520 l-46 26 l0 -52 Z"/>
+   The body sits in a 0..660 by 0..720 box: head at (216,168), shoulders
+   around y 290, waist near y 520, feet at 700. The kit is placed against
+   those. */
+const ULTRA_KIT = {
+  /* ------------------------------------------------ BOSS CRUSHER -------
+     Siege armour: pauldrons, a gauntlet, exhaust stacks and a wrecking
+     ball hanging off a chain behind him. */
+  crusher: {
+    back:(g) => `
+      <g stroke="#12161d" stroke-width="10" stroke-linejoin="round">
+        <rect x="70" y="250" width="60" height="150" rx="20" fill="#39424f"/>
+        <rect x="352" y="250" width="60" height="150" rx="20" fill="#39424f"/>
+        <rect x="88" y="214" width="26" height="54" rx="10" fill="#5a6270"/>
+        <rect x="370" y="214" width="26" height="54" rx="10" fill="#5a6270"/>
       </g>
-      <circle cx="-300" cy="520" r="42" fill="#ff7a2e" opacity=".85" stroke="none"/>
-    </g>
-    <g fill="#ffd0a8" opacity=".9" stroke="none">
-      <rect x="44" y="96" width="24" height="34" rx="8"/><rect x="374" y="126" width="24" height="34" rx="8"/>
-    </g>
-    ${pacifier(210, 470, 1.05, '#ff7a2e', '#8a3200', '#ffd0a8', '#a83c00')}`;
+      <g opacity=".85"><ellipse cx="101" cy="196" rx="16" ry="22" fill="#ff7a2e"/>
+        <ellipse cx="383" cy="196" rx="16" ry="22" fill="#ff7a2e"/></g>
+      <path d="M420 330 L520 430" stroke="#6d7d92" stroke-width="14" stroke-linecap="round"/>
+      <g stroke="#12161d" stroke-width="10">
+        <circle cx="556" cy="470" r="62" fill="#2b323d"/>
+        <g fill="#ff7a2e" stroke="#8a3200" stroke-width="5">
+          <path d="M556 392 l17 30 l-34 0 Z"/><path d="M556 548 l17 -30 l-34 0 Z"/>
+          <path d="M478 470 l30 17 l0 -34 Z"/><path d="M634 470 l-30 17 l0 -34 Z"/>
+        </g>
+        <circle cx="556" cy="470" r="26" fill="#ff7a2e" stroke="none" opacity=".9"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#12161d" stroke-width="9" stroke-linejoin="round">
+        <path d="M104 300 q56 -46 116 -30 l-8 76 q-52 -14 -100 18 Z" fill="#5a6270"/>
+        <path d="M368 300 q-56 -46 -116 -30 l8 76 q52 -14 100 18 Z" fill="#5a6270"/>
+        <path d="M14 404 L162 376 L172 460 L22 490 Z" fill="#39424f"/>
+        <rect x="150" y="500" width="172" height="42" rx="14" fill="#39424f"/>
+      </g>
+      <g fill="#ff7a2e" stroke="#8a3200" stroke-width="5">
+        <path d="M150 286 l24 -34 l24 34 Z"/><path d="M290 286 l24 -34 l24 34 Z"/>
+        <rect x="216" y="508" width="40" height="26" rx="8"/>
+      </g>
+      <g fill="#ffd0a8" opacity=".95"><circle cx="60" cy="432" r="11"/><circle cx="60" cy="466" r="11"/></g>`
   },
 
-  /* ---------------------------------------------------- POWER BOOST -----
-     A floating reactor: no body at all, a suspended core inside three
-     gimbal rings with a broadcast mast above it. */
-  booster(uid) {
-    const g = n => uid + '-' + n;
-    return `<defs>
-      <radialGradient id="${g('c')}" cx="0.4" cy="0.35">
-        <stop offset="0" stop-color="#ffffff"/><stop offset="0.45" stop-color="#d8ffe6"/>
-        <stop offset="1" stop-color="#1f9c58"/></radialGradient>
-    </defs>
-    <ellipse cx="230" cy="690" rx="150" ry="34" fill="#000" opacity=".3"/>
-    <g fill="none" stroke="#16794a" stroke-width="16" stroke-linecap="round">
-      <path d="M120 640 L230 560 L340 640"/>
-      <path d="M230 560 L230 470"/>
-    </g>
-    <g fill="#6bf0a4" stroke="#16794a" stroke-width="9">
-      <path d="M80 620 L180 620 L200 664 L60 664 Z"/>
-      <path d="M280 620 L380 620 L400 664 L260 664 Z"/>
-    </g>
-    <g fill="none" stroke-width="15" stroke-linecap="round">
-      <ellipse cx="230" cy="330" rx="200" ry="66" stroke="#16794a"/>
-      <ellipse cx="230" cy="330" rx="70" ry="190" stroke="#1f9c58"/>
-      <ellipse cx="230" cy="330" rx="150" ry="150" stroke="#6bf0a4" opacity=".7"/>
-    </g>
-    <circle cx="230" cy="330" r="96" fill="url(#${g('c')})" stroke="#16794a" stroke-width="10"/>
-    <g fill="#ffd83d" stroke="#a97c00" stroke-width="7">
-      <path d="M230 60 L262 150 L230 130 L198 150 Z"/>
-      <rect x="216" y="130" width="28" height="90" rx="12"/>
-      <circle cx="230" cy="52" r="22"/>
-    </g>
-    <g fill="none" stroke="#ffd83d" stroke-width="8" opacity=".85" stroke-linecap="round">
-      <path d="M120 190 q110 -70 220 0"/>
-      <path d="M150 140 q80 -52 160 0"/>
-    </g>
-    ${pacifier(230, 330, 0.86, '#ffd83d', '#a97c00', '#ffffff', '#16794a')}`;
+  /* ------------------------------------------------ POWER BOOST --------
+     A reactor backpack, three gimbal rings hanging in the air around him
+     and a broadcast mast over his head. */
+  booster: {
+    back:(g) => `
+      <g fill="none" stroke-width="13" stroke-linecap="round" opacity=".92">
+        <ellipse cx="238" cy="400" rx="250" ry="86" stroke="#16794a"/>
+        <ellipse cx="238" cy="400" rx="86" ry="240" stroke="#1f9c58"/>
+        <ellipse cx="238" cy="400" rx="190" ry="190" stroke="#6bf0a4" opacity=".75"/>
+      </g>
+      <g stroke="#0e5c38" stroke-width="10" stroke-linejoin="round">
+        <rect x="150" y="250" width="176" height="150" rx="30" fill="#1f9c58"/>
+        <circle cx="238" cy="322" r="46" fill="#d8ffe6"/>
+      </g>
+      <g fill="#ffd83d" stroke="#a97c00" stroke-width="7">
+        <rect x="224" y="-90" width="28" height="120" rx="12"/>
+        <path d="M238 -140 L272 -60 L238 -80 L204 -60 Z"/>
+        <circle cx="238" cy="-150" r="20"/>
+      </g>
+      <g fill="none" stroke="#ffd83d" stroke-width="7" opacity=".8" stroke-linecap="round">
+        <path d="M150 20 q88 -58 176 0"/><path d="M176 -22 q62 -42 124 0"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#0e5c38" stroke-width="9" stroke-linejoin="round">
+        <path d="M108 296 q56 -44 116 -28 l-8 72 q-52 -14 -100 16 Z" fill="#6bf0a4"/>
+        <path d="M364 296 q-56 -44 -116 -28 l8 72 q52 -14 100 16 Z" fill="#6bf0a4"/>
+        <rect x="160" y="492" width="152" height="40" rx="16" fill="#1f9c58"/>
+      </g>
+      <g fill="#ffd83d" stroke="#a97c00" stroke-width="5">
+        <circle cx="160" cy="300" r="15"/><circle cx="316" cy="300" r="15"/>
+        <path d="M222 500 l16 -26 l16 26 l-16 22 Z"/>
+      </g>
+      <g fill="none" stroke="#d8ffe6" stroke-width="6" opacity=".85">
+        <path d="M132 386 q106 44 212 0"/>
+      </g>`
   },
 
-  /* ---------------------------------------------------- ELITE SLAYER ----
-     A tall hunter on one knee behind a mounted rail lance, cloaked, with
-     a bank of optics where a face would be. */
-  slayer(uid) {
-    const g = n => uid + '-' + n;
-    return `<defs>
-      <linearGradient id="${g('k')}" x1="0" y1="0" x2="0.3" y2="1">
-        <stop offset="0" stop-color="#a86bff"/><stop offset="1" stop-color="#2a0f52"/></linearGradient>
-    </defs>
-    <ellipse cx="230" cy="694" rx="170" ry="30" fill="#000" opacity=".32"/>
-    <g stroke="#1b0838" stroke-width="11" stroke-linejoin="round">
-      <path d="M100 694 L120 470 L250 440 L300 694 Z" fill="url(#${g('k')})"/>
-      <path d="M250 440 L340 470 L400 694 L300 694 Z" fill="#4a1f8a"/>
-      <path d="M120 470 q-70 90 -46 224 l58 0 Z" fill="#2a0f52"/>
-      <path d="M150 300 q90 -70 180 0 l-14 156 q-76 34 -152 0 Z" fill="url(#${g('k')})"/>
-      <path d="M164 296 q76 -56 152 0 l-12 60 q-64 -34 -128 0 Z" fill="#160630"/>
-    </g>
-    <g fill="#ff2d5a" stroke="#8a0020" stroke-width="5">
-      <circle cx="196" cy="326" r="17"/><circle cx="240" cy="318" r="12"/><circle cx="278" cy="328" r="9"/>
-    </g>
-    <g stroke="#1b0838" stroke-width="10" stroke-linejoin="round">
-      <path d="M-80 402 L360 356 L370 408 L-70 452 Z" fill="#39424f"/>
-      <path d="M-150 414 L-70 404 L-64 448 L-146 458 Z" fill="#e8d0ff"/>
-      <rect x="120" y="330" width="72" height="46" rx="12" fill="#a86bff"/>
-      <path d="M300 300 L360 356 L330 380 L280 340 Z" fill="#4a1f8a"/>
-    </g>
-    <g fill="none" stroke="#e8d0ff" stroke-width="7" opacity=".9" stroke-linecap="round">
-      <path d="M-140 388 L-40 378"/><path d="M-136 470 L-36 460"/>
-    </g>
-    ${pacifier(238, 372, 0.78, '#a86bff', '#3a1070', '#ff2d5a', '#8a0020')}`;
+  /* ------------------------------------------------ ELITE SLAYER -------
+     A hunter's cloak, a visor over the eyes and a rail lance braced on
+     his shoulder. */
+  slayer: {
+    back:(g) => `
+      <g stroke="#1b0838" stroke-width="11" stroke-linejoin="round">
+        <path d="M120 300 q-90 190 -54 400 l128 0 Z" fill="#3a1070"/>
+        <path d="M356 300 q90 190 54 400 l-128 0 Z" fill="#3a1070"/>
+        <path d="M150 262 q88 -44 176 0 l-16 74 q-72 -30 -144 0 Z" fill="#2a0f52"/>
+      </g>
+      <g fill="none" stroke="#a86bff" stroke-width="8" opacity=".7">
+        <path d="M96 470 q142 60 284 0"/><path d="M104 560 q134 54 268 0"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#1b0838" stroke-width="9" stroke-linejoin="round">
+        <path d="M100 302 q60 -48 124 -30 l-10 78 q-56 -16 -106 18 Z" fill="#4a1f8a"/>
+        <path d="M372 302 q-60 -48 -124 -30 l10 78 q56 -16 106 18 Z" fill="#4a1f8a"/>
+        <path d="M-40 372 L330 336 L336 384 L-34 420 Z" fill="#39424f"/>
+        <path d="M-104 380 L-36 372 L-30 412 L-98 422 Z" fill="#e8d0ff"/>
+        <rect x="196" y="330" width="76" height="40" rx="12" fill="#a86bff"/>
+      </g>
+      <g fill="#ff2d5a" stroke="#8a0020" stroke-width="4">
+        <path d="M120 176 q96 -34 192 0 l0 46 q-96 -30 -192 0 Z" opacity=".92"/>
+      </g>
+      <g fill="#e8d0ff" opacity=".95">
+        <circle cx="168" cy="198" r="9"/><circle cx="216" cy="196" r="12"/><circle cx="264" cy="198" r="9"/>
+      </g>
+      <g fill="none" stroke="#e8d0ff" stroke-width="6" opacity=".9" stroke-linecap="round">
+        <path d="M-96 358 L-20 350"/><path d="M-92 432 L-16 424"/>
+      </g>`
   },
 
-  /* ---------------------------------------------------- WAVE WIPER ------
-     A wide hover-platform with twin ducted turbines and a saw magazine
-     slung underneath. Reads as a machine that sweeps. */
-  wiper(uid) {
-    const g = n => uid + '-' + n;
-    return `<defs>
-      <linearGradient id="${g('b')}" x1="0" y1="0" x2="0.2" y2="1">
-        <stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#12508f"/></linearGradient>
-    </defs>
-    <ellipse cx="230" cy="700" rx="230" ry="36" fill="#000" opacity=".3"/>
-    <g fill="none" stroke="#3fa8ff" stroke-width="12" opacity=".55" stroke-linecap="round">
-      <path d="M40 660 q190 44 380 0"/><path d="M80 692 q150 34 300 0"/>
-    </g>
-    <g stroke="#0d3c6e" stroke-width="12" stroke-linejoin="round">
-      <path d="M-40 520 L500 520 L440 620 L20 620 Z" fill="url(#${g('b')})"/>
-      <path d="M60 360 L400 360 L440 520 L20 520 Z" fill="#1a6ba8"/>
-      <rect x="140" y="230" width="180" height="140" rx="30" fill="#e8f6ff"/>
-      <path d="M170 262 L290 262 L280 340 L180 340 Z" fill="#0d3c6e"/>
-      <circle cx="-40" cy="430" r="104" fill="#39424f"/>
-      <circle cx="500" cy="430" r="104" fill="#39424f"/>
-      <circle cx="-40" cy="430" r="66" fill="#0d3c6e"/>
-      <circle cx="500" cy="430" r="66" fill="#0d3c6e"/>
-    </g>
-    <g fill="#bfe6ff" stroke="#0d3c6e" stroke-width="7">
-      <path d="M-40 364 l22 52 l-44 0 Z"/><path d="M-40 496 l22 -52 l-44 0 Z"/>
-      <path d="M-106 430 l52 22 l0 -44 Z"/><path d="M26 430 l-52 22 l0 -44 Z"/>
-      <path d="M500 364 l22 52 l-44 0 Z"/><path d="M500 496 l22 -52 l-44 0 Z"/>
-      <path d="M434 430 l52 22 l0 -44 Z"/><path d="M566 430 l-52 22 l0 -44 Z"/>
-    </g>
-    <g fill="#ffffff" stroke="#0d3c6e" stroke-width="6" opacity=".95">
-      <circle cx="150" cy="596" r="34"/><circle cx="230" cy="606" r="34"/><circle cx="310" cy="596" r="34"/>
-    </g>
-    ${pacifier(230, 300, 0.8, '#3fa8ff', '#0d3c6e', '#ffffff', '#9dabc0')}`;
+  /* ------------------------------------------------ WAVE WIPER ---------
+     Ducted turbines on each shoulder, hard-light panels across the chest
+     and a saw slung on his back. */
+  wiper: {
+    back:(g) => `
+      <g stroke="#0d3c6e" stroke-width="11" stroke-linejoin="round">
+        <circle cx="66" cy="330" r="86" fill="#39424f"/>
+        <circle cx="410" cy="330" r="86" fill="#39424f"/>
+        <circle cx="66" cy="330" r="54" fill="#0d3c6e"/>
+        <circle cx="410" cy="330" r="54" fill="#0d3c6e"/>
+      </g>
+      <g fill="#bfe6ff" stroke="#0d3c6e" stroke-width="6">
+        <path d="M66 274 l18 42 l-36 0 Z"/><path d="M66 386 l18 -42 l-36 0 Z"/>
+        <path d="M10 330 l42 18 l0 -36 Z"/><path d="M122 330 l-42 18 l0 -36 Z"/>
+        <path d="M410 274 l18 42 l-36 0 Z"/><path d="M410 386 l18 -42 l-36 0 Z"/>
+        <path d="M354 330 l42 18 l0 -36 Z"/><path d="M466 330 l-42 18 l0 -36 Z"/>
+      </g>
+      <g stroke="#0d3c6e" stroke-width="9">
+        <circle cx="238" cy="250" r="76" fill="#e8f6ff"/>
+        <circle cx="238" cy="250" r="34" fill="#3fa8ff"/>
+      </g>
+      <g fill="none" stroke="#3fa8ff" stroke-width="10" opacity=".55" stroke-linecap="round">
+        <path d="M90 640 q148 46 296 0"/><path d="M120 686 q118 36 236 0"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#0d3c6e" stroke-width="9" stroke-linejoin="round">
+        <path d="M106 300 q58 -46 120 -28 l-10 74 q-54 -16 -102 18 Z" fill="#3fa8ff"/>
+        <path d="M370 300 q-58 -46 -120 -28 l10 74 q54 -16 102 18 Z" fill="#3fa8ff"/>
+        <rect x="156" y="486" width="160" height="44" rx="14" fill="#1a6ba8"/>
+      </g>
+      <g fill="#e8f6ff" opacity=".9" stroke="#0d3c6e" stroke-width="4">
+        <rect x="150" y="356" width="176" height="20" rx="9"/>
+        <rect x="164" y="392" width="148" height="16" rx="8"/>
+        <rect x="178" y="424" width="120" height="14" rx="7"/>
+      </g>
+      <g fill="#ffffff" stroke="#0d3c6e" stroke-width="5">
+        <circle cx="188" cy="508" r="18"/><circle cx="238" cy="512" r="18"/><circle cx="288" cy="508" r="18"/>
+      </g>`
   },
 
-  /* ---------------------------------------------------- INFINITY MIRROR -
-     Deliberately still a Mirror: a tall standing pane in a frame, with
-     smaller panes hung around it and no body behind the glass. */
-  infmirror(uid) {
-    const g = n => uid + '-' + n;
-    return `<defs>
-      <linearGradient id="${g('m')}" x1="0" y1="0" x2="0.7" y2="1">
-        <stop offset="0" stop-color="#ffffff"/><stop offset="0.4" stop-color="#e8e0ff"/>
-        <stop offset="0.65" stop-color="#c08bff"/><stop offset="1" stop-color="#ffffff"/></linearGradient>
-      <linearGradient id="${g('f')}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#f4f8ff"/><stop offset="1" stop-color="#8f6bc4"/></linearGradient>
-    </defs>
-    <ellipse cx="230" cy="700" rx="150" ry="30" fill="#000" opacity=".3"/>
-    <g stroke="#5a4a7a" stroke-width="10" stroke-linejoin="round">
-      <path d="M130 700 L330 700 L300 640 L160 640 Z" fill="url(#${g('f')})"/>
-      <path d="M120 640 L340 640 L316 120 q-86 -66 -172 0 Z" fill="url(#${g('f')})"/>
-      <path d="M152 616 L308 616 L288 150 q-58 -44 -116 0 Z" fill="url(#${g('m')})"/>
-    </g>
-    <g fill="#ffffff" opacity=".55" stroke="none">
-      <path d="M176 590 L214 168 L246 168 L206 590 Z"/>
-      <path d="M250 590 L276 200 L292 200 L268 590 Z"/>
-    </g>
-    <g stroke="#8f6bc4" stroke-width="8" stroke-linejoin="round">
-      <path d="M-40 300 L40 250 L70 330 L-10 380 Z" fill="url(#${g('m')})" opacity=".95"/>
-      <path d="M400 260 L490 300 L466 386 L378 348 Z" fill="url(#${g('m')})" opacity=".95"/>
-      <path d="M60 470 L128 446 L146 512 L78 536 Z" fill="url(#${g('m')})" opacity=".8"/>
-      <path d="M330 460 L400 484 L384 548 L316 524 Z" fill="url(#${g('m')})" opacity=".8"/>
-    </g>
-    <g fill="none" stroke="#c08bff" stroke-width="6" opacity=".8">
-      <ellipse cx="230" cy="120" rx="120" ry="34"/>
-      <ellipse cx="230" cy="120" rx="70" ry="20"/>
-    </g>
-    ${pacifier(230, 400, 0.92, '#e8e0ff', '#8f6bc4', '#ffffff', '#c08bff')}`;
+  /* ------------------------------------------------ INFINITY MIRROR ----
+     Panes of glass hanging around him and a halo overhead — still a
+     Jaxon, wearing a hall of mirrors. */
+  infmirror: {
+    back:(g) => `
+      <g stroke="#8f6bc4" stroke-width="9" stroke-linejoin="round" opacity=".95">
+        <path d="M-30 250 L60 196 L96 300 L6 356 Z" fill="#f4f0ff"/>
+        <path d="M420 210 L520 258 L492 366 L392 320 Z" fill="#f4f0ff"/>
+        <path d="M20 470 L104 438 L128 526 L44 558 Z" fill="#efe8ff" opacity=".9"/>
+        <path d="M382 452 L470 484 L448 570 L362 538 Z" fill="#efe8ff" opacity=".9"/>
+      </g>
+      <g fill="none" stroke="#c08bff" stroke-width="9" opacity=".85">
+        <ellipse cx="238" cy="-40" rx="150" ry="42"/>
+        <ellipse cx="238" cy="-40" rx="88" ry="24"/>
+      </g>
+      <g fill="none" stroke="#e8e0ff" stroke-width="7" opacity=".6">
+        <ellipse cx="238" cy="400" rx="230" ry="70"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#7a6a9c" stroke-width="9" stroke-linejoin="round">
+        <path d="M104 300 q58 -46 120 -28 l-10 74 q-54 -16 -102 18 Z" fill="#e6f0ff"/>
+        <path d="M370 300 q-58 -46 -120 -28 l10 74 q54 -16 102 18 Z" fill="#e6f0ff"/>
+        <path d="M160 350 L316 350 L296 520 L180 520 Z" fill="#ffffff" opacity=".55"/>
+      </g>
+      <g fill="#ffffff" opacity=".7" stroke="none">
+        <path d="M186 500 L232 362 L252 362 L206 500 Z"/>
+        <path d="M254 500 L282 388 L294 388 L266 500 Z"/>
+      </g>
+      <g fill="none" stroke="#c08bff" stroke-width="5" opacity=".9">
+        <path d="M150 348 L326 348"/>
+      </g>`
   }
 };
 
 function jaxonSVG(v, uid) {
   const b = boxOf(v);
-  /* an ultra is not a Jaxon with different paint on it: it is drawn from
-     nothing by its own routine */
-  const body = v.ultra && ULTRA_SVG[v.ultra] ? ULTRA_SVG[v.ultra](uid) : jaxonBody(v, uid);
+  /* An ultra is a Jaxon wearing a great deal: the ordinary body, with a
+     layer of kit behind him and a layer over him. Take the gear away and
+     the Jaxon is still standing there. */
+  const kit = v.ultra && ULTRA_KIT[v.ultra];
+  const body = kit ? kit.back(v) + jaxonBody(v, uid) + kit.front(v) : jaxonBody(v, uid);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x} ${b.y} ${b.w} ${b.h}" width="${b.w}" height="${b.h}">${body}</svg>`;
 }
 
@@ -2754,22 +2750,27 @@ VARIANTS.tipjar = { suitLite:'#ffe3f2', suit:'#ffa8d8', suitDark:'#c4589c', arm:
 /* ---- the ultra tier: money buys them, nothing else gates them ---- */
 VARIANTS.crusher = { ultra:'crusher', wide:true,
                     suitLite:'#ffd0a8', suit:'#ff7a2e', suitDark:'#a83c00', arm:'#3a3f4a', armDark:'#161b22',
+                    belt:'#1a1f28', beltDark:'#000000', goggles:true, boots:true,
                     outline:'#8a3200', outlineWidth:7,
                     pacG:'#ff7a2e', pacGD:'#8a3200', pacO:'#ffd0a8', pacOD:'#a83c00' };
 VARIANTS.booster = { ultra:'booster', wide:true,
                     suitLite:'#d8ffe6', suit:'#6bf0a4', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00',
+                    belt:'#ffd83d', beltDark:'#a97c00', core:'#d8ffe6', coreD:'#1f9c58',
                     outline:'#16794a', outlineWidth:7,
                     pacG:'#6bf0a4', pacGD:'#16794a', pacO:'#ffd83d', pacOD:'#a97c00' };
 VARIANTS.slayer = { ultra:'slayer', wide:true,
                     suitLite:'#e8d0ff', suit:'#a86bff', suitDark:'#4a1f8a', arm:'#39424f', armDark:'#161b22',
+                    belt:'#ff2d5a', beltDark:'#8a0020', boots:true,
                     outline:'#3a1070', outlineWidth:7,
                     pacG:'#a86bff', pacGD:'#3a1070', pacO:'#ff2d5a', pacOD:'#8a0020' };
 VARIANTS.wiper = { ultra:'wiper', wide:true,
                     suitLite:'#bfe6ff', suit:'#3fa8ff', suitDark:'#12508f', arm:'#f4f7fc', armDark:'#c3cad6',
+                    belt:'#ffffff', beltDark:'#9dabc0', goggles:true, boots:true,
                     outline:'#0d3c6e', outlineWidth:8,
                     pacG:'#3fa8ff', pacGD:'#0d3c6e', pacO:'#ffffff', pacOD:'#9dabc0' };
 VARIANTS.infmirror = { ultra:'infmirror', wide:true,
                     suitLite:'#ffffff', suit:'#e6f0ff', suitDark:'#9dabc0', arm:'#c08bff', armDark:'#4a1f8a',
+                    belt:'#e8d0ff', beltDark:'#8f6bc4', shards:true, core:'#ffffff', coreD:'#8f6bc4',
                     outline:'#7a6a9c', outlineWidth:7,
                     pacG:'#e6f0ff', pacGD:'#7a6a9c', pacO:'#c08bff', pacOD:'#4a1f8a' };
 
@@ -4510,7 +4511,7 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      stormcloud:1.3, director:1.2,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
                      factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
-                     crusher:1.5, booster:1.4, slayer:1.35, wiper:1.6, infmirror:1.35,
+                     crusher:1.3, booster:1.25, slayer:1.2, wiper:1.35, infmirror:1.22,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -14302,6 +14303,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
