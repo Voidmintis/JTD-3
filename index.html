@@ -2552,6 +2552,32 @@ VARIANTS.tipjar = { suitLite:'#ffe3f2', suit:'#ffa8d8', suitDark:'#c4589c', arm:
 /* He is not painted, he is rendered: the body is a hole in the screen with
    ACCESS DENIED running down it. The variant only carries the face, the
    arms and the pacifier — drawTower paints the rest. */
+/* ---- the ultra tier: money buys them, nothing else gates them ---- */
+VARIANTS.crusher = { suitLite:'#ffd0a8', suit:'#ff7a2e', suitDark:'#a83c00', arm:'#3a3f4a', armDark:'#161b22',
+                    belt:'#1a1f28', beltDark:'#000000', hammer:true, anvil:true, wide:true,
+                    hammerH:'#3a3f4a', hammerHD:'#161b22', hammerHead:'#ff7a2e', hammerHeadD:'#a83c00',
+                    outline:'#8a3200', outlineWidth:7,
+                    pacG:'#ff7a2e', pacGD:'#8a3200', pacO:'#ffd0a8', pacOD:'#a83c00' };
+VARIANTS.booster = { suitLite:'#d8ffe6', suit:'#6bf0a4', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00',
+                    belt:'#ffd83d', beltDark:'#a97c00', core:'#d8ffe6', coreD:'#1f9c58',
+                    tabletRing:true, wide:true,
+                    outline:'#16794a', outlineWidth:7,
+                    pacG:'#6bf0a4', pacGD:'#16794a', pacO:'#ffd83d', pacOD:'#a97c00' };
+VARIANTS.slayer = { suitLite:'#e8d0ff', suit:'#a86bff', suitDark:'#4a1f8a', arm:'#39424f', armDark:'#161b22',
+                    belt:'#ff2d5a', beltDark:'#8a0020', visor:'blue', visorGlow:'#e8d0ff', wide:true,
+                    outline:'#3a1070', outlineWidth:7,
+                    pacG:'#a86bff', pacGD:'#3a1070', pacO:'#ff2d5a', pacOD:'#8a0020' };
+VARIANTS.wiper = { suitLite:'#bfe6ff', suit:'#3fa8ff', suitDark:'#12508f', arm:'#f4f7fc', armDark:'#c3cad6',
+                    belt:'#ffffff', beltDark:'#9dabc0', split:true, splitCore:true, shredder:true, wide:true,
+                    core:'#e8f6ff', coreD:'#12508f',
+                    outline:'#0d3c6e', outlineWidth:8,
+                    pacG:'#3fa8ff', pacGD:'#0d3c6e', pacO:'#ffffff', pacOD:'#9dabc0' };
+VARIANTS.infmirror = { suitLite:'#ffffff', suit:'#e6f0ff', suitDark:'#9dabc0', arm:'#c08bff', armDark:'#4a1f8a',
+                    belt:'#e8d0ff', beltDark:'#8f6bc4', shards:true, visor:'blue', visorGlow:'#ffffff',
+                    core:'#ffffff', coreD:'#8f6bc4', wide:true,
+                    outline:'#7a6a9c', outlineWidth:7,
+                    pacG:'#e6f0ff', pacGD:'#7a6a9c', pacO:'#c08bff', pacOD:'#4a1f8a' };
+
 VARIANTS.admin = { suitLite:'#2a0407', suit:'#180204', suitDark:'#0a0102', arm:'#ff2b2b', armDark:'#7a0000',
                     belt:'#ff2b2b', beltDark:'#7a0000', goggles:true, wide:true,
                     outline:'#ff5a3c', outlineWidth:7,
@@ -2852,6 +2878,99 @@ const UPGRADES = {
         mod:{"set":{"carBoost":2.1},"cd":0.8} },
       { name:"Race Team", blurb:"Everything he touches flies, including his own workshop.", cost:3800,
         mod:{"set":{"carBoost":2.9},"cd":0.66,"dmg":1.4} }
+    ] }
+  },
+  crusher: {
+    A: { name:"Heavier Head", tiers:[
+      { name:"Weighted", blurb:"A good deal more behind every swing.", cost:64000, mod:{"dmg":1.7} },
+      { name:"Depleted Core", blurb:"Twice the mass again.", cost:190000, mod:{"dmg":2.1} },
+      { name:"Worldbreaker", blurb:"A number bosses were not written for.", cost:620000, mod:{"dmg":2.9} }
+    ] },
+    B: { name:"Faster Swing", tiers:[
+      { name:"Balanced", blurb:"Swings noticeably quicker.", cost:58000, mod:{"cd":0.84} },
+      { name:"Servo Arm", blurb:"Barely stops between swings.", cost:172000, mod:{"cd":0.7,"dmg":1.2} },
+      { name:"Piledriver", blurb:"A constant hammering.", cost:560000, mod:{"cd":0.55,"dmg":1.35} }
+    ] },
+    C: { name:"Boss Hunter", tiers:[
+      { name:"Grudge", blurb:"Even harder on anything with a health bar.", cost:70000, mod:{"mul":{"bossMul":1.4}} },
+      { name:"Vendetta", blurb:"Husks feel it too.", cost:210000, mod:{"mul":{"bossMul":1.8,"huskMul":1.9}} },
+      { name:"Extinction", blurb:"Nothing with a name survives him for long.", cost:680000,
+        mod:{"mul":{"bossMul":2.6,"huskMul":2.4},"range":1.3} }
+    ] }
+  },
+  booster: {
+    A: { name:"Louder", tiers:[
+      { name:"Amplifier", blurb:"A stronger push on everyone in the ring.", cost:78000, mod:{"add":{"rate":0.2}} },
+      { name:"Overdrive Coil", blurb:"Half again as fast for everyone near him.", cost:240000, mod:{"add":{"rate":0.5}} },
+      { name:"Resonance", blurb:"Everything in the ring fires like it is possessed.", cost:760000, mod:{"add":{"rate":1.1}} }
+    ] },
+    B: { name:"Wider", tiers:[
+      { name:"Bigger Room", blurb:"The ring covers a lot more ground.", cost:70000, mod:{"range":1.3} },
+      { name:"Open Plan", blurb:"Most of a lane, boosted.", cost:215000, mod:{"range":1.65,"add":{"rangeUp":0.1}} },
+      { name:"Whole Trail", blurb:"Half the map stands in his ring.", cost:700000, mod:{"range":2.2,"add":{"rangeUp":0.28}} }
+    ] },
+    C: { name:"Longer Reach", tiers:[
+      { name:"Sightlines", blurb:"Boosted Jaxons see further as well as fire faster.", cost:82000, mod:{"add":{"rangeUp":0.18}} },
+      { name:"Spotter", blurb:"A serious reach bonus on everyone in the ring.", cost:250000, mod:{"add":{"rangeUp":0.42}} },
+      { name:"Horizon Sight", blurb:"Everyone he touches covers nearly twice the ground.", cost:790000, mod:{"add":{"rangeUp":0.8}} }
+    ] }
+  },
+  slayer: {
+    A: { name:"Sharper Mark", tiers:[
+      { name:"Bounty", blurb:"The mark bites a lot harder.", cost:92000, mod:{"mul":{"eliteMul":1.5}} },
+      { name:"Contract", blurb:"An elite under his mark is a short story.", cost:280000, mod:{"mul":{"eliteMul":2.1}} },
+      { name:"Execution", blurb:"Nothing below a boss lives under it.", cost:880000, mod:{"mul":{"eliteMul":3.2},"dmg":1.4} }
+    ] },
+    B: { name:"Colder Mark", tiers:[
+      { name:"Hobble", blurb:"The marked one drags badly.", cost:84000, mod:{"set":{"slaySlow":0.4}} },
+      { name:"Snare", blurb:"Barely moving, and marked for longer.", cost:260000, mod:{"set":{"slaySlow":0.26,"slayMark":4.5}} },
+      { name:"Frozen Contract", blurb:"It stops in its tracks and waits for the rest.", cost:820000,
+        mod:{"set":{"slaySlow":0.12,"slayMark":6}} }
+    ] },
+    C: { name:"Wider Contract", tiers:[
+      { name:"Field Office", blurb:"Sees a lot more of the trail.", cost:88000, mod:{"range":1.3} },
+      { name:"Regional", blurb:"A far wider hunting ground, and a faster hand.", cost:270000, mod:{"range":1.6,"cd":0.8} },
+      { name:"No Borders", blurb:"Half the map is his beat.", cost:860000, mod:{"range":2.1,"cd":0.6,"dmg":1.3} }
+    ] }
+  },
+  wiper: {
+    A: { name:"Bigger Blast", tiers:[
+      { name:"Heavier Charge", blurb:"The blast hits far harder.", cost:112000, mod:{"mul":{"blastDmg":2.2}} },
+      { name:"Deep Charge", blurb:"A blast that clears most things outright.", cost:330000, mod:{"mul":{"blastDmg":3.6}} },
+      { name:"Levelling", blurb:"The trail is empty afterwards.", cost:1050000, mod:{"mul":{"blastDmg":6.5},"dmg":1.4} }
+    ] },
+    B: { name:"Faster Cycle", tiers:[
+      { name:"Quick Vent", blurb:"Blasts come round sooner.", cost:104000, mod:{"mul":{"blastCd":0.78}} },
+      { name:"Twin Coil", blurb:"Nearly twice as often, and heavier fire between.", cost:315000,
+        mod:{"mul":{"blastCd":0.58},"dmg":1.3} },
+      { name:"Continuous", blurb:"There is barely a gap between blasts.", cost:1000000,
+        mod:{"mul":{"blastCd":0.36},"dmg":1.6,"cd":0.7} }
+    ] },
+    C: { name:"Wider Sweep", tiers:[
+      { name:"Broad Wave", blurb:"The blast reaches further along the trail.", cost:118000,
+        mod:{"mul":{"blastR":1.25},"splash":1.4} },
+      { name:"Full Sweep", blurb:"Most of the lane, every blast.", cost:345000,
+        mod:{"mul":{"blastR":1.6},"splash":1.9,"range":1.25} },
+      { name:"Horizon Sweep", blurb:"The whole trail, end to end.", cost:1100000,
+        mod:{"mul":{"blastR":2.4},"splash":2.6,"range":1.5} }
+    ] }
+  },
+  infmirror: {
+    A: { name:"Brighter Glass", tiers:[
+      { name:"Silvered", blurb:"Copies come back stronger.", cost:120000, mod:{"mul":{"boost":1.4}} },
+      { name:"Prismatic", blurb:"Far brighter than what went in.", cost:360000, mod:{"mul":{"boost":1.9}} },
+      { name:"Absolute", blurb:"A copy outshines the original several times over.", cost:1150000, mod:{"mul":{"boost":2.8}} }
+    ] },
+    B: { name:"Faster Glass", tiers:[
+      { name:"Quick Silver", blurb:"Copies land noticeably sooner.", cost:112000, mod:{"cd":0.78} },
+      { name:"Rapid Reflection", blurb:"Barely a pause between copies.", cost:340000, mod:{"cd":0.58} },
+      { name:"Instant", blurb:"It answers as fast as it is fired at.", cost:1080000, mod:{"cd":0.38} }
+    ] },
+    C: { name:"Deeper Corridor", tiers:[
+      { name:"Third Pane", blurb:"One more echo on every copy.", cost:126000, mod:{"add":{"echo":3}} },
+      { name:"Long Hall", blurb:"A corridor of them.", cost:380000, mod:{"add":{"echo":7},"range":1.25} },
+      { name:"Endless", blurb:"It does not appear to stop echoing at all.", cost:1200000,
+        mod:{"add":{"echo":14},"range":1.5} }
     ] }
   },
   /* levels instead of paths — see ADM below. The entry exists so every
@@ -3361,7 +3480,8 @@ const setUp = (t, p, v) => { if (p === 'A') t.upA = v; else if (p === 'B') t.upB
 
 function SP(t) {
   const ver = (t.upA || 0)*16 + (t.upB || 0)*4 + (t.upC || 0) + (t.asc ? 1024 : 0)
-            + (t.dbl ? 2048 : 0) + (t.lvl || 0)*4096;
+            + (t.dbl ? 2048 : 0) + (t.lvl || 0)*4096
+            + Math.round((t.rangeUp || 0)*100)*4194304;
   if (t._spec && t._sv === ver) return t._spec;
   const base = TOWERS[t.type];
   const sp = Object.assign({}, base);
@@ -3376,6 +3496,10 @@ function SP(t) {
   /* An Ascended Jaxon carries every path at once and then some — see ASCEND */
   if (t.asc) ascendSpec(sp, t.type);
   if (t.dbl) dblSpec(sp, t.type);
+  /* a Power Boost Jaxon standing nearby lends everyone his reach */
+  if (t.rangeUp && typeof sp.range === 'number' && isFinite(sp.range)) {
+    sp.range = Math.round(sp.range * (1 + t.rangeUp));
+  }
   /* the Admin Jaxon's numbers come from his level, not from the tables */
   if (sp.ammo === 'admin') {
     const lv = admLevel(t);
@@ -3475,7 +3599,23 @@ const ASCEND = {
            blurb:'A corridor of glass. One friendly shot goes in and a barrage of brighter ones comes back out.' },
   truegod: { name:'Ascended True God Jaxon', cost:400000,
            mods:{ dmg:5.4, cd:0.45, range:1.4 },
-           blurb:'Every divine path folded into one. The cars, the cone, the aura and the ultimates, all of it, always.' }
+           blurb:'Every divine path folded into one. The cars, the cone, the aura and the ultimates, all of it, always.' },
+  /* the ultra tier ascends on the same rules and at ultra prices */
+  crusher: { name:'Ascended Boss Crusher', cost:900000,
+           mods:{ dmg:5.0, cd:0.5, range:1.35, extra:{ mul:{ bossMul:1.8, huskMul:1.8 } } },
+           blurb:'A hammer with a boss-shaped dent in it. Whatever has a health bar has already lost.' },
+  booster: { name:'Ascended Power Boost', cost:1100000,
+           mods:{ dmg:1, cd:1, range:1.6, extra:{ add:{ rate:1.4, rangeUp:0.7 } } },
+           blurb:'Everything inside his ring stops behaving like a tower and starts behaving like a weather event.' },
+  slayer: { name:'Ascended Elite Slayer', cost:1300000,
+           mods:{ dmg:5.0, cd:0.48, range:1.45, extra:{ mul:{ eliteMul:2.2 }, set:{ slaySlow:0.1, slayMark:7 } } },
+           blurb:'Everything short of a boss is a contract, and every contract closes.' },
+  wiper: { name:'Ascended Wave Wiper', cost:1600000,
+           mods:{ dmg:5.2, cd:0.45, range:1.4, extra:{ mul:{ blastDmg:4.5, blastCd:0.55, blastR:1.7 } } },
+           blurb:'The blast stops being an event and becomes the weather. The trail is simply empty.' },
+  infmirror: { name:'Ascended Infinity Mirror', cost:1900000,
+           mods:{ dmg:3.0, cd:0.4, range:1.45, extra:{ add:{ echo:16 }, mul:{ boost:2.4 } } },
+           blurb:'A room with no walls, only reflections. One friendly shot goes in and a wall of light comes out.' }
 };
 /* Two Jaxons in the whole game go further than Ascended. Fuse two Ascended
    ones of the same type and you get the last form there is — one only, and
@@ -3486,7 +3626,16 @@ const DOUBLE = {
             blurb:'Two corridors of glass facing each other. Anything a friendly Jaxon fires comes back a dozen times over and brighter every time.' },
   truegod: { name:'Double Ascended True God Jaxon', cost:2200000,
             mods:{ dmg:3.4, cd:0.55, range:1.3 },
-            blurb:'There is nothing after this one. Every divine path, twice over, on a clock that barely stops to breathe.' }
+            blurb:'There is nothing after this one. Every divine path, twice over, on a clock that barely stops to breathe.' },
+  infmirror: { name:'Double Ascended Infinity Mirror', cost:9500000,
+            mods:{ dmg:3.4, cd:0.55, range:1.3, extra:{ add:{ echo:22 }, mul:{ boost:2.0 } } },
+            blurb:'Two infinite corridors facing one another. Whatever goes in never really stops coming back out.' },
+  crusher: { name:'Double Ascended Boss Crusher', cost:6500000,
+            mods:{ dmg:3.6, cd:0.55, range:1.25, extra:{ mul:{ bossMul:2.2, huskMul:2.2 } } },
+            blurb:'Bosses were a mechanic. Now they are a formality.' },
+  wiper: { name:'Double Ascended Wave Wiper', cost:8200000,
+            mods:{ dmg:3.5, cd:0.55, range:1.3, extra:{ mul:{ blastDmg:3.4, blastCd:0.6, blastR:1.5 } } },
+            blurb:'It does not clear the trail so much as decline to have one.' }
 };
 const DBL_MAX = 1;                     // one of each, ever
 const canDouble = k => !!DOUBLE[k];
@@ -3511,7 +3660,7 @@ function startDouble(t) {
   if (!pair) { toast(dblWhy(t) || 'No pair ready'); return; }
   if (dblCount(t.type) >= DBL_MAX) { toast('There can only be one'); return; }
   const cost = dblCost(t.type);
-  if (!afford(cost)) { toast('Double Ascension costs $' + cost.toLocaleString()); beep(150, 0.08, 'square', 0.03); return; }
+  if (!afford(cost)) { toast('Double Ascension costs ' + bigCash(cost)); beep(150, 0.08, 'square', 0.03); return; }
   spend(cost);
   const keep = t, other = pair.find(o => o !== t);
   S.fuse = { x:keep.x, y:keep.y, t:0, dur:1.5, type:keep.type,
@@ -3617,6 +3766,11 @@ Object.assign(ASC_VARIANTS.ninja,   { suitLite:'#bfe6ff', suit:'#5fa8e0', suitDa
 Object.assign(ASC_VARIANTS.rainbow, { rainbow:true, arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.goldeng, { suitLite:'#fff4b8', suit:'#ffd21e', suitDark:'#a87a00', arm:'#c08bff', armDark:'#4a1f8a' });
 Object.assign(ASC_VARIANTS.mirror,  { shards:true, suitLite:'#f8f2ff', suit:'#d9c6ff', suitDark:'#8f6bc4' });
+Object.assign(ASC_VARIANTS.crusher, { suitLite:'#ffe0c0', suit:'#ff9440', suitDark:'#a83c00' });
+Object.assign(ASC_VARIANTS.booster, { suitLite:'#e8ffef', suit:'#8bffbe', suitDark:'#1f9c58', arm:'#ffd83d', armDark:'#a97c00' });
+Object.assign(ASC_VARIANTS.slayer,  { suitLite:'#f0dcff', suit:'#b98bff', suitDark:'#4a1f8a' });
+Object.assign(ASC_VARIANTS.wiper,   { split:true, splitCore:true, suitLite:'#d8f0ff', suit:'#6bc0ff', suitDark:'#12508f' });
+Object.assign(ASC_VARIANTS.infmirror, { shards:true, suitLite:'#ffffff', suit:'#f0e6ff', suitDark:'#a88fd0' });
 /* The Admin Jaxon's clothes are a hole in the screen. Two sprites make
    that work: the ordinary one is used only as a stencil for the rain, and
    this one has every scrap of cloth punched out of it, so what is left to
@@ -3995,6 +4149,27 @@ const TOWERS = {
              caddyBase:70, caddyWave:9,
              blurb:'Carries the bag and settles up at the end of every round. A flat $70 on each wave clear, plus $9 for every wave you have already survived. Nothing at all mid-wave.',
              tags:[['Income','t-fast'],['Wave Bonus','t-rain'],['No Damage','']] },
+  /* ------ the ultra tier. No wave gate: if you can pay, you can buy. --- */
+  crusher: { name:'Boss Crusher Jaxon', cost:110000, range:420, cd:1.1, dmg:2400, ammo:'crusher',
+             bossMul:14, huskMul:6,
+             blurb:'Built for one job. He hits a boss or an ex-boss husk fourteen times as hard as anything else on the trail, and he is deliberately poor against ordinary blobs.',
+             tags:[['Boss Killer','t-rain'],['x14 vs Bosses','t-single'],['Ultra','t-fast']] },
+  booster: { name:'Power Boost Jaxon', cost:140000, range:420, cd:1.0, dmg:0, ammo:'boost',
+             rate:0.55, rangeUp:0.22,
+             blurb:'No attack worth the name. Every Jaxon standing in his ring fires 55% faster and reaches 22% further, and it stacks with the Forge.',
+             tags:[['Aura','t-fast'],['+55% Rate','t-fast'],['Ultra','t-rain']] },
+  slayer:  { name:'Elite Slayer Jaxon', cost:165000, range:460, cd:1.4, dmg:1800, ammo:'slayer',
+             eliteMul:9, slayMark:3.0, slaySlow:0.55,
+             blurb:'Picks the toughest thing in range that is not a boss, paints it, and hits it nine times as hard while it crawls. Elites stop being the problem.',
+             tags:[['Elite Killer','t-single'],['Marks + Slows','t-aoe'],['Ultra','t-fast']] },
+  wiper:   { name:'Wave Wiper Jaxon', cost:195000, range:520, cd:0.34, dmg:1500, ammo:'wiper',
+             splash:900, splashR:190, blastCd:9.0, blastDmg:90000, blastR:900,
+             blurb:'Heavy fire between blasts, and every 9s a blast that walks the whole trail. It is the answer to a wave that simply has too much in it.',
+             tags:[['Path Blast','t-aoe'],['Every 9s','t-rain'],['Ultra','t-fast']] },
+  infmirror:{ name:'Infinity Mirror Jaxon', cost:210000, range:520, cd:0.5, dmg:0, ammo:'mirror',
+             boost:5.5, echo:6,
+             blurb:'The Mirror line, finished. A wider room, faster copies and far brighter echoes — whatever your best Jaxon fires, this one fires a corridor of it back.',
+             tags:[['Copies Allies','t-rain'],['x5.5 Echoes','t-aoe'],['Ultra','t-fast']] },
   /* Not in the shop. He is bought from the Admin Panel and he does not
      take upgrade paths — he takes levels. */
   admin:   { name:'Admin Jaxon', cost:500, range:620, cd:0.1, dmg:125, ammo:'admin',
@@ -4025,7 +4200,8 @@ const CATS = [
   ['support',  'Support'],
   ['builders', 'Builders'],
   ['income',   'Income'],
-  ['late',     'Late game']
+  ['late',     'Late game'],
+  ['ultra',    'Ultra']
 ];
 const ROLE = {
   basic:['starters','builders'],      slingshot:['starters','dps'],
@@ -4037,6 +4213,9 @@ const ROLE = {
   factory:['builders'],               towtruck:['builders'],
   mechanic:['builders','support'],    tipjar:['income'],
   caddy:['income'],                   admin:[],
+  crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
+  slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
+  infmirror:['dps','splash','late','ultra'],
   pinwheel:['support'],               boombox:['support'],
   lunchbox:['support'],               forge:['support'],
   yoyo:['dps'],                       tablet:['dps'],
@@ -4057,6 +4236,7 @@ const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).inc
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
+               'crusher','booster','slayer','wiper','infmirror',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -4070,7 +4250,8 @@ const VALUE = {
                 titantablet:100, stormcloud:104, eclipse:100, upgradedlaser:100, titanmax:89,
                 blackholelaser:89, director:100, mirror:100, truegod:89,
                 piggybank:100, recycler:100, tax:100, merchant:100,
-                factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100 };
+                factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100,
+                crusher:96, booster:100, slayer:98, wiper:94, infmirror:92 };
 
 /* ------------------------------------------------------ Admin Jaxon ----
    He does not buy upgrades, he buys levels. Damage compounds hard for the
@@ -4133,6 +4314,7 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      stormcloud:1.3, director:1.2,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
                      factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
+                     crusher:1.25, booster:1.2, slayer:1.15, wiper:1.4, infmirror:1.25,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -4163,7 +4345,20 @@ const BOSSES = [
   { at:70, name:'ACCESS DENIED',     hp:32000, r:149, speed:76,  leak:75, theme:'denied' },
   { at:80, name:'Static Sovereign',  hp:64000,  r:158, speed:80, leak:85,  theme:'static', power:'static' },
   { at:90, name:'Nursery Reaper',    hp:128000, r:167, speed:88, leak:100, theme:'reaper', power:'reaper' },
-  { at:100,name:'FINAL TRANSMISSION',hp:256000, r:182, speed:82, leak:120, theme:'final',  power:'final'  }
+  { at:100,name:'FINAL TRANSMISSION',hp:256000, r:182, speed:82, leak:120, theme:'final',  power:'final'  },
+  /* Past the old ladder the fight changes character: every one of these
+     has a mechanic that asks something of the board rather than just more
+     health, and the health climbs steeply on top. */
+  { at:110,name:'Overclock Warden',  hp:560000,   r:170, speed:86,  leak:135, theme:'static', power:'overclock' },
+  { at:120,name:'Iron Nursery',      hp:1.25e6,   r:188, speed:70,  leak:170, theme:'white',  power:'iron', plates:4 },
+  { at:130,name:'Twin Signal',       hp:2.7e6,    r:176, speed:96,  leak:150, theme:'blue',   power:'twin' },
+  { at:140,name:'Debt Collector',    hp:6e6,      r:180, speed:88,  leak:160, theme:'gold',   power:'debt' },
+  { at:150,name:'Rain Codex',        hp:1.3e7,    r:192, speed:80,  leak:175, theme:'green',  power:'codex' },
+  { at:160,name:'Fortress Orb',      hp:3e7,      r:205, speed:62,  leak:190, theme:'red',    power:'fortress' },
+  { at:170,name:'Null Prophet',      hp:6.6e7,    r:186, speed:90,  leak:200, theme:'denied', power:'null' },
+  { at:180,name:'Chainbreak',        hp:1.5e8,    r:190, speed:104, leak:210, theme:'reaper', power:'chain' },
+  { at:190,name:'Glass Tyrant',      hp:3.2e8,    r:172, speed:150, leak:300, theme:'final',  power:'glass' },
+  { at:200,name:'Godspeed Horizon',  hp:7.5e8,    r:210, speed:112, leak:340, theme:'horizon',power:'horizon' }
 ];
 /* how far the Static Sovereign's jam reaches, and how far the Reaper's dread
    hurries the crowd along behind him */
@@ -4204,10 +4399,12 @@ const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅ�
 function bossFor(wave) {
   const i = Math.round(wave / BOSS.every) - 1;
   if (i < BOSSES.length) return BOSSES[i];
+  /* There are no new bosses after the Horizon. It comes back instead, the
+     same fight with the same mechanic and a number that keeps doubling. */
   const last = BOSSES[BOSSES.length - 1], over = i - (BOSSES.length - 1);
-  return { at:wave, name:'ACCESS DENIED v' + (over + 1), hp:last.hp * Math.pow(2, over),
-           r:Math.min(210, last.r * Math.pow(1.04, over)), speed:last.speed, leak:last.leak + over*10,
-           theme:'denied' };
+  return { at:wave, name:last.name + ' v' + (over + 1), hp:last.hp * Math.pow(2.15, over),
+           r:Math.min(236, last.r * Math.pow(1.02, over)), speed:last.speed,
+           leak:last.leak + over*24, theme:last.theme, power:last.power };
 }
 const CAR = { hp:3, speed:340 };
 const WAVE_SPEED = 1500;      // px/s numerator: 1500 / (tier + 5)
@@ -4573,7 +4770,7 @@ function buildShelf() {
         <div class="nm">${t.name}</div>
         <div class="rt">${(t.tags || []).filter(g => g[0]).slice(0, 2).map(g =>
           `<span class="tag ${g[1]}">${g[0]}</span>`).join('')}</div>
-        <div class="pr">$${costOf(k)}</div>
+        <div class="pr">${bigCash(costOf(k))}</div>
       </button>`;
   }).join('');
   $('shelf').querySelectorAll('.med').forEach(el => {
@@ -4680,7 +4877,7 @@ function startDuplicate(t) {
     return;
   }
   if (!afford(cost)) {
-    toast('Need $' + cost.toLocaleString() + ' to duplicate ' +
+    toast('Need ' + bigCash(cost) + ' to duplicate ' +
           (t.asc ? ASCEND[t.type].name : TOWERS[t.type].name));
     beep(150, 0.08, 'square', 0.03);
     return;
@@ -4698,8 +4895,8 @@ function startDuplicate(t) {
 function syncHUD() {
   const sb = SB();
   $('hpVal').textContent = sb ? '∞'
-    : Math.max(0, Math.round(S.health)) + (S.shield > 0 ? ' +' + S.shield : '');
-  $('moneyVal').textContent = sb ? '∞' : '$' + Math.floor(S.money);
+    : bigNum(Math.max(0, Math.round(S.health))) + (S.shield > 0 ? ' +' + S.shield : '');
+  $('moneyVal').textContent = sb ? '∞' : bigCash(Math.floor(S.money));
   $('waveVal').textContent = S.wave;
   $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
                            : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
@@ -5269,7 +5466,7 @@ function sweepStrays() {
     const back = costOf(t.type) + upSpent(t);
     S.money += back;
     S.floats.push({ x:Math.max(60, Math.min(W - 60, t.x)), y:Math.max(60, Math.min(H - 60, t.y)),
-                    txt:'+$' + back.toLocaleString(), color:'#7dffb4', life:1.8, big:true });
+                    txt:'+' + bigCash(back), color:'#7dffb4', life:1.8, big:true });
     burst(t.x, t.y, '#7dffb4', 16);
   }
   S.towers = S.towers.filter(t => onLawn(t.x, t.y));
@@ -5349,7 +5546,7 @@ function addBoss(def, extra) {
     d:0, hp:def.hp, max:def.hp, hit:0, def, cols:makeRain(def), glitch:0,
     mark:0, markMul:1, dbl:false, stun:0,
     pulseCd:3.5, ring:0, inv:0, phase:1, slowCd:9, bar:null,
-    plates:armorFor(def.at || S.wave), crack:0
+    plates:Math.max(def.plates || 0, armorFor(def.at || S.wave)), crack:0
   }, extra || {});
   S.bosses.push(b);
   const el = document.createElement('div');
@@ -5561,6 +5758,8 @@ function enemyFill(e) {
    they apply to every weapon in the game without touching any of them. */
 function amplify(dmg, owner, e) {
   if (S.dmgMul !== 1) dmg *= S.dmgMul;          // the Admin Panel's dial
+  if (owner && owner.nulled) dmg *= 0.42;       // standing in the Null Prophet's shadow
+  if (e && e.slay > 0) dmg *= e.slayMul || 1;   // painted by an Elite Slayer
   if (owner && owner.admField) dmg *= 1 + ADM.field.dmg;
   if (owner) {
     if (owner.dmgBuff > 0) dmg *= 1 + owner.dmgBuffAmt;
@@ -5782,6 +5981,53 @@ function adminTick(t, spec, dt, mul, override) {
 
   /* 4. level 100: everyone standing near him works far harder */
   t.lit = true;
+}
+
+/* The Crusher's swing: ordinary things barely notice it, bosses and the
+   husks of old bosses very much do. */
+function crusherSwing(t, spec, aim) {
+  const R = 70;
+  for (const e of S.enemies) {
+    if (e.dead) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - aim.x, p.y - aim.y) > R) continue;
+    hurtEnemy(e, spec.dmg * (e.husk ? spec.huskMul : 1), t);
+  }
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - aim.x, p.y - aim.y) <= R + B.def.r) hurtBoss(spec.dmg * spec.bossMul, t, B);
+  }
+  S.fx.push({ k:'boom', x:aim.x, y:aim.y, life:0.4, max:0.4, r:R });
+  if (!S.perf) burst(aim.x, aim.y, '#ff7a2e', 12, 1.2);
+  beep(140, 0.22, 'square', 0.05, 60);
+}
+
+/* The Wiper's blast: everything along the trail near him, at once. */
+function wiperBlast(t, spec) {
+  const d0 = nearestPathD(t.x, t.y);
+  let hit = 0;
+  for (const e of S.enemies) {
+    if (e.dead) continue;
+    if (Math.abs(e.d - d0) > spec.blastR) continue;
+    hurtEnemy(e, spec.blastDmg, t);
+    hit++;
+  }
+  for (const B of S.bosses) {
+    if (Math.abs(B.d - d0) <= spec.blastR) hurtBoss(spec.blastDmg*0.55, t, B);
+  }
+  /* the shape of it, drawn along the trail rather than as a circle */
+  const steps = S.perf > 1 ? 5 : 11;
+  for (let i = 0; i <= steps; i++) {
+    const d = d0 - spec.blastR + (i/steps)*spec.blastR*2;
+    if (d < 0 || d > PATH_LEN) continue;
+    const q = pointAt(d);
+    S.fx.push({ k:'boom', x:q.x, y:q.y, life:0.44, max:0.44, r:150 });
+  }
+  t.shots++;
+  shakeScreen(14, 0.7);
+  flashScreen(0.18);
+  beep(64, 0.9, 'sawtooth', 0.07, 240);
+  if (hit) toast('Wave Wiper — ' + hit + ' swept off the trail');
 }
 
 /* his beam lands as a burst, the same shape a Rainbow leaves behind */
@@ -6193,6 +6439,15 @@ function cycleAim(t, by) {
 }
 
 function targetFor(t) {
+  /* the Overclock Warden's pulse: he is still firing, just not at anything
+     he chose — he throws it wherever he was last looking */
+  if (t.scramble > 0) {
+    const list = S.enemies.filter(e => !e.dead);
+    if (!list.length) return null;
+    const e = list[Math.floor(Math.random()*list.length)];
+    const q = enemyPos(e);
+    return Math.hypot(q.x - t.x, q.y - t.y) <= SP(t).range ? q : null;
+  }
   const range = SP(t).range;
   const onBoss = () => {
     let hit = null, hd = 1e9;
@@ -6693,6 +6948,161 @@ function bossPowers(dt, b) {
     }
   }
 
+  /* ---- 110: a pulse that scrambles what every Jaxon is looking at ---- */
+  if (pw === 'overclock') {
+    b.pulseCd -= dt;
+    if (b.pulseCd <= 0) {
+      b.pulseCd = 7.5; b.ring = 0.9;
+      let hit = 0;
+      for (const t of S.towers) {
+        if (Math.hypot(t.x - p.x, t.y - p.y) > 520) continue;
+        t.scramble = 1.6; hit++;
+      }
+      beep(150, 0.5, 'square', 0.06, 900);
+      if (hit) toast('Overclock pulse — ' + hit + ' Jaxons lost their target');
+    }
+  }
+
+  /* ---- 120: it walks in armoured and it walks in heavy ---- */
+  if (pw === 'iron') {
+    /* the plates are set at spawn; this only keeps the warning up */
+    if (b.plates > 0 && !b.ironSaid) {
+      b.ironSaid = true;
+      toast('Iron Nursery — control breaks the plates, damage will not');
+    }
+  }
+
+  /* ---- 130: at half health it is two of them ---- */
+  if (pw === 'twin') {
+    if (!b.split && b.hp <= b.max*0.5) {
+      b.split = true; b.inv = 0.8; b.ring = 1.1;
+      const half = Math.max(1, Math.round(b.hp));
+      b.hp = half; b.max = half;
+      const def2 = Object.assign({}, b.def, { name:b.def.name + ' II', hp:half });
+      const twin = addBoss(def2, { d:Math.max(0, b.d - 140), plates:0 });
+      twin.hp = twin.max = half;
+      b.twinOf = twin; twin.twinOf = b;
+      burst(p.x, p.y, '#5cc4ff', 60);
+      banner('SIGNAL SPLIT', 'two of them now', '#5cc4ff');
+      beep(70, 1.1, 'sawtooth', 0.08, 320);
+      shakeScreen(16, 0.9);
+    }
+    /* linked: hurting one bleeds a little into the other */
+    if (b.twinOf && S.bosses.includes(b.twinOf)) {
+      const other = b.twinOf;
+      if (b.hp/b.max < other.hp/other.max - 0.25) other.hp -= other.max*0.0006;
+    }
+  }
+
+  /* ---- 140: it charges you for the privilege ---- */
+  if (pw === 'debt') {
+    b.debtCd = (b.debtCd || 3) - dt;
+    if (b.debtCd <= 0) {
+      b.debtCd = 4.5;
+      const owed = Math.min(Math.round(S.money*0.06), 4000 + S.wave*40);
+      if (owed > 0 && !SB()) {
+        S.money = Math.max(0, S.money - owed);
+        S.floats.push({ x:p.x, y:p.y - b.def.r - 20, txt:'-' + bigCash(owed), color:'#ffd83d', life:1.4 });
+        bump('moneyBox','hurt'); beep(120, 0.3, 'square', 0.05, 60);
+        syncHUD();
+      }
+    }
+  }
+
+  /* ---- 150: a storm that drags every shot on the map ---- */
+  if (pw === 'codex') {
+    b.slowCd -= dt;
+    if (b.slowCd <= 0) {
+      b.slowCd = 11; b.ring = 1.0;
+      S.projSlow = 4.2;
+      beep(100, 0.7, 'square', 0.055, 48);
+      toast('Rain Codex — every shot on the board is wading');
+    }
+  }
+
+  /* ---- 160: it keeps putting more on the trail ---- */
+  if (pw === 'fortress') {
+    b.spawnCd = (b.spawnCd || 4) - dt;
+    if (b.spawnCd <= 0) {
+      b.spawnCd = 6.5;
+      if (S.enemies.length < LIVE_CAP(S.wave)) {
+        const e = sbBaseEnemy(Math.max(0, b.d - 60));
+        e.elite = ELITE.length - 1;
+        e.hp = e.max = Math.round(b.max*0.012);
+        e.husk = huskTheme(Math.max(S.wave, 70));
+        e.spd = 74;
+        e.leakN = 20;
+        S.enemies.push(e);
+        burst(p.x, p.y, '#ff5a3c', 18);
+        beep(180, 0.25, 'sawtooth', 0.04, 90);
+      }
+    }
+  }
+
+  /* ---- 170: standing near it is standing in a dead zone ---- */
+  if (pw === 'null') {
+    for (const t of S.towers) {
+      const near = Math.hypot(t.x - p.x, t.y - p.y) <= 430;
+      t.nulled = near ? 1 : 0;
+    }
+    b.ring = Math.max(b.ring, 0.28);
+  }
+
+  /* ---- 180: everything else on the trail hurries ---- */
+  if (pw === 'chain') {
+    for (const e of S.enemies) e.haste = Math.max(e.haste === undefined ? 1 : e.haste, 1.75);
+  }
+
+  /* ---- 190: fast, brittle, and it costs you everything if it lands ---- */
+  if (pw === 'glass') {
+    b.glassCd = (b.glassCd || 2) - dt;
+    if (b.glassCd <= 0) {
+      b.glassCd = 5.5;
+      b.dashT = 0.9;
+      beep(900, 0.2, 'sawtooth', 0.045, 1600);
+    }
+    if (b.dashT > 0) { b.dashT -= dt; b.d += b.def.speed*1.4*dt; }
+  }
+
+  /* ---- 200: the finale, one phase at a time ---- */
+  if (pw === 'horizon') {
+    const frac = b.hp/b.max;
+    const want = frac > 0.66 ? 1 : frac > 0.33 ? 2 : 3;
+    if (want > (b.hPhase || 1)) {
+      b.hPhase = want; b.inv = 1.1; b.ring = 1.2;
+      burst(p.x, p.y, '#c08bff', 90, 2); burst(p.x, p.y, '#ffffff', 50, 3);
+      banner('HORIZON · PHASE ' + want, b.def.name, '#c08bff');
+      flashScreen(0.34); shakeScreen(20, 1.2);
+      beep(60, 1.3, 'sawtooth', 0.08, 260);
+    }
+    b.hPhase = b.hPhase || 1;
+    /* every phase adds one of the earlier tricks on top of the last */
+    b.pulseCd -= dt;
+    if (b.pulseCd <= 0) {
+      b.pulseCd = 6.5;
+      b.ring = 0.9;
+      for (const t of S.towers) if (Math.hypot(t.x - p.x, t.y - p.y) <= 480) t.scramble = 1.2;
+      if (b.hPhase >= 2) S.projSlow = 2.4;
+      beep(120, 0.6, 'square', 0.06, 700);
+    }
+    if (b.hPhase >= 2) {
+      for (const e of S.enemies) e.haste = Math.max(e.haste === undefined ? 1 : e.haste, 1.5);
+    }
+    if (b.hPhase >= 3) {
+      b.spawnCd = (b.spawnCd || 3) - dt;
+      if (b.spawnCd <= 0) {
+        b.spawnCd = 5;
+        if (S.enemies.length < LIVE_CAP(S.wave)) {
+          const e = sbBaseEnemy(Math.max(0, b.d - 50));
+          e.elite = ELITE.length - 1;
+          e.hp = e.max = Math.round(b.max*0.008);
+          e.husk = 'final'; e.spd = 96; e.leakN = 26;
+          S.enemies.push(e);
+        }
+      }
+    }
+  }
+
   /* wave 100 — half health splits the signal, and the whole map keeps
      stuttering while he is on it */
   if (pw === 'final') {
@@ -6712,7 +7122,10 @@ function bossPowers(dt, b) {
   }
 }
 /* the Reaper's dread dies with him */
-function clearBossAuras() { for (const e of S.enemies) e.haste = 1; }
+function clearBossAuras() {
+  for (const e of S.enemies) e.haste = 1;
+  for (const t of S.towers) { t.nulled = 0; t.scramble = 0; }
+}
 /* the Reaper aura is rebuilt from scratch every frame, so it has to be
    wiped before the bosses get their turn or it would only ever grow */
 function resetHaste() { for (const e of S.enemies) e.haste = 1; }
@@ -6740,6 +7153,7 @@ function update(dt) {
     if (e.stun > 0) e.stun -= dt;
     if (e.bub > 0) e.bub -= dt;
     if (e.mark > 0) { e.mark -= dt; if (e.mark <= 0) e.markMul = 1; }
+    if (e.slay > 0) { e.slay -= dt; if (e.slay <= 0) e.slayMul = 1; }
     if (e.abCd > 0) {                                  // Jammer / Healer, on a slow timer
       e.abCd -= dt;
       if (e.abCd <= 0) {
@@ -6881,6 +7295,7 @@ function update(dt) {
   if (S.auraT <= 0) {
     S.auraT = 0.125;
     const forges    = S.towers.filter(x => TOWERS[x.type].ammo === 'buff');
+    const boosters  = S.towers.filter(x => TOWERS[x.type].ammo === 'boost');
     const directors = S.towers.filter(x => TOWERS[x.type].ammo === 'cut');
     for (const t of S.towers) {
       let m = 1;
@@ -6889,7 +7304,17 @@ function update(dt) {
         const fs = SP(fg);
         if (Math.hypot(fg.x - t.x, fg.y - t.y) <= fs.range) m *= (1 - fs.rate);
       }
-      t.rateMul = Math.max(0.3, m);
+      let up = 0;
+      for (const bs of boosters) {
+        if (bs === t) continue;
+        const s2 = SP(bs);
+        if (Math.hypot(bs.x - t.x, bs.y - t.y) <= s2.range) {
+          m *= 1/(1 + s2.rate);
+          up = Math.max(up, s2.rangeUp);
+        }
+      }
+      t.rangeUp = up;
+      t.rateMul = Math.max(0.12, m);
       t.buffed = m < 1;
       let cr = 0;
       for (const d of directors) {
@@ -6904,6 +7329,7 @@ function update(dt) {
   for (const t of S.towers) {
     const spec = SP(t);
     if (t.fireSlow > 0) t.fireSlow -= dt;                // a Jammer elite is standing nearby
+    if (t.scramble > 0) t.scramble -= dt;                // the Warden's pulse wearing off
     /* the Admin Jaxon's field is the other half of amplify() */
     const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1)
               * (t.admField ? 1/(1 + ADM.field.rate) : 1)
@@ -6939,6 +7365,71 @@ function update(dt) {
         bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
         syncHUD();
       }
+      continue;
+    }
+    /* Boss Crusher — a single heavy swing, and it only really matters
+       against something with a name on it */
+    if (spec.ammo === 'crusher') {
+      t.cd -= dt;
+      if (t.cd <= 0) {
+        const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+        if (aim) {
+          t.cd = spec.cd * mul;
+          t.face = aim.x < t.x ? -1 : 1;
+          t.flash = 1; t.shots++; t.recoil = 1;
+          crusherSwing(t, spec, aim);
+        } else t.cd = Math.min(t.cd, 0);
+      }
+      continue;
+    }
+    /* Power Boost — pure aura, applied in the fire-rate sweep */
+    if (spec.ammo === 'boost') { t.lit = true; continue; }
+    /* Elite Slayer — paints the fattest thing in reach that is not a boss */
+    if (spec.ammo === 'slayer') {
+      t.cd -= dt;
+      if (t.cd <= 0) {
+        let best = null, bestHp = -1;
+        for (const e of S.enemies) {
+          if (e.dead) continue;
+          const p = enemyPos(e);
+          if (Math.hypot(p.x - t.x, p.y - t.y) > spec.range) continue;
+          if (e.hp > bestHp) { bestHp = e.hp; best = e; }
+        }
+        if (best) {
+          t.cd = spec.cd * mul;
+          const p = enemyPos(best);
+          t.face = p.x < t.x ? -1 : 1;
+          t.flash = 1; t.shots++;
+          best.slay = spec.slayMark;
+          best.slayMul = spec.eliteMul;
+          best.slow = Math.max(best.slow || 0, spec.slayMark);
+          best.slowMul = Math.min(best.slowMul || 1, spec.slaySlow);
+          hurtEnemy(best, spec.dmg * spec.eliteMul, t);
+          S.fx.push({ k:'boom', x:p.x, y:p.y, life:0.3, max:0.3, r:44 });
+          beep(1200, 0.07, 'square', 0.03, 300);
+        } else t.cd = Math.min(t.cd, 0);
+      }
+      t.lit = true;
+      continue;
+    }
+    /* Wave Wiper — steady heavy fire, and a blast that walks the trail */
+    if (spec.ammo === 'wiper') {
+      t.cd -= dt;
+      if (t.cd <= 0) {
+        const aim = override ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+        if (aim) {
+          t.cd = spec.cd * mul;
+          t.face = aim.x < t.x ? -1 : 1;
+          t.flash = 1; t.shots++;
+          adminBurst(t, aim.x, aim.y, spec.dmg, spec.splash, spec.splashR, '#3fa8ff');
+        } else t.cd = Math.min(t.cd, 0);
+      }
+      t.blastCd = (t.blastCd || spec.blastCd) - dt;
+      if (t.blastCd <= 0) {
+        t.blastCd = spec.blastCd * mul;
+        wiperBlast(t, spec);
+      }
+      t.lit = true;
       continue;
     }
     /* Admin Jaxon — a beam that bursts, plus whatever his level unlocked */
@@ -7698,7 +8189,7 @@ function update(dt) {
       flashScreen(0.18);
       for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
     } else {
-      banner('WAVE ' + cleared + ' CLEARED', '+$' + (reward + caddy).toLocaleString(), '#7dffb4');
+      banner('WAVE ' + cleared + ' CLEARED', '+' + bigCash((reward + caddy)), '#7dffb4');
     }
     syncHUD();
   }
@@ -7721,7 +8212,7 @@ function endGame() {
   $('scoreRow').innerHTML =
     '<div><div class="k">Waves survived</div><div class="v">' + survived + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
-    '<div><div class="k">Total pops</div><div class="v">' + S.pops.toLocaleString() + '</div></div>' +
+    '<div><div class="k">Total pops</div><div class="v">' + bigNum(S.pops) + '</div></div>' +
     (isBest ? '<div><div class="k">Result</div><div class="v" style="color:#ffd83d">NEW BEST</div></div>' : '');
   $('ovEnd').classList.add('on');
   setShop(false); hideTip();
@@ -7772,7 +8263,7 @@ function startAscend(t) {
   if (!trio) { toast(ascWhy(t) || 'No trio ready'); return; }
   if (ascCount(t.type) >= ASC_MAX) { toast('Already two Ascended of that Jaxon'); return; }
   const cost = ascCost(t.type);
-  if (!afford(cost)) { toast('Ascension costs $' + cost.toLocaleString()); beep(150, 0.08, 'square', 0.03); return; }
+  if (!afford(cost)) { toast('Ascension costs ' + bigCash(cost)); beep(150, 0.08, 'square', 0.03); return; }
   spend(cost);
   /* the survivor is the one the player had open, standing where he stands */
   const keep = trio.includes(t) ? t : trio[0];
@@ -7856,7 +8347,7 @@ function statRows(spec, t) {
              `<div class="r"><span>Fire-rate bonus</span><b>+${Math.round(spec.rate*100)}%</b></div>` +
              `<div class="r"><span>Range</span><b>${Math.round(spec.range)}</b></div></div>`;
     }
-    rows += `<div class="r"><span>Damage dealt</span><b>${Math.round(t.dmg).toLocaleString()}</b></div>
+    rows += `<div class="r"><span>Damage dealt</span><b>${bigNum(Math.round(t.dmg))}</b></div>
              <div class="r"><span>Enemies popped</span><b>${t.pops}</b></div>
              <div class="r"><span>${what}</span><b>${t.shots}</b></div>`;
   }
@@ -7973,7 +8464,7 @@ function showShopTip(key, el) {
   const spec = TOWERS[key];
   $('ttip').innerHTML =
     `<div class="th"><img src="${PORTRAIT[key]}" alt="">
-       <div><div class="n">${spec.name}</div><div class="s">$${costOf(spec.key)}</div></div></div>
+       <div><div class="n">${spec.name}</div><div class="s">${bigCash(costOf(spec.key))}</div></div></div>
      ${tagHTML(spec.tags)}
      <div class="r" style="padding-bottom:7px">${spec.blurb}</div>
      ${ASCEND[key] ? '<div class="r" style="padding-bottom:7px;color:#c9b0ee">Can ascend: three maxed ' +
@@ -8031,7 +8522,7 @@ function drawPanel() {
       const rich = st === 'ok' ? ' rich' : '';
       const cost = st === 'owned' ? 'OWNED'
                  : st === 'blocked' ? 'PATH LOCKED'
-                 : '$' + u.cost.toLocaleString();
+                 : bigCash(u.cost);
       h += `<button class="upg ${path.toLowerCase()} ${st}${rich}" data-p="${path}" data-t="${i}">
               <span class="tier">${st === 'owned' ? '✓' : i}</span>
               <div class="un">${u.name}</div>
@@ -8051,7 +8542,7 @@ function drawPanel() {
              t.dbl ? ' · DOUBLE ASCENDED' : t.asc ? ' · ASCENDED' : ''}</div></div>
     </div>
     <div class="pstats">
-      <div><div class="k">Damage</div><div class="v">${Math.round(t.dmg).toLocaleString()}</div></div>
+      <div><div class="k">Damage</div><div class="v">${bigNum(Math.round(t.dmg))}</div></div>
       <div><div class="k">Pops</div><div class="v">${t.pops}</div></div>
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
@@ -8061,13 +8552,13 @@ function drawPanel() {
     ${ascBtn(t, trio, why, acost)}
     ${dblBtn(t)}
     <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
-      <span class="dn">Duplicate &nbsp;$${dcost.toLocaleString()}</span>
+      <span class="dn">Duplicate &nbsp;$${bigNum(dcost)}</span>
       <span class="ds">${t.asc ? 'Builds a second Ascended one, fee and all'
                               : 'Copies this Jaxon with all upgrades'}</span>
     </button>
     <div class="prow">
       ${hasChal('nosell') ? '<button class="sell poor" disabled>No Sell</button>'
-        : '<button class="sell" id="pSell">Sell &nbsp;+$' + refund.toLocaleString() + '</button>'}
+        : '<button class="sell" id="pSell">Sell &nbsp;+' + bigCash(refund) + '</button>'}
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
     <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
@@ -8099,11 +8590,11 @@ function drawPanel() {
   if (lg) {
     $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
     const price = () => admBuyCost(t, Math.max(1, Math.round(+$('pLvN').value || 1)));
-    $('pLvN').oninput = () => { lg.textContent = 'Buy $' + price().toLocaleString(); };
+    $('pLvN').oninput = () => { lg.textContent = 'Buy ' + bigCash(price()); };
     lg.onclick = ev => {
       ev.stopPropagation();
       const cnt = Math.max(1, Math.round(+$('pLvN').value || 1)), cost = admBuyCost(t, cnt);
-      if (!afford(cost)) { toast('Need $' + cost.toLocaleString() + ' for ' + cnt + ' level' + (cnt === 1 ? '' : 's')); return; }
+      if (!afford(cost)) { toast('Need ' + bigCash(cost) + ' for ' + cnt + ' level' + (cnt === 1 ? '' : 's')); return; }
       spend(cost);
       t.lvl = admLevel(t) + cnt;
       admLevelled(t, cnt);
@@ -8141,7 +8632,7 @@ function admPanelRows(t) {
       '<div class="lvUn' + (lv >= at ? ' on' : '') + '"><span>' + nm + '</span><b>lvl ' + at + '</b></div>').join('') +
     '<div class="lvRow">' +
       '<input type="number" id="pLvN" min="1" max="500" value="1">' +
-      '<button id="pLvGo">Buy $' + next.toLocaleString() + '</button>' +
+      '<button id="pLvGo">Buy ' + bigCash(next) + '</button>' +
     '</div></div>';
 }
 
@@ -8154,7 +8645,7 @@ function dblBtn(t) {
   }
   const cost = dblCost(t.type);
   return '<button class="asc dbl' + (afford(cost) ? '' : ' poor') + '" id="pDbl">' +
-         '<span class="an">Double Ascend &nbsp;$' + cost.toLocaleString() + '</span>' +
+         '<span class="an">Double Ascend &nbsp;' + bigCash(cost) + '</span>' +
          '<span class="as">Fuses two Ascended ' + TOWERS[t.type].name + 's. There can only be one.</span>' +
          '</button>';
 }
@@ -8168,7 +8659,7 @@ function ascBtn(t, trio, why, cost) {
   }
   const poor = !afford(cost);
   return '<button class="asc' + (poor ? ' poor' : '') + '" id="pAsc">' +
-         '<span class="an">Ascend &nbsp;$' + cost.toLocaleString() + '</span>' +
+         '<span class="an">Ascend &nbsp;' + bigCash(cost) + '</span>' +
          '<span class="as">Fuses three maxed ' + TOWERS[t.type].name + 's into one</span>' +
          '</button>';
 }
@@ -8182,7 +8673,7 @@ function refreshPanel() {
   const sp = SP(t);
   const vals = el.querySelectorAll('.pstats .v');
   if (vals.length === 3) {
-    vals[0].textContent = Math.round(t.dmg).toLocaleString();
+    vals[0].textContent = bigNum(Math.round(t.dmg));
     vals[1].textContent = t.pops;
     vals[2].textContent = sp.range === Infinity ? '∞' : Math.round(sp.range);
   }
@@ -8192,12 +8683,12 @@ function refreshPanel() {
     if (bt.className !== 'upg ' + want) bt.className = 'upg ' + want;
   });
   const sell = $('pSell');
-  if (sell) sell.innerHTML = 'Sell &nbsp;+$' + refundOf(t).toLocaleString();
+  if (sell) sell.innerHTML = 'Sell &nbsp;+' + bigCash(refundOf(t));
   const dupe = $('pDupe');
   if (dupe) {
     const dc = dupeCost(t);
     const dn = dupe.querySelector('.dn');
-    if (dn) dn.innerHTML = 'Duplicate &nbsp;$' + dc.toLocaleString();
+    if (dn) dn.innerHTML = 'Duplicate &nbsp;' + bigCash(dc);
     dupe.classList.toggle('poor', !afford(dc));
   }
 }
@@ -8229,7 +8720,7 @@ function showUpTip(t, path, tier, el) {
                  markAura:'Marks the whole map' };
   for (const g of gained) rows.push(`<div class="r"><span>New</span><b style="color:#ffd83d">${NICE[g] || g}</b></div>`);
   $('ttip').innerHTML =
-    `<div class="th"><div><div class="n">${u.name}</div><div class="s">$${u.cost.toLocaleString()} · ${UPGRADES[t.type][path].name} ${tier}</div></div></div>
+    `<div class="th"><div><div class="n">${u.name}</div><div class="s">$${bigNum(u.cost)} · ${UPGRADES[t.type][path].name} ${tier}</div></div></div>
      <div class="r" style="padding-bottom:7px">${u.blurb}</div>
      ${rows.length ? '<div class="rows">' + rows.join('') + '</div>' : ''}`;
   const r = el.getBoundingClientRect(), sr = stage.getBoundingClientRect();
@@ -8534,11 +9025,64 @@ function drawField() {
   ctx.restore();
 }
 
-const shortHp = n => n >= 1e9     ? (n/1e9).toFixed(n >= 1e10 ? 0 : 2) + 'b'
-                   : n >= 1e6     ? (n/1e6).toFixed(n >= 1e7 ? 0 : 1) + 'm'
-                   : n >= 100000 ? Math.round(n/1000) + 'k'
-                   : n >= 10000  ? (n/1000).toFixed(1).replace(/\.0$/,'') + 'k'
-                   : String(n);
+/* --------------------------------------------------------- big numbers --
+   Late runs deal in numbers nobody can read as digits. Two forms of the
+   same idea: bigNum spells the scale out for anywhere there is room for
+   words, and shortHp keeps a two-letter tag for the handful of places that
+   are drawn onto the board itself and have no room at all.
+
+   Short scale, every step from a thousand to 10^99, and a googol past it. */
+const SCALES = ['', 'thousand', 'million', 'billion', 'trillion', 'quadrillion',
+  'quintillion', 'sextillion', 'septillion', 'octillion', 'nonillion', 'decillion',
+  'undecillion', 'duodecillion', 'tredecillion', 'quattuordecillion', 'quindecillion',
+  'sexdecillion', 'septendecillion', 'octodecillion', 'novemdecillion', 'vigintillion',
+  'unvigintillion', 'duovigintillion', 'trevigintillion', 'quattuorvigintillion',
+  'quinvigintillion', 'sexvigintillion', 'septenvigintillion', 'octovigintillion',
+  'novemvigintillion', 'trigintillion', 'untrigintillion', 'duotrigintillion'];
+const SCALE_TAG = ['', 'k', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc',
+  'Ud', 'Dd', 'Td', 'Qad', 'Qid', 'Sxd', 'Spd', 'Ocd', 'Nod', 'Vg',
+  'Uvg', 'Dvg', 'Tvg', 'Qavg', 'Qivg', 'Sxvg', 'Spvg', 'Ocvg', 'Novg', 'Tg', 'Utg', 'Dtg'];
+/* two or three significant figures, and never a trailing zero */
+function sigStr(v) {
+  const s = v < 10 ? v.toFixed(2) : v < 100 ? v.toFixed(1) : String(Math.round(v));
+  return s.indexOf('.') < 0 ? s : s.replace(/0+$/, '').replace(/\.$/, '');
+}
+function scaleOf(n) {
+  const i = Math.floor(Math.log10(n)/3);
+  return Math.max(0, Math.min(SCALES.length - 1, i));
+}
+/* "1.28 million" — for anywhere with room for words */
+function bigNum(n) {
+  n = Math.max(0, +n || 0);
+  if (!isFinite(n)) return '∞';
+  if (n < 1000) return String(Math.round(n));
+  if (n >= 1e100) {
+    const m = n/1e100;
+    /* a googol is the last name there is; past a thousand of them even the
+       multiplier stops being readable, so it goes to standard form */
+    if (m < 1000) return sigStr(m) + ' googol';
+    const e = Math.floor(Math.log10(n));
+    return sigStr(n/Math.pow(10, e)) + ' × 10^' + e;
+  }
+  const i = scaleOf(n);
+  return sigStr(n/Math.pow(10, i*3)) + ' ' + SCALES[i];
+}
+/* "$1.28 million" */
+const bigCash = n => '$' + bigNum(n);
+/* "1.28M" — for numbers painted onto the board, where words will not fit */
+function shortHp(n) {
+  n = Math.max(0, +n || 0);
+  if (!isFinite(n)) return '∞';
+  if (n < 10000) return String(Math.round(n));
+  if (n >= 1e100) {
+    const m = n/1e100;
+    if (m < 1000) return sigStr(m) + 'Go';
+    const e = Math.floor(Math.log10(n));
+    return sigStr(n/Math.pow(10, e)) + 'e' + e;
+  }
+  const i = scaleOf(n);
+  return sigStr(n/Math.pow(10, i*3)) + SCALE_TAG[i];
+}
 /* An ex-boss husk: the same face as a boss you have already put down, at a
    fraction of the health, with no boss bar and no boss rules. */
 function drawHusk(e) {
@@ -9006,7 +9550,9 @@ function drawTower(t, ghost) {
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
   ctx.save();
   /* jammed by the Static Sovereign: he flickers and stops firing */
-  ctx.globalAlpha = ghost ? 0.72 : (t.jam > 0 ? 0.45 + Math.abs(Math.sin(S.t*36))*0.3 : 1);
+  ctx.globalAlpha = ghost ? 0.72
+    : t.jam > 0 ? 0.45 + Math.abs(Math.sin(S.t*36))*0.3
+    : t.scramble > 0 ? 0.62 + Math.abs(Math.sin(S.t*22))*0.25 : 1;
   if (!ghost) {
     ctx.fillStyle = 'rgba(0,0,0,.33)';
     ctx.beginPath(); ctx.ellipse(t.x, t.y + T_H*0.44, foot, foot*0.36, 0, 0, 7); ctx.fill();
@@ -9045,6 +9591,14 @@ function drawTower(t, ghost) {
   ctx.restore();
 
   if (TOWERS[t.type].ammo === 'admin' && !ghost) drawAdminBeam(t, art, grow);
+  if (!ghost && t.nulled) {                      // inside the Null Prophet's reach
+    ctx.save();
+    ctx.globalAlpha = 0.3 + Math.sin(S.t*3 + t.x*0.01)*0.1;
+    ctx.strokeStyle = '#ff5a3c'; ctx.lineWidth = 2; ctx.setLineDash([5,5]);
+    ctx.lineDashOffset = S.t*14;
+    ctx.beginPath(); ctx.ellipse(t.x, t.y + T_H*0.4, T_W*0.5, T_W*0.2, 0, 0, 7); ctx.stroke();
+    ctx.restore();
+  }
   if (!ghost) drawTierArt(t, art);
 
   if (t.dbl && !ghost) {                         // the last form: a double ring
@@ -9537,6 +10091,9 @@ const SG = {
 const TITAN_H = T_H*9.5;                       // 9.5 Jaxons tall. That is the fantasy.
 
 /* the boss ladder supplies the summons; the Titan borrows a face of its own */
+BOSS_THEME.horizon = { bg:'#050014', glyph:'#b98bff', head:'#ffffff', ring:'#3a1070', ring2:'#c08bff',
+                       bar1:'#7d3fd0', bar2:'#e8d0ff', num:'#f0e2ff', label:'#d9c0ff',
+                       vary:true, glow:true, sparkle:true };
 BOSS_THEME.titanfight = { bg:'#160308', glyph:'#ff5a3c', head:'#ffd8cc', ring:'#5a0d06', ring2:'#ff7a4a',
                           bar1:'#ff3b1a', bar2:'#ffb04a', num:'#ffe0d2', label:'#ff8a5a' };
 
@@ -9696,7 +10253,7 @@ function titanUpdate(dt) {
     S.money += pay;
     S.floats.push({ x:SG.base.x + SG.base.w/2, y:SG.base.y - 30,
                     txt:'+$' + pay + ' breach bonus', color:'#ffd83d', life:2.2, big:true });
-    bump('moneyBox','gain'); toast('The Titan cracks — $' + pay.toLocaleString() + ' salvaged');
+    bump('moneyBox','gain'); toast('The Titan cracks — ' + bigCash(pay) + ' salvaged');
   }
   if (!T.enraged && frac <= 0.25) {
     T.enraged = true;
@@ -11344,7 +11901,7 @@ function admRender() {
     '<h4>Deployment</h4>' +
     '<button id="admBuy">' +
       '<span class="circ"><img src="' + PORTRAIT.admin + '" alt=""></span>' +
-      '<span><span class="nm">Admin Jaxon &middot; $' + costOf('admin').toLocaleString() + '</span>' +
+      '<span><span class="nm">Admin Jaxon &middot; ' + bigCash(costOf('admin')) + '</span>' +
       '<span class="ds">No upgrade paths. He earns levels every wave, and every ' +
       'thirtieth one hands him a new weapon.' +
       (t ? '<br>On the field: level ' + admLevel(t) + '.' : '') + '</span></span>' +
@@ -11352,7 +11909,7 @@ function admRender() {
     (t ? '<h4>Admin Jaxon &middot; level ' + admLevel(t) + '</h4>' +
       '<div class="admRow"><label>Buy levels</label>' +
         '<input type="number" id="admLv" value="' + ADM_UI.buy + '" min="1" max="500">' +
-        '<button id="admLvGo">BUY $' + admBuyCost(t, ADM_UI.buy).toLocaleString() + '</button></div>' +
+        '<button id="admLvGo">BUY ' + bigCash(admBuyCost(t, ADM_UI.buy)) + '</button></div>' +
       '<div class="admRow"><label>Damage now</label>' +
         '<input type="text" value="' + shortHp(Math.round(SP(t).dmg)) + ' / 0.1s" readonly></div>'
      : '');
@@ -11374,7 +11931,7 @@ function admRender() {
   $('admKill').onclick = () => { const k = S.bosses.length; clearBosses(); toast(k + ' bosses removed'); };
   $('admBuy').onclick = () => {
     const cost = costOf('admin');
-    if (!afford(cost)) { toast('Need $' + cost.toLocaleString()); return; }
+    if (!afford(cost)) { toast('Need ' + bigCash(cost)); return; }
     S.placing = 'admin'; S.dupe = null;
     closeAdmin();
     setShop(false); setPlacingBanner(); syncShelf();
@@ -11384,11 +11941,11 @@ function admRender() {
     $('admLv').addEventListener('keydown', ev => ev.stopPropagation());
     $('admLv').oninput = () => {
       ADM_UI.buy = Math.max(1, Math.min(500, Math.round(+$('admLv').value || 1)));
-      $('admLvGo').textContent = 'BUY $' + admBuyCost(t, ADM_UI.buy).toLocaleString();
+      $('admLvGo').textContent = 'BUY ' + bigCash(admBuyCost(t, ADM_UI.buy));
     };
     $('admLvGo').onclick = () => {
       const cnt = ADM_UI.buy, cost = admBuyCost(t, cnt);
-      if (!afford(cost)) { toast('Need $' + cost.toLocaleString() + ' for ' + cnt + ' levels'); return; }
+      if (!afford(cost)) { toast('Need ' + bigCash(cost) + ' for ' + cnt + ' levels'); return; }
       spend(cost);
       const was = admLevel(t);
       t.lvl = was + cnt;
@@ -12069,6 +12626,139 @@ const GUIDE = [
     shows[on]();
   } },
 
+{ ch:'Shop', title:'The ultra tier',
+  text:'Five Jaxons sit past the late game, on an <b>Ultra</b> chip of their own. Nothing gates them but the price — if you can pay, you can buy, on wave 1 or wave 100.<br><br><b>Boss Crusher</b> hits anything with a health bar fourteen times as hard as it hits a blob. <b>Power Boost</b> makes everyone around him fire far faster and reach further. <b>Elite Slayer</b> paints the toughest thing that is not a boss and shreds it. <b>Wave Wiper</b> walks a blast down the whole trail every few seconds. <b>Infinity Mirror</b> is the Mirror line finished.<br><br>All five take three upgrade paths, all five can <b>Ascend</b>, and three of them can <b>Double Ascend</b>.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    const ks = ['crusher','booster','slayer','wiper','infmirror'];
+    const on = Math.floor(p*5) % 5;
+    gbLawn(g, w, h);
+    ks.forEach((k, i) => {
+      const x = w*0.14 + i*w*0.18;
+      const lift = i === on ? -h*0.06 : 0;
+      if (i === on) {
+        g.save();
+        g.globalCompositeOperation = 'lighter';
+        const gg = g.createRadialGradient(x, h*0.62 + lift, 4, x, h*0.62 + lift, 58);
+        gg.addColorStop(0, 'rgba(255,216,61,.3)'); gg.addColorStop(1, 'rgba(255,216,61,0)');
+        g.fillStyle = gg; g.beginPath(); g.arc(x, h*0.62 + lift, 58, 0, 7); g.fill();
+        g.restore();
+      }
+      pvJaxon(g, k, x, h*0.78 + lift, h*0.3, false);
+      gbText(g, bigCash(TOWERS[k].cost), x, h*0.88, 9,
+             i === on ? '#ffd83d' : '#7e8c9c', 'center');
+    });
+    gbText(g, TOWERS[ks[on]].name, w/2, h*0.14, 15, '#ffd83d', 'center');
+    gbBtn(g, w/2 - 34, h*0.21, 68, 22, 'Ultra', '#5ef064', '#1fce27');
+  } },
+
+{ ch:'Ascended', title:'Which ones go all the way',
+  text:'Fifteen Jaxons can <b>Ascend</b> — the ten from earlier plus all five ultras. Three maxed copies, one per path, fuse into one.<br><br>Only <b>five</b> can go the step past that and <b>Double Ascend</b>: <b>True God</b>, <b>Mirror</b>, <b>Infinity Mirror</b>, <b>Boss Crusher</b> and <b>Wave Wiper</b>. Two Ascended of the same type fuse into a single final form, one of each per run, and the fee is the largest number the game will ever ask you for.<br><br>Everything else stops at Ascended, which is still the best thing that can happen to it.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    const dbl = ['truegod','mirror','infmirror','crusher','wiper'];
+    gbLawn(g, w, h);
+    gbText(g, 'these five, and only these five', w/2, h*0.13, 12, '#fff0ff', 'center');
+    dbl.forEach((k, i) => {
+      const x = w*0.16 + i*w*0.17;
+      const a = t*1.2 + i;
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      const gg = g.createRadialGradient(x, h*0.56, 6, x, h*0.56, 46);
+      const al = 0.22 + Math.sin(a)*0.1;
+      gg.addColorStop(0, 'rgba(255,216,255,' + al + ')');
+      gg.addColorStop(1, 'rgba(150,90,255,0)');
+      g.fillStyle = gg; g.beginPath(); g.arc(x, h*0.56, 46, 0, 7); g.fill();
+      g.restore();
+      pvJaxon(g, ASC_KEY(k), x, h*0.74, h*0.3, false);
+      for (let j = 0; j < 2; j++) {
+        const a2 = a*(j ? -1 : 1) + j*2.1;
+        g.save();
+        g.globalAlpha = 0.5 + Math.sin(a2*2)*0.3;
+        g.fillStyle = j ? '#ffd8ff' : '#c08bff';
+        g.beginPath(); g.arc(x + Math.cos(a2)*26, h*0.56 + Math.sin(a2)*9, 2.8, 0, 7); g.fill();
+        g.restore();
+      }
+    });
+    const glow = 0.5 + Math.sin(p*Math.PI*2)*0.5;
+    gbText(g, 'DOUBLE ASCENDED', w/2, h*0.92, 13,
+           'rgba(255,216,255,' + (0.5 + glow*0.5) + ')', 'center');
+  } },
+
+{ ch:'Bosses', title:'Waves 110 to 200',
+  text:'The ladder does not stop at the FINAL TRANSMISSION. Ten more, every tenth wave, and each one asks something different of the board.<br><br><b>110 Overclock Warden</b> scrambles what your Jaxons are aiming at. <b>120 Iron Nursery</b> arrives armoured. <b>130 Twin Signal</b> becomes two of itself at half health. <b>140 Debt Collector</b> takes coins off you as it walks. <b>150 Rain Codex</b> drags every shot on the map. <b>160 Fortress Orb</b> keeps adding husks to the trail. <b>170 Null Prophet</b> makes everything near it hit for less than half. <b>180 Chainbreak</b> hurries the whole crowd along. <b>190 Glass Tyrant</b> is fast and takes a lot with it. <b>200 Godspeed Horizon</b> is the finale, in three phases.',
+  art:(g, w, h, t) => {
+    const list = [
+      ['Overclock Warden','static',110], ['Iron Nursery','white',120],
+      ['Twin Signal','blue',130], ['Debt Collector','gold',140],
+      ['Rain Codex','green',150], ['Fortress Orb','red',160],
+      ['Null Prophet','denied',170], ['Chainbreak','reaper',180],
+      ['Glass Tyrant','final',190], ['Godspeed Horizon','horizon',200]
+    ];
+    const p = frac(t/9);
+    const on = Math.floor(p*list.length) % list.length;
+    gbLawn(g, w, h);
+    gbTrail(g, w, h*0.84);
+    /* the ladder, small, with the current one large */
+    list.forEach(([nm, th, wv], i) => {
+      const x = w*0.08 + i*w*0.093;
+      const r = i === on ? 0 : 9;
+      if (!r) return;
+      pvBoss(g, 'gb' + wv, th, x, h*0.34, r, t, undefined);
+    });
+    const [nm, th, wv] = list[on];
+    pvBoss(g, 'gbBig' + wv, th, w/2, h*0.62, h*0.2, t, 1 - frac(p*list.length));
+    gbText(g, 'WAVE ' + wv, w/2, h*0.86, 10, '#7e8c9c', 'center');
+    gbText(g, nm.toUpperCase(), w/2, h*0.94, 14, '#ff8a5a', 'center');
+  } },
+
+{ ch:'Bosses', title:'After the Horizon',
+  text:'There is no boss after wave 200, because there does not need to be one.<br><br>The <b>Godspeed Horizon</b> comes back instead — the same fight, the same three phases, the same tricks — as <b>v2</b>, <b>v3</b>, <b>v4</b> and onward, every tenth wave. Its health more than doubles each time and its leak keeps climbing; its size stops growing early so it never swallows the screen.<br><br>By v21 it is carrying a few quadrillion health. That is what the ultra tier and the Double Ascended forms are for.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    const steps = [['v1', 7.5e8], ['v2', 1.6e9], ['v5', 1.6e10], ['v11', 1.6e12], ['v21', 3.3e15]];
+    const on = Math.floor(p*steps.length) % steps.length;
+    gbLawn(g, w, h);
+    pvBoss(g, 'gbHz', 'horizon', w/2, h*0.5, h*0.2, t, 1);
+    gbText(g, 'GODSPEED HORIZON ' + steps[on][0], w/2, h*0.15, 15, '#e8d0ff', 'center');
+    gbText(g, bigNum(steps[on][1]) + ' health', w/2, h*0.84, 14, '#c08bff', 'center');
+    /* the climb, as a row of bars */
+    steps.forEach(([lab, hp], i) => {
+      const x = w*0.14 + i*w*0.18, bh = h*0.1*(0.25 + i*0.19);
+      g.fillStyle = i === on ? '#c08bff' : 'rgba(255,255,255,.16)';
+      g.beginPath(); g.roundRect(x - 13, h*0.78 - bh, 26, bh, 4); g.fill();
+      gbText(g, lab, x, h*0.83, 8.5, i === on ? '#e8d0ff' : '#6c7f8f', 'center');
+    });
+  } },
+
+{ ch:'Menu', title:'Reading the numbers',
+  text:'A deep run stops dealing in numbers anyone can read as digits, so the game stops printing them that way.<br><br>Everything — coins, damage, boss health, prices, pops — is written as a short decimal and the name of the scale: <b>1.28 million</b>, <b>12.8 billion</b>, <b>1.28 quadrillion</b>, and on through quintillion, sextillion and the rest, all the way to a <b>googol</b>.<br><br>Numbers painted onto the board itself, where there is no room for a word, use a short tag instead: <b>1.28M</b>, <b>12.8B</b>, <b>3.4Qa</b>. Same number, less space.',
+  art:(g, w, h, t) => {
+    const rows = [
+      ['1284', '1.28 thousand'],
+      ['1284814', '1.28 million'],
+      ['12848140000', '12.8 billion'],
+      ['1.28e15', '1.28 quadrillion'],
+      ['4.5e18', '4.5 quintillion'],
+      ['1e100', '1 googol']
+    ];
+    const p = frac(t/6);
+    const on = Math.floor(p*rows.length) % rows.length;
+    gbLawn(g, w, h);
+    gbPanel(g, w*0.06, h*0.08, w*0.88, h*0.84, 12, 'rgba(14,21,30,.96)');
+    rows.forEach(([raw, nice], i) => {
+      const y = h*0.16 + i*h*0.13;
+      const lit = i === on;
+      if (lit) {
+        g.save(); g.globalAlpha = 0.14; g.fillStyle = '#22e02a';
+        g.beginPath(); g.roundRect(w*0.09, y - h*0.05, w*0.82, h*0.1, 7); g.fill(); g.restore();
+      }
+      gbText(g, raw, w*0.12, y, 11, lit ? '#7e8c9c' : '#4d5a68', 'left', 700);
+      gbText(g, '→', w*0.47, y, 11, '#4d5a68', 'center');
+      gbText(g, nice, w*0.53, y, 12.5, lit ? '#7dffb4' : '#6c7f8f', 'left');
+    });
+  } },
+
 { ch:'Camera', title:'Zoom in, look around',
   text:'The camera is yours to move and it never changes the fight.<br><br><b>Scroll wheel</b> zooms toward your cursor, from a fifth of the way out to five times in. <b>Right-drag</b> or <span class="k">W</span><span class="k">A</span><span class="k">S</span><span class="k">D</span> looks around; on a phone, <b>pinch</b> to zoom and drag with <b>two fingers</b> to pan. One finger is still aiming.<br><br>The camera eases up to speed and coasts to a stop, so panning looks like a film crane rather than a jump cut. <span class="k">R</span> puts the view back.',
   art:(g, w, h, t) => {
@@ -12515,6 +13205,16 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
+
+
+
+
 
 
 
