@@ -545,6 +545,30 @@
   #panel .dupe.poor{
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
   }
+  /* ---------------------------------------------------- mirror source --- */
+  .linkRow{display:flex;gap:5px;margin-top:9px}
+  .linkB{
+    flex:1;min-width:0;font:inherit;cursor:pointer;text-align:left;padding:7px 10px;border-radius:10px;
+    border:1px solid var(--line);background:rgba(255,255,255,.045);color:var(--dim);transition:.12s;
+  }
+  .linkB:hover{color:var(--ink);background:rgba(255,255,255,.1);border-color:#c08bff}
+  .linkB.on{
+    border-color:rgba(192,139,255,.65);background:rgba(192,139,255,.14);color:#f0e2ff;
+  }
+  .linkB .ln{display:block;font-size:11px;font-weight:800;
+             overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .linkB .ls{display:block;font-size:8.5px;color:var(--dim);margin-top:2px;letter-spacing:.3px}
+  .linkB.on .ls{color:#c9b0ee}
+  .linkX{
+    flex:none;width:34px;font:inherit;font-size:14px;font-weight:800;cursor:pointer;border-radius:10px;
+    border:1px solid var(--line);background:rgba(255,255,255,.05);color:var(--dim);transition:.12s;
+  }
+  .linkX:hover{color:#fff;background:rgba(229,72,77,.26);border-color:rgba(229,72,77,.5)}
+  body.mobile .linkB{padding:12px;min-height:var(--tap)}
+  body.mobile .linkB .ln{font-size:17px}
+  body.mobile .linkB .ls{font-size:13px}
+  body.mobile .linkX{width:var(--tap);font-size:22px}
+
   /* ------------------------------------------------------- targeting --- */
   .aimRow{display:flex;align-items:center;gap:4px;margin-top:9px}
   .aimRow .al{
@@ -4646,7 +4670,7 @@ const S = {
   discs:[], novas:[], pulses:[], gusts:[], clouds:[], fx:[], floats:[],
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
-  camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0,
+  camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -5128,7 +5152,7 @@ function reset() {
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.rollers=[]; S.orbs=[];
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
-  S.abilCd={}; S.overdrive=0; abilKey='';
+  S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
   S.rollers = []; S.orbs = []; S.bestAtStart = bestHere();
@@ -6542,12 +6566,60 @@ function noteFired(t, ammo, dmg, spec, wp) {
                   reach:(spec && spec.range) || 400, wp:wp || null, at:S.t };
 }
 
+/* ------------------------------------------------- the chosen source ---
+   A Mirror normally copies whoever fired last inside its ring, which is
+   rarely who you wanted. Point it at one Jaxon and it copies nothing else.
+   The link drops itself if that Jaxon is sold or ends up out of reach. */
+const MIRRORS = t => TOWERS[t.type].ammo === 'mirror';
+function linkOk(t) {
+  const o = t.copyOf;
+  if (!o) return null;
+  if (!S.towers.includes(o)) { t.copyOf = null; return null; }
+  if (Math.hypot(o.x - t.x, o.y - t.y) > SP(t).range) return null;   // out of reach for now
+  return o;
+}
+function startLink(t) {
+  S.linking = t;
+  cancelPlacing(); deselect(); hideTip(); setShop(false);
+  toast((MOBILE ? 'Tap' : 'Click') + ' a Jaxon in the ring for ' + TOWERS[t.type].name + ' to copy');
+  beep(820, 0.07, 'triangle', 0.03);
+}
+function endLink(pick) {
+  const t = S.linking;
+  S.linking = null;
+  if (!t || !S.towers.includes(t)) return;
+  if (pick === undefined) return;                    // simply cancelled
+  if (pick === null) {
+    t.copyOf = null;
+    toast(TOWERS[t.type].name + ' copies whoever fired last again');
+  } else if (pick === t) {
+    toast('It cannot copy itself');
+    beep(150, 0.08, 'square', 0.03);
+    return;
+  } else if (Math.hypot(pick.x - t.x, pick.y - t.y) > SP(t).range) {
+    toast(TOWERS[pick.type].name + ' is outside the ring');
+    beep(150, 0.08, 'square', 0.03);
+    return;
+  } else {
+    t.copyOf = pick;
+    toast(TOWERS[t.type].name + ' now copies ' + TOWERS[pick.type].name + ' only');
+    beep(1100, 0.09, 'triangle', 0.035, 1500);
+  }
+  selectTower(t);
+}
+
 function fireMirror(t, aim, spec) {
   let src = null;
-  for (const o of S.towers) {
-    if (o === t || !o.lastFired) continue;
-    if (Math.hypot(o.x - t.x, o.y - t.y) > spec.range) continue;
-    if (!src || o.lastFired.at > src.at) src = o.lastFired;
+  const chosen = linkOk(t);
+  if (chosen) {
+    /* pointed at someone: copy them and nobody else */
+    src = chosen.lastFired || null;
+  } else if (!t.copyOf) {
+    for (const o of S.towers) {
+      if (o === t || !o.lastFired) continue;
+      if (Math.hypot(o.x - t.x, o.y - t.y) > spec.range) continue;
+      if (!src || o.lastFired.at > src.at) src = o.lastFired;
+    }
   }
   /* A copy is only worth making if it beats what this Jaxon can throw on
      its own. Beside a Ninja the Infinity Mirror was copying a 1.5-damage
@@ -9146,6 +9218,7 @@ function drawPanel() {
     ${t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
         : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
     ${aimRow(t)}
+    ${linkRow(t)}
     ${ascBtn(t, trio, why, acost)}
     ${dblBtn(t)}
     <button class="dupe${afford(dcost) && !(t.asc && ascCount(t.type) >= ASC_MAX) ? '' : ' poor'}" id="pDupe">
@@ -9177,6 +9250,12 @@ function drawPanel() {
   if (ab) ab.onclick = ev => { ev.stopPropagation(); startAscend(t); };
   const db = $('pDbl');
   if (db) db.onclick = ev => { ev.stopPropagation(); startDouble(t); };
+  const lk = $('pLink');
+  if (lk) lk.onclick = ev => { ev.stopPropagation(); startLink(t); };
+  const ux = $('pUnlink');
+  if (ux) ux.onclick = ev => { ev.stopPropagation(); t.copyOf = null; drawPanel();
+                               toast(TOWERS[t.type].name + ' copies whoever fired last again');
+                               beep(420, 0.06, 'triangle', 0.026); };
   el.querySelectorAll('.aimB').forEach(b => b.onclick = ev => {
     ev.stopPropagation();
     t.aim = b.dataset.aim;
@@ -9202,6 +9281,22 @@ function drawPanel() {
   const sb2 = $('pSell');
   if (sb2) sb2.onclick = ev => { ev.stopPropagation(); const x = S.selected; deselect(); sellTower(x); };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
+}
+
+/* The Mirror line gets to choose its source. */
+function linkRow(t) {
+  if (!MIRRORS(t)) return '';
+  const o = t.copyOf && S.towers.includes(t.copyOf) ? t.copyOf : null;
+  const far = o && Math.hypot(o.x - t.x, o.y - t.y) > SP(t).range;
+  return '<div class="linkRow">' +
+    '<button class="linkB' + (o ? ' on' : '') + '" id="pLink">' +
+      '<span class="ln">' + (o ? 'Copying ' + TOWERS[o.type].name : 'Copying whoever fired last') + '</span>' +
+      '<span class="ls">' + (o ? (far ? 'out of the ring right now — nothing is copied'
+                                      : 'tap to point him somewhere else')
+                               : 'tap to pick one Jaxon in the ring') + '</span>' +
+    '</button>' +
+    (o ? '<button class="linkX" id="pUnlink" title="Back to whoever fired last">&times;</button>' : '') +
+    '</div>';
 }
 
 /* Who he shoots at. Support Jaxons that never pick a target do not ask. */
@@ -11531,6 +11626,44 @@ function render() {
       if (!ok) ctx.restore();
     }
   }
+  /* every Mirror that has been pointed at someone shows the line */
+  for (const t of S.towers) {
+    if (!MIRRORS(t) || !t.copyOf) continue;
+    const o = t.copyOf;
+    if (!S.towers.includes(o)) continue;
+    const far = Math.hypot(o.x - t.x, o.y - t.y) > SP(t).range;
+    ctx.save();
+    ctx.globalAlpha = far ? 0.3 : 0.5 + Math.sin(S.t*3 + t.x*0.01)*0.16;
+    ctx.strokeStyle = far ? '#ff8b8e' : '#e8d0ff';
+    ctx.lineWidth = 2.2; ctx.setLineDash([9, 8]);
+    ctx.lineDashOffset = -S.t*26;
+    ctx.beginPath();
+    ctx.moveTo(t.x, t.y - 18); ctx.lineTo(o.x, o.y - 18);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = far ? 0.4 : 0.85;
+    ctx.beginPath(); ctx.arc(o.x, o.y - 18, 7, 0, 7); ctx.stroke();
+    ctx.restore();
+  }
+
+  /* choosing one: the ring, and every Jaxon inside it lit up */
+  if (S.linking && S.towers.includes(S.linking)) {
+    const m = S.linking, R = SP(m).range;
+    drawRange(m.x, m.y - spriteH(artOf(m))*0.18, R, true);
+    ctx.save();
+    for (const o of S.towers) {
+      if (o === m) continue;
+      const inR = Math.hypot(o.x - m.x, o.y - m.y) <= R;
+      ctx.globalAlpha = inR ? 0.5 + Math.sin(S.t*6 + o.x*0.02)*0.25 : 0.14;
+      ctx.strokeStyle = inR ? '#e8d0ff' : '#6c7f8f';
+      ctx.lineWidth = inR ? 3.4 : 2;
+      ctx.beginPath();
+      ctx.ellipse(o.x, o.y + T_H*0.42, T_W*0.5, T_W*0.2, 0, 0, 7);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   /* the hover ring is browsing too — it stays down while aiming */
   const aiming = S.mouse.down && S.mouse.in && !S.placing;
   const ring = S.selected || (aiming ? null : S.hovered);
@@ -12379,6 +12512,11 @@ cv.addEventListener('pointerdown', ev => {
   try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
   if (S.titan) S.pan = { x:ev.clientX, y:ev.clientY, moved:false };
   if (!S.placing && !towerAt(p.x, p.y)) hideTip();   // a hold is an aim, not a hover
+  if (S.linking) {
+    /* choosing who a Mirror watches: a Jaxon picks him, bare ground clears */
+    endLink(towerAt(p.x, p.y) || null);
+    return;
+  }
   if (!S.placing) {
     /* a picked sandbox unit turns the whole field into a drop target */
     if (S.sbPick && SB() && !towerAt(p.x, p.y)) { sbSpawn(S.sbPick, p); return; }
@@ -12447,6 +12585,7 @@ window.addEventListener('keydown', ev => {
   }
   if (ev.key === 'Escape') {
     if (S.paused) { setPause(false); return; }
+    if (S.linking) { const t = S.linking; endLink(); selectTower(t); return; }
     if (S.sbPick) { S.sbPick = null; sbHint(); if (S.sbOpen) sbRender(); return; }
     if (S.sbOpen) { setSb(false); return; }
     if (S.placing || S.selected) { cancelPlacing(); deselect(); hideTip(); return; }
@@ -14303,6 +14442,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 
 
