@@ -545,6 +545,13 @@
   #panel .dupe.poor{
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
   }
+  /* ------------------------------------------------------- the Titan --- */
+  .admLv.astro .lvBar i{background:linear-gradient(90deg,#ff9a2e,#ffd83d)}
+  .asc.snap{border-color:rgba(255,216,61,.6);background:rgba(255,154,46,.16)}
+  .asc.snap .an{color:#ffe9a8}
+  .admLv.astro .lvRow{gap:5px}
+  .admLv.astro .lvRow button{white-space:nowrap}
+
   /* ---------------------------------------------------- mirror source --- */
   .linkRow{display:flex;gap:5px;margin-top:9px}
   .linkB{
@@ -2376,6 +2383,34 @@ const boxOf = v => (v.wide ? BOX_WIDE : BOX_DEFAULT);
    The body sits in a 0..660 by 0..720 box: head at (216,168), shoulders
    around y 290, waist near y 520, feet at 700. The kit is placed against
    those. */
+/* ---------------------------------------------------------- astro gear --
+   One claw: a shoulder joint, a stubby arm and two hooks, with a bar of
+   yellow energy standing between their tips. It is drawn around a local
+   origin at the joint reaching along +x, so a single rotation hangs one
+   anywhere on him. */
+function astroClaw(x, y, rot, sc, sp) {
+  const up = `M90 -14 C 148 -30, 176 -52, 196 -${sp}`;
+  const dn = `M90 14 C 148 30, 176 52, 196 ${sp}`;
+  const a = Math.round(sp*0.30), b = Math.round(sp*0.10), c = Math.round(sp*0.52);
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${sc})">
+    <path d="M-16 -34 L 96 -24 L 96 24 L -16 34 Z" fill="#5a6270" stroke="#12161d" stroke-width="9" stroke-linejoin="round"/>
+    <path d="M16 -16 L 88 -12 L 88 12 L 16 16 Z" fill="#39424f"/>
+    <g fill="none" stroke="#12161d" stroke-width="44" stroke-linecap="round"><path d="${up}"/><path d="${dn}"/></g>
+    <g fill="none" stroke="#98a6b8" stroke-width="28" stroke-linecap="round"><path d="${up}"/><path d="${dn}"/></g>
+    <g fill="none" stroke="#e2e9f2" stroke-width="7" stroke-linecap="round" opacity=".55">
+      <path d="M100 -26 C 152 -40, 176 -60, 194 -${sp + 8}"/>
+      <path d="M100 26 C 152 40, 176 60, 194 ${sp + 8}"/>
+    </g>
+    <circle cx="0" cy="0" r="37" fill="#6d7d92" stroke="#12161d" stroke-width="9"/>
+    <circle cx="0" cy="0" r="15" fill="#ffd83d" stroke="#a97c00" stroke-width="5"/>
+    <ellipse cx="196" cy="0" rx="27" ry="${sp}" fill="url(#astroArc)" opacity=".95"/>
+    <path d="M196 -${sp - 10} L 176 -${a} L 216 ${b} L 182 ${c} L 196 ${sp - 10}"
+          fill="none" stroke="#fffbe0" stroke-width="7" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="196" cy="-${sp}" r="14" fill="#fff6b8"/>
+    <circle cx="196" cy="${sp}" r="14" fill="#fff6b8"/>
+  </g>`;
+}
+
 const ULTRA_KIT = {
   /* ------------------------------------------------ BOSS CRUSHER -------
      Siege armour: pauldrons, a gauntlet, exhaust stacks and a wrecking
@@ -2553,7 +2588,86 @@ const ULTRA_KIT = {
       <g fill="none" stroke="#c08bff" stroke-width="5" opacity=".9">
         <path d="M150 348 L326 348"/>
       </g>`
+  },
+  /* ------------------------------------------------- TITAN ASTRO -------
+     The largest Jaxon there is, and still a Jaxon: same body, same face,
+     same diaper, same pacifier. What is bolted on is a construction kit —
+     a hard hat with a lamp, a harness, four astro claws arcing yellow
+     between their hooks, and the orange hologram wings he flew in on. */
+  astro: {
+    back:(g) => `
+      <defs>
+        <radialGradient id="astroArc" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#fffbe0"/>
+          <stop offset="0.42" stop-color="#ffd83d"/>
+          <stop offset="1" stop-color="rgba(255,168,20,0)"/>
+        </radialGradient>
+        <linearGradient id="astroWing" x1="1" y1="0" x2="0" y2="0.7">
+          <stop offset="0" stop-color="rgba(255,150,40,.9)"/>
+          <stop offset="0.55" stop-color="rgba(255,110,20,.38)"/>
+          <stop offset="1" stop-color="rgba(255,90,20,0)"/>
+        </linearGradient>
+        <linearGradient id="astroHat" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stop-color="#ffe98a"/><stop offset="1" stop-color="#efa400"/>
+        </linearGradient>
+      </defs>
+      <g opacity=".5">
+        <path d="M150 300 C -20 210, -168 262, -178 402 C -62 356, 42 350, 148 372 Z" fill="url(#astroWing)"/>
+        <path d="M150 340 C -8 302, -126 374, -126 474 C -30 416, 62 398, 150 398 Z" fill="url(#astroWing)" opacity=".72"/>
+        <g transform="translate(660 0) scale(-1 1)">
+          <path d="M150 300 C -20 210, -168 262, -178 402 C -62 356, 42 350, 148 372 Z" fill="url(#astroWing)"/>
+          <path d="M150 340 C -8 302, -126 374, -126 474 C -30 416, 62 398, 150 398 Z" fill="url(#astroWing)" opacity=".72"/>
+        </g>
+        <g fill="none" stroke="rgba(255,180,80,.55)" stroke-width="5">
+          <path d="M140 350 C 40 322, -40 350, -110 400"/>
+          <path d="M520 350 C 620 322, 700 350, 770 400"/>
+        </g>
+      </g>
+      <g stroke="#12161d" stroke-width="10" stroke-linejoin="round">
+        <rect x="98" y="246" width="264" height="232" rx="36" fill="#39424f"/>
+        <rect x="126" y="188" width="44" height="78" rx="17" fill="#5a6270"/>
+        <rect x="290" y="188" width="44" height="78" rx="17" fill="#5a6270"/>
+      </g>
+      <g opacity=".9">
+        <ellipse cx="148" cy="176" rx="21" ry="27" fill="#ff9a2e"/>
+        <ellipse cx="312" cy="176" rx="21" ry="27" fill="#ff9a2e"/>
+      </g>
+      ${astroClaw(58, 252, -150, 1.02, 58)}
+      ${astroClaw(402, 252, -30, 1.02, 58)}`,
+    front:(g) => `
+      <g stroke="#8a5a00" stroke-width="10" stroke-linejoin="round">
+        <path d="M48 108 C 60 -52, 372 -52, 384 108 Z" fill="url(#astroHat)"/>
+        <ellipse cx="216" cy="110" rx="202" ry="37" fill="url(#astroHat)"/>
+      </g>
+      <path d="M196 -38 L 236 -38 L 242 102 L 190 102 Z" fill="#ffb62e" opacity=".85"/>
+      <g stroke="#8a5a00" stroke-width="8" stroke-linejoin="round">
+        <rect x="172" y="14" width="88" height="56" rx="15" fill="#2b323d"/>
+      </g>
+      <circle cx="216" cy="42" r="20" fill="#fff6b8" stroke="#a97c00" stroke-width="6"/>
+      <circle cx="216" cy="42" r="8" fill="#ffffff"/>
+      <g stroke="#12161d" stroke-width="9" stroke-linejoin="round" fill="#4a5462">
+        <path d="M118 300 L 170 292 L 198 522 L 148 530 Z"/>
+        <path d="M300 292 L 350 302 L 322 530 L 274 522 Z"/>
+        <path d="M110 496 C 180 522, 288 522, 356 494 L 356 542 C 288 568, 180 568, 110 544 Z"/>
+      </g>
+      <g stroke="#12161d" stroke-width="7">
+        <rect x="196" y="500" width="80" height="36" rx="10" fill="#1a1f28"/>
+      </g>
+      <rect x="205" y="509" width="62" height="18" rx="6" fill="#ffd83d" opacity=".92"/>
+      <g fill="none" stroke="#ffd83d" stroke-width="5" opacity=".7">
+        <path d="M132 342 L 186 336"/><path d="M334 342 L 286 336"/>
+      </g>
+      ${astroClaw(24, 468, 168, 1.14, 66)}
+      ${astroClaw(436, 468, 12, 1.14, 66)}
+      <g stroke="#12161d" stroke-width="9" stroke-linejoin="round">
+        <path d="M92 612 L 178 612 L 188 700 L 84 700 Z" fill="#4a5462"/>
+        <path d="M242 612 L 328 612 L 338 700 L 234 700 Z" fill="#4a5462"/>
+      </g>
+      <g fill="#ffd83d" opacity=".85">
+        <rect x="92" y="630" width="96" height="12"/><rect x="242" y="630" width="96" height="12"/>
+      </g>`
   }
+
 };
 
 function jaxonSVG(v, uid) {
@@ -2797,6 +2911,14 @@ VARIANTS.infmirror = { ultra:'infmirror', wide:true,
                     belt:'#e8d0ff', beltDark:'#8f6bc4', shards:true, core:'#ffffff', coreD:'#8f6bc4',
                     outline:'#7a6a9c', outlineWidth:7,
                     pacG:'#e6f0ff', pacGD:'#7a6a9c', pacO:'#c08bff', pacOD:'#4a1f8a' };
+
+/* A Jaxon in a work suit. Everything that makes him a Titan is bolted on
+   over the top of this — take the kit away and he is one of the family. */
+VARIANTS.astro = { ultra:'astro', wide:true,
+                    suitLite:'#ffe0b0', suit:'#ff9a2e', suitDark:'#a34e00',
+                    arm:'#4a5462', armDark:'#161b22',
+                    outline:'#7a3800', outlineWidth:8,
+                    pacG:'#ffd83d', pacGD:'#a97c00', pacO:'#ff9a2e', pacOD:'#a34e00' };
 
 VARIANTS.admin = { suitLite:'#2a0407', suit:'#180204', suitDark:'#0a0102', arm:'#ff2b2b', armDark:'#7a0000',
                     belt:'#ff2b2b', beltDark:'#7a0000', goggles:true, wide:true,
@@ -3196,6 +3318,9 @@ const UPGRADES = {
   /* levels instead of paths — see ADM below. The entry exists so every
      roster table stays the same shape; nothing ever reads these. */
   admin: { levels:true,
+    A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  /* the Titan takes levels too, and earns rather than buys them */
+  astro: { levels:true,
     A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   tipjar: {
     A: { name:"Fuller Jar", tiers:[
@@ -3720,6 +3845,18 @@ function SP(t) {
   if (t.rangeUp && typeof sp.range === 'number' && isFinite(sp.range)) {
     sp.range = Math.round(sp.range * (1 + t.rangeUp));
   }
+  /* the Titan's numbers come from his level too, and from nowhere else */
+  if (sp.ammo === 'astro') {
+    const lv = astroLevel(t), m = astroDmgMul(lv);
+    sp.lvl = lv;
+    sp.dmg = Math.round(sp.dmg * m);
+    /* levels buy rate as well as size, down to a floor */
+    sp.cd = Math.max(0.07, sp.cd * (1 - Math.min(0.62, (lv - 1)*0.007)));
+    sp.lanceCd = Math.max(0.7, sp.lanceCd * (1 - Math.min(0.6, (lv - 1)*0.007)));
+    sp.plasmaCd = Math.max(2.6, sp.plasmaCd * (1 - Math.min(0.6, (lv - 1)*0.007)));
+    sp.ringCd = Math.max(12, sp.ringCd * (1 - Math.min(0.55, (lv - 1)*0.006)));
+    sp.beams = 3 + Math.min(3, Math.floor((lv - 1)/25));   // a fourth claw at 26, and beyond
+  }
   /* the Admin Jaxon's numbers come from his level, not from the tables */
   if (sp.ammo === 'admin') {
     const lv = admLevel(t);
@@ -4112,6 +4249,12 @@ const chalName = key => {
   return (md ? md.name : m) + (c ? ' · ' + c.split('+')
     .map(id => (CHALLENGES.find(x => x.id === id) || {}).name || id).join(' + ') : '');
 };
+/* Some Jaxons are not for sale yet. Sandbox never waits for anything. */
+function gateBlocks(k) {
+  const g = TOWERS[k] && TOWERS[k].gate;
+  if (!g || SB() || S.wave >= g) return null;
+  return 'wave ' + g;
+}
 /* a Jaxon the current rules will not let you buy */
 function chalBlocks(k) {
   if (hasChal('noincome') && (ROLE[k] || []).includes('income')) return 'No Income';
@@ -4391,6 +4534,16 @@ const TOWERS = {
              boost:5.5, echo:6, ownDmg:5200, ownCd:0.9, ownSplash:1500, ownR:150,
              blurb:'The Mirror line, finished. A wider room, faster copies and far brighter echoes — whatever your best Jaxon fires, this one fires a corridor of it back.',
              tags:[['Copies Allies','t-rain'],['x5.5 Echoes','t-aoe'],['Ultra','t-fast']] },
+  /* The Titan. He needs his own cleared pad, he will not fit anywhere
+     else, and no Mirror can steal a single shot off him. */
+  astro:   { name:'Titan Astro Jaxon', cost:1500000, range:2600, cd:0.22, dmg:900000, ammo:'astro',
+             bigPad:true, noMirror:true, gate:300,
+             beams:3, beamR:120,
+             lanceCd:2.4, lanceMul:6, lanceR:260,
+             plasmaCd:8, plasmaMul:55, plasmaR:420,
+             ringCd:30,
+             blurb:'The biggest Jaxon there is, and he only fits on the cleared Astro Pad. Three claw beams at once, a heavier lance off a random claw, a charged plasma ball, and every 30s a gravity ring that drags the trail into orbit. He has no upgrade paths — he levels off the damage he deals each round.',
+             tags:[['Titan','t-rain'],['Levels','t-fast'],['Claw Beams','t-single']] },
   /* Not in the shop. He is bought from the Admin Panel and he does not
      take upgrade paths — he takes levels. */
   admin:   { name:'Admin Jaxon', cost:500, range:620, cd:0.1, dmg:125, ammo:'admin',
@@ -4434,6 +4587,7 @@ const ROLE = {
   factory:['builders'],               towtruck:['builders'],
   mechanic:['builders','support'],    tipjar:['income'],
   caddy:['income'],                   admin:[],
+  astro:['dps','splash','late','ultra'],
   crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
   slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
   infmirror:['dps','splash','late','ultra'],
@@ -4457,7 +4611,7 @@ const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).inc
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
-               'crusher','booster','slayer','wiper','infmirror',
+               'crusher','booster','slayer','wiper','infmirror','astro',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -4472,7 +4626,7 @@ const VALUE = {
                 blackholelaser:89, director:100, mirror:100, truegod:89,
                 piggybank:100, recycler:100, tax:100, merchant:100,
                 factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100,
-                crusher:96, booster:100, slayer:98, wiper:94, infmirror:92 };
+                crusher:96, booster:100, slayer:98, wiper:94, infmirror:92, astro:100 };
 
 /* ------------------------------------------------------ Admin Jaxon ----
    He does not buy upgrades, he buys levels. Damage compounds hard for the
@@ -4536,6 +4690,9 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      piggybank:1.05, tax:1.05, merchant:1.1, recycler:1.05,
                      factory:1.05, towtruck:1.05, mechanic:1.05, tipjar:1.05, caddy:1.05,
                      crusher:1.3, booster:1.25, slayer:1.2, wiper:1.35, infmirror:1.22,
+                     /* the Titan. roughly the size of the whole playfield,
+                        which is the entire point of him */
+                     astro:6.8,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -4671,6 +4828,7 @@ const S = {
   shield:0, cut:null, projSlow:0,
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
+  plots:{}, clearFx:null, plotArm:null, wellT:0,
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -5023,7 +5181,7 @@ function buildShelf() {
 
 function syncShelf() {
   document.querySelectorAll('.med').forEach(el => {
-    const key = el.dataset.key, can = afford(costOf(key)) && !chalBlocks(key);
+    const key = el.dataset.key, can = afford(costOf(key)) && !chalBlocks(key) && !gateBlocks(key);
     if (can && S.affordable[key] === false) { el.classList.add('newly'); setTimeout(() => el.classList.remove('newly'), 820); }
     S.affordable[key] = can;
     el.classList.toggle('locked', !can);
@@ -5069,6 +5227,20 @@ function setPlacingBanner() {
 function pick(key) {
   const block = chalBlocks(key);
   if (block) { toast(TOWERS[key].name + ' is locked by ' + block); beep(150,0.08,'square',0.03); return; }
+  const gate = gateBlocks(key);
+  if (gate) { toast(TOWERS[key].name + ' unlocks at ' + gate); beep(150,0.08,'square',0.03); return; }
+  /* the Titan only fits on his pad, so the board pulls all the way back to
+     show it — and says so if the trees are still standing on it */
+  if (TOWERS[key].bigPad) {
+    const pad = plotById('astro');
+    if (!plotCleared('astro')) {
+      toast('Clear the Astro Pad first — ' + bigCash(plotCost(pad)));
+      beep(150, 0.08, 'square', 0.03);
+    }
+    if (theAstro()) { toast('There is only ever one Titan'); beep(150,0.08,'square',0.03); return; }
+    S.cam.z = S.cam.min; camClamp();
+    syncCamChip();
+  }
   if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
   S.dupe = null;
   S.placing = key;
@@ -5153,6 +5325,7 @@ function reset() {
   S.rollers=[]; S.orbs=[];
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
+  S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0;
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
   S.rollers = []; S.orbs = []; S.bestAtStart = bestHere();
@@ -5681,7 +5854,9 @@ function scheduleBolt() {
 /* A safety net, not a rule: placement already refuses everything off the
    lawn. If a Jaxon ever ends up out there anyway, he fades out and every
    coin comes back rather than sitting uselessly in a field. */
-const onLawn = (x, y) => x >= 0 && x <= W && y >= 0 && y <= H;
+/* Ground a Jaxon is allowed to stand on: the lawn, or any plot that has
+   been paid for and cleared. Everything else is somebody else's park. */
+const onLawn = (x, y) => (x >= 0 && x <= W && y >= 0 && y <= H) || !!inClearedPlot(x, y, 0);
 function sweepStrays() {
   if (S.titan) return;
   const lost = S.towers.filter(t => !onLawn(t.x, t.y));
@@ -5985,6 +6160,7 @@ function amplify(dmg, owner, e) {
   if (owner && owner.nulled) dmg *= 0.42;       // standing in the Null Prophet's shadow
   if (e && e.slay > 0) dmg *= e.slayMul || 1;   // painted by an Elite Slayer
   if (owner && owner.admField) dmg *= 1 + ADM.field.dmg;
+  if (owner && S.wellT > 0) dmg *= 1 + ASTRO.ringBuff;   // the Titan's gravity well
   if (owner) {
     if (owner.dmgBuff > 0) dmg *= 1 + owner.dmgBuffAmt;
     if (owner.crit > 0 && Math.random() < owner.crit) {
@@ -6596,6 +6772,10 @@ function endLink(pick) {
     toast('It cannot copy itself');
     beep(150, 0.08, 'square', 0.03);
     return;
+  } else if (TOWERS[pick.type].noMirror) {
+    toast('Nothing copies a ' + TOWERS[pick.type].name);
+    beep(150, 0.08, 'square', 0.03);
+    return;
   } else if (Math.hypot(pick.x - t.x, pick.y - t.y) > SP(t).range) {
     toast(TOWERS[pick.type].name + ' is outside the ring');
     beep(150, 0.08, 'square', 0.03);
@@ -6617,6 +6797,7 @@ function fireMirror(t, aim, spec) {
   } else if (!t.copyOf) {
     for (const o of S.towers) {
       if (o === t || !o.lastFired) continue;
+      if (TOWERS[o.type].noMirror) continue;         // the Titan cannot be copied
       if (Math.hypot(o.x - t.x, o.y - t.y) > spec.range) continue;
       if (!src || o.lastFired.at > src.at) src = o.lastFired;
     }
@@ -7466,6 +7647,9 @@ function resetHaste() { for (const e of S.enemies) e.haste = 1; }
 /* -------------------------------------------------------------- update --- */
 function update(dt) {
   S.t += dt;
+  clearFxTick(dt);
+  S.wellT = astroWell() ? 1 : 0;
+  if (S.plotArm && S.t > S.plotArm.until) S.plotArm = null;
   if (S.projSlow > 0) S.projSlow = Math.max(0, S.projSlow - dt);
 
   if (S.phase === 'wave' && S.spawnQueue > 0) {
@@ -7511,7 +7695,14 @@ function update(dt) {
     }
     if (e.cap) {                                       // held by a black hole or the shredder
       e.cap.t -= dt; e.cap.a += dt*3.4;
-      if (e.cap.t <= 0) e.cap = null;                  // spat back out onto the trail
+      if (e.cap.t <= 0) {
+        /* the Titan's well hands them back a shell of themselves */
+        if (e.cap.drain) {
+          e.hp = Math.max(1, Math.round(e.max*e.cap.drain));
+          S.fx.push({ k:'flash', x:e.cap.x, y:e.cap.y, life:0.14, max:0.14 });
+        }
+        e.cap = null;                                 // spat back out onto the trail
+      }
       continue;
     }
     e.d += eSpeed(e)*dt;
@@ -7702,6 +7893,8 @@ function update(dt) {
       }
       continue;
     }
+    /* the Titan runs his own show entirely */
+    if (spec.ammo === 'astro') { astroTick(t, spec, mul, dt, override); continue; }
     /* Boss Crusher — a single heavy swing, and it only really matters
        against something with a name on it */
     if (spec.ammo === 'crusher') {
@@ -8602,6 +8795,43 @@ function update(dt) {
       if (s.life <= 0) s.dead = true;
       continue;
     }
+    /* The Titan's plasma ball. It is slow, it is enormous, and it goes
+       off on the first thing it touches or when it reaches the spot it
+       was aimed at — never a beam, always a thing in the air. */
+    if (s.ammo === 'plasma') {
+      s.spin += sdt*2.2;
+      let hit = null;
+      for (const e of S.enemies) {
+        if (e.dead) continue;
+        const p = enemyPos(e);
+        if (Math.hypot(p.x - s.x, p.y - s.y) < E_R + 34) { hit = e; break; }
+      }
+      let bhit = null;
+      for (const B of S.bosses) {
+        const p = pointAt(B.d);
+        if (Math.hypot(p.x - s.x, p.y - s.y) <= B.def.r + 30) { bhit = B; break; }
+      }
+      const there = Math.hypot(s.x - s.tx, s.y - s.ty) < 26;
+      if (hit || bhit || there || s.life <= 0) {
+        const px = s.x, py = s.y, R = s.splashR;
+        for (const e of S.enemies) {
+          if (e.dead) continue;
+          const q = enemyPos(e);
+          const d = Math.hypot(q.x - px, q.y - py);
+          if (d <= R) hurtEnemy(e, Math.round(s.dmg*(1 - d/R*0.45)), s.owner);
+        }
+        for (const B of S.bosses) {
+          const q = pointAt(B.d);
+          if (Math.hypot(q.x - px, q.y - py) <= R + B.def.r) hurtBoss(s.dmg, s.owner, B);
+        }
+        S.fx.push({ k:'plasmaBoom', x:px, y:py, r:R, life:0.7, max:0.7 });
+        S.fx.push({ k:'boom', x:px, y:py, life:0.35, max:0.35, r:R*0.7, col:'#7ddcff' });
+        shakeScreen(14, 0.4); flashScreen(0.12);
+        beep(70, 0.9, 'sawtooth', 0.07, 260);
+        s.dead = true;
+      }
+      continue;
+    }
     /* the Infinity Mirror's pane: it shatters into more of itself */
     if (s.ammo === 'prism') {
       s.spin += sdt*4;
@@ -8834,6 +9064,15 @@ function update(dt) {
         S.money += pay; m.earned = (m.earned || 0) + pay;
         S.floats.push({ x:m.x, y:m.y - 54, txt:'+$' + pay, color:'#ffd83d', life:1.9, big:true });
       }
+    }
+    /* the Titan banks the round's damage as experience */
+    for (const a of S.towers) {
+      if (TOWERS[a.type].ammo !== 'astro') continue;
+      const round = Math.max(0, a.dmg - (a.xpDmg || 0));
+      a.xpDmg = a.dmg;
+      const got = astroGainXp(a, round);
+      if (got) S.floats.push({ x:a.x, y:a.y - 200, txt:'TITAN LVL ' + astroLevel(a),
+                               color:'#ffd83d', life:2.2, big:true });
     }
     /* the Admin Jaxon banks a wave's experience */
     for (const a of S.towers) {
@@ -9215,7 +9454,8 @@ function drawPanel() {
       <div><div class="k">Pops</div><div class="v">${t.pops}</div></div>
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
-    ${t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
+    ${TOWERS[t.type].ammo === 'astro' ? astroPanelRows(t)
+        : t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
         : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
     ${aimRow(t)}
     ${linkRow(t)}
@@ -9232,6 +9472,7 @@ function drawPanel() {
       <button class="close" id="pClose">${MOBILE ? 'Close' : 'Esc'}</button>
     </div>
     <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
+        : TOWERS[t.type].ammo === 'astro' ? 'He levels off the damage he deals each round. No paths, ever.'
         : TOWERS[t.type].ammo === 'admin' ? 'Levels are bought or earned. He has no paths.'
         : 'A tier 3 locks the other paths at tier 2'}</div>`;
 
@@ -9262,6 +9503,24 @@ function drawPanel() {
     el.querySelectorAll('.aimB').forEach(x => x.classList.toggle('on', x === b));
     beep(620, 0.05, 'triangle', 0.026);
   });
+  const sn = $('pSnap');
+  if (sn) sn.onclick = ev => { ev.stopPropagation(); if (astroSnap(false)) drawPanel(); };
+  const alv = $('pAstroLv');
+  if (alv) {
+    $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
+    alv.onclick = ev => {
+      ev.stopPropagation();
+      const cnt = Math.max(1, Math.round(+$('pLvN').value || 1));
+      t.lvl = Math.min(ASTRO.maxLvl, astroLevel(t) + cnt);
+      t._spec = null; t._sv = -1;
+      S.floats.push({ x:t.x, y:t.y - 200, txt:'TITAN LVL ' + astroLevel(t),
+                      color:'#ffd83d', life:2, big:true });
+      beep(900, 0.1, 'triangle', 0.035, 1400);
+      drawPanel();
+    };
+  }
+  const asn = $('pAstroSnap');
+  if (asn) asn.onclick = ev => { ev.stopPropagation(); astroSnap(true); drawPanel(); };
   const lg = $('pLvGo');
   if (lg) {
     $('pLvN').addEventListener('keydown', ev => ev.stopPropagation());
@@ -9308,6 +9567,40 @@ function aimRow(t) {
     AIMS.map(([id, label, tip]) =>
       '<button class="aimB' + (id === cur ? ' on' : '') + '" data-aim="' + id + '" title="' + tip + '">' +
       label + '</button>').join('') + '</div>';
+}
+
+/* The Titan shows what he has earned, and the one thing you can buy from
+   him: the guillotine, on a boss wave, for a great deal of money. */
+function astroPanelRows(t) {
+  const lv = astroLevel(t), sp = SP(t);
+  const bar = Math.max(0, Math.min(1, (t.xp || 0)/astroNeed(t)));
+  const round = Math.max(0, t.dmg - (t.xpDmg || 0));
+  const B = S.bosses[0];
+  const pct = Math.round(snapPct(S.wave)*100);
+  const used = t.snapWave === S.wave;
+  const snapWhy = !B ? 'Only while a boss is on the trail'
+                : used ? 'Already used this boss wave'
+                : Math.round(pct) + '% of the whole bar, and a small chance of the real thing';
+  return '<div class="admLv astro">' +
+    '<div class="lvTop"><span>Titan level ' + lv + '</span><b>' +
+      shortHp(Math.round(sp.dmg)) + ' &times; ' + sp.beams + '</b></div>' +
+    '<div class="lvBar"><i style="width:' + (bar*100).toFixed(1) + '%"></i></div>' +
+    '<div class="lvXp">' + bigNum(Math.round(t.xp || 0)) + ' / ' + bigNum(astroNeed(t)) +
+      ' damage &middot; ' + bigNum(Math.round(round)) + ' banked this round</div>' +
+    '<div class="lvUn on"><span>Claw beams</span><b>' + sp.beams + ' at once</b></div>' +
+    '<div class="lvUn on"><span>Plasma ball</span><b>every ' + sp.plasmaCd.toFixed(1) + 's</b></div>' +
+    '<div class="lvUn on"><span>Gravity ring</span><b>every ' + Math.round(sp.ringCd) + 's</b></div>' +
+    (t.ringBuffT > 0 ? '<div class="lvUn on"><span>Gravity well</span><b>' +
+        Math.ceil(t.ringBuffT) + 's left</b></div>' : '') +
+    '<button class="asc snap' + (B && !used && afford(ASTRO.snapCost) ? '' : ' poor') + '" id="pSnap">' +
+      '<span class="an">Gravity Guillotine &nbsp;' + tagCash(ASTRO.snapCost) + '</span>' +
+      '<span class="as">' + snapWhy + '</span>' +
+    '</button>' +
+    (SB() ? '<div class="lvRow">' +
+      '<input type="number" id="pLvN" min="1" max="250" value="1">' +
+      '<button id="pAstroLv">Buy level</button>' +
+      '<button id="pAstroSnap">Force snap</button></div>' : '') +
+    '</div>';
 }
 
 /* The Admin Jaxon shows levels where everyone else shows paths. */
@@ -9509,6 +9802,195 @@ function syncOmen() {
   S.omen.step += Math.max(0, want - S.omen.p) + 0.004;
 }
 
+/* ======================================================= the land plots ==
+   Two pieces of ground out in the park that can be bought and cleared.
+   The right one is the only pad big enough for a Titan Astro Jaxon; the
+   left one is a small satellite island, deliberately too far from the
+   trail for most guns to reach, for income and overflow.
+
+   A plot is forest until it is paid for. Clearing runs a chainsaw across
+   it, drops the trees and leaves plain grass. */
+const PLOTS = [
+  { id:'astro', name:'Astro Pad', cost:1000000, astro:true,
+    x:1880, y:70, w:1240, h:940,
+    blurb:'The only ground that will take a Titan Astro Jaxon.' },
+  { id:'sat', name:'Satellite Plot', cost:150000, astro:false,
+    x:-1420, y:250, w:620, h:520,
+    blurb:'A quiet island. Too far out for most guns to reach the trail.' }
+];
+const plotById = id => PLOTS.find(p => p.id === id);
+const plotCleared = id => !!(S.plots && S.plots[id]);
+const inPlot = (p, x, y) => x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h;
+function plotAt(x, y) {
+  for (const p of PLOTS) if (inPlot(p, x, y)) return p;
+  return null;
+}
+/* a little margin so nothing is placed hanging off the edge */
+function inClearedPlot(x, y, pad) {
+  const m = pad === undefined ? 40 : pad;
+  for (const p of PLOTS) {
+    if (!plotCleared(p.id)) continue;
+    if (x >= p.x + m && x <= p.x + p.w - m && y >= p.y + m && y <= p.y + p.h - m) return p;
+  }
+  return null;
+}
+
+/* half the ground a Titan Astro Jaxon actually stands on */
+function astroFoot() { return SPRITE.astro ? SPRITE.astro.w*0.36 : 240; }
+
+/* the sign is the only part of a plot you can press */
+const SIGN_W = 250, SIGN_H = 74;
+function plotSignAt(x, y) {
+  if (S.titan) return null;
+  for (const p of PLOTS) {
+    if (plotCleared(p.id)) continue;
+    const cx = p.x + p.w/2, cy = p.y + p.h/2;
+    if (Math.abs(x - cx) <= SIGN_W && Math.abs(y - cy) <= SIGN_H) return p;
+  }
+  return null;
+}
+
+function plotCost(p) { return Math.round(p.cost * M().cost); }
+function buyPlot(p) {
+  if (plotCleared(p.id)) return false;
+  if (S.clearFx) return false;
+  const cost = plotCost(p);
+  if (!afford(cost)) {
+    toast('Clearing the ' + p.name + ' costs ' + bigCash(cost));
+    beep(150, 0.08, 'square', 0.03);
+    return false;
+  }
+  spend(cost);
+  /* the chainsaw run: it sweeps the plot and the trees go with it */
+  S.clearFx = { p, t:0, dur:2.2 };
+  toast('Clearing the ' + p.name + '…');
+  beep(180, 1.6, 'sawtooth', 0.05, 240);
+  syncHUD(); syncShelf();
+  return true;
+}
+function clearFxTick(dt) {
+  const c = S.clearFx;
+  if (!c) return;
+  c.t += dt;
+  /* sawdust thrown up along the cutting line */
+  if (!S.perf && c.t < c.dur*0.8 && S.fx.length < FX_CAP[S.perf] - 6) {
+    const k = Math.min(1, c.t/(c.dur*0.8));
+    const cx = c.p.x + k*c.p.w;
+    for (let i = 0; i < 2; i++) {
+      S.fx.push({ k:'p', x:cx + (Math.random()-0.5)*40,
+                  y:c.p.y + Math.random()*c.p.h,
+                  vx:-60 - Math.random()*140, vy:(Math.random()-0.5)*160,
+                  life:0.5, max:0.5, color:Math.random() < 0.5 ? '#c8a06a' : '#4a3218',
+                  r:2 + Math.random()*3 });
+    }
+  }
+  if (c.t >= c.dur) {
+    S.plots[c.p.id] = 1;
+    S.clearFx = null;
+    banner('LAND CLEARED', c.p.name, '#7dffb4');
+    flashScreen(0.12);
+    toast(c.p.name + ' is ready to build on');
+    beep(700, 0.3, 'triangle', 0.05, 1200);
+    saveNow();
+  }
+}
+
+/* how far the chainsaw has got, 0 to 1 */
+const clearK = id => {
+  const c = S.clearFx;
+  if (plotCleared(id)) return 1;
+  if (!c || c.p.id !== id) return 0;
+  return Math.min(1, c.t/(c.dur*0.8));
+};
+
+/* ---------------------------------------------------------- drawing --- */
+function drawPlots() {
+  if (S.titan) return;
+  for (const p of PLOTS) {
+    const k = clearK(p.id);
+    const done = plotCleared(p.id);
+    ctx.save();
+    if (k > 0) {
+      /* the cleared ground: the same grass as the lawn, mown flat */
+      ctx.save();
+      ctx.beginPath(); ctx.rect(p.x, p.y, p.w*k, p.h); ctx.clip();
+      ctx.fillStyle = grassPattern || '#009242';
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.fillStyle = 'rgba(0,0,0,.12)';
+      ctx.fillRect(p.x, p.y, p.w, p.h);
+      ctx.restore();
+      /* stumps left behind at the edge */
+      ctx.globalAlpha = 0.5;
+      ctx.fillStyle = '#4a3218';
+      for (let i = 0; i < 14; i++) {
+        const sx = p.x + ((i*137) % Math.max(1, Math.floor(p.w*k)));
+        const sy = p.y + ((i*271) % p.h);
+        ctx.beginPath(); ctx.ellipse(sx, sy, 9, 4, 0, 0, 7); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    /* the fence, and the sign while it is still forest */
+    ctx.setLineDash(done ? [] : [22, 16]);
+    ctx.lineWidth = done ? 4 : 5;
+    ctx.strokeStyle = done ? 'rgba(125,255,180,.55)'
+      : (S.clearFx && S.clearFx.p.id === p.id) ? '#ffd83d' : 'rgba(255,216,61,.75)';
+    ctx.lineDashOffset = -S.t*20;
+    ctx.strokeRect(p.x, p.y, p.w, p.h);
+    ctx.setLineDash([]);
+    if (!done) {
+      const cx = p.x + p.w/2, cy = p.y + p.h/2;
+      const busy = S.clearFx && S.clearFx.p.id === p.id;
+      ctx.fillStyle = 'rgba(8,12,18,.82)';
+      ctx.beginPath(); ctx.roundRect(cx - 250, cy - 74, 500, 148, 20); ctx.fill();
+      ctx.lineWidth = 3; ctx.strokeStyle = busy ? '#ffd83d' : 'rgba(255,216,61,.6)'; ctx.stroke();
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.font = '800 30px "Segoe UI", system-ui, sans-serif';
+      ctx.fillStyle = '#ffd83d';
+      ctx.fillText(p.name.toUpperCase(), cx, cy - 36);
+      ctx.font = '600 19px "Segoe UI", system-ui, sans-serif';
+      ctx.fillStyle = '#93a2b2';
+      ctx.fillText(p.blurb, cx, cy + 2);
+      ctx.font = '900 34px "Segoe UI", system-ui, sans-serif';
+      ctx.fillStyle = busy ? '#7dffb4' : (afford(plotCost(p)) ? '#7dffb4' : '#ff8b8e');
+      const armed = S.plotArm && S.plotArm.id === p.id;
+      ctx.fillText(busy ? 'CLEARING…' : 'CLEAR FOR ' + bigCash(plotCost(p)), cx, cy + 46);
+      if (!busy) {
+        ctx.font = '700 15px "Segoe UI", system-ui, sans-serif';
+        ctx.fillStyle = armed ? '#ffd83d' : '#6c7f8f';
+        ctx.fillText(armed ? (MOBILE ? 'tap again to buy it' : 'click again to buy it')
+                           : (MOBILE ? 'tap' : 'click') + ' this sign', cx, cy + 80);
+      }
+    }
+    /* the saw itself, running down the cut */
+    if (S.clearFx && S.clearFx.p.id === p.id && k < 1) {
+      const cx = p.x + k*p.w;
+      ctx.save();
+      ctx.strokeStyle = '#ffd83d'; ctx.lineWidth = 6;
+      ctx.globalAlpha = 0.85;
+      ctx.beginPath(); ctx.moveTo(cx, p.y); ctx.lineTo(cx, p.y + p.h); ctx.stroke();
+      ctx.globalCompositeOperation = 'lighter';
+      const g = ctx.createLinearGradient(cx - 70, 0, cx + 20, 0);
+      g.addColorStop(0, 'rgba(255,216,61,0)'); g.addColorStop(1, 'rgba(255,216,61,.5)');
+      ctx.fillStyle = g; ctx.fillRect(cx - 70, p.y, 90, p.h);
+      /* the blade, biting */
+      const by = p.y + (0.5 + Math.sin(S.t*7)*0.42)*p.h;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 1;
+      ctx.translate(cx, by); ctx.rotate(S.t*30);
+      ctx.fillStyle = '#e8eef7'; ctx.strokeStyle = '#39424f'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i < 12; i++) {
+        const a = i*0.523, a2 = a + 0.26;
+        ctx.lineTo(Math.cos(a)*34, Math.sin(a)*34);
+        ctx.lineTo(Math.cos(a2)*22, Math.sin(a2)*22);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+}
+
 /* -------------------------------------------------------- the park -----
    Zoom out far enough and the 1600x900 field turns out to be a lawn in the
    middle of a park. None of it is playable: no path runs through it, no
@@ -9671,7 +10153,7 @@ function drawOmen() {
 function drawField() {
   if (S.titan) { drawSiegeField(); drawTitanFx(); drawTitan(); return; }
   const v = viewBox();
-  if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) { makePark(); drawPark(v); }
+  if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) { makePark(); drawPark(v); drawPlots(); }
   if (S.omen) drawOmen();                        // out past the lawn, walking in
   ctx.fillStyle = grassPattern || '#009242'; ctx.fillRect(0, 0, W, H);
   const vg = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
@@ -10247,7 +10729,20 @@ function drawBoss(bs) {
   }
 }
 
+let _flyingIn = false;
 function drawTower(t, ghost) {
+  /* The Titan arrives rather than appearing. While he is in the air his
+     position is lent out to the ordinary drawing code below, so shadow,
+     sprite and gear all travel together and land as one. */
+  if (!ghost && !_flyingIn && t.arrive > 0) {
+    const k = 1 - t.arrive/ASTRO.arrive;
+    const e = 1 - Math.pow(1 - k, 3);
+    const ox = t.x, oy = t.y;
+    t.x = ox + (1 - e)*2400; t.y = oy - (1 - e)*1100;
+    _flyingIn = true;
+    try { drawTower(t, ghost); } finally { _flyingIn = false; t.x = ox; t.y = oy; }
+    return;
+  }
   const rec = (t.recoil || 0)*3;
   const bob = ghost ? 0 : Math.sin(S.t*2.4 + t.x)*1.2;
   const art = artOf(t);
@@ -10622,6 +11117,128 @@ const ULTRA_FX = {
   }
 };
 
+/* ------------------------------------------------ the Titan's own paint -
+   Everything here is drawn in world coordinates, next to him rather than
+   inside his sprite transform: the claw arcs, the charge on the plasma,
+   the ring winding up, and the hologram wings on the way in. */
+function astroWings(t, k, alpha) {
+  /* k is how far through the fly-in he is; the wings burn out as he lands */
+  const art = artOf(t), sw = spriteW(art), sh = spriteH(art);
+  const y = t.y + spriteTop(art) + sh*0.42;
+  const beat = Math.sin(S.t*6)*0.12 + 1;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.globalAlpha = alpha;
+  for (const side of [-1, 1]) {
+    for (let i = 0; i < 5; i++) {
+      const span = sw*(0.5 + i*0.14)*beat;
+      const drop = sh*(0.04 + i*0.05);
+      const g = ctx.createLinearGradient(t.x, y, t.x + side*span, y + drop);
+      g.addColorStop(0, 'rgba(255,190,110,' + (0.42 - i*0.06) + ')');
+      g.addColorStop(0.55, 'rgba(255,122,26,' + (0.24 - i*0.04) + ')');
+      g.addColorStop(1, 'rgba(255,90,20,0)');
+      ctx.strokeStyle = g; ctx.lineWidth = sh*0.035; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(t.x + side*sw*0.16, y - sh*0.06);
+      ctx.quadraticCurveTo(t.x + side*span*0.7, y - sh*0.16 + drop*0.4,
+                           t.x + side*span, y + drop);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+ULTRA_FX.astro = function (t, art, grow) {
+  const sh = spriteH(art)*grow, sw = spriteW(art)*grow;
+  /* --- still on his way in: wings, a long shadow closing, a shine ---- */
+  if (t.arrive > 0) {
+    const k = 1 - t.arrive/ASTRO.arrive;             // 0 far away, 1 landed
+    astroWings(t, k, 0.55 + Math.sin(S.t*9)*0.12);
+    ctx.save();
+    ctx.globalAlpha = k*0.4;
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.ellipse(t.x, t.y + T_H*0.44, sw*0.3*k, sw*0.11*k, 0, 0, 7);
+    ctx.fill();
+    if (k > 0.82) {                                  // the shine as he touches down
+      const f = (k - 0.82)/0.18;
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 1 - f;
+      const g = ctx.createRadialGradient(t.x, t.y - sh*0.3, 10, t.x, t.y - sh*0.3, sw*f*1.4);
+      g.addColorStop(0, 'rgba(255,255,255,.9)');
+      g.addColorStop(0.4, 'rgba(255,200,90,.5)');
+      g.addColorStop(1, 'rgba(255,150,40,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(t.x, t.y - sh*0.3, sw*f*1.4, 0, 7); ctx.fill();
+    }
+    ctx.restore();
+    return;
+  }
+  if (S.perf > 1) return;
+
+  /* --- the arcs between the hooks, drifting and pulsing -------------- */
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 4; i++) {
+    const p = astroTip(t, i);
+    const hot = (t.lanceT > 0 && t.lanceClaw === i) ? 1 : 0;
+    const pulse = 0.4 + Math.sin(S.t*3.4 + i*1.6)*0.22 + hot*0.5;
+    const r = sh*0.055*(1 + hot*0.5);
+    ctx.globalAlpha = pulse;
+    const g = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, r);
+    g.addColorStop(0, 'rgba(255,255,220,.95)');
+    g.addColorStop(0.4, hot ? 'rgba(255,154,46,.75)' : 'rgba(255,216,61,.6)');
+    g.addColorStop(1, 'rgba(255,168,20,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, 7); ctx.fill();
+  }
+  /* --- the plasma winding up between the lower claws ----------------- */
+  if (t.plasmaWind > 0.02) {
+    const a = astroTip(t, 2), b = astroTip(t, 3);
+    const cx = (a.x + b.x)/2, cy = (a.y + b.y)/2;
+    const w = t.plasmaWind;
+    ctx.globalAlpha = w*0.85;
+    const g2 = ctx.createRadialGradient(cx, cy, 2, cx, cy, sh*0.14*w);
+    g2.addColorStop(0, 'rgba(255,255,255,1)');
+    g2.addColorStop(0.35, 'rgba(120,220,255,.8)');
+    g2.addColorStop(1, 'rgba(60,140,255,0)');
+    ctx.fillStyle = g2;
+    ctx.beginPath(); ctx.arc(cx, cy, sh*0.14*w, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(200,240,255,' + (w*0.7) + ')';
+    ctx.lineWidth = 2.5;
+    for (let i = 0; i < 3; i++) {
+      const rr = sh*0.16*w*(1 - i*0.22);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rr, rr*0.34, S.t*(1.4 + i) + i, 0, 7);
+      ctx.stroke();
+    }
+  }
+  /* --- the gravity ring gathering itself ----------------------------- */
+  if (t.ringWind > 0.02) {
+    const cy = t.y - sh*0.3, w = t.ringWind;
+    ctx.globalAlpha = w*0.5;
+    ctx.strokeStyle = '#ffd0a0'; ctx.lineWidth = 3 + w*5;
+    for (let i = 0; i < 3; i++) {
+      const rr = sw*0.5*(1.3 - w) + i*40;
+      ctx.beginPath(); ctx.ellipse(t.x, cy, rr, rr*0.42, 0, 0, 7); ctx.stroke();
+    }
+  }
+  ctx.restore();
+
+  /* --- the well is up: a slow orange breath around the whole board --- */
+  if (t.ringBuffT > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.1 + Math.sin(S.t*1.6)*0.05;
+    const g3 = ctx.createRadialGradient(t.x, t.y - sh*0.3, sw*0.2, t.x, t.y - sh*0.3, sw*2.4);
+    g3.addColorStop(0, 'rgba(255,190,110,.5)');
+    g3.addColorStop(1, 'rgba(255,120,20,0)');
+    ctx.fillStyle = g3;
+    ctx.beginPath(); ctx.arc(t.x, t.y - sh*0.3, sw*2.4, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+};
+
 function drawTierArt(t, art) {
   if (TOWERS[t.type].ammo === 'admin') {
     const lv = admLevel(t);
@@ -10840,6 +11457,29 @@ function drawShot(s) {
     }
     ctx.fillStyle = '#ffffff';
     ctx.beginPath(); ctx.arc(0, 0, 5, 0, 7); ctx.fill();
+    ctx.restore();
+    return;
+  }
+  /* the Titan's plasma ball: a cold-white core in a boiling blue shell */
+  if (s.ammo === 'plasma') {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const r = 30 + Math.sin(S.t*14)*3;
+    const g = ctx.createRadialGradient(s.x, s.y, 2, s.x, s.y, r*1.9);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.28, 'rgba(160,235,255,.95)');
+    g.addColorStop(0.6, 'rgba(60,150,255,.55)');
+    g.addColorStop(1, 'rgba(30,90,220,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(s.x, s.y, r*1.9, 0, 7); ctx.fill();
+    ctx.strokeStyle = 'rgba(220,245,255,.85)'; ctx.lineWidth = 3;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.ellipse(s.x, s.y, r, r*0.36, s.spin + i*1.05, 0, 7);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath(); ctx.arc(s.x, s.y, 11, 0, 7); ctx.fill();
     ctx.restore();
     return;
   }
@@ -11170,6 +11810,285 @@ BOSS_THEME.horizon = { bg:'#050014', glyph:'#b98bff', head:'#ffffff', ring:'#3a1
 BOSS_THEME.titanfight = { bg:'#160308', glyph:'#ff5a3c', head:'#ffd8cc', ring:'#5a0d06', ring2:'#ff7a4a',
                           bar1:'#ff3b1a', bar2:'#ffb04a', num:'#ffe0d2', label:'#ff8a5a' };
 
+/* ================================================== TITAN ASTRO JAXON ====
+   The biggest thing you can put on the board, and still a Jaxon under all
+   the gear. He has no upgrade paths: he takes LEVELS, and he earns them by
+   dealing damage, one round at a time. Strip the rest of your board and he
+   banks more — that is a real strategy, not an exploit.
+
+   Four claws, four attacks:
+     A  the claw beams          constant, one per claw, the bread and butter
+     B  the random lance        a heavier beam off one claw on its own clock
+     C  the plasma ball         a charged orb that flies and detonates
+     D  the gravity ring        pulls the trail into orbit around him
+     E  the gravity guillotine  paid, boss waves only — see astroSnap
+*/
+const ASTRO = {
+  gate:300,                       // no Titan before wave 300 outside sandbox
+  xp0:3e8, xpPow:1.6,             // damage needed for each level
+  dmgPer:1.14,                    // damage per level
+  maxLvl:250,
+  cost0:900000, costPow:1.5,      // buying a level outright
+  arrive:2.4,                     // the fly-in, in seconds
+  ringDur:6, ringBuff:0.2, ringBuffDur:45, ringReturn:0.05,
+  bossPull:0.2, bossReturn:0.3,
+  snapCost:25000000, snapChance:0.08, snapUnder:0.25
+};
+const astroLevel = t => Math.max(1, t.lvl || 1);
+const astroDmgMul = lvl => Math.pow(ASTRO.dmgPer, lvl - 1);
+const astroNeed = t => Math.round(ASTRO.xp0 * Math.pow(astroLevel(t), ASTRO.xpPow));
+const astroLevelCost = lvl => Math.round(ASTRO.cost0 * Math.pow(lvl, ASTRO.costPow));
+function astroBuyCost(t, count) {
+  let sum = 0, lvl = astroLevel(t);
+  for (let i = 0; i < count; i++) sum += astroLevelCost(lvl + i);
+  return sum;
+}
+/* damage banked this round turns into levels at the end of it */
+function astroGainXp(t, amount) {
+  t.xp = (t.xp || 0) + amount;
+  let got = 0;
+  while (astroLevel(t) < ASTRO.maxLvl && t.xp >= astroNeed(t)) {
+    t.xp -= astroNeed(t); t.lvl = astroLevel(t) + 1; got++;
+  }
+  if (got) {
+    t._spec = null; t._sv = -1;
+    banner('TITAN LEVEL ' + astroLevel(t), 'Titan Astro Jaxon', '#ffd83d');
+    flashScreen(0.16); beep(180, 0.7, 'sawtooth', 0.05, 900);
+  }
+  return got;
+}
+const hasAstro = () => S.towers.some(t => TOWERS[t.type].ammo === 'astro');
+const theAstro = () => S.towers.find(t => TOWERS[t.type].ammo === 'astro') || null;
+
+/* ------------------------------------------------------ where he points -
+   The four claw tips, in the drawing box, worked out from where the kit
+   hangs them. Everything he fires leaves from one of these. */
+const ASTRO_TIPS = [[-115, 152], [575, 152], [-194, 514], [654, 514]];
+function astroTip(t, i) {
+  const art = artOf(t), sw = spriteW(art), sh = spriteH(art);
+  const p = ASTRO_TIPS[((i % 4) + 4) % 4];
+  const fx = t.face === -1 ? -1 : 1;
+  const bob = Math.sin(S.t*2.4 + t.x)*1.2;
+  return { x:t.x + fx*((p[0] + 200)/800 - 0.5)*sw,
+           y:t.y + bob + spriteTop(art) + (p[1] + 150)/900*sh };
+}
+
+/* Who the beams pick: anything with a name on it first, then the fattest
+   thing in reach, because that is what a Titan is for. */
+function astroTargets(t, n, R) {
+  const out = [];
+  for (const B of S.bosses) {
+    if (out.length >= n) return out;
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - t.x, p.y - t.y) <= R + B.def.r) out.push({ x:p.x, y:p.y, boss:B });
+  }
+  const es = [];
+  for (const e of S.enemies) {
+    if (e.dead) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - t.x, p.y - t.y) > R) continue;
+    es.push({ x:p.x, y:p.y, e, hp:e.hp });
+  }
+  es.sort((a, b) => b.hp - a.hp);
+  for (const g of es) { if (out.length >= n) break; out.push(g); }
+  return out;
+}
+function astroHit(t, g, dmg, r) {
+  if (g.boss) hurtBoss(dmg, t, g.boss);
+  else if (g.e && !g.e.dead) hurtEnemy(g.e, dmg, t);
+  if (!r) return;
+  for (const e of S.enemies) {
+    if (e.dead || e === g.e) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - g.x, p.y - g.y) <= r) hurtEnemy(e, Math.round(dmg*0.45), t);
+  }
+  for (const B of S.bosses) {
+    if (B === g.boss) continue;
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - g.x, p.y - g.y) <= r + B.def.r) hurtBoss(Math.round(dmg*0.45), t, B);
+  }
+}
+function astroBeam(t, from, g, dmg, col, fat, r) {
+  astroHit(t, g, dmg, r || 0);
+  S.fx.push({ k:'astroBeam', sx:from.x, sy:from.y, x:g.x, y:g.y,
+              col:col, fat:fat || 1, life:0.16, max:0.16 });
+}
+
+/* ------------------------------------------------------------ the tick - */
+function astroTick(t, spec, mul, dt, override) {
+  t.lit = true;
+  /* still flying in: nothing fires until his feet are down */
+  if (t.arrive > 0) {
+    t.arrive -= dt;
+    if (t.arrive <= 0) {
+      t.arrive = 0;
+      shakeScreen(18, 0.9); flashScreen(0.22);
+      S.fx.push({ k:'astroLand', x:t.x, y:t.y + T_H*0.44, life:0.9, max:0.9 });
+      beep(60, 1.2, 'sawtooth', 0.08, 220);
+      toast('Titan Astro Jaxon is online');
+    }
+    return;
+  }
+  const R = spec.range;
+  const aim = override ? [{ x:S.mouse.x, y:S.mouse.y }] : null;
+
+  /* --- A. the claw beams ------------------------------------------- */
+  t.cd -= dt;
+  if (t.cd <= 0) {
+    const list = aim || astroTargets(t, spec.beams, R);
+    if (list.length) {
+      t.cd = spec.cd * mul;
+      t.shots++; t.flash = 1;
+      let i = 0;
+      for (const g of list) astroBeam(t, astroTip(t, i++), g, spec.dmg, '#ffd83d', 1, spec.beamR);
+      if (!S.perf) beep(1500, 0.04, 'sawtooth', 0.012, 1000);
+    } else t.cd = Math.min(t.cd, 0);
+  }
+
+  /* --- B. a heavier lance off one claw, on its own clock ------------ */
+  if (t.lanceCd === undefined) t.lanceCd = spec.lanceCd*0.5;
+  t.lanceCd -= dt;
+  if (t.lanceCd <= 0) {
+    const g = (aim || astroTargets(t, 1, R))[0];
+    t.lanceCd = spec.lanceCd * mul;
+    if (g) {
+      t.lanceClaw = Math.floor(Math.random()*4);
+      t.lanceT = 0.34;
+      astroBeam(t, astroTip(t, t.lanceClaw), g,
+                Math.round(spec.dmg*spec.lanceMul), '#ff9a2e', 3.4, spec.lanceR);
+      beep(300, 0.24, 'sawtooth', 0.045, 900);
+    }
+  }
+  if (t.lanceT > 0) t.lanceT -= dt;
+
+  /* --- C. the plasma ball: a charge, then a real thing in the air --- */
+  if (t.plasmaCd === undefined) t.plasmaCd = spec.plasmaCd;
+  t.plasmaCd -= dt;
+  t.plasmaWind = t.plasmaCd < 1.2 ? 1 - t.plasmaCd/1.2 : 0;
+  if (t.plasmaCd <= 0) {
+    const g = (aim || astroTargets(t, 1, R))[0];
+    t.plasmaCd = spec.plasmaCd * mul;
+    if (g && S.shots.length < SHOT_CAP - 4) {
+      const from = astroTip(t, t.face === -1 ? 2 : 3);
+      const a = Math.atan2(g.y - from.y, g.x - from.x);
+      S.shots.push({ x:from.x, y:from.y, vx:Math.cos(a)*720, vy:Math.sin(a)*720,
+                     a, spin:0, hue:0, ammo:'plasma',
+                     dmg:Math.round(spec.dmg*spec.plasmaMul), splashR:spec.plasmaR,
+                     bounce:0, bounceR:0, trap:0, reach:R*1.4,
+                     life:4, owner:t, dead:false, hitSet:new Set(), wp:null,
+                     tx:g.x, ty:g.y });
+      t.shots++;
+      beep(140, 0.5, 'square', 0.05, 520);
+    }
+  }
+
+  /* --- D. the gravity ring ------------------------------------------ */
+  if (t.ringCd === undefined) t.ringCd = spec.ringCd*0.6;
+  t.ringCd -= dt;
+  t.ringWind = t.ringCd < 2 ? 1 - t.ringCd/2 : 0;
+  if (t.ringCd <= 0) {
+    t.ringCd = spec.ringCd * mul;
+    astroRing(t, spec);
+  }
+  /* the ring's gift, running down */
+  if (t.ringBuffT > 0) {
+    t.ringBuffT -= dt;
+    if (t.ringBuffT <= 0) { t.ringBuffT = 0; toast('The gravity well fades'); }
+  }
+}
+
+/* The ring itself. A white-orange wave leaves him, sweeps the trail and
+   drags whatever it touches into orbit. Everything that comes back comes
+   back at five percent — a boss is too heavy to hold, so it takes a chance
+   of being dragged down to thirty instead. While anything is orbiting,
+   every Jaxon on the board hits harder, which is what makes the ring worth
+   firing even into a thin lane. */
+function astroRing(t, spec) {
+  const R = spec.range;
+  let caught = 0;
+  for (const e of S.enemies) {
+    if (e.dead || e.cap) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - t.x, p.y - t.y) > R) continue;
+    e.cap = { x:t.x, y:t.y - spriteH(artOf(t))*0.3,
+              a:Math.random()*6.28, r:120 + Math.random()*260,
+              t:ASTRO.ringDur, drain:ASTRO.ringReturn };
+    if (++caught >= 60) break;
+  }
+  let boss = 0;
+  for (const B of S.bosses) {
+    const p = pointAt(B.d);
+    if (Math.hypot(p.x - t.x, p.y - t.y) > R + B.def.r) continue;
+    if (Math.random() > ASTRO.bossPull) continue;
+    const want = B.max*ASTRO.bossReturn;
+    if (B.hp > want) hurtBoss(B.hp - want, t, B);
+    boss++;
+  }
+  S.fx.push({ k:'gring', x:t.x, y:t.y - spriteH(artOf(t))*0.3, r:R, life:0.9, max:0.9 });
+  shakeScreen(10, 0.5); flashScreen(0.1);
+  beep(90, 1.1, 'sine', 0.06, 640);
+  if (caught || boss) {
+    t.ringBuffT = ASTRO.ringBuffDur;
+    S.floats.push({ x:t.x, y:t.y - 120, txt:'GRAVITY WELL · all Jaxons +' +
+                    Math.round(ASTRO.ringBuff*100) + '%', color:'#ffd0a0', life:2.4, big:true });
+    banner('GRAVITY WELL', caught + ' pulled in' +
+           (boss ? ' · ' + boss + ' boss dragged down' : ''), '#ffb04a');
+  } else {
+    S.floats.push({ x:t.x, y:t.y - 120, txt:'nothing in reach', color:'#93a2b2', life:1.4 });
+  }
+}
+/* the board-wide bonus the well hands out while it is holding anything */
+const astroWell = () => {
+  for (const t of S.towers) {
+    if (TOWERS[t.type].ammo === 'astro' && t.ringBuffT > 0) return ASTRO.ringBuff;
+  }
+  return 0;
+};
+
+/* ------------------------------------------------- the claw guillotine --
+   Bought, not rolled. It always takes a percentage of the boss's whole
+   health bar, and that percentage falls away as the waves climb, so it is
+   ruinous in the early 300s and a solid chip at 450. On top of that there
+   is a small chance of the real thing: the claws take him apart. */
+function snapPct(wave) {
+  return Math.max(0.05, Math.min(0.9, 0.65 * Math.pow(300/Math.max(300, wave), 2.2)));
+}
+function astroSnap(force) {
+  const t = theAstro();
+  if (!t) { toast('No Titan Astro Jaxon on the board'); return false; }
+  if (t.arrive > 0) { toast('He has not landed yet'); return false; }
+  const B = S.bosses[0];
+  if (!B) { toast('The guillotine needs a boss'); beep(150, 0.08, 'square', 0.03); return false; }
+  if (!force) {
+    if (t.snapWave === S.wave) { toast('One guillotine a boss wave'); beep(150,0.08,'square',0.03); return false; }
+    if (!afford(ASTRO.snapCost)) {
+      toast('The guillotine costs ' + bigCash(ASTRO.snapCost));
+      beep(150,0.08,'square',0.03); return false;
+    }
+    spend(ASTRO.snapCost); t.snapWave = S.wave; syncHUD();
+  }
+  const pct = snapPct(S.wave);
+  /* it takes a share of the whole bar, so the plates have nothing to soak */
+  const plates = B.plates; B.plates = 0;
+  hurtBoss(Math.max(1, Math.round(B.max*pct)), t, B);
+  B.plates = plates;
+  const finish = !!force || (Math.random() < ASTRO.snapChance && B.hp <= B.max*ASTRO.snapUnder);
+  const bp = pointAt(B.d);
+  S.fx.push({ k:'astroSnap', x:t.x, y:t.y - spriteH(artOf(t))*0.34,
+              bx:bp.x, by:bp.y, br:B.def.r,
+              kill:finish ? 1 : 0, life:finish ? 2.2 : 0.8, max:finish ? 2.2 : 0.8 });
+  shakeScreen(finish ? 34 : 16, finish ? 1.4 : 0.6);
+  flashScreen(finish ? 0.4 : 0.16);
+  beep(finish ? 55 : 120, finish ? 1.6 : 0.5, 'sawtooth', 0.08, finish ? 900 : 420);
+  if (finish) {
+    banner('GRAVITY GUILLOTINE', B.def.name + ' torn in half', '#ffd83d');
+    if (B.hp > 0) { const pl = B.plates; B.plates = 0; hurtBoss(B.hp + 1, t, B); B.plates = pl; }
+  } else {
+    banner('GRAVITY GUILLOTINE', Math.round(pct*100) + '% of the bar', '#ffb04a');
+  }
+  return true;
+}
+
 /* --------------------------------------------------------------- camera --
    Always present. Outside the siege it sits at z=1 centred on the middle of
    the frame, which is the identity transform, so nothing else notices. */
@@ -11215,7 +12134,9 @@ function camEnd() { ctx.restore(); }
 /* How far past the map edge the view may wander. Zoomed in this is a
    generous margin of park; zoomed out the map is already inside the frame
    and the camera simply sits in the middle of it. */
-const CAM_PAD = 620;
+/* wide enough that a zoomed-in camera can still be walked out to either
+   land plot, which is the only reason to go out there at all */
+const CAM_PAD = 1900;
 function camBounds() {
   const c = S.cam, wd = camWorld();
   const pad = S.titan ? 0 : CAM_PAD;
@@ -12089,6 +13010,121 @@ function render() {
         ctx.stroke();
       }
       ctx.restore();
+    } else if (f.k === 'astroBeam') {
+      /* a claw beam: a wide amber sheath, a hot core, a white thread */
+      const k = f.life/f.max, w = f.fat;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = k;
+      ctx.lineCap = 'round';
+      for (const [wd, col] of [[26*w, 'rgba(255,120,20,.35)'], [13*w, f.col],
+                               [5*w, '#fff3b0'], [1.6*w, '#ffffff']]) {
+        ctx.strokeStyle = col; ctx.lineWidth = wd;
+        ctx.beginPath(); ctx.moveTo(f.sx, f.sy); ctx.lineTo(f.x, f.y); ctx.stroke();
+      }
+      ctx.globalAlpha = k*0.9;
+      const g = ctx.createRadialGradient(f.x, f.y, 2, f.x, f.y, 40*w);
+      g.addColorStop(0, 'rgba(255,255,220,.9)');
+      g.addColorStop(0.5, 'rgba(255,168,20,.45)');
+      g.addColorStop(1, 'rgba(255,120,20,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(f.x, f.y, 40*w, 0, 7); ctx.fill();
+      ctx.restore();
+    } else if (f.k === 'astroLand') {
+      /* the ground taking his weight */
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, 1 - k);
+      ctx.strokeStyle = '#ffd0a0'; ctx.lineWidth = 10*(1 - k) + 2;
+      ctx.beginPath(); ctx.ellipse(f.x, f.y, 60 + k*640, 20 + k*220, 0, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.ellipse(f.x, f.y, 40 + k*420, 14 + k*150, 0, 0, 7); ctx.stroke();
+      ctx.restore();
+    } else if (f.k === 'gring') {
+      /* the gravity ring going out, then the drag coming back in */
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 3; i++) {
+        const kk = Math.max(0, k - i*0.12);
+        const rr = f.r*kk;
+        ctx.globalAlpha = (1 - kk)*(0.7 - i*0.18);
+        const g = ctx.createRadialGradient(f.x, f.y, rr*0.82, f.x, f.y, rr);
+        g.addColorStop(0, 'rgba(255,255,255,0)');
+        g.addColorStop(0.7, 'rgba(255,235,200,.9)');
+        g.addColorStop(1, 'rgba(255,140,30,0)');
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.ellipse(f.x, f.y, rr, rr*0.62, 0, 0, 7); ctx.fill();
+      }
+      /* the streaks being hauled inward */
+      ctx.globalAlpha = 1 - k;
+      ctx.strokeStyle = 'rgba(255,200,140,.8)'; ctx.lineWidth = 3;
+      for (let i = 0; i < 22; i++) {
+        const a = i*0.2856 + k*1.4;
+        const r0 = f.r*(1 - k)*0.9, r1 = r0 - 120;
+        ctx.beginPath();
+        ctx.moveTo(f.x + Math.cos(a)*r0, f.y + Math.sin(a)*r0*0.62);
+        ctx.lineTo(f.x + Math.cos(a)*Math.max(0, r1), f.y + Math.sin(a)*Math.max(0, r1)*0.62);
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else if (f.k === 'plasmaBoom') {
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.max(0, 1 - k);
+      const g = ctx.createRadialGradient(f.x, f.y, 4, f.x, f.y, f.r*(0.3 + k));
+      g.addColorStop(0, 'rgba(255,255,255,.95)');
+      g.addColorStop(0.3, 'rgba(150,230,255,.7)');
+      g.addColorStop(0.7, 'rgba(60,140,255,.35)');
+      g.addColorStop(1, 'rgba(20,60,180,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*(0.3 + k), 0, 7); ctx.fill();
+      ctx.strokeStyle = 'rgba(210,245,255,.9)'; ctx.lineWidth = 6*(1 - k) + 1;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*k, 0, 7); ctx.stroke();
+      ctx.restore();
+    } else if (f.k === 'astroSnap') {
+      /* the guillotine: two claws close on the boss and pull */
+      const k = 1 - f.life/f.max;
+      const close = Math.min(1, k*(f.kill ? 1.6 : 3));
+      const gap = f.br*(2.4 - close*2.1);
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.max(0, 1 - k*0.7);
+      ctx.strokeStyle = '#ffd83d'; ctx.lineWidth = 7;
+      ctx.beginPath();
+      ctx.moveTo(f.x, f.y); ctx.lineTo(f.bx - gap, f.by - gap*0.5); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(f.x, f.y); ctx.lineTo(f.bx + gap, f.by + gap*0.5); ctx.stroke();
+      ctx.restore();
+      ctx.save();
+      for (const sgn of [-1, 1]) {
+        ctx.save();
+        ctx.translate(f.bx + sgn*gap, f.by + sgn*gap*0.5);
+        ctx.rotate(sgn > 0 ? Math.PI : 0);
+        ctx.globalAlpha = Math.max(0, 1 - k*0.6);
+        ctx.strokeStyle = '#12161d'; ctx.lineWidth = 26; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(0, -f.br*0.5); ctx.quadraticCurveTo(f.br*0.7, -f.br*0.2, f.br*0.9, 0);
+        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, f.br*0.5); ctx.quadraticCurveTo(f.br*0.7, f.br*0.2, f.br*0.9, 0);
+        ctx.stroke();
+        ctx.strokeStyle = '#98a6b8'; ctx.lineWidth = 15;
+        ctx.beginPath(); ctx.moveTo(0, -f.br*0.5); ctx.quadraticCurveTo(f.br*0.7, -f.br*0.2, f.br*0.9, 0);
+        ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, f.br*0.5); ctx.quadraticCurveTo(f.br*0.7, f.br*0.2, f.br*0.9, 0);
+        ctx.stroke();
+        ctx.restore();
+      }
+      if (f.kill && close >= 1) {
+        /* the cut itself, straight down the middle */
+        ctx.globalCompositeOperation = 'lighter';
+        ctx.globalAlpha = Math.max(0, 1 - (k - 0.6)/0.4);
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 9;
+        ctx.beginPath();
+        ctx.moveTo(f.bx, f.by - f.br*1.5); ctx.lineTo(f.bx, f.by + f.br*1.5);
+        ctx.stroke();
+      }
+      ctx.restore();
     } else if (f.k === 'slayBeam') {
       const k = f.life/f.max;
       ctx.save();
@@ -12369,6 +13405,26 @@ function validSpot(x, y) {
     for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < T_W*0.58) return false;
     return true;
   }
+  /* a cleared plot is ground of its own: no trail runs through it, so the
+     only rule out there is not standing on top of another Jaxon */
+  const plot = inClearedPlot(x, y);
+  if (plot) {
+    if (S.placing && TOWERS[S.placing].bigPad && !plot.astro) return false;
+    if (S.placing && TOWERS[S.placing].bigPad) {
+      /* the Titan wants the middle of the pad and the whole of it */
+      const r = astroFoot();
+      if (x < plot.x + r || x > plot.x + plot.w - r) return false;
+      if (y < plot.y + r || y > plot.y + plot.h - r) return false;
+      for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < r*0.75) return false;
+      return true;
+    }
+    for (const t of S.towers) {
+      const rr = TOWERS[t.type].bigPad ? astroFoot()*0.75 : T_W*0.58;
+      if (Math.hypot(t.x - x, t.y - y) < rr) return false;
+    }
+    return true;
+  }
+  if (S.placing && TOWERS[S.placing].bigPad) return false;   // he only fits on his pad
   if (x < 30 || x > W - 30 || y < 34 || y > H - 30) return false;
   if (distToPath(x, y) < PATH_W/2 + 11) return false;   // original: can't touch the brown trail
   if (S.placing && VARIANTS[S.placing].wide && distToPath(x, y) < PATH_W/2 + 16) return false;
@@ -12415,6 +13471,10 @@ function tryPlaceAt(x, y, silent) {
   const cost = dup ? dup.cost : costOf(S.placing);
   if (!afford(cost)) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
+  if (spec.bigPad && theAstro()) {
+    if (!silent) { toast('There is only ever one Titan'); beep(150, 0.08, 'square', 0.03); }
+    cancelPlacing(); return false;
+  }
   if (dup && dup.asc && ascCount(S.placing) >= ASC_MAX) {
     if (!silent) toast('Already ' + ASC_MAX + ' Ascended ' + TOWERS[S.placing].name + 's');
     cancelPlacing(); return false;
@@ -12429,7 +13489,15 @@ function tryPlaceAt(x, y, silent) {
               xp:0, aim:(dup && dup.aim) || 'first', _spec:null, _sv:-1,
               rateMul:1, crit:0, dmgBuff:0, dmgBuffAmt:0, cloud:null,
               lastFired:null, copied:null, copyFlash:0,
-              placedWave:S.wave, dmg:0, pops:0, shots:0 };
+              placedWave:S.wave, dmg:0, pops:0, shots:0,
+              /* the Titan comes in on hologram wings before he does a thing */
+              arrive:spec.ammo === 'astro' ? ASTRO.arrive : 0,
+              xpDmg:0 };
+  if (spec.ammo === 'astro') {
+    t.lvl = dup && dup.lvl !== undefined ? dup.lvl : 1;
+    banner('TITAN INBOUND', 'Titan Astro Jaxon', '#ffb04a');
+    beep(120, 1.4, 'sawtooth', 0.06, 700);
+  }
   if (dup) {
     /* a copy starts cold — nothing temporary is inherited, and every unique
        active (Judgment, CUT, the shockwave) waits out a full cooldown. */
@@ -12516,6 +13584,20 @@ cv.addEventListener('pointerdown', ev => {
     /* choosing who a Mirror watches: a Jaxon picks him, bare ground clears */
     endLink(towerAt(p.x, p.y) || null);
     return;
+  }
+  if (!S.placing && !towerAt(p.x, p.y)) {
+    /* the sign on an uncleared plot. A million dollars is worth asking
+       twice about, so the first press arms it and the second buys. */
+    const sign = plotSignAt(p.x, p.y);
+    if (sign) {
+      if (S.plotArm && S.plotArm.id === sign.id) { S.plotArm = null; buyPlot(sign); }
+      else {
+        S.plotArm = { id:sign.id, until:S.t + 4 };
+        toast((MOBILE ? 'Tap' : 'Click') + ' the sign again to pay ' + bigCash(plotCost(sign)));
+        beep(520, 0.07, 'triangle', 0.03);
+      }
+      return;
+    }
   }
   if (!S.placing) {
     /* a picked sandbox unit turns the whole field into a drop target */
@@ -14442,6 +15524,12 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
 
 
 
