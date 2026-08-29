@@ -416,9 +416,9 @@
     box-shadow:0 8px 20px rgba(0,0,0,.5), inset 0 -6px 14px rgba(0,0,0,.12);
     transition:transform .16s cubic-bezier(.2,1.4,.4,1), box-shadow .16s, border-color .16s, filter .2s;
   }
-  .med .ring img{width:44px;height:48px;object-fit:contain;transition:transform .16s}
-  .med[data-wide] .ring img{width:68px;height:58px;transform:scale(1.12)}
-  .med[data-wide]:hover:not(.locked) .ring img{transform:scale(1.19)}
+  .med .ring img{width:44px;height:48px;object-fit:contain;transition:transform .16s;transform:scale(1.213)}
+  .med[data-wide] .ring img{width:68px;height:58px;transform:scale(1.443)}
+  .med[data-wide]:hover:not(.locked) .ring img{transform:scale(1.533)}
   .med .glow{
     position:absolute;inset:-12px;border-radius:50%;pointer-events:none;opacity:0;
     background:radial-gradient(circle,rgba(34,224,42,.4),transparent 68%);transition:opacity .18s;
@@ -436,7 +436,7 @@
     font-size:10px;font-weight:700;display:grid;place-items:center;color:var(--dim);
   }
   .med:hover:not(.locked) .ring{transform:translateY(-9px) scale(1.05);border-color:#22e02a;box-shadow:0 14px 26px rgba(0,0,0,.55),0 0 0 3px rgba(34,224,42,.25)}
-  .med:hover:not(.locked) .ring img{transform:scale(1.06)}
+  .med:hover:not(.locked) .ring img{transform:scale(1.286)}
   .med:hover:not(.locked) .glow{opacity:1}
   .med.locked{cursor:not-allowed}
   .med.locked .ring{filter:grayscale(1) brightness(.52);border-color:#2a323d;box-shadow:none}
@@ -469,7 +469,7 @@
     background:radial-gradient(circle at 38% 30%,#fff,#e6ebf3 72%,#cfd7e2);
     border:4px solid #0a0e13;box-shadow:0 6px 14px rgba(0,0,0,.5);
   }
-  #panel .phead .pic img{width:38px;height:42px;object-fit:contain}
+  #panel .phead .pic img{width:38px;height:42px;object-fit:contain;transform:scale(1.23)}
   #panel .phead .nm{font-size:14px;font-weight:800;line-height:1.15}
   #panel .phead .sub{font-size:9.5px;color:var(--dim);letter-spacing:.3px;margin-top:2px}
   #panel .pstats{
@@ -872,7 +872,7 @@
   }
   #ttip.on{display:block}
   #ttip .th{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-  #ttip .th img{width:36px;height:40px;object-fit:contain}
+  #ttip .th img{width:36px;height:40px;object-fit:contain;transform:scale(1.23)}
   #ttip .th .n{font-size:14px;font-weight:800;line-height:1.15}
   #ttip .th .s{font-size:9.5px;color:var(--dim);letter-spacing:1.1px;text-transform:uppercase;margin-top:2px}
   .tags{display:flex;gap:4px;flex-wrap:wrap}
@@ -1126,7 +1126,7 @@
     width:38px;height:38px;flex:none;border-radius:10px;background:rgba(255,255,255,.05);
     display:grid;place-items:center;overflow:hidden;
   }
-  .stRow .pic img{width:30px;height:32px;object-fit:contain}
+  .stRow .pic img{width:30px;height:32px;object-fit:contain;transform:scale(1.19)}
   .stRow .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
   .stRow .who .nm{font-size:12px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .stRow .who .sub{font-size:9px;color:var(--dim);display:flex;align-items:center;gap:5px}
@@ -2390,9 +2390,23 @@ function jaxonBody(v, uid) {
   </g>`;
 }
 
-const BOX_DEFAULT = { x:0, y:0, w:660, h:720 };
-const BOX_WIDE    = { x:-200, y:-150, w:800, h:900 };
+const BOX_DEFAULT = { x:-80, y:-60, w:800, h:780 };
+const BOX_WIDE    = { x:-280, y:-380, w:1160, h:1160 };
 const boxOf = v => (v.wide ? BOX_WIDE : BOX_DEFAULT);
+/* the boxes as they were, which is what every on-screen size is still
+   measured against, so widening one moves nothing */
+const BOX_WAS = { def:{ w:660, h:720 }, wide:{ w:800, h:900 } };
+const boxWas = v => (v.wide ? BOX_WAS.wide : BOX_WAS.def);
+/* How many real pixels the sheet is drawn at. A wider box is mostly empty
+   margin, and paying for that margin thirty-five times over would cost
+   more memory than the room is worth, so the pixel count is held at what
+   it always was. The Titan opts out: he is drawn hundreds of pixels tall
+   and the detail shows on him. */
+function sheetPx(v) {
+  const b = boxOf(v), was = boxWas(v);
+  const k = v.hires ? 1 : Math.min(1, Math.sqrt((was.w*was.h)/(b.w*b.h)));
+  return { w:Math.round(b.w*k), h:Math.round(b.h*k) };
+}
 
 /* ==================================================== the ultra kits ====
    An ultra is a Jaxon in a lot of gear, not a machine with a Jaxon logo.
@@ -2698,7 +2712,8 @@ function jaxonSVG(v, uid) {
      the Jaxon is still standing there. */
   const kit = v.ultra && ULTRA_KIT[v.ultra];
   const body = kit ? kit.back(v) + jaxonBody(v, uid) + kit.front(v) : jaxonBody(v, uid);
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x} ${b.y} ${b.w} ${b.h}" width="${b.w}" height="${b.h}">${body}</svg>`;
+  const px = sheetPx(v);
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${b.x} ${b.y} ${b.w} ${b.h}" width="${px.w}" height="${px.h}">${body}</svg>`;
 }
 
 /* -------------------------------------------------------- projectiles ---- */
@@ -2935,7 +2950,7 @@ VARIANTS.infmirror = { ultra:'infmirror', wide:true,
 
 /* A Jaxon in a work suit. Everything that makes him a Titan is bolted on
    over the top of this — take the kit away and he is one of the family. */
-VARIANTS.astro = { ultra:'astro', wide:true,
+VARIANTS.astro = { ultra:'astro', wide:true, hires:true,
                     suitLite:'#ffe0b0', suit:'#ff9a2e', suitDark:'#a34e00',
                     arm:'#4a5462', armDark:'#161b22',
                     outline:'#7a3800', outlineWidth:8,
@@ -4722,16 +4737,27 @@ const FOOT_Y = 700;                   // where the legs end inside the drawing b
 const SPRITE = {};
 for (const k in VARIANTS) {
   const b = boxOf(VARIANTS[k]);
+  const was = boxWas(VARIANTS[k]);
+  /* what he measured before, and still measures */
   const h = VARIANTS[k].wide ? T_H * (BODY_SCALE[k] || 1.7) / WIDE_FILL : T_H;
-  SPRITE[k] = { w: h * (b.w / b.h), h, feet: (FOOT_Y - b.y) / b.h };
+  /* and the sheet around him, which grew with the box */
+  const sh = h * (b.h / was.h), sw = sh * (b.w / b.h);
+  SPRITE[k] = { w: h * (was.w / was.h), h, sw, sh,
+                feet: (FOOT_Y - b.y) / b.h,
+                /* where the top of the Jaxon himself is, margin aside */
+                head: (FOOT_Y - (VARIANTS[k].wide ? -150 : 0)) / was.h };
 }
 /* an Ascended Jaxon draws with his own sprite, everyone else with theirs */
 const artOf = t => (t && (t.asc || t.dbl) && SPRITE[ASC_KEY(t.type)] ? ASC_KEY(t.type) : (t && t.type) || t);
 const spriteW = k => SPRITE[k].w, spriteH = k => SPRITE[k].h;
+/* the picture, not the Jaxon: only the code that blits wants these */
+const sheetW = k => SPRITE[k].sw, sheetH = k => SPRITE[k].sh;
 /* amber is power, cyan is utility, violet is the third way */
 const PATH_COL = { A:'#ffd83d', B:'#7fe9ff', C:'#c08bff' };
 /* every Jaxon, whatever its size, plants its feet on the same ground line */
-const spriteTop = k => T_H*0.44 - SPRITE[k].h * SPRITE[k].feet;
+const spriteTop = k => T_H*0.44 - SPRITE[k].sh * SPRITE[k].feet;
+/* the top of the Jaxon rather than the top of his sheet */
+const bodyTop  = k => T_H*0.44 - SPRITE[k].h * SPRITE[k].head;
 
 /* ---- the boss ladder. one every ten waves, each nastier than the last ---- */
 const BOSSES = [
@@ -5524,13 +5550,21 @@ function pvPop(g, x, y, k, col) {                       // k in [0,1]
 function pvJaxon(g, key, x, y, hgt, flip) {
   const im = IMG[key];
   if (!im || !im.width) return;
-  const wid = hgt*(im.width/im.height || 0.9);
+  /* hgt still means the Jaxon, not the sheet: the sheet is bigger than he
+     is by whatever margin his box carries, and his feet stay on y */
+  const v = VARIANTS[key] || {};
+  const b = boxOf(v), was = boxWas(v);
+  const sh = hgt*(b.h/was.h), wid = sh*(b.w/b.h);
+  /* where his feet used to sit inside the old sheet, and where they sit
+     inside this one: line the two up and nothing has moved */
+  const wasFoot = v.wide ? (FOOT_Y + 150)/was.h : FOOT_Y/was.h;
+  const top = -hgt*(1 - wasFoot) - sh*((FOOT_Y - b.y)/b.h);
   g.save();
   g.fillStyle = 'rgba(0,0,0,.34)';
-  g.beginPath(); g.ellipse(x, y, wid*0.34, hgt*0.07, 0, 0, 7); g.fill();
+  g.beginPath(); g.ellipse(x, y, hgt*(was.w/was.h)*0.34, hgt*0.07, 0, 0, 7); g.fill();
   g.translate(x, y);
   if (flip) g.scale(-1, 1);
-  g.drawImage(im, -wid/2, -hgt, wid, hgt);
+  g.drawImage(im, -wid/2, top, wid, sh);
   g.restore();
 }
 function pvSprite(g, key, x, y, size, spin) {
@@ -9783,7 +9817,7 @@ function towerAt(x, y) {
   for (let i = S.towers.length - 1; i >= 0; i--) {
     const t = S.towers[i];
     const hw = Math.max(T_W*0.55, spriteW(t.type)*0.26);
-    const hh = Math.max(T_H*0.55, -spriteTop(t.type) - spriteH(t.type)*0.06);
+    const hh = Math.max(T_H*0.55, -bodyTop(t.type) - spriteH(t.type)*0.06);
     if (Math.abs(t.x - x) < hw && y > t.y - hh && y < t.y + T_H*0.5) return t;
   }
   return null;
@@ -10815,6 +10849,7 @@ function drawTower(t, ghost) {
   const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
   const grow = (1 + tiers*0.03) * (t.asc ? 1.1 : 1) * (t.dbl ? 1.34 : 1);   // every upgrade puffs him up a little
   const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
+  const shw = sheetW(art)*grow, shh = sheetH(art)*grow;   // the picture around him
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
   ctx.save();
   /* jammed by the Static Sovereign: he flickers and stops firing */
@@ -10849,12 +10884,12 @@ function drawTower(t, ghost) {
        it is only the stencil that cuts the rain to his shape. Both go down
        inside this transform, which is what makes the rain bob, lean and
        recoil with him instead of hanging in the air behind him. */
-    const sheet = adminSheet(t, art, sw, sh);
-    if (sheet) ctx.drawImage(sheet, -sw/2, spriteTop(art)*grow, sw, sh);
+    const sheet = adminSheet(t, art, shw, shh);
+    if (sheet) ctx.drawImage(sheet, -shw/2, spriteTop(art)*grow, shw, shh);
     if (IMG.admin_face && IMG.admin_face.width)
-      ctx.drawImage(IMG.admin_face, -sw/2, spriteTop(art)*grow, sw, sh);
+      ctx.drawImage(IMG.admin_face, -shw/2, spriteTop(art)*grow, shw, shh);
   } else {
-    ctx.drawImage(IMG[art] || IMG[t.type], -sw/2, spriteTop(art)*grow, sw, sh);
+    ctx.drawImage(IMG[art] || IMG[t.type], -shw/2, spriteTop(art)*grow, shw, shh);
   }
   ctx.restore();
 
@@ -11002,7 +11037,7 @@ function adminSheet(t, art, sw, sh) {
 
 /* the beam lives in world space, so it is drawn after his transform */
 function drawAdminBeam(t, art, grow) {
-  const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
+  const sw = sheetW(art)*grow, sh = sheetH(art)*grow;
   const top = spriteTop(art)*grow;
   if (!t.beamOn || !t.beamTo) return;
   const bob = Math.sin(S.t*2.4 + t.x)*1.2;
@@ -11190,7 +11225,8 @@ const ULTRA_FX = {
 function astroWings(t, k, alpha) {
   /* k is how far through the fly-in he is; the wings burn out as he lands */
   const art = artOf(t), sw = spriteW(art), sh = spriteH(art);
-  const y = t.y + spriteTop(art) + sh*0.42;
+  const b = boxOf(VARIANTS[art]);
+  const y = t.y + spriteTop(art) + sheetH(art)*((300 - b.y)/b.h);   // his shoulders
   const beat = Math.sin(S.t*6)*0.12 + 1;
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
@@ -11344,7 +11380,7 @@ function drawTierArt(t, art) {
   const cap = paths.find(p => upOf(t, p) === 3);
   if (!cap) return;
   const col = PATH_COL[cap];
-  const hy = t.y + spriteTop(art) - 7;
+  const hy = t.y + bodyTop(art) - 7;
   ctx.save();
   ctx.globalAlpha = 0.92;
   ctx.fillStyle = col;
@@ -11931,12 +11967,13 @@ const theAstro = () => S.towers.find(t => TOWERS[t.type].ammo === 'astro') || nu
    hangs them. Everything he fires leaves from one of these. */
 const ASTRO_TIPS = [[-115, 152], [575, 152], [-194, 514], [654, 514]];
 function astroTip(t, i) {
-  const art = artOf(t), sw = spriteW(art), sh = spriteH(art);
+  const art = artOf(t), b = boxOf(VARIANTS[art]);
+  const shw = sheetW(art), shh = sheetH(art);
   const p = ASTRO_TIPS[((i % 4) + 4) % 4];
   const fx = t.face === -1 ? -1 : 1;
   const bob = Math.sin(S.t*2.4 + t.x)*1.2;
-  return { x:t.x + fx*((p[0] + 200)/800 - 0.5)*sw,
-           y:t.y + bob + spriteTop(art) + (p[1] + 150)/900*sh };
+  return { x:t.x + fx*((p[0] - b.x)/b.w - 0.5)*shw,
+           y:t.y + bob + spriteTop(art) + (p[1] - b.y)/b.h*shh };
 }
 
 /* Who the beams pick: anything with a name on it first, then the fattest
@@ -13693,6 +13730,14 @@ cv.addEventListener('pointercancel', endPtr);
 /* touch has no hover, so the field's "is the cursor here" flag has to drop
    on lift or the aim override would stay latched */
 cv.addEventListener('lostpointercapture', ev => { if (MOBILE) S.mouse.in = false; endPtr(ev); });
+document.addEventListener('contextmenu', ev => {
+  /* a text field keeps its cut/copy/paste; nothing else in here needs a
+     browser menu, and one opening over the board is only ever in the way */
+  const el = ev.target;
+  if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA' || el.isContentEditable)) return;
+  ev.preventDefault();
+}, { capture:true });
+
 cv.addEventListener('contextmenu', ev => {
   ev.preventDefault();
   closeSbAsc();
@@ -15719,6 +15764,10 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
 
 
 
