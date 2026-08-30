@@ -239,6 +239,10 @@
   #startWave:hover{filter:brightness(1.05)}
   #startWave:active{animation:none;transform:translateX(-50%) translateY(4px);box-shadow:0 1px 0 #9aa6b6}
   #startWave.hidden{display:none}
+  #waveTag.rush{border-color:rgba(255,60,60,.55);color:#ffd0cc;
+                background:linear-gradient(180deg,rgba(70,8,10,.92),rgba(24,2,4,.94))}
+  #scoreRow .wide{grid-column:1/-1}
+  #scoreRow .v.sm{font-size:13px;font-weight:700;line-height:1.4;color:#c2ced9}
   #waveTag{
     position:absolute;top:24px;left:50%;transform:translateX(-50%);
     background:var(--glass);border:1px solid var(--line);border-radius:999px;
@@ -1524,8 +1528,8 @@
 
   /* ------------------------------------------------- gamemode select ---- */
   #modeGrid{
-    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:11px;
-    width:min(1240px,100%);
+    display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;
+    width:min(1420px,100%);
   }
   .mcard{
     position:relative;display:flex;flex-direction:column;gap:8px;text-align:left;
@@ -1649,7 +1653,7 @@
       </div>
       <div class="pill" id="waveBox">
         <svg width="21" height="21" viewBox="0 0 24 24"><path fill="#22e02a" d="M3 17l5-8 4 5 3-4 5 7z"/><circle cx="18" cy="6" r="2.4" fill="#22e02a"/></svg>
-        <div><div class="lbl">Wave</div><div class="val" id="waveVal">1</div></div>
+        <div><div class="lbl" id="waveLbl">Wave</div><div class="val" id="waveVal">1</div></div>
       </div>
       <div class="pill" id="bestBox">
         <svg width="21" height="21" viewBox="0 0 24 24"><path fill="#8fe4ff" d="M12 2l2.8 6.2 6.7.7-5 4.5 1.4 6.6L12 16.6 6.1 20l1.4-6.6-5-4.5 6.7-.7z"/></svg>
@@ -4247,6 +4251,15 @@ const MODES = {
                difficulty the player picked inside the run. */
             money:0, lives:0, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
             bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 },
+  /* Twenty fights and nothing in between them. Its dials are Medium's,
+     because the ladder is the difficulty here. */
+  bossrush:{ key:'bossrush', name:'Boss Rush', mc:'#ff2d2d', pips:3, menu:true, preview:'bossrush',
+            rush:true, tint:['rgba(200,24,24,.34)','rgba(18,2,4,.66)'],
+            scoreLabel:'Bosses beaten',
+            blurb:'Twenty bosses back to back &mdash; the whole ladder, wave 10 to wave 200. No blobs at all.',
+            runTint:'rgba(200,24,24,.05)',
+            money:22000, lives:50, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
+            bossHp:1, coin:1, waveReward:0, leak:1, cost:1, refund:0.70, autoFrom:1 },
   titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:4, siege:true,
             menu:false, preview:'hard', tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
             scoreLabel:'Best time',
@@ -4299,6 +4312,7 @@ function chalBlocks(k) {
 }
 
 const SB = () => S.mode === 'sandbox';
+const BR = () => S.mode === 'bossrush';
 let _mCache = null, _mKey = '';
 const M = () => {
   const m = MODES[S.mode] || MODES.normal;
@@ -4315,7 +4329,7 @@ const M = () => {
 };
 /* nothing may be unaffordable in a sandbox, and nothing is ever deducted */
 const afford = c => SB() || S.money >= c;
-const spend  = c => { if (!SB()) S.money -= c; };
+const spend  = c => { if (!SB()) { S.money -= c; S.spent += c; } };
 /* prices and refunds are mode business, so nothing reads TOWERS[k].cost raw */
 const costOf   = k => Math.round(TOWERS[k].cost * M().cost);
 const refundOf = t => Math.floor((costOf(t.type) + upSpent(t)) * M().refund);
@@ -4876,6 +4890,7 @@ const S = {
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
+  runT:0, spent:0, money0:0, rushBest:{},
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -4920,6 +4935,7 @@ function loadSave() {
   if (typeof j.best === 'number' && isFinite(j.best))
     S.bests.normal = Math.max(S.bests.normal || 0, Math.floor(j.best));
   if (j.titan && typeof j.titan === 'object') S.titanBest = j.titan;
+  if (j.rush && typeof j.rush === 'object') S.rushBest = j.rush;
   S.best = bestOf(S.mode);
   if (typeof j.sound === 'boolean') S.sound = j.sound;
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
@@ -4940,7 +4956,7 @@ function loadSave() {
 function saveNow() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
-      bests:S.bests, titan:S.titanBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
+      bests:S.bests, titan:S.titanBest, rush:S.rushBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
       sbDiff:S.sbDiff, customs:S.customs, chal:S.chal,
       vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0
@@ -5380,7 +5396,8 @@ function syncHUD() {
   $('hpVal').textContent = sb ? '∞'
     : bigNum(Math.max(0, Math.round(S.health))) + (S.shield > 0 ? ' +' + S.shield : '');
   $('moneyVal').textContent = sb ? '∞' : bigCash(Math.floor(S.money));
-  $('waveVal').textContent = S.wave;
+  $('waveVal').textContent = BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses : S.wave;
+  $('waveLbl').textContent = BR() ? 'Boss' : 'Wave';
   $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
                            : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
   $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
@@ -5388,17 +5405,22 @@ function syncHUD() {
   const sw = $('startWave'), tag = $('waveTag');
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
-  sw.textContent = isBossWave(S.wave) ? 'Start Boss Wave ' + S.wave : 'Start Wave ' + S.wave;
-  const showTag = S.phase === 'wave' || (S.phase === 'build' && S.autoSkip);
+  sw.textContent = BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
+                 : isBossWave(S.wave) ? 'Start Boss Wave ' + S.wave : 'Start Wave ' + S.wave;
+  const showTag = S.phase === 'wave' || (S.phase === 'build' && (S.autoSkip || BR()));
   tag.classList.toggle('on', showTag);
-  tag.textContent = S.phase === 'wave'
+  tag.classList.toggle('rush', BR());
+  tag.textContent = BR()
+    ? (S.phase === 'wave' ? rushBoss(S.wave).name + ' \u00b7 ' + rushLeft() + ' left'
+       : 'Next: ' + rushBoss(S.wave).name + ' \u00b7 ' + Math.max(0, Math.ceil(S.autoTimer)) + 's')
+    : S.phase === 'wave'
     ? (S.boss ? 'Boss wave — hold the line' : 'Wave ' + S.wave + ' in progress')
     : 'Auto-skip · wave ' + S.wave + ' queued';
   syncShelf();
 }
 
 /* --------------------------------------------------------------- game ---- */
-const isBossWave = w => w % BOSS.every === 0;
+const isBossWave = w => BR() || w % BOSS.every === 0;
 const LIFE_CAP = 99;      // nurses top the nursery back up, they don't stack it to infinity
 
 function reset() {
@@ -5408,7 +5430,8 @@ function reset() {
   /* the sandbox's numbers are only ever cosmetic; nothing can spend them
      down and nothing can knock them out */
   S.health = SB() ? 9999 : (hasChal('onelife') ? 1 : md.lives);
-  S.money  = SB() ? 100000 : md.money;
+  S.money  = SB() ? 100000 : BR() ? RUSH.money : md.money;
+  S.money0 = S.money; S.spent = 0; S.runT = 0;
   S.enemies=[]; S.towers=[]; S.shots=[]; S.waves=[]; S.cars=[]; S.holes=[]; S.shreds=[]; S.vortex=[]; S.shocks=[];
   S.discs=[]; S.novas=[]; S.pulses=[]; S.gusts=[]; S.clouds=[]; S.fx=[]; S.floats=[];
   S.rollers=[]; S.orbs=[];
@@ -5435,6 +5458,9 @@ function reset() {
   $('sbPanel').classList.remove('open'); $('sbTab').classList.remove('open');
   S.sbOpen = false; sbHint();
   if (SB()) { S.sbTab = 'spawn'; sbRender(); }
+  /* a Rush opens on a full build phase, so the first boss is not already
+     walking in before a single Jaxon is down */
+  if (BR()) S.autoTimer = rushBuild();
   hideTip(); setPlacingBanner(); setShop(true); syncHUD();
   abilKey = ''; buildAbilityBar();
 }
@@ -5697,6 +5723,74 @@ function pvScene(key, g, w, h, t) {
     }
     pvJaxon(g, 'titan', w*0.16, ground + 4, h*0.62, false);
 
+  } else if (key === 'bossrush') {
+    /* four bosses, one after another, inside a single loop: each enters
+       from the right, takes fire from the line, chips down and shatters,
+       and the next is already on its way in. No blobs anywhere. */
+    pvGround(g, w, h, '#3a0a0c', '#120203');
+    g.fillStyle = 'rgba(255,40,40,.06)'; g.fillRect(0, ground, w, h - ground);
+    /* the strip of trail they arrive along */
+    g.save();
+    g.lineCap = 'round';
+    g.strokeStyle = '#4a1c06'; g.lineWidth = 13;
+    g.beginPath(); g.moveTo(-6, h*0.46); g.lineTo(w + 6, h*0.46); g.stroke();
+    g.strokeStyle = '#7a3204'; g.lineWidth = 9;
+    g.beginPath(); g.moveTo(-6, h*0.46); g.lineTo(w + 6, h*0.46); g.stroke();
+    g.restore();
+
+    const THEMES = ['classic', 'red', 'gold', 'denied'];
+    const slot = 1/THEMES.length;
+    const idx = Math.min(THEMES.length - 1, Math.floor(p/slot));
+    const u = (p - idx*slot)/slot;                  // 0..1 within this boss
+    const bx = w*0.70, by = h*0.44, br = Math.min(h*0.29, w*0.16);
+    /* in from the right, hold, then gone */
+    const inK = Math.min(1, u/0.22);
+    const ease = 1 - Math.pow(1 - inK, 3);
+    const x = w*1.35 - (w*1.35 - bx)*ease;
+    const dying = u > 0.82;
+    const hp = Math.max(0, 1 - Math.max(0, (u - 0.22)/0.6));
+    if (!dying) pvBoss(g, 'bossrush', THEMES[idx], x, by, br, t, hp);
+    else {
+      const k = (u - 0.82)/0.18;
+      g.save();
+      g.globalAlpha = Math.max(0, 1 - k);
+      g.fillStyle = '#fff';
+      g.beginPath(); g.arc(bx, by, br*(1 + k*1.5), 0, 7); g.fill();
+      g.globalAlpha = Math.max(0, 1 - k)*0.9;
+      g.strokeStyle = '#ff5a3c'; g.lineWidth = 3;
+      for (let i = 0; i < 8; i++) {
+        const a = i*0.785 + k;
+        g.beginPath();
+        g.moveTo(bx + Math.cos(a)*br*(0.5 + k), by + Math.sin(a)*br*(0.5 + k));
+        g.lineTo(bx + Math.cos(a)*br*(1 + k*2), by + Math.sin(a)*br*(1 + k*2));
+        g.stroke();
+      }
+      g.restore();
+    }
+    /* the line answering it */
+    if (!dying && inK >= 1) {
+      for (let j = 0; j < 5; j++) {
+        const v = frac(p*11 + j/5);
+        const sy = ground - 24 - (j % 3)*8;
+        const px = w*0.26 + v*(bx - w*0.26), py = sy + (by - sy)*v;
+        g.save();
+        g.globalAlpha = Math.min(1, (1 - v)*2.4);
+        g.fillStyle = j % 2 ? '#ff5b3a' : '#ffd83d';
+        g.beginPath(); g.arc(px, py, 3.2, 0, 7); g.fill();
+        g.restore();
+      }
+    }
+    pvJaxon(g, 'laser',  w*0.11, ground + 3, h*0.46, false);
+    pvJaxon(g, 'titan',  w*0.23, ground + 4, h*0.54, false);
+    pvJaxon(g, 'ninja',  w*0.35, ground + 3, h*0.40, false);
+    /* the tally in the corner */
+    g.save();
+    g.textAlign = 'right'; g.textBaseline = 'top';
+    g.font = '900 ' + Math.round(h*0.13) + 'px "Segoe UI", system-ui, sans-serif';
+    g.fillStyle = 'rgba(255,60,60,.9)';
+    g.fillText('BOSS ' + (idx + 1) + ' / 20', w - 6, 5);
+    g.restore();
+
   } else if (key === 'sandbox') {
     /* a workshop: two Engineers and a production line of cars rolling out */
     pvGround(g, w, h, '#4a3a1e', '#241a0b');
@@ -5835,6 +5929,13 @@ function bestsRender() {
     const m = k.split('|')[0];
     (byMode[m] = byMode[m] || []).push(k);
   }
+  /* one line's worth of score, in whatever unit that mode is measured in */
+  const bsScore = (mode, key) => {
+    if (!S.bests[key]) return '\u2014';
+    if (mode !== 'bossrush') return 'wave ' + S.bests[key];
+    const t = (S.rushBest && S.rushBest[key] && S.rushBest[key].time) || 0;
+    return S.bests[key] + '/' + RUSH.bosses + (t ? ' \u00b7 ' + fmtTime(t) : '');
+  };
   let h = '<div class="stHead"><span class="t">Best runs</span>' +
           '<span class="sub">' + (keys.length || 'no') + ' recorded</span>' +
           '<button class="bkX" id="bsClose" aria-label="Close">&times;</button></div><div class="bsList">';
@@ -5847,14 +5948,14 @@ function bestsRender() {
          '<div class="bsTop"><span class="nm">' + md.name + '</span>' +
          '<span class="pips">' + [1,2,3,4].map(i =>
            '<i class="' + (i <= md.pips ? 'on' : '') + '"></i>').join('') + '</span>' +
-         '<b>' + (S.bests[m] ? 'wave ' + S.bests[m] : '—') + '</b></div>';
+         '<b>' + bsScore(m, m) + '</b></div>';
     const chal = rows.filter(k => k !== m);
     if (chal.length) {
       any = true;
       h += chal.map(k => '<div class="bsChal"><span>' +
         k.split('|')[1].split('+').map(id =>
           (CHALLENGES.find(x => x.id === id) || {}).name || id).join(' + ') +
-        '</span><b>wave ' + S.bests[k] + '</b></div>').join('');
+        '</span><b>' + bsScore(m, k) + '</b></div>').join('');
     }
     if (S.bests[m]) any = true;
     h += '</div>';
@@ -5865,6 +5966,12 @@ function bestsRender() {
   $('bsClose').onclick = closeBests;
 }
 
+/* the recorded clear time for Boss Rush under the rules now selected */
+function rushTimeFor(chals) {
+  const key = 'bossrush' + (chals && chals.length ? '|' + chals.join('+') : '');
+  const r = S.rushBest && S.rushBest[key];
+  return (r && r.time) || 0;
+}
 function buildModeCards() {
   const card = k => {
     const m = MODES[k];
@@ -5880,7 +5987,10 @@ function buildModeCards() {
         <div class="mtop"><span class="mn">${m.name}</span><span class="pips">${pips}</span></div>
         <div class="mb">${m.blurb}</div>
         <div class="mfoot">
-          <span class="best">${m.scoreLabel || 'Best wave'} <b>${best || '—'}</b></span>
+          <span class="best">${m.scoreLabel || 'Best wave'} <b>${
+            k === 'bossrush'
+              ? (best ? best + '/' + RUSH.bosses + (rushTimeFor(c) ? ' · ' + fmtTime(rushTimeFor(c)) : '') : '—')
+              : (best || '—')}</b></span>
           <span class="go">Play</span>
         </div>
       </button>`;
@@ -5973,9 +6083,123 @@ function sweepStrays() {
   syncHUD(); syncShelf();
 }
 
+/* ========================================================== BOSS RUSH ====
+   Twenty fights and nothing else. Wave N is the ladder's (N x 10) boss, so
+   the run is the whole ladder from the Wave 10 Boss to the Godspeed
+   Horizon with every blob, elite and filler spawn taken out of it.
+
+   Nothing here forks the boss code. The same addBoss, the same bar, the
+   same themes and the same signature mechanics — a Rush run simply asks
+   for a different boss each wave and pays for it out of its own table. */
+const RUSH = {
+  bosses:20,
+  money:22000,
+  hp:0.95,                 // a shade off the ladder so boss 1 is not a chip war
+  build:16,                // seconds of build between fights
+  quick:1.6,               // ...unless auto-skip is on
+  /* what beating boss N is worth. Tight enough early that boss 5 cannot be
+     met with a finished board, generous enough late to pay for one. */
+  bounty:[  1500,   1900,   2400,   3000,
+            4000,   5200,   6500,   8000,
+           10000,  12500,  15000,  18000,
+           22000,  27000,  33000,  40000,
+           50000,  62000,  75000,  90000]
+};
+/* which rung of the main ladder wave N of a Rush is */
+const rushWaveOf = n => Math.max(1, Math.min(RUSH.bosses, n)) * BOSS.every;
+const rushBoss = n => bossFor(rushWaveOf(n));
+const rushBounty = n => Math.round((RUSH.bounty[Math.max(1, Math.min(RUSH.bosses, n)) - 1] || 90000)
+                                   * M().coin);
+const rushBuild = () => (S.autoSkip ? RUSH.quick : RUSH.build);
+const rushLeft = () => Math.max(0, RUSH.bosses - (S.wave - 1));
+
+/* the boss for a Rush wave, with the mode's dials already on it */
+function rushDef(n) {
+  const b0 = rushBoss(n);
+  return Object.assign({}, b0, {
+    hp:Math.max(1, Math.round(b0.hp * RUSH.hp * M().bossHp)),
+    leak:Math.max(1, Math.round(b0.leak * M().leak))
+  });
+}
+
+/* ------------------------------------------------------------ the end -- */
+function rushEnd(won) {
+  if (S.phase === 'over') return;
+  S.phase = 'over';
+  const beaten = won ? RUSH.bosses : Math.max(0, S.wave - 1);
+  const secs = Math.round(S.runT || 0);
+  const earned = Math.max(0, S.money - (S.money0 || 0) + (S.spent || 0));
+  const key = runKey();
+  const prev = (S.rushBest && S.rushBest[key]) || null;
+  const better = won && (!prev || !prev.time || secs < prev.time);
+  if (better) {
+    S.rushBest = S.rushBest || {};
+    S.rushBest[key] = { time:secs, when:Date.now() };
+    saveNow();
+  }
+  noteBest(beaten);
+  /* who actually did the work */
+  const top = S.towers.slice().sort((a, b) => b.dmg - a.dmg).slice(0, 3)
+    .filter(t => t.dmg > 0)
+    .map(t => (t.dbl ? DOUBLE[t.type].name : t.asc ? ASCEND[t.type].name : TOWERS[t.type].name) +
+              ' ' + shortHp(Math.round(t.dmg)));
+  const chal = chalList().length ? chalName(key) : 'no extra rules';
+  $('endTitle').textContent = won ? 'ALL TWENTY DOWN' : 'THE RUSH ENDS';
+  $('endText').textContent = won
+    ? 'Every boss on the ladder, from the Wave 10 Boss to the Godspeed Horizon, in ' +
+      fmtTime(secs) + '. ' + (better ? 'A new best.'
+        : prev && prev.time ? 'Best: ' + fmtTime(prev.time) + '.' : '') + ' Rules: ' + chal + '.'
+    : rushBoss(S.wave).name + ' stopped you on boss ' + S.wave + ' of ' + RUSH.bosses +
+      (S.lastLeak ? ' — ' + S.lastLeak + ' walked through the nursery door.' : '.') +
+      ' Rules: ' + chal + '.';
+  $('scoreRow').innerHTML =
+    '<div><div class="k">Bosses beaten</div><div class="v">' + beaten + ' / ' + RUSH.bosses + '</div></div>' +
+    '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
+    '<div><div class="k">Coins earned</div><div class="v">' + tagCash(Math.round(earned)) + '</div></div>' +
+    '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (top.length ? '<div class="wide"><div class="k">Did the damage</div><div class="v sm">' +
+                  top.join(' &middot; ') + '</div></div>' : '') +
+    (better ? '<div><div class="k">Result</div><div class="v" style="color:#ffd83d">NEW BEST TIME</div></div>' : '');
+  $('ovEnd').classList.add('on');
+  setShop(false); hideTip();
+  if (won) {
+    banner('BOSS RUSH CLEARED', fmtTime(secs), '#ffd83d');
+    flashScreen(0.34);
+    for (let i = 0; i < 5; i++) setTimeout(() => beep(420 + i*160, 0.18, 'triangle', 0.05), i*140);
+  } else {
+    beep(160, 0.5, 'sawtooth', 0.06, 60);
+  }
+  syncHUD();
+}
+
+/* ------------------------------------------------------- starting one -- */
+function rushStartWave() {
+  S.phase = 'wave';
+  S.shield = hasChal('onelife') ? 0 : S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
+  S.plan = []; S.spawnQueue = 0; S.waveTotal = 1; S.spawnGap = 0; S.spawnTimer = 0;
+  S.omen = null;
+  const def = rushDef(S.wave);
+  addBoss(def);
+  shakeScreen(18, 1.2); flashScreen(0.12);
+  banner(def.name.toUpperCase(), 'boss ' + S.wave + ' of ' + RUSH.bosses, '#ff3b3b');
+  toast(def.name + ' — ' + rushLeft() + ' left on the ladder');
+  beep(def.theme === 'classic' ? 90 : 62, 1.4, 'sawtooth', 0.07, 34);
+  syncHUD();
+}
+
+/* the gap between fights: a real countdown, and Start Wave cuts it short */
+function rushTick(dt) {
+  if (!BR() || S.phase !== 'build') return;
+  S.autoTimer -= dt;
+  if (S.autoTimer <= 0) startWave();
+}
+
 function startWave() {
   if (S.phase !== 'build') return;
   sweepStrays();
+  /* a Rush wave is one boss and nothing else, so it skips the whole
+     spawner: no plan, no budget, no queue */
+  if (BR()) { rushStartWave(); return; }
   S.phase = 'wave';
   /* Band-Aid Jaxon tapes a fresh plaster over the nursery door each wave */
   S.shield = hasChal('onelife') ? 0 : S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
@@ -6358,7 +6582,10 @@ function hurtBoss(dmg, owner, b) {
     owner.bdmg = (owner.bdmg || 0) + real;      // what he has done to bosses alone
   }
   if (before > 0 && b.hp <= 0) {
-    let bounty = COIN_BASE * (b.max/13) * coinCurve() * M().coin;   // bosses are the payday
+    /* a Rush pays off its own table: the ladder's own bounty would hand
+       you eight figures for boss twenty and there is nothing left to buy */
+    let bounty = BR() ? rushBounty(S.wave)
+                      : COIN_BASE * (b.max/13) * coinCurve() * M().coin;   // bosses are the payday
     if (b.def.power === 'final') bounty *= 2.5;            // the climb deserves paying for
     S.money += bounty;
     const p = pointAt(b.d);
@@ -7585,7 +7812,7 @@ function bossPowers(dt, b) {
 
   /* ---- 130: at half health it is two of them ---- */
   if (pw === 'twin') {
-    if (!b.split && b.hp <= b.max*0.5) {
+    if (!b.split && b.hp > 0 && b.hp <= b.max*0.5) {
       b.split = true; b.inv = 0.8; b.ring = 1.1;
       const half = Math.max(1, Math.round(b.hp));
       b.hp = half; b.max = half;
@@ -7744,6 +7971,7 @@ function resetHaste() { for (const e of S.enemies) e.haste = 1; }
 /* -------------------------------------------------------------- update --- */
 function update(dt) {
   S.t += dt;
+  if (S.phase === 'wave' || S.phase === 'build') S.runT += dt;
   clearFxTick(dt);
   S.wellT = astroWell() ? 1 : 0;
   if (S.plotArm && S.t > S.plotArm.until) S.plotArm = null;
@@ -7837,7 +8065,7 @@ function update(dt) {
     if (B.stun > 0) B.stun -= dt;
     if (B.stun <= 0) B.d += B.def.speed*dt;      // bosses keep their own pace
     B.hit = Math.max(0, B.hit - dt*6);
-    bossPowers(dt, B);
+    if (B.hp > 0) bossPowers(dt, B);
     if (S.titan && B.hp <= 0) {          // the colossus goes down: that is the win
       const tp = SG.titan;
       burst(tp.x, tp.y, '#ff5a3c', 150, 3); burst(tp.x, tp.y, '#ffd83d', 110, 2.4);
@@ -9180,7 +9408,8 @@ function update(dt) {
     }
     const caddy = caddyPayout();                    // Caddy Jaxon settles the round
     S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + (reward + caddy), color:'#ffd83d', life:1.6, big:true });
-    S.phase = 'build'; S.autoTimer = 1.4;
+    S.phase = 'build'; S.autoTimer = BR() ? rushBuild() : 1.4;
+    if (BR() && cleared >= RUSH.bosses) { rushEnd(true); return; }
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
@@ -9194,12 +9423,15 @@ function update(dt) {
       flashScreen(0.18);
       for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
     } else {
-      banner('WAVE ' + cleared + ' CLEARED', '+' + bigCash((reward + caddy)), '#7dffb4');
+      banner(BR() ? 'BOSS ' + cleared + ' DOWN' : 'WAVE ' + cleared + ' CLEARED',
+             BR() ? rushLeft() + ' left \u00b7 next: ' + rushBoss(S.wave).name
+                  : '+' + bigCash((reward + caddy)), '#7dffb4');
     }
     syncHUD();
   }
 
-  if (S.phase === 'build' && S.autoSkip) {
+  if (BR()) rushTick(dt);
+  else if (S.phase === 'build' && S.autoSkip) {
     S.autoTimer -= dt;
     if (S.autoTimer <= 0) startWave();
   }
@@ -9886,6 +10118,22 @@ function omenPoint(p) {
 /* the state the renderer reads; rebuilt whenever the target changes */
 function syncOmen() {
   if (SB() || S.titan || S.phase === 'menu' || S.phase === 'over') { S.omen = null; return; }
+  /* a Rush has no run-up to march across: the next boss walks in over the
+     build countdown, and nothing shows while one is already on the trail */
+  if (BR()) {
+    if (S.phase !== 'build' || S.wave > RUSH.bosses) { S.omen = null; return; }
+    const nw = rushWaveOf(S.wave);
+    if (!S.omen || S.omen.wave !== nw) {
+      const d = rushBoss(S.wave);
+      S.omen = { wave:nw, def:d, p:0, cols:makeRain(d), step:0 };
+    }
+    const want = Math.max(0, Math.min(1, 1 - S.autoTimer/rushBuild()));
+    if (want > S.omen.p) S.omen.p += Math.min(want - S.omen.p, 0.004 + (want - S.omen.p)*0.08);
+    const at2 = omenPoint(S.omen.p);
+    S.omen.x = at2.x; S.omen.y = at2.y;
+    S.omen.step += 0.006;
+    return;
+  }
   const nb = omenWave();
   if (nb <= S.wave) { S.omen = null; return; }   // it has arrived, or it is here
   if (!S.omen || S.omen.wave !== nb) {
@@ -15330,6 +15578,42 @@ const GUIDE = [
     if (on === 3) pvRainfall(g, w, h, t, 0.22);
   } },
 
+{ ch:'Boss Rush', title:'Twenty bosses, nothing else',
+  text:'<b>Boss Rush</b> is the whole ladder with the blobs taken out. Twenty waves, and wave <b>N</b> is the main game’s wave <b>N&times;10</b> boss — wave 1 is the Wave 10 Boss, wave 20 is the Godspeed Horizon.<br><br>No trash, no elites, no filler. Every boss keeps its real name, art, health, speed and signature mechanic, so the Static Sovereign still jams your line and the Iron Nursery still arrives in plates.<br><br>You start with <b>$22k</b> and there is no wave-clear money, because there are no waves to clear. Beating a boss is the only thing that pays: about <b>$1.5k</b> for the first and <b>$90k</b> for the last, so the early fights are lean and the last third can afford serious hardware.<br><br>Between fights you get about <b>16 seconds</b> to build, counting down on the wave chip. Press <b>Start</b> to go early. Turn Auto-Skip on and the gap drops to under two seconds.<br><br>Beat all twenty to win. One leak too many and it is over — and with <b>One Life</b> on, one leak is too many.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5.5);
+    pvGround(g, w, h, '#3a0a0c', '#120203');
+    /* the ladder, twenty rungs, lighting up left to right */
+    const done = Math.floor(p*20);
+    const y = h*0.72, x0 = w*0.06, x1 = w*0.94;
+    g.save();
+    g.strokeStyle = 'rgba(255,255,255,.14)'; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(x0, y); g.lineTo(x1, y); g.stroke();
+    for (let i = 0; i < 20; i++) {
+      const bx = x0 + (i/19)*(x1 - x0);
+      const on = i <= done;
+      g.fillStyle = on ? '#ff3b3b' : 'rgba(255,255,255,.16)';
+      g.beginPath(); g.arc(bx, y, on ? 5 : 3.4, 0, 7); g.fill();
+      if (i === done) {
+        g.strokeStyle = 'rgba(255,216,61,.9)'; g.lineWidth = 2;
+        g.beginPath(); g.arc(bx, y, 5 + frac(p*20)*9, 0, 7); g.stroke();
+      }
+    }
+    g.restore();
+    gbText(g, 'wave 10', x0, y + 16, 8, '#7e8c9c', 'center', 700);
+    gbText(g, 'wave 200', x1, y + 16, 8, '#7e8c9c', 'center', 700);
+
+    /* the boss currently on the rung */
+    const TH = ['classic','green','red','blue','white','gold','denied','static','reaper','final'];
+    const th = TH[done % TH.length];
+    const br = Math.min(h*0.22, w*0.12);
+    pvBoss(g, 'bookrush', th, w*0.5, h*0.34, br, t, 1 - frac(p*20));
+
+    gbText(g, 'BOSS ' + (done + 1) + ' / 20', w*0.5, h*0.09, 12, '#ff5a4a', 'center');
+    gbPill(g, w*0.05, h*0.06, 'START', '$22k', '#ffd83d');
+    gbPill(g, w*0.76, h*0.06, 'BUILD', '16s', '#7dffb4');
+  } },
+
 { ch:'Titan', title:'Buying the land',
   text:'Zoom the camera all the way out and the lawn turns out to be a mown square in the middle of a park — and two pieces of that park are for sale.<br><br>On the <b>right</b> is the <b>Astro Pad</b>. It costs $1m to clear and it is the only ground in the game big enough to hold a Titan Astro Jaxon.<br><br>On the <b>left</b> is the <b>Satellite Plot</b>, $150k, small, and deliberately a long way from the trail. Most guns cannot reach anything from out there — but a Piggybank does not need to.<br><br>Click the sign on a plot to arm it, click again to pay. A chainsaw runs the width of it, the trees come down, and plain grass is left behind.',
   art:(g, w, h, t) => {
@@ -15745,7 +16029,7 @@ function frame(now) {
   /* the leak that ends the run plays out in slow motion before the screen */
   if (S.dying > 0) {
     S.dying -= dt;
-    if (S.dying <= 0) { S.dying = 0; S.phase = 'over'; endGame(); }
+    if (S.dying <= 0) { S.dying = 0; if (BR()) rushEnd(false); else { S.phase = 'over'; endGame(); } }
     else dt *= 0.22;
   }
   if (S.phase === 'wave' || S.phase === 'build') {
@@ -15764,6 +16048,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
