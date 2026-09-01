@@ -549,6 +549,141 @@
   #panel .dupe.poor{
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
   }
+  /* --------------------------------------------------- adventure menu --- */
+  #modeRow{display:flex;align-items:stretch;gap:14px;width:min(1480px,100%)}
+  #modeRow > #modeGrid{flex:1 1 auto;width:auto}
+  .mDiv{flex:none;width:1px;align-self:stretch;
+        background:linear-gradient(180deg,transparent,rgba(255,255,255,.22),transparent)}
+  #advCol{flex:none;width:216px;display:flex;flex-direction:column;gap:7px}
+  .acLab{
+    font-size:10px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;
+    color:#9b7fd0;text-align:center;
+  }
+  #advCard{flex:1;display:flex}
+  #advCard .mcard{
+    flex:1;filter:saturate(.24) brightness(.82);transition:filter .22s,transform .18s,box-shadow .18s,border-color .18s;
+  }
+  #advCard .mcard:hover,#advCard .mcard:focus-visible{
+    filter:none;box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 2px rgba(192,139,255,.5),
+                           0 0 44px rgba(150,80,255,.42);
+  }
+  #advCard .mcard .mfoot .go{color:#e8d0ff}
+  body.mobile #modeRow{flex-direction:column;align-items:center}
+  body.mobile .mDiv{width:100%;height:1px;
+        background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
+  body.mobile #advCol{width:min(760px,100%)}
+
+  /* ------------------------------------------------------ the solar map - */
+  #ovHub{padding:0;gap:0;background:#04060b;display:none}
+  #ovHub.on{display:block}
+  #hubCv{position:absolute;inset:0;width:100%;height:100%;display:block}
+  #hubUI{position:absolute;inset:0;pointer-events:none}
+  #hubUI > *{pointer-events:auto}
+  #ovHub .hTop{
+    position:absolute;top:22px;left:26px;right:26px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  #ovHub .hTitle{
+    text-align:center;font-size:22px;font-weight:900;letter-spacing:5px;color:#e8d0ff;
+    text-shadow:0 0 26px rgba(150,90,255,.6);
+  }
+  #ovHub .hTitle em{
+    display:block;font-style:normal;font-size:10.5px;font-weight:700;letter-spacing:1.6px;
+    color:#8f7fb0;margin-top:4px;
+  }
+  #hubBack,#hubOrb{
+    border:1px solid rgba(192,139,255,.34);background:rgba(14,10,26,.8);color:#c9b6e8;
+    border-radius:999px;padding:10px 20px;font:inherit;font-weight:800;font-size:12px;cursor:pointer;
+    transition:.15s;backdrop-filter:blur(6px);
+  }
+  #hubBack:hover,#hubOrb:hover{color:#fff;background:rgba(60,30,110,.8);border-color:#c08bff}
+  #hubOrb b{margin-left:8px;color:#ffd83d;font-variant-numeric:tabular-nums}
+  #ovHub .hHint{
+    position:absolute;bottom:22px;left:0;right:0;text-align:center;
+    font-size:11px;font-weight:700;letter-spacing:2px;color:#5d6a80;
+  }
+  #hubPlate{
+    position:absolute;right:26px;bottom:64px;width:296px;
+    border:1px solid rgba(192,139,255,.3);border-radius:16px;
+    background:linear-gradient(180deg,rgba(16,12,28,.94),rgba(6,5,14,.96));
+    box-shadow:0 22px 60px rgba(0,0,0,.7);backdrop-filter:blur(8px);
+    padding:14px;text-align:left;opacity:0;transform:translateY(10px);
+    transition:opacity .18s,transform .18s;pointer-events:none;
+  }
+  #hubPlate.on{opacity:1;transform:none;pointer-events:auto}
+  #hubPlate .hpTop{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+  #hubPlate .nm{font-size:19px;font-weight:900;color:var(--pc)}
+  #hubPlate .tg{font-size:9px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7e8c9c}
+  #hubPlate .hpB{font-size:11px;line-height:1.5;color:#a6b2c2;margin-bottom:10px}
+  #hubPlate .hpRow{display:flex;justify-content:space-between;align-items:center;
+                   font-size:11px;padding:5px 0;border-top:1px solid rgba(255,255,255,.07)}
+  #hubPlate .hpRow .k{color:#7e8c9c;font-weight:700}
+  #hubPlate .hpRow b{color:#e6ecf4;font-weight:800}
+  #hubPlate .dif{display:flex;gap:3px}
+  #hubPlate .dif i{width:7px;height:7px;border-radius:2px;background:rgba(255,255,255,.14)}
+  #hubPlate .dif i.on{background:#ff5a3c}
+  #hubPlate .hpShard{
+    display:flex;align-items:center;gap:8px;margin-top:9px;padding:8px 10px;border-radius:10px;
+    border:1px dashed rgba(255,255,255,.16);font-size:10.5px;font-weight:700;color:#7e8c9c;
+  }
+  #hubPlate .hpShard svg path{fill:rgba(255,255,255,.12)}
+  #hubPlate .hpShard.got{border-style:solid;border-color:var(--pc);color:#e6ecf4;
+                         background:color-mix(in srgb,var(--pc) 12%,transparent)}
+  #hubPlate .hpShard.got svg path{fill:var(--pc)}
+  #hubPlate .hpGo{
+    display:block;width:100%;margin-top:11px;padding:11px;border-radius:11px;cursor:pointer;
+    border:none;font:inherit;font-weight:900;font-size:13px;letter-spacing:.4px;color:#100418;
+    background:linear-gradient(180deg,#e8d0ff,#c08bff);
+    box-shadow:0 8px 20px rgba(150,90,255,.4);transition:.14s;
+  }
+  #hubPlate .hpGo:hover{transform:translateY(-2px);box-shadow:0 12px 26px rgba(150,90,255,.55)}
+  #hubPlate .hpLock{
+    margin-top:11px;padding:10px;border-radius:11px;text-align:center;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    font-size:11px;font-weight:800;color:#7e8c9c;
+  }
+  body.mobile #hubPlate{width:360px;bottom:80px}
+  body.mobile #hubBack,body.mobile #hubOrb{font-size:17px;padding:14px 24px;min-height:var(--tap)}
+  body.mobile #ovHub .hTitle{font-size:26px}
+
+  /* --------------------------------------------------- orb progress ----- */
+  #orbWrap{
+    width:min(880px,100%);max-height:86vh;overflow:auto;text-align:left;
+    border:1px solid rgba(192,139,255,.28);border-radius:18px;
+    background:linear-gradient(180deg,rgba(16,12,28,.96),rgba(6,5,14,.98));
+    padding:16px 18px 20px;box-shadow:0 26px 70px rgba(0,0,0,.7);
+  }
+  .orbCube{
+    display:flex;align-items:center;gap:18px;margin:12px 0 16px;padding:14px;
+    border-radius:14px;border:1px dashed rgba(192,139,255,.3);background:rgba(255,255,255,.03);
+  }
+  .orbCube .ocArt svg path{stroke:rgba(192,139,255,.45);stroke-width:2;fill:rgba(120,60,220,.12)}
+  .orbCube .ocArt svg .c2{fill:rgba(150,90,255,.2)}
+  .orbCube .ocArt svg .c3{fill:rgba(80,40,160,.24)}
+  .orbCube.ready .ocArt svg path{stroke:#e8d0ff;fill:rgba(192,139,255,.4)}
+  .orbCube .ocTxt{flex:1;min-width:0}
+  .orbCube .ocTxt b{display:block;font-size:15px;font-weight:900;color:#e8d0ff}
+  .orbCube .ocTxt span{display:block;font-size:11.5px;line-height:1.5;color:#93a2b2;margin-top:4px}
+  .orbCube .ocBar{height:7px;border-radius:99px;background:rgba(255,255,255,.09);margin-top:10px;overflow:hidden}
+  .orbCube .ocBar i{display:block;height:100%;border-radius:99px;
+                    background:linear-gradient(90deg,#c08bff,#ffd83d);transition:width .4s}
+  .orbGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .oSlot{
+    padding:12px 10px;border-radius:12px;text-align:center;
+    border:1px solid var(--line);background:rgba(255,255,255,.03);
+  }
+  .oSlot .osArt svg path{fill:rgba(255,255,255,.09);stroke:rgba(255,255,255,.16);stroke-width:1}
+  .oSlot.got{border-color:var(--pc);background:color-mix(in srgb,var(--pc) 10%,transparent)}
+  .oSlot.got .osArt svg path{fill:var(--pc);stroke:#fff}
+  .oSlot .osNm{font-size:11.5px;font-weight:800;color:#c2ced9;margin-top:4px}
+  .oSlot.got .osNm{color:#f2f6fb}
+  .oSlot .osFrom{font-size:9.5px;font-weight:700;color:#6c7f8f;margin-top:2px}
+  .oSlot .osSt{font-size:9px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;
+               color:#5d6a80;margin-top:6px}
+  .oSlot.got .osSt{color:var(--pc)}
+  .oSlot.soon{opacity:.6}
+  body.mobile .orbGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+
   /* ------------------------------------------- sandbox ascend shortcut --- */
   #sbAsc{
     position:absolute;z-index:26;display:none;min-width:210px;padding:7px;
@@ -1728,8 +1863,15 @@
       <div class="tagline">Select a Gamemode</div>
       <h1>JAXON <span>TOWER DEFENSE</span></h1>
       <div class="cast" id="menuCast"></div>
-      <p id="menuSub">Thirty-two Jaxons, a boss every tenth wave, and a colossus in the rain. Pick your fight.</p>
-      <div id="modeGrid"></div>
+      <p id="menuSub">Forty-odd Jaxons, a boss every tenth wave, a colossus in the rain &mdash; and nine worlds with a shard of the Orb on each. Pick your fight.</p>
+      <div id="modeRow">
+        <div id="modeGrid"></div>
+        <div class="mDiv" aria-hidden="true"></div>
+        <div id="advCol">
+          <div class="acLab">Adventure</div>
+          <div id="advCard"></div>
+        </div>
+      </div>
       <div id="chalRow"></div>
       <div id="menuRow">
         <button id="bestsBtn">Bests</button>
@@ -1765,6 +1907,20 @@
     <div class="overlay" id="ovAdmin">
       <div id="admWrap"></div>
     </div>
+
+    <div class="overlay" id="ovHub">
+      <canvas id="hubCv" width="1600" height="900"></canvas>
+      <div id="hubUI">
+        <div class="hTop">
+          <button id="hubBack">&larr; Main menu</button>
+          <div class="hTitle">ADVENTURE<em>Nine worlds, nine shards, one Orb</em></div>
+          <button id="hubOrb">Orb Progress <b id="hubShards">0 / 9</b></button>
+        </div>
+        <div id="hubPlate"></div>
+        <div class="hHint">Pick a world</div>
+      </div>
+    </div>
+    <div class="overlay" id="ovOrb"><div id="orbWrap"></div></div>
 
     <div class="overlay" id="ovStats"><div id="statWrap"></div></div>
     <div class="overlay" id="ovBests"><div id="bestWrap"></div></div>
@@ -2633,6 +2789,125 @@ const ULTRA_KIT = {
      same diaper, same pacifier. What is bolted on is a construction kit —
      a hard hat with a lamp, a harness, four astro claws arcing yellow
      between their hooks, and the orange hologram wings he flew in on. */
+  /* --------------------------------------------- MERCURY -------------
+     A heat suit. Basalt plate, cooling fins, and the orange of rock that
+     has not finished cooling. The visor is pushed up on his forehead, so
+     the face, the eyes and the pacifier are all exactly where they were. */
+  mercury: {
+    back:(g) => `
+      <defs>
+        <linearGradient id="mercVis" x1="0" y1="0" x2="0.2" y2="1">
+          <stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#c98a2c"/>
+        </linearGradient>
+        <radialGradient id="mercHot" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#fff0c0"/><stop offset="0.45" stop-color="#ff7a2e"/>
+          <stop offset="1" stop-color="rgba(255,80,10,0)"/>
+        </radialGradient>
+      </defs>
+      <g opacity=".8">
+        <ellipse cx="238" cy="380" rx="300" ry="250" fill="url(#mercHot)" opacity=".2"/>
+      </g>
+      <g stroke="#1a1410" stroke-width="10" stroke-linejoin="round">
+        <path d="M96 260 L46 196 L74 176 L128 240 Z" fill="#5c4b42"/>
+        <path d="M364 260 L414 196 L386 176 L332 240 Z" fill="#5c4b42"/>
+        <rect x="104" y="252" width="252" height="150" rx="26" fill="#463731"/>
+      </g>
+      <g fill="#ff7a2e" opacity=".9">
+        <rect x="126" y="276" width="208" height="12" rx="6"/>
+        <rect x="126" y="308" width="208" height="12" rx="6"/>
+        <rect x="126" y="340" width="208" height="12" rx="6"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#3a2c22" stroke-width="9" stroke-linejoin="round">
+        <path d="M52 116 C 64 -14, 368 -14, 380 116 L 344 116 C 330 34, 102 34, 88 116 Z" fill="#5c4b42"/>
+        <path d="M74 104 C 92 26, 340 26, 358 104 Z" fill="url(#mercVis)" opacity=".92"/>
+      </g>
+      <g stroke="#1a1410" stroke-width="9" stroke-linejoin="round">
+        <path d="M104 288 L 176 274 L 190 356 L 116 372 Z" fill="#5c4b42"/>
+        <path d="M356 288 L 288 274 L 274 356 L 348 372 Z" fill="#5c4b42"/>
+        <path d="M112 500 C 180 524, 288 524, 356 496 L 356 542 C 288 570, 180 570, 112 546 Z" fill="#3a2c22"/>
+      </g>
+      <g fill="#ff7a2e" opacity=".92">
+        <rect x="122" y="306" width="52" height="10" rx="5"/>
+        <rect x="304" y="306" width="52" height="10" rx="5"/>
+        <rect x="196" y="512" width="80" height="16" rx="7"/>
+      </g>
+      <g stroke="#ff7a2e" stroke-width="6" fill="none" opacity=".75" stroke-linecap="round">
+        <path d="M34 430 L 62 452 L 40 476"/>
+        <path d="M306 300 L 330 322 L 312 344"/>
+      </g>
+      <g stroke="#1a1410" stroke-width="9" stroke-linejoin="round">
+        <path d="M94 612 L 180 612 L 190 700 L 86 700 Z" fill="#463731"/>
+        <path d="M240 612 L 326 612 L 336 700 L 232 700 Z" fill="#463731"/>
+      </g>
+      <g fill="#ff7a2e" opacity=".85">
+        <rect x="94" y="656" width="96" height="10"/><rect x="240" y="656" width="96" height="10"/>
+      </g>`
+  },
+
+  /* --------------------------------------------- VENUS ---------------
+     A gas suit for air that eats things. Brass collar, a scrubber tank on
+     his back with the hose over one shoulder, and a filter canister sat
+     well clear of the pacifier. */
+  venus: {
+    back:(g) => `
+      <defs>
+        <linearGradient id="venTank" x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0" stop-color="#f0d070"/><stop offset="1" stop-color="#8a6320"/>
+        </linearGradient>
+        <radialGradient id="venGas" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#d8ff9a"/><stop offset="0.5" stop-color="rgba(150,220,80,.4)"/>
+          <stop offset="1" stop-color="rgba(120,200,50,0)"/>
+        </radialGradient>
+      </defs>
+      <g opacity=".55">
+        <ellipse cx="238" cy="330" rx="300" ry="240" fill="url(#venGas)" opacity=".28"/>
+      </g>
+      <g stroke="#3a2c08" stroke-width="10" stroke-linejoin="round">
+        <rect x="108" y="248" width="112" height="230" rx="52" fill="url(#venTank)"/>
+        <rect x="248" y="248" width="112" height="230" rx="52" fill="url(#venTank)"/>
+        <rect x="150" y="216" width="30" height="46" rx="12" fill="#8a6320"/>
+        <rect x="290" y="216" width="30" height="46" rx="12" fill="#8a6320"/>
+      </g>
+      <g fill="none" stroke="#6a8a3c" stroke-width="14" stroke-linecap="round">
+        <path d="M300 250 C 388 236, 404 300, 356 336"/>
+      </g>
+      <g fill="none" stroke="#b8d06a" stroke-width="5" stroke-linecap="round" opacity=".8">
+        <path d="M300 250 C 388 236, 404 300, 356 336"/>
+      </g>`,
+    front:(g) => `
+      <g stroke="#3a2c08" stroke-width="9" stroke-linejoin="round">
+        <path d="M56 108 C 70 6, 362 6, 376 108 L 340 112 C 326 44, 106 44, 92 112 Z" fill="#c98a3c"/>
+        <ellipse cx="216" cy="60" rx="132" ry="44" fill="#f0d070" opacity=".85"/>
+      </g>
+      <g stroke="#3a2c08" stroke-width="9" stroke-linejoin="round">
+        <path d="M100 300 C 160 330, 296 330, 356 298 L 350 344 C 292 372, 164 372, 106 344 Z" fill="#e0a840"/>
+      </g>
+      <g stroke="#2a3a10" stroke-width="8" stroke-linejoin="round">
+        <rect x="290" y="378" width="86" height="96" rx="22" fill="#6a8a3c"/>
+        <circle cx="333" cy="426" r="26" fill="#b8d06a"/>
+      </g>
+      <g fill="#3a4a22" opacity=".8">
+        <circle cx="333" cy="426" r="11"/>
+      </g>
+      <g fill="none" stroke="#8fbf5a" stroke-width="7" stroke-linecap="round" opacity=".85">
+        <path d="M290 420 L 250 420"/>
+      </g>
+      <g stroke="#3a2c08" stroke-width="9" stroke-linejoin="round">
+        <path d="M110 496 C 180 520, 288 520, 356 494 L 356 540 C 288 566, 180 566, 110 542 Z" fill="#8a6320"/>
+      </g>
+      <g fill="#b8d06a" opacity=".9">
+        <rect x="196" y="506" width="80" height="18" rx="8"/>
+      </g>
+      <g stroke="#3a2c08" stroke-width="9" stroke-linejoin="round">
+        <path d="M94 612 L 180 612 L 190 700 L 86 700 Z" fill="#8a6320"/>
+        <path d="M240 612 L 326 612 L 336 700 L 232 700 Z" fill="#8a6320"/>
+      </g>
+      <g fill="#b8d06a" opacity=".85">
+        <rect x="94" y="654" width="96" height="12"/><rect x="240" y="654" width="96" height="12"/>
+      </g>`
+  }
+,
   astro: {
     back:(g) => `
       <defs>
@@ -2954,6 +3229,19 @@ VARIANTS.infmirror = { ultra:'infmirror', wide:true,
 
 /* A Jaxon in a work suit. Everything that makes him a Titan is bolted on
    over the top of this — take the kit away and he is one of the family. */
+/* The two worlds that are open. Both are Jaxons first: the visor is up,
+   the mask is off to one side, and the pacifier is where it always was. */
+VARIANTS.mercury = { ultra:'mercury', wide:true,
+                    suitLite:'#ffd0a8', suit:'#c9662a', suitDark:'#7a2c08',
+                    arm:'#5c4b42', armDark:'#1a1410',
+                    outline:'#3a1c08', outlineWidth:7, boots:false,
+                    pacG:'#ff7a2e', pacGD:'#8a3200', pacO:'#ffd0a8', pacOD:'#a83c00' };
+VARIANTS.venus = { ultra:'venus', wide:true,
+                    suitLite:'#f4e2a8', suit:'#c98a3c', suitDark:'#7a5008',
+                    arm:'#6a8a3c', armDark:'#28380a',
+                    outline:'#3a2c08', outlineWidth:7,
+                    pacG:'#b8d06a', pacGD:'#3a4a22', pacO:'#f0d070', pacOD:'#8a6320' };
+
 VARIANTS.astro = { ultra:'astro', wide:true, hires:true,
                     suitLite:'#ffe0b0', suit:'#ff9a2e', suitDark:'#a34e00',
                     arm:'#4a5462', armDark:'#161b22',
@@ -3362,6 +3650,9 @@ const UPGRADES = {
   /* the Titan takes levels too, and earns rather than buys them */
   astro: { levels:true,
     A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  /* the adventure Jaxons arrive finished; what they are is the reward */
+  mercury: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  venus:   { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   tipjar: {
     A: { name:"Fuller Jar", tiers:[
       { name:"Bigger Jar", blurb:"Two to five coins a tip instead of one to three.", cost:300,
@@ -3885,6 +4176,8 @@ function SP(t) {
   if (t.rangeUp && typeof sp.range === 'number' && isFinite(sp.range)) {
     sp.range = Math.round(sp.range * (1 + t.rangeUp));
   }
+  /* a few Jaxons are born with an on-hit rider rather than earning one */
+  if (base.baseXtra) Object.assign(sp.xtra, base.baseXtra);
   /* the Titan's numbers come from his level too, and from nowhere else */
   if (sp.ammo === 'astro') {
     const lv = astroLevel(t), m = astroDmgMul(lv);
@@ -4260,6 +4553,16 @@ const MODES = {
             runTint:'rgba(200,24,24,.05)',
             money:22000, lives:50, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
             bossHp:1, coin:1, waveReward:0, leak:1, cost:1, refund:0.70, autoFrom:1 },
+  /* Every adventure world runs through this one entry; which world it is
+     lives in S.world, and M() folds that world's dials in on top. */
+  adventure:{ key:'adventure', name:'Adventure', mc:'#c08bff', pips:0, menu:false,
+            preview:'adventure', adv:true,
+            tint:['rgba(140,70,230,.30)','rgba(10,4,24,.62)'],
+            scoreLabel:'Best wave',
+            blurb:'Nine worlds, nine shards, one Orb.',
+            runTint:'rgba(140,70,230,.04)',
+            money:170, lives:45, budget:1, eliteHp:1, spd:1, eliteShift:0, eliteMul:1,
+            bossHp:1, coin:1, waveReward:1, leak:1, cost:1, refund:0.70, autoFrom:1 },
   titan:  { key:'titan', name:'Titan Fight', mc:'#ff5a3c', pips:4, siege:true,
             menu:false, preview:'hard', tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
             scoreLabel:'Best time',
@@ -4290,7 +4593,9 @@ const chalList = () => CHALLENGES.filter(c => hasChal(c.id)).map(c => c.id);
 /* the key a best is filed under: the mode, plus whatever rules were on */
 const runKey = () => {
   const c = chalList();
-  return S.mode + (c.length ? '|' + c.join('+') : '');
+  /* every world keeps its own best, so the key carries which one it is */
+  const m = S.mode === 'adventure' && S.world ? 'adventure:' + S.world : S.mode;
+  return m + (c.length ? '|' + c.join('+') : '');
 };
 const chalName = key => {
   const [m, c] = key.split('|');
@@ -4300,6 +4605,8 @@ const chalName = key => {
 };
 /* Some Jaxons are not for sale yet. Sandbox never waits for anything. */
 function gateBlocks(k) {
+  const a = TOWERS[k] && TOWERS[k].adv;
+  if (a && !SB() && !advHas(a)) return 'clearing ' + worldById(a).name;
   const g = TOWERS[k] && TOWERS[k].gate;
   if (!g || SB() || S.wave >= g) return null;
   return 'wave ' + g;
@@ -4313,9 +4620,23 @@ function chalBlocks(k) {
 
 const SB = () => S.mode === 'sandbox';
 const BR = () => S.mode === 'bossrush';
-let _mCache = null, _mKey = '';
+let _mCache = null, _mKey = '', _wCache = null, _wKey = '';
 const M = () => {
   const m = MODES[S.mode] || MODES.normal;
+  /* an adventure world is the mode's dials with the planet's laid over */
+  if (m.adv) {
+    const v = worldById(S.world);
+    if (!v) return m;
+    if (_wKey !== v.id) {
+      _wCache = Object.assign({}, m, {
+        name:v.name, mc:v.shardCol,
+        money:v.money, lives:v.lives, budget:v.budget, spd:v.spd,
+        eliteShift:v.eliteShift, eliteMul:v.eliteMul, bossHp:v.bossHp, coin:v.coin
+      });
+      _wKey = v.id;
+    }
+    return _wCache;
+  }
   if (!m.sandbox) return m;
   const d = MODES[S.sbDiff] || MODES.normal;
   if (_mKey !== S.sbDiff) {
@@ -4584,6 +4905,16 @@ const TOWERS = {
              boost:5.5, echo:6, ownDmg:5200, ownCd:0.9, ownSplash:1500, ownR:150,
              blurb:'The Mirror line, finished. A wider room, faster copies and far brighter echoes — whatever your best Jaxon fires, this one fires a corridor of it back.',
              tags:[['Copies Allies','t-rain'],['x5.5 Echoes','t-aoe'],['Ultra','t-fast']] },
+  /* ----- the adventure Jaxons. Bought like anything else, but only once
+     the world they came off has been cleared. ----- */
+  mercury: { name:'Mercury Jaxon', cost:2400, range:330, cd:0.16, dmg:22, speed:1500, ammo:'ember',
+             splash:9, splashR:96, baseXtra:{ burnHit:1 }, adv:'mercury',
+             blurb:'Brought back off the scorched world. An ember every 0.16s for 22, bursting for 9 across 96, and everything it touches keeps burning.',
+             tags:[['Adventure','t-rain'],['Burn','t-fast'],['Rapid','t-fast']] },
+  venus:   { name:'Venus Jaxon', cost:7800, range:360, cd:0.42, dmg:96, speed:980, ammo:'acid',
+             splash:54, splashR:170, baseXtra:{ slowHit:1, burnHit:1 }, adv:'venus',
+             blurb:'A globe of the air that world breathes. 96 on the hit and 54 across 170, and whatever survives it crawls away burning.',
+             tags:[['Adventure','t-rain'],['Splash','t-aoe'],['Corrodes','t-single']] },
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
      else, and no Mirror can steal a single shot off him. */
   astro:   { name:'Titan Astro Jaxon', cost:1500000, range:2600, cd:0.22, dmg:900000, ammo:'astro',
@@ -4625,7 +4956,8 @@ const CATS = [
   ['builders', 'Builders'],
   ['income',   'Income'],
   ['late',     'Late game'],
-  ['ultra',    'Ultra']
+  ['ultra',    'Ultra'],
+  ['adv',      'Adventure']
 ];
 const ROLE = {
   basic:['starters','builders'],      slingshot:['starters','dps'],
@@ -4638,6 +4970,7 @@ const ROLE = {
   mechanic:['builders','support'],    tipjar:['income'],
   caddy:['income'],                   admin:[],
   astro:['dps','splash','late','ultra'],
+  mercury:['dps','splash','adv'],     venus:['dps','splash','adv'],
   crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
   slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
   infmirror:['dps','splash','late','ultra'],
@@ -4661,6 +4994,7 @@ const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).inc
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
+               'mercury','venus',
                'crusher','booster','slayer','wiper','infmirror','astro',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
@@ -4676,7 +5010,8 @@ const VALUE = {
                 blackholelaser:89, director:100, mirror:100, truegod:89,
                 piggybank:100, recycler:100, tax:100, merchant:100,
                 factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100,
-                crusher:96, booster:100, slayer:98, wiper:94, infmirror:92, astro:100 };
+                crusher:96, booster:100, slayer:98, wiper:94, infmirror:92, astro:100,
+                mercury:100, venus:100 };
 
 /* ------------------------------------------------------ Admin Jaxon ----
    He does not buy upgrades, he buys levels. Damage compounds hard for the
@@ -4742,7 +5077,7 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      crusher:1.3, booster:1.25, slayer:1.2, wiper:1.35, infmirror:1.22,
                      /* the Titan. roughly the size of the whole playfield,
                         which is the entire point of him */
-                     astro:6.8,
+                     astro:6.8, mercury:1.16, venus:1.2,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -4891,6 +5226,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
   runT:0, spent:0, money0:0, rushBest:{},
+  world:null, adv:null, shardFly:null,
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -4936,6 +5272,8 @@ function loadSave() {
     S.bests.normal = Math.max(S.bests.normal || 0, Math.floor(j.best));
   if (j.titan && typeof j.titan === 'object') S.titanBest = j.titan;
   if (j.rush && typeof j.rush === 'object') S.rushBest = j.rush;
+  if (j.adv && typeof j.adv === 'object') S.adv = j.adv;
+  advInit();
   S.best = bestOf(S.mode);
   if (typeof j.sound === 'boolean') S.sound = j.sound;
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
@@ -4956,7 +5294,8 @@ function loadSave() {
 function saveNow() {
   try {
     localStorage.setItem(SAVE_KEY, JSON.stringify({
-      bests:S.bests, titan:S.titanBest, rush:S.rushBest, sound:S.sound, speed:S.speed, perfLock:S.perfLock,
+      bests:S.bests, titan:S.titanBest, rush:S.rushBest, adv:S.adv,
+      sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
       sbDiff:S.sbDiff, customs:S.customs, chal:S.chal,
       vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0
@@ -5437,7 +5776,7 @@ function reset() {
   S.rollers=[]; S.orbs=[];
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
-  S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc();
+  S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
   S.rollers = []; S.orbs = []; S.bestAtStart = bestHere();
@@ -5473,6 +5812,7 @@ function bestOf(k) { const v = S.bests[k]; return typeof v === 'number' ? v : 0;
 const bestHere = () => bestOf(runKey());
 
 function showModes() {
+  closeHub(); closeOrb();
   setTimeout(fitMenu, 0);
   setTimeout(maybeNudge, 240);
   $('ovEnd').classList.remove('on');
@@ -5791,6 +6131,176 @@ function pvScene(key, g, w, h, t) {
     g.fillText('BOSS ' + (idx + 1) + ' / 20', w - 6, 5);
     g.restore();
 
+  } else if (key === 'adventure') {
+    /* Nine shards come in off the edges, lock into a cube, the cube opens
+       into a portal, and something walks out of it and breaks the orb it
+       is carrying. The break flashes white, and the flash is what covers
+       the loop coming back round to the shards. */
+    const cx = w*0.5, cy = h*0.48;
+    pvGround(g, w, h, '#0a0616', '#03020a');
+    /* the sky it all happens in */
+    g.save();
+    for (let i = 0; i < 34; i++) {
+      const sx = frac(i*0.3719 + 0.12)*w, sy = frac(i*0.6317 + 0.3)*h;
+      g.globalAlpha = 0.25 + Math.abs(Math.sin(t*1.4 + i))*0.4;
+      g.fillStyle = '#cfd8ee';
+      g.beginPath(); g.arc(sx, sy, i % 5 ? 0.9 : 1.5, 0, 7); g.fill();
+    }
+    g.restore();
+
+    const ease = x => x*x*(3 - 2*x);
+    const seg = (a, b) => Math.max(0, Math.min(1, (p - a)/(b - a)));
+    const inK = seg(0, 0.28), lock = seg(0.26, 0.42);
+    const open = seg(0.42, 0.58), walk = seg(0.56, 0.76);
+    const raise = seg(0.74, 0.90), brk = seg(0.90, 1);
+
+    /* --- the shards, flying in --- */
+    if (brk < 0.15) {
+      const e = ease(inK);
+      for (let i = 0; i < 9; i++) {
+        const a = i*0.698 + 0.3;
+        const far = Math.max(w, h)*0.85;
+        const d = far*(1 - e) + (h*0.16)*(1 - lock);
+        const sx = cx + Math.cos(a)*d, sy = cy + Math.sin(a)*d*0.8;
+        g.save();
+        g.globalAlpha = Math.min(1, inK*3)*(1 - lock*0.85);
+        g.translate(sx, sy);
+        g.rotate(a + t*1.6);
+        g.fillStyle = ['#ff9a2e','#ffd83d','#3fa8ff','#e8eef7','#ff5a3c',
+                       '#ffb04a','#ffe98a','#7fe9ff','#6b8bff'][i];
+        const sz = h*0.055;
+        g.beginPath(); g.moveTo(0, -sz); g.lineTo(sz*0.5, 0); g.lineTo(0, sz); g.lineTo(-sz*0.5, 0);
+        g.closePath(); g.fill();
+        g.globalAlpha *= 0.6;
+        g.strokeStyle = '#ffffff'; g.lineWidth = 1.2; g.stroke();
+        g.restore();
+      }
+    }
+
+    /* --- the cube --- */
+    if (lock > 0 && open < 1) {
+      const e = ease(lock), o = ease(open);
+      const R = h*0.19*(0.4 + e*0.6)*(1 + o*0.5);
+      g.save();
+      g.translate(cx, cy);
+      g.globalAlpha = (1 - o*0.85);
+      g.globalCompositeOperation = 'lighter';
+      const gl = g.createRadialGradient(0, 0, 2, 0, 0, R*2.4);
+      gl.addColorStop(0, 'rgba(200,150,255,.7)');
+      gl.addColorStop(1, 'rgba(120,60,220,0)');
+      g.fillStyle = gl;
+      g.beginPath(); g.arc(0, 0, R*2.4, 0, 7); g.fill();
+      g.globalCompositeOperation = 'source-over';
+      g.rotate(Math.sin(t*0.7)*0.12);
+      /* an isometric box: top face, two sides */
+      const hx = R*0.86, hy = R*0.5, vv = R*0.72;
+      g.strokeStyle = '#e8d0ff'; g.lineWidth = 2.2;
+      g.fillStyle = 'rgba(150,90,255,.55)';
+      g.beginPath(); g.moveTo(0, -vv - hy); g.lineTo(hx, -vv); g.lineTo(0, -vv + hy); g.lineTo(-hx, -vv);
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(96,50,190,.75)';
+      g.beginPath(); g.moveTo(-hx, -vv); g.lineTo(0, -vv + hy); g.lineTo(0, vv + hy*0.2); g.lineTo(-hx, vv);
+      g.closePath(); g.fill(); g.stroke();
+      g.fillStyle = 'rgba(66,30,150,.85)';
+      g.beginPath(); g.moveTo(hx, -vv); g.lineTo(0, -vv + hy); g.lineTo(0, vv + hy*0.2); g.lineTo(hx, vv);
+      g.closePath(); g.fill(); g.stroke();
+      g.restore();
+    }
+
+    /* --- the portal --- */
+    if (open > 0) {
+      const o = ease(open);
+      const rr = h*0.30*o*(1 - brk*0.5);
+      g.save();
+      g.translate(cx, cy);
+      g.globalAlpha = 1 - brk*0.6;
+      const pg = g.createRadialGradient(0, 0, rr*0.1, 0, 0, rr);
+      pg.addColorStop(0, '#000009');
+      pg.addColorStop(0.62, 'rgba(70,20,140,.85)');
+      pg.addColorStop(0.92, 'rgba(200,140,255,.9)');
+      pg.addColorStop(1, 'rgba(150,90,255,0)');
+      g.fillStyle = pg;
+      g.beginPath(); g.ellipse(0, 0, rr*0.72, rr, 0, 0, 7); g.fill();
+      g.globalCompositeOperation = 'lighter';
+      g.strokeStyle = 'rgba(220,180,255,.8)'; g.lineWidth = 2.4;
+      for (let i = 0; i < 3; i++) {
+        const k = frac(t*0.5 + i/3);
+        g.globalAlpha = (1 - k)*0.6*(1 - brk);
+        g.beginPath(); g.ellipse(0, 0, rr*0.72*(0.4 + k), rr*(0.4 + k), 0, 0, 7); g.stroke();
+      }
+      g.restore();
+    }
+
+    /* --- and what comes out of it --- */
+    if (walk > 0) {
+      const e = ease(walk);
+      const jy = cy + h*0.30;
+      g.save();
+      g.globalAlpha = Math.min(1, walk*2.2)*(1 - brk*0.3);
+      /* he arrives out of the dark, so he darkens as he clears the ring */
+      pvJaxon(g, 'admin', cx - w*0.02, jy, h*(0.30 + e*0.24), false);
+      g.restore();
+      /* the staff, and the orb turning on the end of it */
+      if (raise > 0) {
+        const r2 = ease(raise);
+        const sx = cx + w*0.12, sy0 = jy - h*0.06;
+        const tipY = sy0 - h*(0.20 + r2*0.30);
+        g.save();
+        g.strokeStyle = '#3a2c4a'; g.lineWidth = 5; g.lineCap = 'round';
+        g.beginPath(); g.moveTo(sx, sy0); g.lineTo(sx, tipY); g.stroke();
+        g.strokeStyle = '#6b4a8a'; g.lineWidth = 2;
+        g.beginPath(); g.moveTo(sx, sy0); g.lineTo(sx, tipY); g.stroke();
+        const orbR = h*0.075*(1 - brk);
+        g.globalCompositeOperation = 'lighter';
+        const og = g.createRadialGradient(sx - orbR*0.3, tipY - orbR*0.3, 1, sx, tipY, orbR*1.8);
+        og.addColorStop(0, '#ffffff');
+        og.addColorStop(0.35, '#c08bff');
+        og.addColorStop(1, 'rgba(120,60,220,0)');
+        g.fillStyle = og;
+        g.beginPath(); g.arc(sx, tipY, orbR*1.8, 0, 7); g.fill();
+        /* it turns: two rings crossing */
+        g.strokeStyle = 'rgba(255,240,255,.9)'; g.lineWidth = 2;
+        for (let i = 0; i < 2; i++) {
+          g.beginPath();
+          g.ellipse(sx, tipY, orbR, orbR*Math.abs(Math.cos(t*2.6 + i*1.57))*0.9 + 2, 0, 0, 7);
+          g.stroke();
+        }
+        g.restore();
+        /* --- and it comes apart --- */
+        if (brk > 0) {
+          const b = ease(brk);
+          g.save();
+          g.globalCompositeOperation = 'lighter';
+          g.globalAlpha = 1 - b;
+          for (let i = 0; i < 14; i++) {
+            const a = i*0.449;
+            const d = b*h*0.5;
+            g.fillStyle = i % 2 ? '#ffffff' : '#c08bff';
+            g.save();
+            g.translate(sx + Math.cos(a)*d, tipY + Math.sin(a)*d);
+            g.rotate(a + b*4);
+            const sz = h*0.03*(1 - b);
+            g.beginPath(); g.moveTo(0, -sz); g.lineTo(sz*0.5, 0); g.lineTo(0, sz); g.lineTo(-sz*0.5, 0);
+            g.closePath(); g.fill();
+            g.restore();
+          }
+          /* the white-out that hides the seam */
+          g.globalAlpha = Math.max(0, 1 - Math.abs(b - 0.25)*4)*0.85;
+          g.fillStyle = '#ffffff';
+          g.fillRect(0, 0, w, h);
+          g.restore();
+        }
+      }
+    }
+    /* the same flash on the way back in, so the two ends meet */
+    if (inK < 0.12) {
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (1 - inK/0.12)*0.5;
+      g.fillStyle = '#ffffff'; g.fillRect(0, 0, w, h);
+      g.restore();
+    }
+
   } else if (key === 'sandbox') {
     /* a workshop: two Engineers and a production line of cars rolling out */
     pvGround(g, w, h, '#4a3a1e', '#241a0b');
@@ -5996,8 +6506,21 @@ function buildModeCards() {
       </button>`;
   };
   $('modeGrid').innerHTML = MENU_MODES().map(card).join('');
+  /* the campaign sits beside the endless modes, not inside them */
+  advInit();
+  const av = MODES.adventure;
+  $('advCard').innerHTML =
+    '<button class="mcard" data-m="adventure" data-pv="adventure" style="--mc:' + av.mc + '"' +
+    ' aria-label="Adventure. ' + av.blurb + '">' +
+      '<div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>' +
+      '<div class="mtop"><span class="mn">Adventure</span>' +
+        '<span class="pips"><span class="freeform">' + shardCount() + '&nbsp;/&nbsp;' + ADV_TARGET + '</span></span></div>' +
+      '<div class="mb">' + av.blurb + '</div>' +
+      '<div class="mfoot"><span class="best">Shards <b>' + shardCount() + '</b></span>' +
+      '<span class="go">Enter</span></div>' +
+    '</button>';
   buildChalRow();
-  $('modeGrid').querySelectorAll('.mcard').forEach(el => {
+  $('ovMenu').querySelectorAll('.mcard').forEach(el => {
     const k = el.dataset.m, pv = el.dataset.pv;
     /* Pointer and keyboard both light the card up and shift the whole menu. */
     el.addEventListener('mouseenter', () => { if (!MOBILE) pvStart(el, pv); });
@@ -6014,6 +6537,7 @@ function buildModeCards() {
         return;
       }
       PV.picked = null;
+      if (k === 'adventure') { openHub(); return; }
       startMode(k);
     });
   });
@@ -6193,6 +6717,599 @@ function rushTick(dt) {
   S.autoTimer -= dt;
   if (S.autoTimer <= 0) startWave();
 }
+
+/* ========================================================== ADVENTURE ====
+   A campaign laid over the same engine. Nine worlds each hold one shard of
+   the Orb; collect all nine and the cube can be assembled, the portal
+   opened, and whatever came through it answered for. Two worlds are open
+   in this pass — Mercury and Venus — and the rest sit on their rails with
+   their names showing and their missions still to come.
+
+   A world is not a new game. It is a path, a sky, a palette for the blobs,
+   a wave goal and a Jaxon on the other side of it. Everything else — the
+   towers, the shop, the upgrades, the bosses — is the game you already
+   have. */
+const ADV_TARGET = 9;                     // shards in a complete Orb
+
+const WORLDS = [
+  {
+    id:'mercury', name:'Mercury', order:1, ring:210, ang:-24, r:19,
+    body:'#a08b7c', body2:'#6b584c', glow:'rgba(210,170,140,.5)',
+    tag:'Scorched', diff:2, goal:20,
+    blurb:'Bare rock a step from the fire. Nothing here is slow.',
+    shard:'Ember Shard', shardCol:'#ff9a2e',
+    jaxon:'mercury', jaxonName:'Mercury Jaxon',
+    play:true, needs:null,
+    /* the mission */
+    path:[[0,150],[1180,150],[1180,430],[300,430],[300,720],[1600,720]],
+    sky:'mercury', money:170, lives:45,
+    spd:1.22, budget:0.92, eliteShift:2, eliteMul:0.9, bossHp:0.95, coin:1.15,
+    blob:'a cinder',
+    tiers:[
+      { fill:'#e0603a', edge:'#7a2408', text:'#ffffff' },
+      { fill:'#ef8a3c', edge:'#8a4409', text:'#ffffff' },
+      { fill:'#f5c24a', edge:'#8a6a0b', text:'#241f00' },
+      { fill:'#c9d3d8', edge:'#5c6a72', text:'#12181c' },
+      { fill:'#8fa0aa', edge:'#3c4850', text:'#ffffff' },
+      { fill:'#6b584c', edge:'#2a201a', text:'#ffffff' },
+      { fill:'#3a3230', edge:'#0e0b0a', text:'#ffd0a0' }
+    ]
+  },
+  {
+    id:'venus', name:'Venus', order:2, ring:310, ang:16, r:24,
+    body:'#e0b366', body2:'#8a6320', glow:'rgba(240,190,110,.55)',
+    tag:'Toxic', diff:3, goal:30,
+    blurb:'An ocean of acid air. You will not see them coming until they are close.',
+    shard:'Vapour Shard', shardCol:'#ffd83d',
+    jaxon:'venus', jaxonName:'Venus Jaxon',
+    play:true, needs:'mercury',
+    path:[[0,760],[1450,760],[1450,600],[150,600],[150,450],[1480,450],
+          [1480,300],[120,300],[120,150],[1600,150]],
+    sky:'venus', money:210, lives:40,
+    spd:0.95, budget:1.16, eliteShift:-2, eliteMul:1.25, bossHp:1.15, coin:0.95,
+    blob:'a bloom',
+    tiers:[
+      { fill:'#f0d070', edge:'#8a6a10', text:'#241f00' },
+      { fill:'#e0a840', edge:'#7a5008', text:'#ffffff' },
+      { fill:'#c98a3c', edge:'#6a3c06', text:'#ffffff' },
+      { fill:'#b8d06a', edge:'#5a6a18', text:'#141a06' },
+      { fill:'#8fbf5a', edge:'#3c5a10', text:'#ffffff' },
+      { fill:'#6a8a3c', edge:'#28380a', text:'#ffffff' },
+      { fill:'#3a4a22', edge:'#0e1206', text:'#e8ff9a' }
+    ]
+  },
+  { id:'earth',   name:'Earth',   order:3, ring:410, ang:-8,  r:25,
+    body:'#3f7fd0', body2:'#12406a', glow:'rgba(90,160,240,.5)',
+    tag:'Home', diff:3, goal:35, blurb:'The nursery itself. Something is already here.',
+    shard:'Cradle Shard', shardCol:'#3fa8ff', jaxonName:'Earth Jaxon', needs:'venus' },
+  { id:'moon',    name:'The Moon', order:4, ring:410, ang:-8, moonOf:'earth', off:52, r:10,
+    body:'#cfd4da', body2:'#7a8088', glow:'rgba(220,228,238,.5)',
+    tag:'Silent', diff:2, goal:25, blurb:'Grey dust and no air to carry a scream.',
+    shard:'Dust Shard', shardCol:'#e8eef7', jaxonName:'Luna Jaxon', needs:'earth' },
+  { id:'mars',    name:'Mars',    order:5, ring:520, ang:10,  r:21,
+    body:'#c1502a', body2:'#6a2408', glow:'rgba(230,110,60,.5)',
+    tag:'Rust', diff:4, goal:40, blurb:'Red iron, thin wind, and a very long walk.',
+    shard:'Rust Shard', shardCol:'#ff5a3c', jaxonName:'Mars Jaxon', needs:'moon' },
+  { id:'jupiter', name:'Jupiter', order:6, ring:680, ang:-16, r:42,
+    body:'#c9a184', body2:'#7a5638', glow:'rgba(220,180,140,.5)',
+    tag:'Storm', diff:5, goal:45, blurb:'A storm older than the nursery, and it has not finished.',
+    shard:'Storm Shard', shardCol:'#ffb04a', jaxonName:'Jupiter Jaxon', needs:'mars' },
+  { id:'saturn',  name:'Saturn',  order:7, ring:820, ang:6,   r:36, rings:true,
+    body:'#d8c878', body2:'#8a7a28', glow:'rgba(230,215,140,.5)',
+    tag:'Ringed', diff:6, goal:50, blurb:'Ice and rock in a perfect circle. Do not step off.',
+    shard:'Ring Shard', shardCol:'#ffe98a', jaxonName:'Saturn Jaxon', needs:'jupiter' },
+  { id:'uranus',  name:'Uranus',  order:8, ring:960, ang:-4,  r:29,
+    body:'#6fd8e8', body2:'#1e7a8a', glow:'rgba(120,220,240,.5)',
+    tag:'Frozen', diff:7, goal:55, blurb:'Tipped on its side and colder than anything you own.',
+    shard:'Frost Shard', shardCol:'#7fe9ff', jaxonName:'Uranus Jaxon', needs:'saturn' },
+  { id:'neptune', name:'Neptune', order:9, ring:1100, ang:-20, r:28,
+    body:'#3a6fd8', body2:'#12306a', glow:'rgba(80,130,240,.55)',
+    tag:'The Edge', diff:8, goal:60, blurb:'The last light. Whatever holds the Orb is out here.',
+    shard:'Deep Shard', shardCol:'#6b8bff', jaxonName:'Neptune Jaxon', needs:'uranus' }
+];
+const worldById = id => WORLDS.find(v => v.id === id) || null;
+const AD = () => S.mode === 'adventure';
+const advWorld = () => (AD() ? worldById(S.world) : null);
+
+/* --------------------------------------------------------- what is kept -
+   Shards, the worlds beaten, the Jaxons that came off them, and the best
+   run on each. All of it survives the tab. */
+function advInit() {
+  if (!S.adv) S.adv = { shards:{}, cleared:{}, jaxons:{}, best:{} };
+  for (const k of ['shards','cleared','jaxons','best']) if (!S.adv[k]) S.adv[k] = {};
+}
+const hasShard  = id => { advInit(); return !!S.adv.shards[id]; };
+const shardCount = () => { advInit(); return WORLDS.filter(v => S.adv.shards[v.id]).length; };
+const advDone   = id => { advInit(); return !!S.adv.cleared[id]; };
+const advHas    = k  => { advInit(); return !!S.adv.jaxons[k]; };
+/* a world is open if it is built, and if whatever it asks for is done */
+function worldOpen(v) {
+  if (!v || !v.play) return false;
+  return !v.needs || advDone(v.needs);
+}
+function worldWhy(v) {
+  if (!v.play) return 'Coming soon';
+  if (v.needs && !advDone(v.needs)) return 'Clear ' + worldById(v.needs).name + ' first';
+  return null;
+}
+
+/* ------------------------------------------------------ playing a world - */
+function startWorld(id) {
+  const v = worldById(id);
+  if (!v || !worldOpen(v)) {
+    toast(v ? worldWhy(v) : 'Not yet');
+    beep(150, 0.08, 'square', 0.03);
+    return false;
+  }
+  closeHub(); closeOrb();
+  S.world = id;
+  S.mode = 'adventure';
+  S.best = bestHere();
+  $('ovMenu').classList.remove('on');
+  reset();
+  usePath(v.path);
+  banner(v.name.toUpperCase(), 'clear ' + v.goal + ' waves', v.shardCol);
+  toast(v.name + ' — hold the line to wave ' + v.goal);
+  beep(200, 0.8, 'triangle', 0.05, 700);
+  return true;
+}
+
+/* the reward: the shard flies in, the Jaxon comes off the shelf */
+function advWin() {
+  if (S.phase === 'over') return;
+  S.phase = 'over';
+  const v = advWorld();
+  const secs = Math.round(S.runT || 0);
+  const first = !advDone(v.id);
+  advInit();
+  S.adv.cleared[v.id] = 1;
+  S.adv.shards[v.id] = 1;
+  if (v.jaxon) S.adv.jaxons[v.jaxon] = 1;
+  const prev = S.adv.best[v.id];
+  if (!prev || secs < prev) S.adv.best[v.id] = secs;
+  saveNow();
+  buildShelf();
+  S.shardFly = { t:0, col:v.shardCol, name:v.shard };
+  $('endTitle').textContent = v.name.toUpperCase() + ' CLEARED';
+  $('endText').textContent =
+    (first ? 'The ' + v.shard + ' is yours, and ' + v.jaxonName + ' has joined the shelf. '
+           : 'Cleared again, in ' + fmtTime(secs) + '. ') +
+    'That is ' + shardCount() + ' of ' + ADV_TARGET + ' shards toward the Orb.';
+  $('scoreRow').innerHTML =
+    '<div><div class="k">Waves held</div><div class="v">' + v.goal + '</div></div>' +
+    '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
+    '<div><div class="k">Shards</div><div class="v">' + shardCount() + ' / ' + ADV_TARGET + '</div></div>' +
+    '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (first ? '<div class="wide"><div class="k">Unlocked</div><div class="v sm">' +
+             v.jaxonName + ' &middot; permanently on the shelf, in every mode</div></div>' : '');
+  $('ovEnd').classList.add('on');
+  $('endModes').textContent = 'Back to the solar map';
+  setShop(false); hideTip();
+  banner('SHARD RECOVERED', v.shard, v.shardCol);
+  flashScreen(0.3);
+  for (let i = 0; i < 4; i++) setTimeout(() => beep(500 + i*190, 0.2, 'triangle', 0.05), i*150);
+  syncHUD();
+}
+
+/* ---------------------------------------------------------- the ground -
+   Each world paints its own sky and its own dirt. It is the same field
+   underneath — same size, same rules — wearing different weather. */
+function drawWorldGround() {
+  const v = advWorld();
+  if (!v) return false;
+  const sky = v.sky;
+  if (sky === 'mercury') {
+    /* bare rock in a hard white light, with the sun far too close */
+    const g = ctx.createLinearGradient(0, 0, W*0.5, H);
+    g.addColorStop(0, '#5c4b42'); g.addColorStop(0.45, '#463731'); g.addColorStop(1, '#2a211d');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    const sun = ctx.createRadialGradient(W*0.12, -60, 20, W*0.12, -60, 620);
+    sun.addColorStop(0, 'rgba(255,240,200,.55)');
+    sun.addColorStop(0.4, 'rgba(255,170,80,.22)');
+    sun.addColorStop(1, 'rgba(255,140,40,0)');
+    ctx.fillStyle = sun; ctx.fillRect(0, 0, W, H);
+    /* craters, laid down once from a fixed seed so they never crawl */
+    ctx.save();
+    let sd = 424242;
+    const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+    for (let i = 0; i < 54; i++) {
+      const x = rnd()*W, y = rnd()*H, r = 14 + rnd()*54;
+      ctx.globalAlpha = 0.22;
+      ctx.fillStyle = '#2a211d';
+      ctx.beginPath(); ctx.ellipse(x, y, r, r*0.62, 0, 0, 7); ctx.fill();
+      ctx.globalAlpha = 0.18;
+      ctx.strokeStyle = '#8a7566'; ctx.lineWidth = 2.4;
+      ctx.beginPath(); ctx.ellipse(x, y - 2, r*0.94, r*0.58, 0, 3.5, 6.1); ctx.stroke();
+    }
+    ctx.restore();
+    return true;
+  }
+  if (sky === 'venus') {
+    /* nothing but air, and all of it the wrong colour */
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#8a5a12'); g.addColorStop(0.4, '#b07f22'); g.addColorStop(1, '#6a4208');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 7; i++) {
+      const y = ((i*137 + S.t*(6 + i*3)) % (H + 260)) - 130;
+      const a = 0.05 + (i % 3)*0.018;
+      const cg = ctx.createLinearGradient(0, y - 90, 0, y + 90);
+      cg.addColorStop(0, 'rgba(255,220,150,0)');
+      cg.addColorStop(0.5, 'rgba(255,214,130,' + a + ')');
+      cg.addColorStop(1, 'rgba(255,220,150,0)');
+      ctx.fillStyle = cg; ctx.fillRect(0, y - 90, W, 180);
+    }
+    ctx.restore();
+    /* the haze that hides the far end of the trail */
+    const hz = ctx.createRadialGradient(W/2, H*0.55, H*0.18, W/2, H*0.55, H*1.1);
+    hz.addColorStop(0, 'rgba(255,200,110,0)');
+    hz.addColorStop(1, 'rgba(120,70,10,.55)');
+    ctx.fillStyle = hz; ctx.fillRect(0, 0, W, H);
+    return true;
+  }
+  return false;
+}
+/* the trail, in the colours of whatever you are standing on */
+const WORLD_TRAIL = {
+  mercury:['rgba(0,0,0,.32)', '#241a14', '#5e4a3c', 'rgba(255,220,180,.06)'],
+  venus:  ['rgba(0,0,0,.28)', '#4a2c04', '#8a5a12', 'rgba(255,240,190,.07)']
+};
+
+/* ======================================================= the solar map ==
+   The hub. A sun, nine rails, nine bodies and a great deal of sky. It runs
+   on its own canvas and its own frame loop, and only while it is open —
+   the field's loop never sees it.
+
+   The stars lie in three sheets at different depths. The pointer moves all
+   three, the far ones barely at all, and the whole thing is clamped so the
+   sky drifts rather than swings. */
+const HUB = {
+  open:false, raf:0, t0:0, t:0,
+  mx:0, my:0, tx:0, ty:0,                  // pointer, eased
+  hot:null, zoom:null, stars:null, seed:0
+};
+const HUB_SUN = { x:300, y:450, r:92 };
+const HUB_PAR = [10, 26, 54];              // how far each sheet may drift
+
+function hubStars() {
+  if (HUB.stars) return HUB.stars;
+  let sd = 20260830;
+  const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+  const sheets = [];
+  for (let L = 0; L < 3; L++) {
+    const n = [220, 130, 60][L], out = [];
+    for (let i = 0; i < n; i++) {
+      out.push({ x:rnd()*(W + 220) - 110, y:rnd()*(H + 220) - 110,
+                 r:[0.7, 1.1, 1.7][L] + rnd()*[0.5, 0.7, 1.1][L],
+                 a:0.28 + rnd()*[0.3, 0.42, 0.5][L],
+                 tw:rnd()*6.28, ts:0.5 + rnd()*1.6 });
+    }
+    sheets.push(out);
+  }
+  HUB.stars = sheets;
+  return sheets;
+}
+/* where a body sits on its rail */
+function hubPos(v) {
+  if (v.moonOf) {
+    const host = hubPos(worldById(v.moonOf));
+    const a = HUB.t*0.5 + 1.2;
+    return { x:host.x + Math.cos(a)*v.off, y:host.y + Math.sin(a)*v.off*0.7 };
+  }
+  const a = v.ang*Math.PI/180;
+  return { x:HUB_SUN.x + Math.cos(a)*v.ring, y:HUB_SUN.y + Math.sin(a)*v.ring*0.96 };
+}
+function hubAt(x, y) {
+  for (let i = WORLDS.length - 1; i >= 0; i--) {
+    const v = WORLDS[i], p = hubPos(v);
+    if (Math.hypot(p.x - x, p.y - y) <= v.r + 16) return v;
+  }
+  return null;
+}
+
+/* ------------------------------------------------------------ drawing -- */
+function hubDraw(g) {
+  const zoom = HUB.zoom;
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#04060b'; g.fillRect(0, 0, W, H);
+
+  /* the sky, in three sheets */
+  const sheets = hubStars();
+  for (let L = 0; L < 3; L++) {
+    const dx = HUB.mx*HUB_PAR[L], dy = HUB.my*HUB_PAR[L];
+    g.save();
+    for (const s of sheets[L]) {
+      g.globalAlpha = s.a*(0.72 + Math.sin(HUB.t*s.ts + s.tw)*0.28);
+      g.fillStyle = L === 2 ? '#ffffff' : L === 1 ? '#dfe8ff' : '#b9c6e0';
+      g.beginPath(); g.arc(s.x + dx, s.y + dy, s.r, 0, 7); g.fill();
+    }
+    g.restore();
+  }
+
+  g.save();
+  if (zoom) {
+    /* the dive: everything scales about the planet being entered */
+    const k = Math.min(1, zoom.t/0.75);
+    const e = k*k*(3 - 2*k);
+    const p = hubPos(zoom.v);
+    const sc = 1 + e*7;
+    g.translate(p.x, p.y); g.scale(sc, sc); g.translate(-p.x, -p.y);
+    g.globalAlpha = 1 - e*0.35;
+  }
+
+  /* the rails */
+  g.save();
+  g.translate(HUB.mx*4, HUB.my*4);
+  for (const v of WORLDS) {
+    if (v.moonOf) continue;
+    const lit = HUB.hot === v || (HUB.hot && HUB.hot.moonOf === v.id);
+    g.strokeStyle = lit ? 'rgba(255,216,61,.5)' : 'rgba(160,185,225,.16)';
+    g.lineWidth = lit ? 2 : 1.1;
+    g.beginPath(); g.ellipse(HUB_SUN.x, HUB_SUN.y, v.ring, v.ring*0.96, 0, 0, 7); g.stroke();
+  }
+  g.restore();
+
+  /* the sun */
+  g.save();
+  g.translate(HUB.mx*2, HUB.my*2);
+  const pulse = 1 + Math.sin(HUB.t*0.9)*0.02;
+  const cor = g.createRadialGradient(HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*0.6,
+                                     HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*4.2);
+  cor.addColorStop(0, 'rgba(255,190,60,.42)');
+  cor.addColorStop(0.35, 'rgba(255,140,30,.16)');
+  cor.addColorStop(1, 'rgba(255,110,20,0)');
+  g.fillStyle = cor;
+  g.beginPath(); g.arc(HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*4.2, 0, 7); g.fill();
+  const disc = g.createRadialGradient(HUB_SUN.x - HUB_SUN.r*0.3, HUB_SUN.y - HUB_SUN.r*0.34, HUB_SUN.r*0.15,
+                                      HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*pulse);
+  disc.addColorStop(0, '#fff6c8'); disc.addColorStop(0.45, '#ffc428'); disc.addColorStop(1, '#f08a10');
+  g.fillStyle = disc;
+  g.beginPath(); g.arc(HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*pulse, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(255,90,20,.8)'; g.lineWidth = 3;
+  g.beginPath(); g.arc(HUB_SUN.x, HUB_SUN.y, HUB_SUN.r*pulse, 0, 7); g.stroke();
+  /* flares, slow and off-centre so it never looks stamped */
+  g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 9; i++) {
+    const a = i*0.698 + HUB.t*0.12;
+    const len = HUB_SUN.r*(1.06 + Math.abs(Math.sin(HUB.t*0.7 + i))*0.16);
+    g.globalAlpha = 0.22;
+    g.strokeStyle = '#ffcf5a'; g.lineWidth = 7;
+    g.beginPath();
+    g.moveTo(HUB_SUN.x + Math.cos(a)*HUB_SUN.r*0.95, HUB_SUN.y + Math.sin(a)*HUB_SUN.r*0.95);
+    g.lineTo(HUB_SUN.x + Math.cos(a)*len, HUB_SUN.y + Math.sin(a)*len);
+    g.stroke();
+  }
+  g.restore();
+
+  /* the bodies */
+  for (const v of WORLDS) {
+    const p = hubPos(v), open = worldOpen(v), done = advDone(v.id);
+    const hot = HUB.hot === v;
+    const dep = 6 + Math.min(10, v.ring/140);
+    const x = p.x + HUB.mx*dep*0.4, y = p.y + HUB.my*dep*0.4;
+    g.save();
+    /* the glow it sits in */
+    const gl = g.createRadialGradient(x, y, v.r*0.4, x, y, v.r*(hot ? 4.4 : 2.8));
+    gl.addColorStop(0, v.glow);
+    gl.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = hot ? 0.85 : 0.42;
+    g.fillStyle = gl;
+    g.beginPath(); g.arc(x, y, v.r*(hot ? 4.4 : 2.8), 0, 7); g.fill();
+    g.globalAlpha = 1;
+    /* Saturn keeps its ring */
+    if (v.rings) {
+      g.save();
+      g.translate(x, y); g.rotate(-0.35);
+      g.strokeStyle = 'rgba(228,214,150,.75)'; g.lineWidth = 4;
+      g.beginPath(); g.ellipse(0, 0, v.r*2.05, v.r*0.5, 0, 0, 7); g.stroke();
+      g.strokeStyle = 'rgba(228,214,150,.35)'; g.lineWidth = 2;
+      g.beginPath(); g.ellipse(0, 0, v.r*2.5, v.r*0.62, 0, 0, 7); g.stroke();
+      g.restore();
+    }
+    /* the disc, lit from the sun */
+    const ang = Math.atan2(HUB_SUN.y - y, HUB_SUN.x - x);
+    const sg = g.createRadialGradient(x + Math.cos(ang)*v.r*0.42, y + Math.sin(ang)*v.r*0.42,
+                                      v.r*0.12, x, y, v.r);
+    sg.addColorStop(0, v.body); sg.addColorStop(0.62, v.body); sg.addColorStop(1, v.body2);
+    g.fillStyle = sg;
+    g.beginPath(); g.arc(x, y, v.r, 0, 7); g.fill();
+    /* the night side */
+    g.globalAlpha = 0.34;
+    g.fillStyle = '#04060b';
+    g.beginPath();
+    g.arc(x, y, v.r, ang + 1.35, ang - 1.35);
+    g.fill();
+    g.globalAlpha = 1;
+    if (!open) {
+      /* locked: drained of colour, and chained */
+      g.globalAlpha = 0.62;
+      g.fillStyle = '#0a0f16';
+      g.beginPath(); g.arc(x, y, v.r, 0, 7); g.fill();
+      g.globalAlpha = 0.8;
+      g.strokeStyle = '#6c7f8f'; g.lineWidth = 2.6;
+      for (let i = -1; i <= 1; i++) {
+        g.beginPath();
+        g.moveTo(x - v.r*0.95, y + i*v.r*0.5);
+        g.lineTo(x + v.r*0.95, y + i*v.r*0.5);
+        g.stroke();
+      }
+      g.globalAlpha = 1;
+    }
+    /* a ring of light on the one the pointer is over */
+    if (hot) {
+      g.strokeStyle = open ? '#ffd83d' : '#6c7f8f'; g.lineWidth = 2.4;
+      g.setLineDash([7, 6]); g.lineDashOffset = -HUB.t*24;
+      g.beginPath(); g.arc(x, y, v.r + 12, 0, 7); g.stroke();
+      g.setLineDash([]);
+    }
+    /* the shard, once it is yours */
+    if (done) {
+      g.save();
+      g.translate(x + v.r + 10, y - v.r - 8);
+      g.rotate(Math.sin(HUB.t*1.4)*0.16);
+      g.fillStyle = v.shardCol;
+      g.beginPath();
+      g.moveTo(0, -9); g.lineTo(6, 0); g.lineTo(0, 11); g.lineTo(-6, 0);
+      g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(255,255,255,.8)'; g.lineWidth = 1.3; g.stroke();
+      g.restore();
+    }
+    /* the name, small, under everything but the hovered one */
+    g.globalAlpha = hot ? 1 : 0.5;
+    g.textAlign = 'center'; g.textBaseline = 'top';
+    g.font = (hot ? '800 ' : '700 ') + (hot ? 15 : 12) + 'px "Segoe UI", system-ui, sans-serif';
+    g.fillStyle = hot ? (open ? '#ffe9a8' : '#93a2b2') : '#7e8c9c';
+    g.fillText(v.name, x, y + v.r + (v.rings ? 18 : 12));
+    g.restore();
+  }
+  g.restore();
+
+  if (zoom) {
+    /* the white-out at the end of the dive */
+    const k = Math.max(0, (zoom.t - 0.45)/0.4);
+    if (k > 0) {
+      g.save();
+      g.globalAlpha = Math.min(1, k);
+      g.fillStyle = zoom.v.shardCol;
+      g.globalCompositeOperation = 'lighter';
+      g.fillRect(0, 0, W, H);
+      g.restore();
+    }
+  }
+}
+
+function hubFrame(now) {
+  if (!HUB.open) return;
+  HUB.raf = requestAnimationFrame(hubFrame);
+  const cvs = $('hubCv');
+  if (!cvs) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const bw = Math.round(W*dpr), bh = Math.round(H*dpr);
+  if (cvs.width !== bw || cvs.height !== bh) { cvs.width = bw; cvs.height = bh; }
+  const g = cvs.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const t = (now - HUB.t0)/1000;
+  const dt = Math.min(0.05, t - HUB.t);
+  HUB.t = t;
+  /* the sky follows the pointer, but lazily and never all the way */
+  HUB.mx += (HUB.tx - HUB.mx)*Math.min(1, dt*4.5);
+  HUB.my += (HUB.ty - HUB.my)*Math.min(1, dt*4.5);
+  if (HUB.zoom) {
+    HUB.zoom.t += dt;
+    if (HUB.zoom.t >= 0.78 && !HUB.zoom.fired) {
+      HUB.zoom.fired = true;
+      const id = HUB.zoom.v.id;
+      HUB.zoom = null;
+      startWorld(id);
+      return;
+    }
+  }
+  try { hubDraw(g); } finally { ctx = FIELD_CTX; }
+}
+
+/* ------------------------------------------------------------- the UI -- */
+function hubPlate(v) {
+  const el = $('hubPlate');
+  if (!v) { el.classList.remove('on'); return; }
+  const open = worldOpen(v), why = worldWhy(v), done = advDone(v.id);
+  const best = (S.adv && S.adv.best && S.adv.best[v.id]) || 0;
+  el.innerHTML =
+    '<div class="hpTop" style="--pc:' + v.shardCol + '">' +
+      '<span class="nm">' + v.name + '</span>' +
+      '<span class="tg">' + v.tag + '</span>' +
+    '</div>' +
+    '<div class="hpB">' + v.blurb + '</div>' +
+    '<div class="hpRow"><span class="k">Mission</span><b>Hold ' + v.goal + ' waves</b></div>' +
+    '<div class="hpRow"><span class="k">Difficulty</span><b class="dif">' +
+      [1,2,3,4,5,6,7,8].map(i => '<i class="' + (i <= v.diff ? 'on' : '') + '"></i>').join('') +
+    '</b></div>' +
+    '<div class="hpRow"><span class="k">Reward</span><b>' +
+      (done || open ? v.jaxonName : '???') + '</b></div>' +
+    '<div class="hpShard' + (done ? ' got' : '') + '" style="--pc:' + v.shardCol + '">' +
+      '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 1 L19 12 L12 23 L5 12 Z"/></svg>' +
+      '<span>' + v.shard + (done ? ' &middot; recovered' : ' &middot; not yet') + '</span>' +
+    '</div>' +
+    (best ? '<div class="hpRow"><span class="k">Best</span><b>' + fmtTime(best) + '</b></div>' : '') +
+    (open ? '<button class="hpGo" id="hubPlay">Play ' + v.name + '</button>'
+          : '<div class="hpLock">' + why + '</div>');
+  el.classList.add('on');
+  const go = $('hubPlay');
+  if (go) go.onclick = ev => { ev.stopPropagation(); hubEnter(v); };
+}
+function hubEnter(v) {
+  if (!worldOpen(v)) { toast(worldWhy(v)); beep(150, 0.08, 'square', 0.03); return; }
+  if (HUB.zoom) return;
+  HUB.zoom = { v, t:0, fired:false };
+  hubPlate(null);
+  beep(240, 0.7, 'triangle', 0.05, 900);
+}
+function syncHubChrome() {
+  advInit();
+  $('hubShards').textContent = shardCount() + ' / ' + ADV_TARGET;
+}
+function openHub() {
+  advInit();
+  pvStop(); setMenuMood(null); PV.picked = null;
+  $('ovMenu').classList.remove('on');
+  $('ovEnd').classList.remove('on');
+  $('ovHub').classList.add('on');
+  HUB.open = true; HUB.t0 = performance.now(); HUB.t = 0;
+  HUB.hot = null; HUB.zoom = null;
+  hubPlate(null); syncHubChrome();
+  cancelAnimationFrame(HUB.raf);
+  HUB.raf = requestAnimationFrame(hubFrame);
+  beep(520, 0.12, 'triangle', 0.04, 880);
+}
+function closeHub() {
+  HUB.open = false;
+  cancelAnimationFrame(HUB.raf); HUB.raf = 0;
+  $('ovHub').classList.remove('on');
+}
+function hubToMenu() { closeHub(); closeOrb(); showModes(); }
+
+/* --------------------------------------------------------- orb progress - */
+function openOrb() {
+  advInit();
+  const n = shardCount();
+  const wrap = $('orbWrap');
+  wrap.innerHTML =
+    '<div class="stHead"><span class="t">Orb Progress</span>' +
+      '<span class="sub">' + n + ' of ' + ADV_TARGET + ' shards</span>' +
+      '<button class="bkX" id="orbClose" aria-label="Close">&times;</button></div>' +
+    '<div class="orbCube' + (n >= ADV_TARGET ? ' ready' : '') + '">' +
+      '<div class="ocArt">' +
+        '<svg viewBox="0 0 120 120" width="118" height="118" aria-hidden="true">' +
+          '<path class="c1" d="M60 14 L102 38 L102 82 L60 106 L18 82 L18 38 Z"/>' +
+          '<path class="c2" d="M60 14 L102 38 L60 62 L18 38 Z"/>' +
+          '<path class="c3" d="M60 62 L102 38 L102 82 L60 106 Z"/>' +
+        '</svg>' +
+      '</div>' +
+      '<div class="ocTxt">' +
+        '<b>' + (n >= ADV_TARGET ? 'The cube is whole' : 'The cube is in pieces') + '</b>' +
+        '<span>' + (n >= ADV_TARGET
+          ? 'Nine shards, one Orb. The portal will open.'
+          : 'Nine shards assemble it. It opens a portal, and something is waiting on the other side of that.') +
+        '</span>' +
+        '<div class="ocBar"><i style="width:' + Math.round(n/ADV_TARGET*100) + '%"></i></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="orbGrid">' + WORLDS.map(v => {
+      const got = hasShard(v.id);
+      return '<div class="oSlot' + (got ? ' got' : '') + (v.play ? '' : ' soon') +
+             '" style="--pc:' + v.shardCol + '">' +
+        '<div class="osArt"><svg viewBox="0 0 24 24" width="30" height="30">' +
+          '<path d="M12 1 L19 12 L12 23 L5 12 Z"/></svg></div>' +
+        '<div class="osNm">' + v.shard + '</div>' +
+        '<div class="osFrom">' + v.name + '</div>' +
+        '<div class="osSt">' + (got ? 'recovered' : v.play ? 'not yet' : 'coming soon') + '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+  $('ovOrb').classList.add('on');
+  $('orbClose').onclick = closeOrb;
+  beep(660, 0.1, 'triangle', 0.035, 1100);
+}
+function closeOrb() { $('ovOrb').classList.remove('on'); }
 
 function startWave() {
   if (S.phase !== 'build') return;
@@ -6469,9 +7586,16 @@ function salvageLeak(lives) {
   bump('moneyBox','gain'); beep(520, 0.1, 'triangle', 0.03, 760);
 }
 
+/* A world repaints the blobs in its own colours. Same tiers, same rules,
+   a different species walking the trail. */
+function tierOf(n) {
+  const k = Math.max(1, Math.min(MAX_TIER, n));
+  const v = advWorld();
+  return (v && v.tiers && v.tiers[k - 1]) || TIER[k];
+}
 function enemyFill(e) {
   if (e.cust) return e.cust.fill;
-  return e.elite >= 0 ? ELITE[e.elite].fill : TIER[Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)))].fill;
+  return e.elite >= 0 ? ELITE[e.elite].fill : tierOf(Math.ceil(e.hp)).fill;
 }
 /* Whistle's mark, the Director's cut, Lunchbox's snack and the Director's
    crit all just scale whatever damage is passing through. Doing it here means
@@ -8049,6 +9173,7 @@ function update(dt) {
           shakeScreen(S.health <= 0 ? 30 : 7, S.health <= 0 ? 1.6 : 0.4);
           S.lastLeak = eliteOf(e) ? ELITE[e.elite].name
                      : e.cust ? e.cust.name || 'a hand-made blob'
+                     : advWorld() ? advWorld().blob
                      : 'a tier ' + Math.max(1, Math.ceil(e.hp)) + ' blob';
         }
       }
@@ -9410,6 +10535,8 @@ function update(dt) {
     S.floats.push({ x:W/2, y:H/2 - 30, txt:'+$' + (reward + caddy), color:'#ffd83d', life:1.6, big:true });
     S.phase = 'build'; S.autoTimer = BR() ? rushBuild() : 1.4;
     if (BR() && cleared >= RUSH.bosses) { rushEnd(true); return; }
+    /* a world mission is over the moment its wave goal is met */
+    if (AD() && advWorld() && cleared >= advWorld().goal) { advWin(); return; }
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
@@ -9423,7 +10550,8 @@ function update(dt) {
       flashScreen(0.18);
       for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
     } else {
-      banner(BR() ? 'BOSS ' + cleared + ' DOWN' : 'WAVE ' + cleared + ' CLEARED',
+      banner(AD() ? 'WAVE ' + cleared + ' OF ' + (advWorld() ? advWorld().goal : '?')
+             : BR() ? 'BOSS ' + cleared + ' DOWN' : 'WAVE ' + cleared + ' CLEARED',
              BR() ? rushLeft() + ' left \u00b7 next: ' + rushBoss(S.wave).name
                   : '+' + bigCash((reward + caddy)), '#7dffb4');
     }
@@ -9440,6 +10568,27 @@ function update(dt) {
 
 function endGame() {
   const survived = Math.max(0, S.wave - 1), best = Math.max(bestHere(), survived);
+  /* a failed world says which world, and offers the map back */
+  if (AD() && advWorld()) {
+    const v = advWorld();
+    $('endTitle').textContent = v.name.toUpperCase() + ' HELD YOU';
+    $('endText').textContent =
+      'The line broke on wave ' + S.wave + ' of ' + v.goal +
+      (S.lastLeak ? ' — ' + S.lastLeak + ' walked through the nursery door.' : '.') +
+      ' The ' + v.shard + ' is still down there.';
+    $('scoreRow').innerHTML =
+      '<div><div class="k">Waves held</div><div class="v">' + survived + ' / ' + v.goal + '</div></div>' +
+      '<div><div class="k">Best here</div><div class="v">' + best + '</div></div>' +
+      '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+      '<div><div class="k">Shards</div><div class="v">' + shardCount() + ' / ' + ADV_TARGET + '</div></div>';
+    $('endModes').textContent = 'Back to the solar map';
+    $('ovEnd').classList.add('on');
+    setShop(false); hideTip();
+    beep(160, 0.5, 'sawtooth', 0.06, 60);
+    syncHUD();
+    return;
+  }
+  $('endModes').textContent = 'Change gamemode';
   const isBest = survived > S.bestAtStart && !SB();
   $('endTitle').textContent = 'NURSERY OVERRUN';
   $('endText').textContent =
@@ -10503,10 +11652,12 @@ function drawField() {
   const v = viewBox();
   if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) { makePark(); drawPark(v); drawPlots(); }
   if (S.omen) drawOmen();                        // out past the lawn, walking in
-  ctx.fillStyle = grassPattern || '#009242'; ctx.fillRect(0, 0, W, H);
-  const vg = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.36)');
-  ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  if (!drawWorldGround()) {
+    ctx.fillStyle = grassPattern || '#009242'; ctx.fillRect(0, 0, W, H);
+    const vg = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.36)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  }
   if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) {   // where the lawn ends
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 3/Math.max(0.35, S.cam.z);
@@ -10515,22 +11666,26 @@ function drawField() {
   }
 
   ctx.save();
-  ctx.strokeStyle = 'rgba(0,0,0,.28)'; tracePath(PATH_W + 13);
-  ctx.strokeStyle = '#6d3f03';         tracePath(PATH_W + 5);
-  ctx.strokeStyle = '#a05f05';         tracePath(PATH_W);      // original pen colour
-  ctx.strokeStyle = 'rgba(255,255,255,.055)'; tracePath(PATH_W - 18);
+  const trail = (advWorld() && WORLD_TRAIL[advWorld().sky]) ||
+                ['rgba(0,0,0,.28)', '#6d3f03', '#a05f05', 'rgba(255,255,255,.055)'];
+  ctx.strokeStyle = trail[0]; tracePath(PATH_W + 13);
+  ctx.strokeStyle = trail[1]; tracePath(PATH_W + 5);
+  ctx.strokeStyle = trail[2]; tracePath(PATH_W);      // original pen colour
+  ctx.strokeStyle = trail[3]; tracePath(PATH_W - 18);
   ctx.restore();
 
   ctx.save();
   ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 4;
   ctx.setLineDash([7,7]); ctx.lineDashOffset = -S.t*18;
-  ctx.beginPath(); ctx.moveTo(6, 180-23); ctx.lineTo(6, 180+23); ctx.stroke();
+  const sy0 = (S.pathPts && S.pathPts[0] ? S.pathPts[0][1] : 180);
+  ctx.beginPath(); ctx.moveTo(6, sy0-23); ctx.lineTo(6, sy0+23); ctx.stroke();
   ctx.setLineDash([]);
   ctx.font = '800 12px "Segoe UI", system-ui, sans-serif'; ctx.textAlign = 'left';
   ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(255,255,255,.5)';
-  ctx.fillText('SPAWN', 16, 180 - 50);
+  ctx.fillText('SPAWN', 16, sy0 - 50);
 
-  const gx = W - 48, gy = 840;
+  const gx = W - 48, gy = (S.pathPts && S.pathPts.length
+                           ? S.pathPts[S.pathPts.length - 1][1] : 840);
   ctx.fillStyle = '#f4f6fa';
   ctx.beginPath(); ctx.moveTo(gx-6, gy-46); ctx.lineTo(W, gy-46); ctx.lineTo(W, gy+46); ctx.lineTo(gx-6, gy+46);
   ctx.closePath(); ctx.fill();
@@ -10672,7 +11827,7 @@ function drawEnemy(e) {
   const el = cu ? (cu.look === 'armour' ? cu : null) : eliteOf(e);
   const p = enemyPos(e);
   const tier = Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)));
-  const T = cu || (el ? el : TIER[tier]);
+  const T = cu || (el ? el : tierOf(tier));
   const lean = S.perf;
   const x = p.x, y = p.y + (lean ? 0 : Math.sin(S.t*6 + e.wob)*2.2), r = eRad(e)*(1 + e.hit*0.16);
   ctx.save();
@@ -11915,6 +13070,28 @@ function drawShot(s) {
 
     case 'laser':
       ctx.rotate(s.a); orb('#ffd24a', '#ff3a12', 22, true); break;
+
+    case 'ember':
+      /* a chip of the crust, still glowing */
+      ctx.rotate(s.a); orb('#fff0c0', '#c93a08', 20, true);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(255,140,40,.55)';
+      for (let i = 1; i <= 2; i++) {
+        ctx.beginPath(); ctx.arc(-i*9, Math.sin(S.t*24 + i)*2.5, 6 - i*1.6, 0, 7); ctx.fill();
+      }
+      break;
+
+    case 'acid':
+      /* a bead of the air down there, and it is dripping */
+      ctx.rotate(s.a); orb('#e8ffb0', '#4a7a12', 24, true);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(180,220,90,.5)';
+      for (let i = 0; i < 3; i++) {
+        const a2 = S.t*5 + i*2.1;
+        ctx.beginPath();
+        ctx.arc(Math.cos(a2)*11, Math.sin(a2)*7, 3.4, 0, 7); ctx.fill();
+      }
+      break;
 
     case 'rainbow':
       ctx.rotate(s.a);
@@ -14034,6 +15211,8 @@ window.addEventListener('keydown', ev => {
     if (ev.key === 'ArrowLeft')  { bookGo(BOOK.page - 1); return; }
     return;                                   // the book has the keyboard
   }
+  if ($('ovOrb').classList.contains('on')) { if (ev.key === 'Escape') closeOrb(); return; }
+  if (HUB.open) { if (ev.key === 'Escape') hubToMenu(); return; }
   if (ev.key === 'Escape') {
     if (S.paused) { setPause(false); return; }
     if ($('sbAsc').classList.contains('on')) { closeSbAsc(); return; }
@@ -14194,7 +15373,46 @@ $('playBtn').onclick = () => {
   beep(h.hidden ? 420 : 700, 0.06, 'triangle', 0.03);
 };
 $('againBtn').onclick = () => { $('ovEnd').classList.remove('on'); startMode(S.mode); };
-$('endModes').onclick = showModes;
+$('endModes').onclick = () => {
+  /* a world sends you back to the map it came off, not to the mode list */
+  if (AD()) { $('ovEnd').classList.remove('on'); openHub(); return; }
+  showModes();
+};
+$('hubBack').onclick = hubToMenu;
+$('hubOrb').onclick = openOrb;
+$('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') closeOrb(); });
+/* the map: the pointer moves the sky, hovers a world, and picks one */
+(function () {
+  const cvs = $('hubCv');
+  const at = ev => {
+    const r = cvs.getBoundingClientRect();
+    return { x:(ev.clientX - r.left)/(r.width || W)*W, y:(ev.clientY - r.top)/(r.height || H)*H };
+  };
+  cvs.addEventListener('pointermove', ev => {
+    if (!HUB.open) return;
+    const p = at(ev);
+    /* the sky drifts with the pointer, and never more than a nudge */
+    HUB.tx = Math.max(-1, Math.min(1, (p.x - W/2)/(W/2)));
+    HUB.ty = Math.max(-1, Math.min(1, (p.y - H/2)/(H/2)));
+    const v = hubAt(p.x, p.y);
+    if (v !== HUB.hot) {
+      HUB.hot = v;
+      hubPlate(v);
+      if (v) beep(760, 0.04, 'triangle', 0.018, 1000);
+    }
+    cvs.style.cursor = v ? 'pointer' : 'default';
+  });
+  cvs.addEventListener('pointerleave', () => { HUB.tx = 0; HUB.ty = 0; });
+  cvs.addEventListener('pointerdown', ev => {
+    if (!HUB.open) return;
+    const p = at(ev);
+    const v = hubAt(p.x, p.y);
+    if (!v) { HUB.hot = null; hubPlate(null); return; }
+    /* touch has no hover, so the first tap reads the world and the second plays it */
+    if (HUB.hot !== v) { HUB.hot = v; hubPlate(v); beep(760, 0.05, 'triangle', 0.026, 1000); return; }
+    hubEnter(v);
+  });
+})();
 $('pauseBtn').onclick = () => setPause(!S.paused);
 $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); };
 $('bookBtn').onclick = () => openBook('menu');
@@ -15578,6 +16796,123 @@ const GUIDE = [
     if (on === 3) pvRainfall(g, w, h, t, 0.22);
   } },
 
+{ ch:'Adventure', title:'Nine worlds, one Orb',
+  text:'<b>Adventure</b> sits to the right of the difficulties on the front page. It is a campaign, not a fifth difficulty — the endless modes are exactly where they were.<br><br>Inside is the <b>solar map</b>: a sun, nine rails and nine bodies. Each world holds one <b>shard</b>. Nine shards assemble the cube, the cube opens a portal, and something is standing on the other side of it waiting for you.<br><br>Hover or tap a world for its mission, its difficulty and the Jaxon it hands over. <b>Orb Progress</b>, top right, shows every shard slot and how close the cube is.<br><br><b>Mercury</b> and <b>Venus</b> are open. The other seven are on their rails with their names showing and their missions still to come.',
+  art:(g, w, h, t) => {
+    const p = frac(t/6);
+    g.fillStyle = '#04060b'; g.fillRect(0, 0, w, h);
+    for (let i = 0; i < 40; i++) {
+      const sx = frac(i*0.3719)*w, sy = frac(i*0.6317 + 0.2)*h;
+      g.globalAlpha = 0.25 + Math.abs(Math.sin(t + i))*0.4;
+      g.fillStyle = '#cfd8ee';
+      g.beginPath(); g.arc(sx, sy, i % 4 ? 0.8 : 1.4, 0, 7); g.fill();
+    }
+    g.globalAlpha = 1;
+    const sx = w*0.16, sy = h*0.54;
+    /* the rails */
+    g.strokeStyle = 'rgba(160,185,225,.2)'; g.lineWidth = 1;
+    const RING = [0.16, 0.25, 0.35, 0.46, 0.58, 0.70, 0.83, 0.96];
+    for (const r of RING) {
+      g.beginPath(); g.ellipse(sx, sy, w*r, w*r*0.94, 0, 0, 7); g.stroke();
+    }
+    /* the sun */
+    const cor = g.createRadialGradient(sx, sy, w*0.02, sx, sy, w*0.16);
+    cor.addColorStop(0, 'rgba(255,200,70,.5)'); cor.addColorStop(1, 'rgba(255,120,20,0)');
+    g.fillStyle = cor; g.beginPath(); g.arc(sx, sy, w*0.16, 0, 7); g.fill();
+    const sd = g.createRadialGradient(sx - 5, sy - 6, 2, sx, sy, w*0.055);
+    sd.addColorStop(0, '#fff6c8'); sd.addColorStop(0.5, '#ffc428'); sd.addColorStop(1, '#f08a10');
+    g.fillStyle = sd; g.beginPath(); g.arc(sx, sy, w*0.055, 0, 7); g.fill();
+    /* the bodies, the first two lit and the rest chained */
+    const COL = ['#a08b7c','#e0b366','#3f7fd0','#c1502a','#c9a184','#d8c878','#6fd8e8','#3a6fd8'];
+    const ANG = [-0.4, 0.3, -0.15, 0.2, -0.3, 0.1, -0.08, -0.35];
+    RING.forEach((r, i) => {
+      const a = ANG[i], x = sx + Math.cos(a)*w*r, y = sy + Math.sin(a)*w*r*0.94;
+      const rr = [4, 5, 5.5, 5, 8, 7, 6, 6][i];
+      const open = i < 2;
+      g.fillStyle = open ? COL[i] : '#25303c';
+      g.beginPath(); g.arc(x, y, rr, 0, 7); g.fill();
+      if (open) {
+        g.globalAlpha = 0.4 + Math.sin(t*2 + i)*0.2;
+        g.strokeStyle = COL[i]; g.lineWidth = 1.6;
+        g.beginPath(); g.arc(x, y, rr + 5, 0, 7); g.stroke();
+        g.globalAlpha = 1;
+      } else {
+        g.strokeStyle = '#4a5460'; g.lineWidth = 1.4;
+        g.beginPath(); g.moveTo(x - rr, y); g.lineTo(x + rr, y); g.stroke();
+      }
+    });
+    /* the shard counter filling as the loop runs */
+    const got = Math.floor(p*3);
+    gbPanel(g, w*0.66, h*0.06, w*0.3, h*0.2, 9);
+    gbText(g, 'SHARDS', w*0.69, h*0.12, 8, '#7e8c9c', 'left', 700);
+    gbText(g, got + ' / 9', w*0.93, h*0.13, 15, '#ffd83d', 'right');
+    for (let i = 0; i < 9; i++) {
+      const x = w*0.69 + i*(w*0.026), y = h*0.205;
+      g.fillStyle = i < got ? '#ffd83d' : 'rgba(255,255,255,.12)';
+      g.beginPath();
+      g.moveTo(x, y - 5); g.lineTo(x + 3.4, y); g.lineTo(x, y + 6); g.lineTo(x - 3.4, y);
+      g.closePath(); g.fill();
+    }
+  } },
+
+{ ch:'Adventure', title:'Mercury and Venus',
+  text:'A world mission is not endless. It has its own <b>path</b>, its own <b>sky</b>, its own blobs, and a wave goal — hold to that wave and it is yours.<br><br><b>Mercury</b> is bare rock a step from the fire: a short, hard track and everything on it moves fast. Twenty waves. It pays the <b>Ember Shard</b> and the <b>Mercury Jaxon</b> — an ember every 0.16s that leaves whatever it touches burning.<br><br><b>Venus</b> is an ocean of acid air, and it wants Mercury cleared first. A far longer track, fewer but nastier blobs, and thirty waves of it. It pays the <b>Vapour Shard</b> and the <b>Venus Jaxon</b>, who throws a globe of that air for heavy splash and leaves the survivors crawling.<br><br>Both Jaxons are <b>permanent</b>. Once a world is cleared they are on the shelf under <b>Adventure</b>, in every mode, forever.',
+  art:(g, w, h, t) => {
+    const p = frac(t/5);
+    /* two worlds side by side, each with its own ground and its own track */
+    const half = w/2;
+    /* mercury */
+    let gr = g.createLinearGradient(0, 0, 0, h);
+    gr.addColorStop(0, '#5c4b42'); gr.addColorStop(1, '#2a211d');
+    g.fillStyle = gr; g.fillRect(0, 0, half - 1, h);
+    g.save();
+    g.strokeStyle = '#5e4a3c'; g.lineWidth = 9; g.lineCap = 'round';
+    g.beginPath();
+    g.moveTo(0, h*0.28); g.lineTo(half*0.78, h*0.28);
+    g.lineTo(half*0.78, h*0.56); g.lineTo(half*0.2, h*0.56);
+    g.lineTo(half*0.2, h*0.82); g.lineTo(half, h*0.82);
+    g.stroke();
+    g.restore();
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p*1.6 + i/3);
+      g.fillStyle = ['#e0603a','#ef8a3c','#f5c24a'][i];
+      g.beginPath(); g.arc(u*half*0.78, h*0.28, 5, 0, 7); g.fill();
+    }
+    gbText(g, 'MERCURY', half*0.5, h*0.1, 11, '#ff9a2e', 'center');
+    gbText(g, '20 waves', half*0.5, h*0.94, 9, '#a89a90', 'center', 700);
+    /* venus */
+    gr = g.createLinearGradient(half, 0, half, h);
+    gr.addColorStop(0, '#8a5a12'); gr.addColorStop(0.5, '#b07f22'); gr.addColorStop(1, '#6a4208');
+    g.fillStyle = gr; g.fillRect(half + 1, 0, half, h);
+    g.save();
+    g.beginPath(); g.rect(half + 1, 0, half, h); g.clip();
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 4; i++) {
+      const y = ((i*40 + t*14) % (h + 60)) - 30;
+      g.fillStyle = 'rgba(255,220,150,.07)';
+      g.fillRect(half, y - 12, half, 24);
+    }
+    g.globalCompositeOperation = 'source-over';
+    g.strokeStyle = '#8a5a12'; g.lineWidth = 9; g.lineCap = 'round';
+    g.beginPath();
+    g.moveTo(half, h*0.86); g.lineTo(w*0.94, h*0.86);
+    g.lineTo(w*0.94, h*0.66); g.lineTo(half + half*0.12, h*0.66);
+    g.lineTo(half + half*0.12, h*0.44); g.lineTo(w*0.96, h*0.44);
+    g.lineTo(w*0.96, h*0.24); g.lineTo(half + half*0.08, h*0.24);
+    g.stroke();
+    for (let i = 0; i < 3; i++) {
+      const u = frac(p*1.1 + i/3);
+      g.fillStyle = ['#f0d070','#b8d06a','#8fbf5a'][i];
+      g.beginPath(); g.arc(half + u*half*0.9, h*0.86, 6, 0, 7); g.fill();
+    }
+    g.restore();
+    gbText(g, 'VENUS', half*1.5, h*0.1, 11, '#ffd83d', 'center');
+    gbText(g, '30 waves', half*1.5, h*0.94, 9, '#e8d0a0', 'center', 700);
+    /* the two Jaxons they hand over */
+    pvJaxon(g, 'mercury', half*0.5, h*0.9, h*0.4, false);
+    pvJaxon(g, 'venus',   half*1.5, h*0.9, h*0.42, false);
+  } },
+
 { ch:'Boss Rush', title:'Twenty bosses, nothing else',
   text:'<b>Boss Rush</b> is the whole ladder with the blobs taken out. Twenty waves, and wave <b>N</b> is the main game’s wave <b>N&times;10</b> boss — wave 1 is the Wave 10 Boss, wave 20 is the Godspeed Horizon.<br><br>No trash, no elites, no filler. Every boss keeps its real name, art, health, speed and signature mechanic, so the Static Sovereign still jams your line and the Iron Nursery still arrives in plates.<br><br>You start with <b>$22k</b> and there is no wave-clear money, because there are no waves to clear. Beating a boss is the only thing that pays: about <b>$1.5k</b> for the first and <b>$90k</b> for the last, so the early fights are lean and the last third can afford serious hardware.<br><br>Between fights you get about <b>16 seconds</b> to build, counting down on the wave chip. Press <b>Start</b> to go early. Turn Auto-Skip on and the gap drops to under two seconds.<br><br>Beat all twenty to win. One leak too many and it is over — and with <b>One Life</b> on, one leak is too many.',
   art:(g, w, h, t) => {
@@ -16048,6 +17383,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
