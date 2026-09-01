@@ -550,28 +550,120 @@
     background:rgba(255,255,255,.04);border-color:var(--line);color:#6a7684;cursor:not-allowed;
   }
   /* --------------------------------------------------- adventure menu --- */
-  #modeRow{display:flex;align-items:stretch;gap:14px;width:min(1480px,100%)}
-  #modeRow > #modeGrid{flex:1 1 auto;width:auto}
-  .mDiv{flex:none;width:1px;align-self:stretch;
-        background:linear-gradient(180deg,transparent,rgba(255,255,255,.22),transparent)}
-  #advCol{flex:none;width:216px;display:flex;flex-direction:column;gap:7px}
-  .acLab{
-    font-size:10px;font-weight:800;letter-spacing:2.4px;text-transform:uppercase;
-    color:#9b7fd0;text-align:center;
+  #modeRow{
+    display:flex;align-items:stretch;justify-content:center;gap:26px;
+    width:min(1420px,100%);
   }
+  .mDiv{flex:none;width:1px;align-self:stretch;
+        background:linear-gradient(180deg,transparent,rgba(255,255,255,.2),transparent)}
+  .sideLab{
+    font-size:10px;font-weight:800;letter-spacing:3px;text-transform:uppercase;
+    color:#6c7f8f;text-align:center;margin-bottom:9px;
+  }
+  #advSide{flex:1 1 0;min-width:0;display:flex;flex-direction:column;max-width:660px}
+  #advSide .sideLab{color:#a98fdd}
+  #classicSide{flex:0 0 420px;display:flex;flex-direction:column}
   #advCard{flex:1;display:flex}
+
+  /* the headline card, at the size a headline deserves */
   #advCard .mcard{
-    flex:1;filter:saturate(.24) brightness(.82);transition:filter .22s,transform .18s,box-shadow .18s,border-color .18s;
+    flex:1;padding:0;border-radius:22px;overflow:hidden;
+    border-color:rgba(192,139,255,.4);
+    background:linear-gradient(180deg,rgba(26,16,44,.9),rgba(8,5,18,.96));
+    box-shadow:0 14px 36px rgba(0,0,0,.55),0 0 0 1px rgba(192,139,255,.14);
+  }
+  #advCard .mcard .art{
+    height:auto;flex:1;min-height:0;border-radius:0;border:none;border-bottom:1px solid rgba(192,139,255,.22);
+  }
+  #advCard .mcard .mtop{padding:13px 18px 0}
+  #advCard .mcard .mn{font-size:27px;letter-spacing:1.6px;color:#f0e4ff;
+                      text-shadow:0 0 26px rgba(150,90,255,.55)}
+  #advCard .mcard .mb{padding:0 18px;font-size:12.5px;line-height:1.5;max-width:none}
+  #advCard .mcard .mfoot{padding:9px 18px 15px}
+  #advCard .mcard .mfoot .best{font-size:11.5px}
+  #advCard .mcard .mfoot .go{
+    color:#100418;background:linear-gradient(180deg,#e8d0ff,#c08bff);
+    border-radius:999px;padding:8px 20px;font-weight:900;font-size:12.5px;
+    box-shadow:0 8px 20px rgba(150,90,255,.4);
+  }
+  #advCard .mcard .pips .freeform{
+    font-size:11px;font-weight:900;color:#ffd83d;background:rgba(255,216,61,.12);
+    border:1px solid rgba(255,216,61,.34);border-radius:999px;padding:3px 11px;letter-spacing:.6px;
   }
   #advCard .mcard:hover,#advCard .mcard:focus-visible{
-    filter:none;box-shadow:0 16px 40px rgba(0,0,0,.6),0 0 0 2px rgba(192,139,255,.5),
-                           0 0 44px rgba(150,80,255,.42);
+    transform:translateY(-5px);
+    box-shadow:0 26px 60px rgba(0,0,0,.65),0 0 0 2px rgba(192,139,255,.6),
+               0 0 70px rgba(150,80,255,.4);
   }
-  #advCard .mcard .mfoot .go{color:#e8d0ff}
-  body.mobile #modeRow{flex-direction:column;align-items:center}
+  /* it breathes on its own so the eye finds it first */
+  #advCard .mcard::after{
+    content:'';position:absolute;inset:-2px;border-radius:24px;pointer-events:none;
+    box-shadow:0 0 0 1px rgba(192,139,255,.4);
+    animation:advPulse 3.4s ease-in-out infinite;
+  }
+  @keyframes advPulse{
+    0%,100%{opacity:.35;box-shadow:0 0 22px 2px rgba(150,80,255,.22)}
+    50%    {opacity:1;  box-shadow:0 0 44px 6px rgba(150,80,255,.45)}
+  }
+  @media (prefers-reduced-motion: reduce){ #advCard .mcard::after{animation:none} }
+
+  /* ------------------------------------------------------ the classic wheel
+     Closed it is one button. Open, the six cards fly out along a ring
+     around it, each a beat behind the last. */
+  #classicDock{position:relative;flex:1;display:flex;align-items:center;justify-content:center;
+               min-height:calc(var(--artH,112px) * 4.6)}
+  #classicBtn{
+    position:relative;z-index:2;width:186px;height:186px;border-radius:50%;cursor:pointer;
+    border:1px solid rgba(255,255,255,.16);font:inherit;color:inherit;
+    background:radial-gradient(circle at 40% 32%,rgba(38,50,66,.96),rgba(8,12,18,.98));
+    box-shadow:0 16px 40px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.08);
+    transition:transform .25s cubic-bezier(.2,1.3,.4,1),box-shadow .22s,border-color .22s;
+    display:flex;align-items:center;justify-content:center;
+  }
+  #classicBtn:hover{transform:scale(1.05);border-color:#ffd83d;
+                    box-shadow:0 20px 48px rgba(0,0,0,.68),0 0 46px rgba(255,216,61,.28)}
+  #classicBtn .cbRing{
+    position:absolute;inset:9px;border-radius:50%;pointer-events:none;
+    border:1px dashed rgba(255,255,255,.2);
+    transition:transform .5s cubic-bezier(.2,1,.4,1),opacity .3s,border-color .3s;
+  }
+  #classicBtn:hover .cbRing{border-color:rgba(255,216,61,.5);transform:rotate(28deg)}
+  #classicBtn .cbInner{display:flex;flex-direction:column;align-items:center;gap:5px}
+  #classicBtn .cbNm{font-size:19px;font-weight:900;letter-spacing:3.4px;color:#e6ecf4}
+  #classicBtn .cbSub{font-size:10px;font-weight:800;letter-spacing:2px;color:#7e8c9c}
+  #classicDock.open #classicBtn{transform:scale(.72);border-color:rgba(255,216,61,.55)}
+  #classicDock.open #classicBtn .cbRing{transform:rotate(180deg);opacity:.5}
+  #classicDock.open #classicBtn .cbNm{font-size:15px}
+
+  #modeGrid{
+    position:absolute;left:50%;top:50%;width:0;height:0;z-index:3;
+    pointer-events:none;
+  }
+  #modeGrid .mcard{
+    position:absolute;width:158px;left:-79px;top:-96px;
+    transform:translate(0,0) scale(.28);opacity:0;pointer-events:none;
+    transition:transform .42s cubic-bezier(.2,1.25,.35,1),opacity .26s;
+    transition-delay:calc(var(--i) * 26ms);
+  }
+  #classicDock.open #modeGrid{pointer-events:auto}
+  #classicDock.open #modeGrid .mcard{
+    transform:translate(var(--wx),var(--wy)) scale(1);opacity:1;pointer-events:auto;
+  }
+  #modeGrid .mcard .art{height:calc(var(--artH,112px) * 0.6)}
+  #modeGrid .mcard .mb{display:none}
+  #modeGrid .mcard .mn{font-size:13px}
+  @media (prefers-reduced-motion: reduce){
+    #modeGrid .mcard{transition:opacity .18s}
+  }
+
+  body.mobile #modeRow{flex-direction:column;align-items:center;gap:14px}
   body.mobile .mDiv{width:100%;height:1px;
-        background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent)}
-  body.mobile #advCol{width:min(760px,100%)}
+        background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent)}
+  body.mobile #advSide{width:min(880px,100%);max-width:none}
+  body.mobile #classicSide{flex:none;width:min(880px,100%)}
+  body.mobile #classicDock{min-height:420px}
+  body.mobile #classicBtn{width:220px;height:220px}
+  body.mobile #modeGrid .mcard{width:196px;left:-98px;top:-116px}
 
   /* ------------------------------------------------------ the solar map - */
   #ovHub{padding:0;gap:0;background:#04060b;display:none}
@@ -1865,11 +1957,23 @@
       <div class="cast" id="menuCast"></div>
       <p id="menuSub">Forty-odd Jaxons, a boss every tenth wave, a colossus in the rain &mdash; and nine worlds with a shard of the Orb on each. Pick your fight.</p>
       <div id="modeRow">
-        <div id="modeGrid"></div>
-        <div class="mDiv" aria-hidden="true"></div>
-        <div id="advCol">
-          <div class="acLab">Adventure</div>
+        <div id="advSide">
+          <div class="sideLab">The campaign</div>
           <div id="advCard"></div>
+        </div>
+        <div class="mDiv" aria-hidden="true"></div>
+        <div id="classicSide">
+          <div class="sideLab">Everything else</div>
+          <div id="classicDock">
+            <button id="classicBtn" aria-expanded="false" aria-controls="modeGrid">
+              <span class="cbRing" aria-hidden="true"></span>
+              <span class="cbInner">
+                <span class="cbNm">CLASSIC</span>
+                <span class="cbSub">6 modes</span>
+              </span>
+            </button>
+            <div id="modeGrid" role="group" aria-label="Classic modes"></div>
+          </div>
         </div>
       </div>
       <div id="chalRow"></div>
@@ -1958,7 +2062,8 @@
         <button id="pmStats">Stats</button>
         <button id="pmBook">Guidebook</button>
         <button id="pmSettings">Settings</button>
-        <button id="pmRestart">Restart run</button>
+        <button id="pmSaveQuit">Save &amp; quit to the map</button>
+      <button id="pmRestart">Restart run</button>
         <button class="warn" id="pmQuit">Main menu</button>
       </div>
     </div>
@@ -4492,7 +4597,7 @@ function loadImages(done) {
 /* ------------------------------------------------------------- config ---- */
 const W = 1600, H = 900;
 /* A much longer serpentine than the original three-turn trail. */
-const PATH = [[0,180],[1400,180],[1400,345],[200,345],[200,510],[1440,510],[1440,675],[160,675],[160,840],[1600,840]];
+const PATH = [[0,120],[1400,120],[1400,285],[200,285],[200,450],[1440,450],[1440,615],[160,615],[160,780],[1600,780]];
 const PATH_W = 46;          // slimmer trail => wider grass strips between the lanes
 
 /* --------------------------------------------------------- gamemodes ----
@@ -4671,22 +4776,22 @@ const MAX_TIER = 7, E_R = 22;
    order, so keep it sorted. Abilities are deliberately flags-and-timers:
    nothing here allocates, spawns, or draws extra per frame. */
 const ELITE = [
-  { key:'steel',    from:12, hp:60,   fill:'#95a6bb', edge:'#3a4757', text:'#0e1620', leak:8,  r:30, spd:132 },
+  { name:'Steel Blob', key:'steel',    from:12, hp:60,   fill:'#95a6bb', edge:'#3a4757', text:'#0e1620', leak:8,  r:30, spd:132 },
   { key:'sprinter', from:16, hp:70,   fill:'#ffd23d', edge:'#8a6200', text:'#241f00', leak:6,  r:24, spd:236,
-                    ability:'sprint', label:'Sprinter' },
-  { key:'cobalt',   from:20, hp:150,  fill:'#3f7fe0', edge:'#153468', text:'#eaf4ff', leak:12, r:33, spd:122 },
+                    ability:'sprint', label:'Sprinter', name:'Sprinter' },
+  { name:'Cobalt Blob', key:'cobalt',   from:20, hp:150,  fill:'#3f7fe0', edge:'#153468', text:'#eaf4ff', leak:12, r:33, spd:122 },
   { key:'tank',     from:24, hp:900,  fill:'#7a6a4a', edge:'#2e2513', text:'#ffeccc', leak:32, r:46, spd:62,
-                    ability:'tank', label:'Tank' },
-  { key:'obsidian', from:28, hp:400,  fill:'#42356b', edge:'#150f26', text:'#e8dcff', leak:18, r:36, spd:112 },
+                    ability:'tank', label:'Tank', name:'Tank' },
+  { name:'Obsidian Blob', key:'obsidian', from:28, hp:400,  fill:'#42356b', edge:'#150f26', text:'#e8dcff', leak:18, r:36, spd:112 },
   { key:'shielded', from:30, hp:520,  fill:'#2f9ea8', edge:'#0d454b', text:'#e6ffff', leak:20, r:35, spd:106,
-                    ability:'shield', armour:38, label:'Shielded' },
-  { key:'titanium', from:36, hp:1000, fill:'#eef3f9', edge:'#79879a', text:'#1a2330', leak:26, r:40, spd:102 },
+                    ability:'shield', armour:38, label:'Shielded', name:'Shielded Blob' },
+  { name:'Titanium Blob', key:'titanium', from:36, hp:1000, fill:'#eef3f9', edge:'#79879a', text:'#1a2330', leak:26, r:40, spd:102 },
   { key:'jammer',   from:38, hp:760,  fill:'#c86ad8', edge:'#4a1257', text:'#ffe6ff', leak:22, r:36, spd:104,
-                    ability:'jam', jamR:230, jamCd:3.2, label:'Jammer' },
+                    ability:'jam', jamR:230, jamCd:3.2, label:'Jammer', name:'Jammer' },
   { key:'healer',   from:44, hp:900,  fill:'#4fd07a', edge:'#125a2c', text:'#e8ffee', leak:22, r:35, spd:98,
-                    ability:'heal', healR:200, healCd:1.6, label:'Healer' },
+                    ability:'heal', healR:200, healCd:1.6, label:'Healer', name:'Healer' },
   { key:'husk',     from:52, hp:4200, fill:'#3a1418', edge:'#120507', text:'#ffdada', leak:44, r:58, spd:80,
-                    ability:'husk', label:'Ex-boss husk' }
+                    ability:'husk', label:'Ex-boss husk', name:'an ex-boss husk' }
 ];
 /* Armour thickens every wave it survives, so the expensive Jaxons keep
    having something worth shooting at. */
@@ -4695,22 +4800,42 @@ const ARMOUR_GROWTH = 1.045;
 const eliteFrom = i => Math.max(2, ELITE[i].from + M().eliteShift);
 const eliteHp = (i, wave) =>
   Math.round(ELITE[i].hp * M().eliteHp * Math.pow(ARMOUR_GROWTH, Math.max(0, wave - eliteFrom(i))));
-const eliteOf = e => (e.elite >= 0 ? ELITE[e.elite] : null);
+/* the elite as this world dresses it, falling back to the ladder's own */
+function eliteAt(i) {
+  const v = advWorld();
+  return (v && v.eliteAt && v.eliteAt[i]) || ELITE[i];
+}
+const eliteOf = e => (e.elite >= 0 ? eliteAt(e.elite) : null);
+/* and the name of whatever just walked through the door */
+function mobName(e) {
+  if (e.cust) return e.cust.name || 'a hand-made blob';
+  if (e.elite >= 0) return eliteAt(e.elite).name || eliteAt(e.elite).label || 'an elite';
+  const v = advWorld();
+  const t = Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp)));
+  if (v && v.mobs) return 'a ' + v.mobs[t - 1].n;
+  return 'a tier ' + t + ' blob';
+}
 const eLeak  = e => Math.max(1, Math.round((e.leakN !== undefined ? e.leakN
-                                          : e.elite >= 0 ? ELITE[e.elite].leak
+                                          : e.elite >= 0 ? eliteAt(e.elite).leak
                                                          : Math.max(1, Math.ceil(e.hp))) * M().leak));
+const mobMod = (e, k) => {
+  const v = advWorld();
+  if (!v || !v.mobs) return 1;
+  return v.mobs[Math.max(1, Math.min(MAX_TIER, Math.ceil(e.hp))) - 1][k];
+};
 const eSpeed = e => (e.spd !== undefined ? e.spd
-                   : e.elite >= 0 ? ELITE[e.elite].spd : WAVE_SPEED / (Math.max(1, e.hp) + 5))
+                   : e.elite >= 0 ? eliteAt(e.elite).spd
+                   : WAVE_SPEED / (Math.max(1, e.hp) + 5) * mobMod(e, 's'))
                     * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
                     * (e.haste || 1);
-const eRad   = e => (e.cust ? e.cust.r : e.elite >= 0 ? ELITE[e.elite].r : E_R);
-const eAbility = e => (e.elite >= 0 ? ELITE[e.elite].ability : null);
+const eRad   = e => (e.cust ? e.cust.r : e.elite >= 0 ? eliteAt(e.elite).r : E_R*mobMod(e, 'r'));
+const eAbility = e => (e.elite >= 0 ? eliteAt(e.elite).ability : null);
 
 /* ---------------------------------------------------- enemy abilities ----
    Only the Jammer and the Healer actually run code, and both are on a
    multi-second timer, so a screen full of them costs almost nothing. */
 function enemyAbility(e, ab) {
-  const p = enemyPos(e), el = ELITE[e.elite];
+  const p = enemyPos(e), el = eliteAt(e.elite);
   if (ab === 'jam') {                       // slows nearby Jaxons, never silences them
     for (const t of S.towers) {
       if (Math.hypot(t.x - p.x, t.y - p.y) <= el.jamR) t.fireSlow = Math.max(t.fireSlow || 0, el.jamCd*0.55);
@@ -5735,8 +5860,10 @@ function syncHUD() {
   $('hpVal').textContent = sb ? '∞'
     : bigNum(Math.max(0, Math.round(S.health))) + (S.shield > 0 ? ' +' + S.shield : '');
   $('moneyVal').textContent = sb ? '∞' : bigCash(Math.floor(S.money));
-  $('waveVal').textContent = BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses : S.wave;
-  $('waveLbl').textContent = BR() ? 'Boss' : 'Wave';
+  const wd0 = advWorld();
+  $('waveVal').textContent = BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses
+                          : wd0 ? Math.min(S.wave, wd0.goal) + ' / ' + wd0.goal : S.wave;
+  $('waveLbl').textContent = BR() ? 'Boss' : wd0 ? 'Wave' : 'Wave';
   $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
                            : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
   $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
@@ -5745,6 +5872,7 @@ function syncHUD() {
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
   sw.textContent = BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
+                 : wd0 ? 'Start Wave ' + S.wave + ' of ' + wd0.goal
                  : isBossWave(S.wave) ? 'Start Boss Wave ' + S.wave : 'Start Wave ' + S.wave;
   const showTag = S.phase === 'wave' || (S.phase === 'build' && (S.autoSkip || BR()));
   tag.classList.toggle('on', showTag);
@@ -5752,6 +5880,8 @@ function syncHUD() {
   tag.textContent = BR()
     ? (S.phase === 'wave' ? rushBoss(S.wave).name + ' \u00b7 ' + rushLeft() + ' left'
        : 'Next: ' + rushBoss(S.wave).name + ' \u00b7 ' + Math.max(0, Math.ceil(S.autoTimer)) + 's')
+    : wd0 && S.phase === 'wave'
+    ? wd0.name + ' \u00b7 ' + (wd0.goal - S.wave + 1) + ' wave' + (wd0.goal - S.wave === 0 ? '' : 's') + ' left'
     : S.phase === 'wave'
     ? (S.boss ? 'Boss wave — hold the line' : 'Wave ' + S.wave + ' in progress')
     : 'Auto-skip · wave ' + S.wave + ' queued';
@@ -5813,6 +5943,7 @@ const bestHere = () => bestOf(runKey());
 
 function showModes() {
   closeHub(); closeOrb();
+  setWheel(false);
   setTimeout(fitMenu, 0);
   setTimeout(maybeNudge, 240);
   $('ovEnd').classList.remove('on');
@@ -6505,19 +6636,30 @@ function buildModeCards() {
         </div>
       </button>`;
   };
-  $('modeGrid').innerHTML = MENU_MODES().map(card).join('');
-  /* the campaign sits beside the endless modes, not inside them */
+  /* the six endless modes, laid out around the ring the Classic button
+     opens into. Six slots, evenly spaced, starting at the top. */
+  const modes = MENU_MODES();
+  const RAD_X = 236, RAD_Y = 176;
+  $('modeGrid').innerHTML = modes.map((k, i) => {
+    const a = -Math.PI/2 + i*(Math.PI*2/modes.length);
+    return card(k)
+      .replace('style="--mc:', 'style="--wx:' + Math.round(Math.cos(a)*RAD_X) + 'px;' +
+                               '--wy:' + Math.round(Math.sin(a)*RAD_Y) + 'px;--i:' + i + ';--mc:');
+  }).join('');
+  /* the campaign is the headline, not one of the folder */
   advInit();
   const av = MODES.adventure;
+  const n0 = shardCount();
   $('advCard').innerHTML =
     '<button class="mcard" data-m="adventure" data-pv="adventure" style="--mc:' + av.mc + '"' +
     ' aria-label="Adventure. ' + av.blurb + '">' +
       '<div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>' +
-      '<div class="mtop"><span class="mn">Adventure</span>' +
-        '<span class="pips"><span class="freeform">' + shardCount() + '&nbsp;/&nbsp;' + ADV_TARGET + '</span></span></div>' +
-      '<div class="mb">' + av.blurb + '</div>' +
-      '<div class="mfoot"><span class="best">Shards <b>' + shardCount() + '</b></span>' +
-      '<span class="go">Enter</span></div>' +
+      '<div class="mtop"><span class="mn">ADVENTURE</span>' +
+        '<span class="pips"><span class="freeform">' + n0 + '&nbsp;/&nbsp;' + ADV_TARGET + '&nbsp;shards</span></span></div>' +
+      '<div class="mb">Nine worlds, nine shards, one Orb. Take the solar map planet by planet and bring a Jaxon home off every one.</div>' +
+      '<div class="mfoot"><span class="best">' +
+        (n0 ? n0 + ' recovered \u00b7 ' + (ADV_TARGET - n0) + ' to go' : 'Start on Mercury') +
+      '</span><span class="go">Enter</span></div>' +
     '</button>';
   buildChalRow();
   $('ovMenu').querySelectorAll('.mcard').forEach(el => {
@@ -6741,10 +6883,32 @@ const WORLDS = [
     jaxon:'mercury', jaxonName:'Mercury Jaxon',
     play:true, needs:null,
     /* the mission */
-    path:[[0,150],[1180,150],[1180,430],[300,430],[300,720],[1600,720]],
+    path:[[0,165],[1180,165],[1180,445],[300,445],[300,735],[1600,735]],
     sky:'mercury', money:170, lives:45,
-    spd:1.22, budget:0.92, eliteShift:2, eliteMul:0.9, bossHp:0.95, coin:1.15,
+    spd:1.06, budget:0.92, eliteShift:2, eliteMul:0.9, bossHp:0.95, coin:1.15,
     blob:'a cinder',
+    /* small, quick, and made of the crust */
+    mobs:[
+      { n:'Cinder',      s:1.34, r:0.84 },
+      { n:'Sparkmite',   s:1.30, r:0.86 },
+      { n:'Slagling',    s:1.22, r:0.90 },
+      { n:'Ashcap',      s:1.16, r:0.94 },
+      { n:'Emberkin',    s:1.12, r:0.98 },
+      { n:'Basaltback',  s:1.04, r:1.04 },
+      { n:'Coalheart',   s:0.96, r:1.10 }
+    ],
+    elites:{
+      steel:    { name:'Slagplate',     fill:'#8a7566', edge:'#3a2c22', text:'#1a1410', spd:150 },
+      sprinter: { name:'Flarebolt',     fill:'#ffb02e', edge:'#8a4a00', text:'#241200', spd:268, r:22 },
+      cobalt:   { name:'Basalt Kin',    fill:'#6b584c', edge:'#241a14', text:'#ffe0c0', spd:138 },
+      tank:     { name:'Magma Hulk',    fill:'#b0442a', edge:'#3a1006', text:'#ffe0c0', spd:70, r:48 },
+      obsidian: { name:'Obsidian',      fill:'#2a2028', edge:'#0a0608', text:'#ffd0c0', spd:126 },
+      shielded: { name:'Heatshell',     fill:'#d8a86a', edge:'#5a3808', text:'#241200', spd:120 },
+      titanium: { name:'Whitecore',     fill:'#f4efe6', edge:'#8a7566', text:'#241a14', spd:116 },
+      jammer:   { name:'Static Cinder', fill:'#ff7a2e', edge:'#5a1c00', text:'#fff0e0', spd:118 },
+      healer:   { name:'Vent',          fill:'#ffd0a0', edge:'#8a5020', text:'#241200', spd:112 },
+      husk:     { name:'Scorched Husk', fill:'#3a2018', edge:'#100804', text:'#ffd0a0', spd:92 }
+    },
     tiers:[
       { fill:'#e0603a', edge:'#7a2408', text:'#ffffff' },
       { fill:'#ef8a3c', edge:'#8a4409', text:'#ffffff' },
@@ -6763,11 +6927,33 @@ const WORLDS = [
     shard:'Vapour Shard', shardCol:'#ffd83d',
     jaxon:'venus', jaxonName:'Venus Jaxon',
     play:true, needs:'mercury',
-    path:[[0,760],[1450,760],[1450,600],[150,600],[150,450],[1480,450],
-          [1480,300],[120,300],[120,150],[1600,150]],
+    path:[[0,755],[1450,755],[1450,602],[150,602],[150,450],[1480,450],
+          [1480,297],[120,297],[120,145],[1600,145]],
     sky:'venus', money:210, lives:40,
-    spd:0.95, budget:1.16, eliteShift:-2, eliteMul:1.25, bossHp:1.15, coin:0.95,
+    spd:1.0, budget:1.16, eliteShift:-2, eliteMul:1.25, bossHp:1.15, coin:0.95,
     blob:'a bloom',
+    /* heavy, swollen, and in no hurry at all */
+    mobs:[
+      { n:'Bloom',        s:0.88, r:1.14 },
+      { n:'Spore',        s:0.92, r:1.10 },
+      { n:'Fumeling',     s:0.90, r:1.12 },
+      { n:'Acidcap',      s:0.86, r:1.16 },
+      { n:'Brineback',    s:0.82, r:1.20 },
+      { n:'Sulphur Lord', s:0.78, r:1.24 },
+      { n:'Cloudmaw',     s:0.72, r:1.30 }
+    ],
+    elites:{
+      steel:    { name:'Brineplate',     fill:'#9aa86a', edge:'#3a4218', text:'#101404', spd:118 },
+      sprinter: { name:'Gustling',       fill:'#f0d070', edge:'#8a6a10', text:'#241f00', spd:206, r:26 },
+      cobalt:   { name:'Sulphide',       fill:'#8fbf5a', edge:'#2e4a0c', text:'#f0ffe0', spd:108 },
+      tank:     { name:'Pressure Hulk',  fill:'#6a8a3c', edge:'#1e2a06', text:'#f0ffe0', spd:54, r:50 },
+      obsidian: { name:'Tar Bloom',      fill:'#4a4a22', edge:'#12140a', text:'#e0ffb0', spd:98 },
+      shielded: { name:'Acidshell',      fill:'#b8d06a', edge:'#455a12', text:'#141a04', spd:94 },
+      titanium: { name:'Bonecap',        fill:'#f0f0d0', edge:'#8a8a5a', text:'#1a1a08', spd:90 },
+      jammer:   { name:'Fume Witch',     fill:'#c9d06a', edge:'#4a5210', text:'#141a04', spd:92 },
+      healer:   { name:'Spore Mother',   fill:'#8fd07a', edge:'#265a20', text:'#e8ffe8', spd:86 },
+      husk:     { name:'Drowned Husk',   fill:'#2a3a18', edge:'#080e04', text:'#c8ffa0', spd:70 }
+    },
     tiers:[
       { fill:'#f0d070', edge:'#8a6a10', text:'#241f00' },
       { fill:'#e0a840', edge:'#7a5008', text:'#ffffff' },
@@ -6807,6 +6993,15 @@ const WORLDS = [
     tag:'The Edge', diff:8, goal:60, blurb:'The last light. Whatever holds the Orb is out here.',
     shard:'Deep Shard', shardCol:'#6b8bff', jaxonName:'Neptune Jaxon', needs:'uranus' }
 ];
+for (const v of WORLDS) {
+  if (!v.elites) continue;
+  const out = {};
+  for (let i = 0; i < ELITE.length; i++) {
+    const base = ELITE[i];
+    out[i] = v.elites[base.key] ? Object.assign({}, base, v.elites[base.key]) : base;
+  }
+  v.eliteAt = out;
+}
 const worldById = id => WORLDS.find(v => v.id === id) || null;
 const AD = () => S.mode === 'adventure';
 const advWorld = () => (AD() ? worldById(S.world) : null);
@@ -7595,7 +7790,7 @@ function tierOf(n) {
 }
 function enemyFill(e) {
   if (e.cust) return e.cust.fill;
-  return e.elite >= 0 ? ELITE[e.elite].fill : tierOf(Math.ceil(e.hp)).fill;
+  return e.elite >= 0 ? eliteAt(e.elite).fill : tierOf(Math.ceil(e.hp)).fill;
 }
 /* Whistle's mark, the Director's cut, Lunchbox's snack and the Director's
    crit all just scale whatever damage is passing through. Doing it here means
@@ -7641,7 +7836,7 @@ function onHit(e, owner) {
 function hurtEnemy(e, dmg, owner) {
   dmg = amplify(dmg, owner, e);
   if (e.elite >= 0) {                          // Shielded soaks a flat slice of every hit
-    const arm = ELITE[e.elite].armour;
+    const arm = eliteAt(e.elite).armour;
     if (arm) dmg = Math.max(dmg*0.2, dmg - arm);
   }
   const before = e.hp;
@@ -8628,6 +8823,10 @@ function sbSpawn(u, at) {
                            : 'Entity cap reached (' + cap + ') — spawned ' + made);
   else if (made) beep(520, 0.07, 'triangle', 0.03);
 }
+/* the furthest along anything is allowed to be dropped in */
+const ADD_MAX = 0.68;
+const addAt = d => Math.max(0, Math.min(d, PATH_LEN*ADD_MAX));
+
 function sbBaseEnemy(d) {
   return { id:++EID, d, hp:1, max:1, elite:-1, hit:0, wob:Math.random()*Math.PI*2,
            off:(Math.random()-0.5)*13, burn:0, burnDps:0, burnAcc:0, burnOwner:null, cap:null,
@@ -8941,7 +9140,7 @@ function bossPowers(dt, b) {
       const half = Math.max(1, Math.round(b.hp));
       b.hp = half; b.max = half;
       const def2 = Object.assign({}, b.def, { name:b.def.name + ' II', hp:half });
-      const twin = addBoss(def2, { d:Math.max(0, b.d - 140), plates:0 });
+      const twin = addBoss(def2, { d:addAt(b.d - 140), plates:0 });
       twin.hp = twin.max = half;
       b.twinOf = twin; twin.twinOf = b;
       burst(p.x, p.y, '#5cc4ff', 60);
@@ -8988,7 +9187,7 @@ function bossPowers(dt, b) {
     if (b.spawnCd <= 0) {
       b.spawnCd = 6.5;
       if (S.enemies.length < LIVE_CAP(S.wave)) {
-        const e = sbBaseEnemy(Math.max(0, b.d - 60));
+        const e = sbBaseEnemy(addAt(b.d - 60));
         e.elite = ELITE.length - 1;
         e.hp = e.max = Math.round(b.max*0.012);
         e.husk = huskTheme(Math.max(S.wave, 70));
@@ -9055,7 +9254,7 @@ function bossPowers(dt, b) {
       if (b.spawnCd <= 0) {
         b.spawnCd = 5;
         if (S.enemies.length < LIVE_CAP(S.wave)) {
-          const e = sbBaseEnemy(Math.max(0, b.d - 50));
+          const e = sbBaseEnemy(addAt(b.d - 50));
           e.elite = ELITE.length - 1;
           e.hp = e.max = Math.round(b.max*0.008);
           e.husk = 'final'; e.spd = 96; e.leakN = 26;
@@ -9125,7 +9324,7 @@ function update(dt) {
       if (e.abCd <= 0) {
         const ab = eAbility(e);
         enemyAbility(e, ab);
-        e.abCd = ab === 'jam' ? ELITE[e.elite].jamCd : ELITE[e.elite].healCd;
+        e.abCd = ab === 'jam' ? eliteAt(e.elite).jamCd : eliteAt(e.elite).healCd;
       }
     }
     if (e.zap > 0) {                                   // the True God's TV keeps cooking
@@ -9171,10 +9370,7 @@ function update(dt) {
           S.floats.push({ x:W-150, y:800, txt:'-' + dmg, color:'#ff6b6b', life:1 });
           bump('hpBox','hurt'); beep(140, 0.2, 'sawtooth', 0.05, 70);
           shakeScreen(S.health <= 0 ? 30 : 7, S.health <= 0 ? 1.6 : 0.4);
-          S.lastLeak = eliteOf(e) ? ELITE[e.elite].name
-                     : e.cust ? e.cust.name || 'a hand-made blob'
-                     : advWorld() ? advWorld().blob
-                     : 'a tier ' + Math.max(1, Math.ceil(e.hp)) + ' blob';
+          S.lastLeak = mobName(e);
         }
       }
     }
@@ -11526,6 +11722,9 @@ function viewBox() {
   return { x0:c.x - hw, x1:c.x + hw, y0:c.y - hh, y1:c.y + hh };
 }
 function drawPark(v) {
+  /* out here is whatever the arena is standing on */
+  const wd = advWorld();
+  if (wd) { drawWorldPark(v, wd); return; }
   ctx.save();
   /* the same grass the arena is made of, tiling straight out of it, so the
      lawn is a mown square of the field rather than a different material */
@@ -11560,6 +11759,47 @@ function drawPark(v) {
     if (!lean) {
       ctx.fillStyle = 'hsl(' + t.hue + ',56%,' + t.lit + '%)';
       ctx.beginPath(); ctx.arc(cx - t.r*0.26, cy - t.r*0.3, t.r*0.66, 0, 7); ctx.fill();
+    }
+  }
+  ctx.restore();
+}
+
+/* The same ground the arena is made of, carried out to the horizon, with
+   the world's own furniture on it instead of oaks. */
+function drawWorldPark(v, wd) {
+  ctx.save();
+  ctx.beginPath(); ctx.rect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0); ctx.clip();
+  ctx.translate(v.x0, v.y0);
+  ctx.scale((v.x1 - v.x0)/W, (v.y1 - v.y0)/H);
+  drawWorldGround();
+  ctx.restore();
+  /* a little darker than the arena, so the mown square still reads */
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
+  /* the furniture: boulders on Mercury, drifting cloud banks on Venus */
+  let sd = 90210;
+  const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+  for (let i = 0; i < 260; i++) {
+    const x = -PARK_R + rnd()*(W + PARK_R*2);
+    const y = -PARK_R*0.62 + rnd()*(H + PARK_R*1.24);
+    const r = 18 + rnd()*44;
+    if (x > -110 && x < W + 110 && y > -110 && y < H + 110) continue;
+    if (x + r < v.x0 || x - r > v.x1 || y + r < v.y0 || y - r > v.y1) continue;
+    if (wd.sky === 'mercury') {
+      ctx.fillStyle = 'rgba(0,0,0,.3)';
+      ctx.beginPath(); ctx.ellipse(x + 5, y + 4, r*0.9, r*0.34, 0, 0, 7); ctx.fill();
+      ctx.fillStyle = i % 3 ? '#5c4b42' : '#6b584c';
+      ctx.beginPath(); ctx.ellipse(x, y, r*0.86, r*0.62, rnd()*3, 0, 7); ctx.fill();
+      ctx.fillStyle = 'rgba(255,220,180,.12)';
+      ctx.beginPath(); ctx.ellipse(x - r*0.2, y - r*0.2, r*0.44, r*0.26, 0, 0, 7); ctx.fill();
+    } else {
+      ctx.globalAlpha = 0.16;
+      ctx.fillStyle = i % 2 ? '#ffd68a' : '#c98a3c';
+      ctx.beginPath();
+      ctx.ellipse(x + Math.sin(S.t*0.2 + i)*22, y, r*1.9, r*0.6, 0, 0, 7);
+      ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
   ctx.restore();
@@ -15213,6 +15453,8 @@ window.addEventListener('keydown', ev => {
   }
   if ($('ovOrb').classList.contains('on')) { if (ev.key === 'Escape') closeOrb(); return; }
   if (HUB.open) { if (ev.key === 'Escape') hubToMenu(); return; }
+  if (ev.key === 'Escape' && $('ovMenu').classList.contains('on')
+      && $('classicDock').classList.contains('open')) { setWheel(false); return; }
   if (ev.key === 'Escape') {
     if (S.paused) { setPause(false); return; }
     if ($('sbAsc').classList.contains('on')) { closeSbAsc(); return; }
@@ -15378,6 +15620,26 @@ $('endModes').onclick = () => {
   if (AD()) { $('ovEnd').classList.remove('on'); openHub(); return; }
   showModes();
 };
+/* Classic is a folder. It blooms open from its own centre and closes on
+   anything that is not one of its cards. */
+function setWheel(on) {
+  const dock = $('classicDock');
+  if (!dock) return;
+  const was = dock.classList.contains('open');
+  dock.classList.toggle('open', on);
+  $('classicBtn').setAttribute('aria-expanded', on ? 'true' : 'false');
+  if (on !== was) {
+    beep(on ? 620 : 420, 0.07, 'triangle', on ? 0.035 : 0.026, on ? 980 : 320);
+    if (!on) { pvStop(); setMenuMood(null); }
+    setTimeout(fitMenu, 0);
+  }
+}
+$('classicBtn').onclick = ev => { ev.stopPropagation(); setWheel(!$('classicDock').classList.contains('open')); };
+$('ovMenu').addEventListener('pointerdown', ev => {
+  if (!$('classicDock').classList.contains('open')) return;
+  if (ev.target.closest && (ev.target.closest('#classicDock'))) return;
+  setWheel(false);
+});
 $('hubBack').onclick = hubToMenu;
 $('hubOrb').onclick = openOrb;
 $('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') closeOrb(); });
@@ -15427,6 +15689,15 @@ $('bkNext').onclick = () => bookGo(BOOK.page + 1);
 $('pmResume').onclick = () => setPause(false);
 $('pmSettings').onclick = () => openSettings();
 $('pmRestart').onclick = () => { setPause(false); startMode(S.mode); };
+/* A world keeps its shards and its unlocks the moment they are earned, so
+   leaving one costs you the run and nothing else. The endless modes have
+   no map to go back to, so the button only shows on a world. */
+$('pmSaveQuit').onclick = () => {
+  setPause(false);
+  saveNow();
+  toast('Progress kept — back to the map');
+  openHub();
+};
 $('pmQuit').onclick = () => { setPause(false); showModes(); };
 $('menuSettings').onclick = () => setPause(true, true);
 $('sbTab').onclick = () => setSb(!S.sbOpen);
@@ -17217,6 +17488,8 @@ function bookLoop() {
    it, but nothing moves and no timer runs down. */
 function canPause() { return S.phase === 'build' || S.phase === 'wave'; }
 function setPause(on, fromMenu) {
+  const sq = $('pmSaveQuit');
+  if (sq) sq.hidden = !AD();
   if (on && !canPause() && !fromMenu) return;
   S.paused = !!on;
   const ov = $('ovPause');
@@ -17383,6 +17656,14 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
+
+
 
 
 
