@@ -4734,7 +4734,7 @@ const M = () => {
     if (!v) return m;
     if (_wKey !== v.id) {
       _wCache = Object.assign({}, m, {
-        name:v.name, mc:v.shardCol,
+        name:v.name, mc:v.shardCol, runTint:v.runTint || m.runTint,
         money:v.money, lives:v.lives, budget:v.budget, spd:v.spd,
         eliteShift:v.eliteShift, eliteMul:v.eliteMul, bossHp:v.bossHp, coin:v.coin
       });
@@ -4826,8 +4826,10 @@ const mobMod = (e, k) => {
 const eSpeed = e => (e.spd !== undefined ? e.spd
                    : e.elite >= 0 ? eliteAt(e.elite).spd
                    : WAVE_SPEED / (Math.max(1, e.hp) + 5) * mobMod(e, 's'))
-                    * waveRamp() * (e.slow > 0 ? e.slowMul : 1) * (e.stun > 0 ? 0 : 1)
-                    * (e.haste || 1);
+                    * waveRamp()
+                    * (e.slow > 0 && !(e.imm > 0) ? e.slowMul : 1)   // a Solar Drone shrugs it off
+                    * (e.stun > 0 ? 0 : 1)
+                    * (e.haste || 1) * scorchHaste(e);
 const eRad   = e => (e.cust ? e.cust.r : e.elite >= 0 ? eliteAt(e.elite).r : E_R*mobMod(e, 'r'));
 const eAbility = e => (e.elite >= 0 ? eliteAt(e.elite).ability : null);
 
@@ -5033,9 +5035,9 @@ const TOWERS = {
   /* ----- the adventure Jaxons. Bought like anything else, but only once
      the world they came off has been cleared. ----- */
   mercury: { name:'Mercury Jaxon', cost:2400, range:330, cd:0.16, dmg:22, speed:1500, ammo:'ember',
-             splash:9, splashR:96, baseXtra:{ burnHit:1 }, adv:'mercury',
-             blurb:'Brought back off the scorched world. An ember every 0.16s for 22, bursting for 9 across 96, and everything it touches keeps burning.',
-             tags:[['Adventure','t-rain'],['Burn','t-fast'],['Rapid','t-fast']] },
+             splash:9, splashR:96, baseXtra:{ burnHit:1, shellBreak:1 }, adv:'mercury',
+             blurb:'Brought back off the scorched world, and he knows what is under a crust. An ember every 0.16s for 22, bursting for 9 across 96, everything it touches keeps burning, and the first one through a Cinder Shell takes the whole crust off it.',
+             tags:[['Adventure','t-rain'],['Anti-Armour','t-single'],['Burn','t-fast']] },
   venus:   { name:'Venus Jaxon', cost:7800, range:360, cd:0.42, dmg:96, speed:980, ammo:'acid',
              splash:54, splashR:170, baseXtra:{ slowHit:1, burnHit:1 }, adv:'venus',
              blurb:'A globe of the air that world breathes. 96 on the hit and 54 across 170, and whatever survives it crawls away burning.',
@@ -5293,6 +5295,10 @@ const BOSS_THEME = {
             bar1:'#ff2d2d', bar2:'#3fa8ff', num:'#ffffff', label:'#9fdcff',
             stamp:true, sparkle:true, vary:true, wings:true, split:true }
 };
+/* the one thing on Mercury with a name and a bar */
+BOSS_THEME.mercury = { bg:'#1a0e06', glyph:'#ffb02e', head:'#fff0d8', ring:'#7a3200', ring2:'#ffb02e',
+                       bar1:'#e05a10', bar2:'#ffd0a0', num:'#ffe8cc', label:'#ffb877' };
+
 const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎ0123456789ABCDEF#$%&@';
 
 function bossFor(wave) {
@@ -5351,7 +5357,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
   runT:0, spent:0, money0:0, rushBest:{},
-  world:null, adv:null, shardFly:null,
+  world:null, adv:null, shardFly:null, scorch:[],
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -5907,6 +5913,7 @@ function reset() {
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
+  S.scorch=[];
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
   S.rollers = []; S.orbs = []; S.bestAtStart = bestHere();
@@ -6729,6 +6736,13 @@ function scheduleBolt() {
    coin comes back rather than sitting uselessly in a field. */
 /* Ground a Jaxon is allowed to stand on: the lawn, or any plot that has
    been paid for and cleared. Everything else is somebody else's park. */
+function groundShade(x0, y0, x1, y1) {
+  const g = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
+  g.addColorStop(0, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,.36)');
+  ctx.fillStyle = g;
+  ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+}
 const onLawn = (x, y) => (x >= 0 && x <= W && y >= 0 && y <= H) || !!inClearedPlot(x, y, 0);
 function sweepStrays() {
   if (S.titan) return;
@@ -6860,6 +6874,188 @@ function rushTick(dt) {
   if (S.autoTimer <= 0) startWave();
 }
 
+/* ==================================================== MERCURY: the fight ==
+   Mercury does not walk the main game's blobs and it does not use the main
+   game's threat budget. It has five things of its own, each with one job,
+   arriving on a written wave script.
+
+   Everything here is still an ordinary enemy as far as the engine is
+   concerned — same list, same damage, same targeting, same drawing. What
+   makes them Mercurian is a handful of flags read in three places. */
+const MERC_MOB = {
+  mite:   { name:'Scorch Mite',    hp:15,   spd:344, r:14, leak:2,  coin:1.9,
+            fill:'#ffb02e', edge:'#7a3a00', text:'#241200',
+            note:'Fast and thin. Punishes anything that reloads slowly.' },
+  drone:  { name:'Solar Drone',    hp:82,   spd:206, r:20, leak:4,  coin:3.8,
+            fill:'#f4efe6', edge:'#7a6656', text:'#241a14', drone:1,
+            note:'Drifts off the road and shrugs off a slow every few seconds.' },
+  shell:  { name:'Cinder Shell',   hp:150,  spd:116, r:27, leak:6,  coin:5.6,
+            fill:'#8a7566', edge:'#2a201a', text:'#ffe0c0', shell:0.14,
+            note:'Crusted over. Most of a hit is soaked until the crust is broken.' },
+  echo:   { name:'Heat Echo',      hp:118,  spd:152, r:23, leak:5,  coin:4.4,
+            fill:'#e0603a', edge:'#571206', text:'#ffe0c0', echo:1,
+            note:'Dies into a burning patch that hurries everything through it.' },
+  knight: { name:'Mercury Knight', hp:1100, spd:84,  r:42, leak:22, coin:34,
+            fill:'#b0442a', edge:'#3a1006', text:'#ffe0c0',
+            shell:0.3, look:'armour', big:1,
+            note:'The landmark. Armoured, slow, and worth the whole board.' }
+};
+/* how much fatter everything gets per wave */
+const MERC_RAMP = 1.105;
+
+/* The script. Twenty waves that open on nothing but mites and close on a
+   Knight escort, with a Sovereign waiting on the last one. */
+function mercPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('mite', 6 + Math.round(wave*1.9));
+  if (wave >= 3)  add('drone', 1 + Math.floor((wave - 3)/2));
+  if (wave >= 6)  add('shell', 1 + Math.floor((wave - 6)/3));
+  if (wave >= 9)  add('echo',  1 + Math.floor((wave - 9)/3));
+  if (wave % 5 === 0) add('knight', wave >= 15 ? 2 : 1);
+  /* shuffled from the wave number, so a wave is varied but always the same
+     wave — the run is a fixed test, not a lottery */
+  let sd = 1337 + wave*7919;
+  const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd()*(i + 1));
+    const t = out[i]; out[i] = out[j]; out[j] = t;
+  }
+  /* the Knight never leads: you should see the escort before the landmark */
+  out.sort((a, b) => (a === 'knight' ? 1 : 0) - (b === 'knight' ? 1 : 0));
+  return out;
+}
+
+/* one of them, built for the wave it is arriving on */
+function makeWorldMob(v, k) {
+  const m = v.mob[k] || v.mob.mite;
+  const hp = Math.max(1, Math.round(m.hp * Math.pow(v.ramp, S.wave - 1) * M().eliteHp));
+  const e = sbBaseEnemy(0);
+  e.hp = e.max = hp;
+  e.spd = m.spd * M().spd;
+  e.leakN = m.leak;
+  e.worth = m.coin;
+  e.kind = k;
+  e.cust = { r:m.r, look:m.look || null, fill:m.fill, edge:m.edge, text:m.text, name:m.name };
+  if (m.shell) { e.shellSoak = m.shell; e.shellHp = hp*0.5; e.shellMax = hp*0.5; }
+  if (m.drone) { e.drone = 1; e.dPhase = Math.random()*6.28; e.immCd = 2 + Math.random()*2; }
+  if (m.echo) e.echo = 1;
+  if (m.big) {
+    e.big = 1;
+    banner(m.name.toUpperCase(), 'wave ' + S.wave, '#ff7a2e');
+    shakeScreen(9, 0.5);
+    beep(96, 0.8, 'sawtooth', 0.06, 220);
+  }
+  return e;
+}
+
+/* the flags, read where they matter ------------------------------------- */
+/* 1. the crust. Most of a hit is soaked while it holds, and the hit still
+      wears it down, so focus fire opens it and a trickle never will. */
+function shellSoak(e, dmg, owner) {
+  if (!e.shellHp || e.shellHp <= 0) return dmg;
+  /* Mercury's own Jaxon came back knowing how to open these */
+  if (owner && owner.type && SP(owner).xtra.shellBreak) {
+    e.shellHp = 0;
+    const p = enemyPos(e);
+    S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.34, max:0.34, r:eRad(e)*1.6 });
+    beep(300, 0.14, 'square', 0.035, 90);
+    return dmg;
+  }
+  e.shellHp -= dmg;
+  if (e.shellHp <= 0) {
+    const p = enemyPos(e);
+    S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.34, max:0.34, r:eRad(e)*1.6 });
+    beep(260, 0.16, 'square', 0.035, 80);
+    return dmg*e.shellSoak + Math.max(0, -e.shellHp);
+  }
+  return dmg*e.shellSoak;
+}
+/* 2. the drone. It wanders off the asphalt and, every few seconds, stops
+      caring that it has been slowed. */
+function droneTick(e, dt) {
+  e.off = Math.sin(S.t*1.5 + e.dPhase)*27;
+  e.immCd -= dt;
+  if (e.immCd <= 0) { e.immCd = 4.5; e.imm = 1.0; }
+  if (e.imm > 0) e.imm -= dt;
+}
+/* 3. the echo. What it leaves behind hurries whatever crosses it, so a
+      cheap kill in the wrong place makes the next one worse. */
+const SCORCH = { life:4.5, r:96, haste:1.55 };
+function dropScorch(e) {
+  const p = enemyPos(e);
+  S.scorch.push({ x:p.x, y:p.y, r:SCORCH.r, t:SCORCH.life, max:SCORCH.life });
+  if (S.scorch.length > 24) S.scorch.shift();
+  burst(p.x, p.y, '#ff7a2e', 16);
+  beep(150, 0.4, 'sawtooth', 0.04, 60);
+}
+function scorchTick(dt) {
+  if (!S.scorch.length) return;
+  for (const s2 of S.scorch) s2.t -= dt;
+  S.scorch = S.scorch.filter(s2 => s2.t > 0);
+}
+function drawScorch() {
+  if (!S.scorch.length) return;
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const s2 of S.scorch) {
+    const k = s2.t/s2.max;
+    const g = ctx.createRadialGradient(s2.x, s2.y, 4, s2.x, s2.y, s2.r);
+    g.addColorStop(0, 'rgba(255,220,150,' + (0.34*k) + ')');
+    g.addColorStop(0.5, 'rgba(255,122,26,' + (0.24*k) + ')');
+    g.addColorStop(1, 'rgba(200,50,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.ellipse(s2.x, s2.y, s2.r, s2.r*0.52, 0, 0, 7); ctx.fill();
+    /* embers turning over in it */
+    ctx.globalAlpha = k*0.7;
+    for (let i = 0; i < 5; i++) {
+      const a = i*1.257 + S.t*1.3;
+      ctx.fillStyle = i % 2 ? '#ffd0a0' : '#ff7a2e';
+      ctx.beginPath();
+      ctx.arc(s2.x + Math.cos(a)*s2.r*0.5, s2.y + Math.sin(a)*s2.r*0.26, 2.6, 0, 7);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+}
+/* anything standing in one moves like it wants out */
+function scorchHaste(e) {
+  if (!S.scorch.length) return 1;
+  const p = enemyPos(e);
+  for (const s2 of S.scorch) {
+    if (Math.hypot(p.x - s2.x, (p.y - s2.y)*1.9) <= s2.r) return SCORCH.haste;
+  }
+  return 1;
+}
+
+/* ------------------------------------------------------- a scripted wave */
+function advStartWave(v) {
+  S.phase = 'wave';
+  S.shield = hasChal('onelife') ? 0 : S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
+  S.plan = v.plan(S.wave);
+  S.spawnQueue = S.plan.length;
+  S.waveTotal = Math.max(1, S.plan.length);
+  S.spawnGap = Math.max(0.1, 17/Math.max(1, S.spawnQueue));
+  S.spawnTimer = 0;
+  /* the last wave brings the thing the rest of them were working for */
+  if (v.finale && S.wave >= v.goal) {
+    const b = Object.assign({}, v.finale, {
+      hp:Math.round(v.finale.hp * M().bossHp),
+      leak:Math.max(1, Math.round(v.finale.leak * M().leak))
+    });
+    addBoss(b);
+    shakeScreen(20, 1.3); flashScreen(0.2);
+    banner(b.name.toUpperCase(), 'the last wave', '#ff7a2e');
+    toast(b.name + ' has come up out of the trench.');
+    beep(70, 1.5, 'sawtooth', 0.08, 30);
+  } else {
+    /* a short stinger so a wave start reads on a world */
+    beep(v.sky === 'mercury' ? 380 : 250, 0.16, 'square', 0.03, v.sky === 'mercury' ? 620 : 180);
+  }
+  syncHUD();
+}
+
+
 /* ========================================================== ADVENTURE ====
    A campaign laid over the same engine. Nine worlds each hold one shard of
    the Orb; collect all nine and the cube can be assembled, the portal
@@ -6878,13 +7074,19 @@ const WORLDS = [
     id:'mercury', name:'Mercury', order:1, ring:210, ang:-24, r:19,
     body:'#a08b7c', body2:'#6b584c', glow:'rgba(210,170,140,.5)',
     tag:'Scorched', diff:2, goal:20,
-    blurb:'Bare rock a step from the fire. Nothing here is slow.',
+    blurb:'A trench cut through the crater rim. Tight turns, no cover, and nothing on it is slow.',
     shard:'Ember Shard', shardCol:'#ff9a2e',
     jaxon:'mercury', jaxonName:'Mercury Jaxon',
     play:true, needs:null,
     /* the mission */
-    path:[[0,165],[1180,165],[1180,445],[300,445],[300,735],[1600,735]],
-    sky:'mercury', money:170, lives:45,
+    /* the trench: twelve turns down a crater rim and out the far side.
+       Short legs, tight corners, and two places where the road doubles
+       back within reach of itself. */
+    path:[[0,125],[430,125],[430,285],[120,285],[120,455],[560,455],[560,165],
+          [900,165],[900,625],[300,625],[300,775],[1250,775],[1250,315],[1600,315]],
+    sky:'mercury', money:450, lives:45, runTint:'rgba(255,140,50,.05)',
+    ramp:MERC_RAMP, plan:mercPlan, mob:MERC_MOB,
+    finale:{ name:'Mercury Sovereign', hp:20000, r:118, speed:70, leak:40, theme:'mercury' },
     spd:1.06, budget:0.92, eliteShift:2, eliteMul:0.9, bossHp:0.95, coin:1.15,
     blob:'a cinder',
     /* small, quick, and made of the crust */
@@ -7089,62 +7291,106 @@ function advWin() {
 /* ---------------------------------------------------------- the ground -
    Each world paints its own sky and its own dirt. It is the same field
    underneath — same size, same rules — wearing different weather. */
-function drawWorldGround() {
+/* ------------------------------------------------------------- a world -
+   The ground a world is made of, painted over any region of world space
+   you ask for. Every feature is anchored to world coordinates rather than
+   to the viewport, so the arena and the ground beyond the fence are the
+   same surface seen from different distances — zooming out reveals more of
+   it instead of rebuilding it at a different brightness.
+
+   The shading is not here: one falloff covers the lot, see groundShade. */
+function worldGround(x0, y0, x1, y1) {
   const v = advWorld();
   if (!v) return false;
-  const sky = v.sky;
-  if (sky === 'mercury') {
-    /* bare rock in a hard white light, with the sun far too close */
-    const g = ctx.createLinearGradient(0, 0, W*0.5, H);
-    g.addColorStop(0, '#5c4b42'); g.addColorStop(0.45, '#463731'); g.addColorStop(1, '#2a211d');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    const sun = ctx.createRadialGradient(W*0.12, -60, 20, W*0.12, -60, 620);
-    sun.addColorStop(0, 'rgba(255,240,200,.55)');
-    sun.addColorStop(0.4, 'rgba(255,170,80,.22)');
+  const w = x1 - x0, h = y1 - y0;
+  if (v.sky === 'mercury') {
+    /* regolith. Grey-orange dust, lit hard from the sun sitting just off
+       the top-left corner, with everything's shadow pointing the same way
+       because there is nothing here to scatter the light. */
+    const g = ctx.createLinearGradient(0, -200, W*0.55, H + 200);
+    g.addColorStop(0, '#6a564a'); g.addColorStop(0.42, '#4c3c34'); g.addColorStop(1, '#2b211c');
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, w, h);
+    const sun = ctx.createRadialGradient(W*0.1, -120, 30, W*0.1, -120, 900);
+    sun.addColorStop(0, 'rgba(255,244,214,.6)');
+    sun.addColorStop(0.34, 'rgba(255,178,88,.24)');
     sun.addColorStop(1, 'rgba(255,140,40,0)');
-    ctx.fillStyle = sun; ctx.fillRect(0, 0, W, H);
-    /* craters, laid down once from a fixed seed so they never crawl */
+    ctx.fillStyle = sun; ctx.fillRect(x0, y0, w, h);
+    /* craters, laid out once from a fixed seed across a wide field so they
+       do not crawl when the camera moves */
     ctx.save();
     let sd = 424242;
     const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
-    for (let i = 0; i < 54; i++) {
-      const x = rnd()*W, y = rnd()*H, r = 14 + rnd()*54;
-      ctx.globalAlpha = 0.22;
-      ctx.fillStyle = '#2a211d';
-      ctx.beginPath(); ctx.ellipse(x, y, r, r*0.62, 0, 0, 7); ctx.fill();
-      ctx.globalAlpha = 0.18;
-      ctx.strokeStyle = '#8a7566'; ctx.lineWidth = 2.4;
-      ctx.beginPath(); ctx.ellipse(x, y - 2, r*0.94, r*0.58, 0, 3.5, 6.1); ctx.stroke();
+    for (let i = 0; i < 340; i++) {
+      const cx = -2600 + rnd()*(W + 5200), cy = -1800 + rnd()*(H + 3600);
+      const r = 12 + rnd()*58, tilt = rnd()*3;
+      if (cx + r*1.4 < x0 || cx - r*1.4 > x1 || cy + r < y0 || cy - r > y1) continue;
+      /* the bowl, then the sunward lip catching the light */
+      ctx.globalAlpha = 0.26;
+      ctx.fillStyle = '#241b16';
+      ctx.beginPath(); ctx.ellipse(cx, cy, r, r*0.6, tilt, 0, 7); ctx.fill();
+      ctx.globalAlpha = 0.2;
+      ctx.strokeStyle = '#c6a184'; ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.ellipse(cx, cy - 2, r*0.94, r*0.56, tilt, 3.4, 6.2); ctx.stroke();
+      ctx.globalAlpha = 0.13;
+      ctx.strokeStyle = '#120c09'; ctx.lineWidth = 3.4;
+      ctx.beginPath(); ctx.ellipse(cx, cy + 3, r*0.94, r*0.56, tilt, 0.4, 2.9); ctx.stroke();
+    }
+    /* fine grit, so the dust is not a flat wash at 1x */
+    ctx.globalAlpha = 0.1;
+    for (let i = 0; i < 420; i++) {
+      const cx = -2600 + rnd()*(W + 5200), cy = -1800 + rnd()*(H + 3600);
+      if (cx < x0 || cx > x1 || cy < y0 || cy > y1) continue;
+      ctx.fillStyle = rnd() < 0.5 ? '#e8cdb4' : '#1a120d';
+      ctx.fillRect(cx, cy, 2, 2);
     }
     ctx.restore();
+    /* heat shimmer: a few slow horizontal bands, cheap and non-repeating */
+    if (!S.perf) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 5; i++) {
+        const yy = ((i*211 + S.t*11) % (H + 420)) - 210;
+        if (yy + 60 < y0 || yy - 60 > y1) continue;
+        const a = 0.028 + Math.sin(S.t*0.9 + i)*0.012;
+        const cg = ctx.createLinearGradient(0, yy - 46, 0, yy + 46);
+        cg.addColorStop(0, 'rgba(255,190,120,0)');
+        cg.addColorStop(0.5, 'rgba(255,206,140,' + Math.max(0, a) + ')');
+        cg.addColorStop(1, 'rgba(255,190,120,0)');
+        ctx.fillStyle = cg;
+        ctx.fillRect(x0, yy - 46, w, 92);
+      }
+      ctx.restore();
+    }
     return true;
   }
-  if (sky === 'venus') {
-    /* nothing but air, and all of it the wrong colour */
-    const g = ctx.createLinearGradient(0, 0, 0, H);
+  if (v.sky === 'venus') {
+    const g = ctx.createLinearGradient(0, -200, 0, H + 200);
     g.addColorStop(0, '#8a5a12'); g.addColorStop(0.4, '#b07f22'); g.addColorStop(1, '#6a4208');
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, w, h);
     ctx.save();
     ctx.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 7; i++) {
-      const y = ((i*137 + S.t*(6 + i*3)) % (H + 260)) - 130;
+    for (let i = 0; i < 9; i++) {
+      const yy = ((i*137 + S.t*(6 + i*3)) % (H + 900)) - 450;
+      if (yy + 90 < y0 || yy - 90 > y1) continue;
       const a = 0.05 + (i % 3)*0.018;
-      const cg = ctx.createLinearGradient(0, y - 90, 0, y + 90);
+      const cg = ctx.createLinearGradient(0, yy - 90, 0, yy + 90);
       cg.addColorStop(0, 'rgba(255,220,150,0)');
       cg.addColorStop(0.5, 'rgba(255,214,130,' + a + ')');
       cg.addColorStop(1, 'rgba(255,220,150,0)');
-      ctx.fillStyle = cg; ctx.fillRect(0, y - 90, W, 180);
+      ctx.fillStyle = cg; ctx.fillRect(x0, yy - 90, w, 180);
     }
     ctx.restore();
     /* the haze that hides the far end of the trail */
-    const hz = ctx.createRadialGradient(W/2, H*0.55, H*0.18, W/2, H*0.55, H*1.1);
+    const hz = ctx.createRadialGradient(W/2, H*0.55, H*0.18, W/2, H*0.55, H*1.6);
     hz.addColorStop(0, 'rgba(255,200,110,0)');
     hz.addColorStop(1, 'rgba(120,70,10,.55)');
-    ctx.fillStyle = hz; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = hz; ctx.fillRect(x0, y0, w, h);
     return true;
   }
   return false;
 }
+const drawWorldGround = () => worldGround(0, 0, W, H);
+
 /* the trail, in the colours of whatever you are standing on */
 const WORLD_TRAIL = {
   mercury:['rgba(0,0,0,.32)', '#241a14', '#5e4a3c', 'rgba(255,220,180,.06)'],
@@ -7512,6 +7758,9 @@ function startWave() {
   /* a Rush wave is one boss and nothing else, so it skips the whole
      spawner: no plan, no budget, no queue */
   if (BR()) { rushStartWave(); return; }
+  /* a world with a written script does not roll a threat budget either */
+  const wdW = advWorld();
+  if (wdW && wdW.plan) { advStartWave(wdW); return; }
   S.phase = 'wave';
   /* Band-Aid Jaxon tapes a fresh plaster over the nursery door each wave */
   S.shield = hasChal('onelife') ? 0 : S.towers.reduce((n, t) => n + (SP(t).shield || 0), 0);
@@ -7631,6 +7880,12 @@ function dressBossBar(b) {
 }
 
 function spawnEnemy() {
+  /* a scripted world's plan is a list of its own creatures, by name */
+  const wdS = advWorld();
+  if (wdS && wdS.mob) {
+    S.enemies.push(makeWorldMob(wdS, (S.plan && S.plan.length) ? S.plan.shift() : 'mite'));
+    return;
+  }
   const u = (S.plan && S.plan.length) ? S.plan.shift() : rollUnit(S.wave);
   const elite = u.elite, hp = u.hp;
   const ab = elite >= 0 ? ELITE[elite].ability : null;
@@ -7745,7 +8000,8 @@ const coinCurve  = () => 1 / (1 + Math.max(0, S.wave - 1) * COIN_DECAY);
    upgrading the coin raises it and holding a fortune does not. */
 const bankCap = spec => Math.round(spec.income*1.6 + 12);
 
-const enemyWorth = e => (e.cust ? 1.4
+const enemyWorth = e => (e.worth !== undefined ? e.worth
+                       : e.cust ? 1.4
                        : e.elite >= 0 ? 1.00 + e.elite*0.35
                                       : 0.45 + Math.max(1, Math.min(MAX_TIER, Math.ceil(e.max)))*0.09);
 const bountyFor  = e => COIN_BASE * enemyWorth(e) * coinCurve() * M().coin;
@@ -7839,6 +8095,7 @@ function hurtEnemy(e, dmg, owner) {
     const arm = eliteAt(e.elite).armour;
     if (arm) dmg = Math.max(dmg*0.2, dmg - arm);
   }
+  if (e.shellHp > 0) dmg = shellSoak(e, dmg, owner);
   const before = e.hp;
   e.hp -= dmg; e.hit = 1;
   if (owner) owner.dmg += Math.min(dmg, before);
@@ -7850,6 +8107,7 @@ function hurtEnemy(e, dmg, owner) {
     const p = enemyPos(e);
     burst(p.x, p.y, enemyFill({ elite:e.elite, hp:before }), e.elite >= 0 ? 26 : 13);
     e.dead = true; S.pops++;
+    if (e.echo) dropScorch(e);                 // Heat Echo leaves the fire behind
     comboPop();
     if (owner) owner.pops++;
     if (S.titan && e.siege) {
@@ -9297,6 +9555,7 @@ function update(dt) {
   if (S.phase === 'wave' || S.phase === 'build') S.runT += dt;
   clearFxTick(dt);
   S.wellT = astroWell() ? 1 : 0;
+  scorchTick(dt);
   if (S.plotArm && S.t > S.plotArm.until) S.plotArm = null;
   if (S.projSlow > 0) S.projSlow = Math.max(0, S.projSlow - dt);
 
@@ -9315,6 +9574,7 @@ function update(dt) {
     if (e.dead) continue;
     e.hit = Math.max(0, e.hit - dt*6);
     if (e.slow > 0) e.slow -= dt;
+    if (e.drone) droneTick(e, dt);             // wanders, and ignores a slow now and then
     if (e.stun > 0) e.stun -= dt;
     if (e.bub > 0) e.bub -= dt;
     if (e.mark > 0) { e.mark -= dt; if (e.mark <= 0) e.markMul = 1; }
@@ -10736,7 +10996,7 @@ function update(dt) {
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
-    S.rollers = []; S.orbs = [];
+    S.rollers = []; S.orbs = []; S.scorch = [];
     for (const e of S.enemies) e.cap = null;
     bump('moneyBox','gain');
     beep(660, 0.12, 'triangle', 0.04); setTimeout(() => beep(880, 0.16, 'triangle', 0.04), 110);
@@ -11730,13 +11990,8 @@ function drawPark(v) {
      lawn is a mown square of the field rather than a different material */
   ctx.fillStyle = grassPattern || '#009242';
   ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
-  /* the same falloff the lawn carries, spread over what the camera sees */
-  const cx = (v.x0 + v.x1)/2, cy2 = (v.y0 + v.y1)/2;
-  const rad = Math.max(v.x1 - v.x0, v.y1 - v.y0);
-  const pg = ctx.createRadialGradient(cx, cy2, rad*0.16, cx, cy2, rad*0.58);
-  pg.addColorStop(0, 'rgba(0,0,0,0)'); pg.addColorStop(1, 'rgba(0,0,0,.36)');
-  ctx.fillStyle = pg;
-  ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
+  /* the arena's own falloff, carried outward — see groundShade */
+  groundShade(v.x0, v.y0, v.x1, v.y1);
   /* far hills, only if the horizon is in shot */
   const HILL = ['#0b5f47', '#0a5340', '#084736'];
   for (const h of PARK.hills) {
@@ -11767,16 +12022,11 @@ function drawPark(v) {
 /* The same ground the arena is made of, carried out to the horizon, with
    the world's own furniture on it instead of oaks. */
 function drawWorldPark(v, wd) {
+  /* the same ground, painted across the region the camera can see rather
+     than squeezed into it — the sky used to stretch with the zoom */
+  worldGround(v.x0, v.y0, v.x1, v.y1);
+  groundShade(v.x0, v.y0, v.x1, v.y1);
   ctx.save();
-  ctx.beginPath(); ctx.rect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0); ctx.clip();
-  ctx.translate(v.x0, v.y0);
-  ctx.scale((v.x1 - v.x0)/W, (v.y1 - v.y0)/H);
-  drawWorldGround();
-  ctx.restore();
-  /* a little darker than the arena, so the mown square still reads */
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,.28)';
-  ctx.fillRect(v.x0, v.y0, v.x1 - v.x0, v.y1 - v.y0);
   /* the furniture: boulders on Mercury, drifting cloud banks on Venus */
   let sd = 90210;
   const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
@@ -11887,6 +12137,13 @@ function drawOmen() {
   ctx.restore();
 }
 
+/* the palette both ends of the trail are dressed in on a world */
+function gateOf() {
+  const v = advWorld();
+  if (!v) return null;
+  return { mercury:['#c9b6a4', '#5e4a3c', '#ff7a2e'],
+           venus:  ['#e8d8a0', '#6a5010', '#8fbf5a'] }[v.sky] || null;
+}
 function drawField() {
   if (S.titan) { drawSiegeField(); drawTitanFx(); drawTitan(); return; }
   const v = viewBox();
@@ -11894,10 +12151,8 @@ function drawField() {
   if (S.omen) drawOmen();                        // out past the lawn, walking in
   if (!drawWorldGround()) {
     ctx.fillStyle = grassPattern || '#009242'; ctx.fillRect(0, 0, W, H);
-    const vg = ctx.createRadialGradient(W/2, H/2, H*0.3, W/2, H/2, H*1.05);
-    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.36)');
-    ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
   }
+  groundShade(0, 0, W, H);
   if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) {   // where the lawn ends
     ctx.save();
     ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 3/Math.max(0.35, S.cam.z);
@@ -11918,6 +12173,17 @@ function drawField() {
   ctx.strokeStyle = 'rgba(255,255,255,.32)'; ctx.lineWidth = 4;
   ctx.setLineDash([7,7]); ctx.lineDashOffset = -S.t*18;
   const sy0 = (S.pathPts && S.pathPts[0] ? S.pathPts[0][1] : 180);
+  if (gateOf()) {
+    /* the fissure they climb out of */
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    const eg = ctx.createLinearGradient(0, 0, 90, 0);
+    eg.addColorStop(0, gateOf()[2] + 'aa');
+    eg.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = eg; ctx.fillRect(0, sy0 - 40, 90, 80);
+    ctx.restore();
+    ctx.strokeStyle = gateOf()[2]; ctx.lineWidth = 5;
+  }
   ctx.beginPath(); ctx.moveTo(6, sy0-23); ctx.lineTo(6, sy0+23); ctx.stroke();
   ctx.setLineDash([]);
   ctx.font = '800 12px "Segoe UI", system-ui, sans-serif'; ctx.textAlign = 'left';
@@ -11926,12 +12192,30 @@ function drawField() {
 
   const gx = W - 48, gy = (S.pathPts && S.pathPts.length
                            ? S.pathPts[S.pathPts.length - 1][1] : 840);
+  const gate = gateOf();
+  if (gate) {
+    /* a blast hatch set into the rock, lit from inside */
+    ctx.save();
+    ctx.fillStyle = gate[0];
+    ctx.beginPath(); ctx.moveTo(gx-6, gy-46); ctx.lineTo(W, gy-46); ctx.lineTo(W, gy+46);
+    ctx.lineTo(gx-6, gy+46); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = gate[1]; ctx.lineWidth = 4; ctx.stroke();
+    ctx.fillStyle = gate[1];
+    for (let i = -1; i <= 1; i++) ctx.fillRect(gx+2, gy-4 + i*24, 46, 8);
+    ctx.globalCompositeOperation = 'lighter';
+    const gg = ctx.createLinearGradient(gx - 30, 0, W, 0);
+    gg.addColorStop(0, 'rgba(255,255,255,0)');
+    gg.addColorStop(1, gate[2] + '55');
+    ctx.fillStyle = gg; ctx.fillRect(gx - 30, gy - 46, W - gx + 30, 92);
+    ctx.restore();
+  } else {
   ctx.fillStyle = '#f4f6fa';
   ctx.beginPath(); ctx.moveTo(gx-6, gy-46); ctx.lineTo(W, gy-46); ctx.lineTo(W, gy+46); ctx.lineTo(gx-6, gy+46);
   ctx.closePath(); ctx.fill();
   ctx.strokeStyle = '#c3cad6'; ctx.lineWidth = 3; ctx.stroke();
   ctx.fillStyle = '#e5484d';
   for (let i = -1; i <= 1; i++) ctx.fillRect(gx+2, gy-5 + i*26, 44, 10);
+  }
   ctx.save();
   ctx.translate(gx - 18, gy); ctx.rotate(-Math.PI/2);
   ctx.font = '800 13px "Segoe UI", system-ui, sans-serif'; ctx.textAlign = 'center';
@@ -14696,6 +14980,7 @@ function render() {
     }
   }
   for (const c of S.cars) drawCar(c);
+  drawScorch();
   for (const e of S.enemies) drawEnemy(e);
   for (const B of S.bosses) drawBoss(B);
   for (const r of S.rollers) drawRoller(r);
@@ -17127,7 +17412,7 @@ const GUIDE = [
   } },
 
 { ch:'Adventure', title:'Mercury and Venus',
-  text:'A world mission is not endless. It has its own <b>path</b>, its own <b>sky</b>, its own blobs, and a wave goal — hold to that wave and it is yours.<br><br><b>Mercury</b> is bare rock a step from the fire: a short, hard track and everything on it moves fast. Twenty waves. It pays the <b>Ember Shard</b> and the <b>Mercury Jaxon</b> — an ember every 0.16s that leaves whatever it touches burning.<br><br><b>Venus</b> is an ocean of acid air, and it wants Mercury cleared first. A far longer track, fewer but nastier blobs, and thirty waves of it. It pays the <b>Vapour Shard</b> and the <b>Venus Jaxon</b>, who throws a globe of that air for heavy splash and leaves the survivors crawling.<br><br>Both Jaxons are <b>permanent</b>. Once a world is cleared they are on the shelf under <b>Adventure</b>, in every mode, forever.',
+  text:'A world mission is not endless. It has its own <b>path</b>, its own <b>sky</b>, its own blobs, and a wave goal — hold to that wave and it is yours.<br><br><b>Mercury</b> is a trench cut through a crater rim &mdash; twelve turns, no cover, and its own creatures. <b>Scorch Mites</b> are thin and quick, <b>Solar Drones</b> wander off the road and shrug off a slow, <b>Cinder Shells</b> soak most of a hit until the crust is broken, and a <b>Heat Echo</b> dies into a burning patch that hurries the next one through. A <b>Mercury Knight</b> lands every fifth wave, and the <b>Mercury Sovereign</b> is waiting on the twentieth. It pays the <b>Ember Shard</b> and the <b>Mercury Jaxon</b> — an ember every 0.16s that leaves whatever it touches burning.<br><br><b>Venus</b> is an ocean of acid air, and it wants Mercury cleared first. A far longer track, fewer but nastier blobs, and thirty waves of it. It pays the <b>Vapour Shard</b> and the <b>Venus Jaxon</b>, who throws a globe of that air for heavy splash and leaves the survivors crawling.<br><br>Both Jaxons are <b>permanent</b>. Once a world is cleared they are on the shelf under <b>Adventure</b>, in every mode, forever.',
   art:(g, w, h, t) => {
     const p = frac(t/5);
     /* two worlds side by side, each with its own ground and its own track */
@@ -17656,6 +17941,14 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
+
+
+
+
+
+
 
 
 
