@@ -11677,9 +11677,11 @@ function makeGrass() {
 }
 
 function tracePath(width) {
+  /* whatever usePath last loaded, which is what the enemies are walking */
+  const p = (S.pathPts && S.pathPts.length) ? S.pathPts : PATH;
   ctx.beginPath();
-  ctx.moveTo(PATH[0][0], PATH[0][1]);
-  for (let i = 1; i < PATH.length; i++) ctx.lineTo(PATH[i][0], PATH[i][1]);
+  ctx.moveTo(p[0][0], p[0][1]);
+  for (let i = 1; i < p.length; i++) ctx.lineTo(p[i][0], p[i][1]);
   ctx.lineWidth = width; ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
 }
 
@@ -17941,6 +17943,8 @@ function frame(now) {
 }
 
 window.JTD = S;   // handy for tinkering from the console
+
+
 
 
 
