@@ -858,6 +858,33 @@
     transition:background var(--t-hover) var(--e),color var(--t-hover) var(--e);
   }
   .admLv .lvRow button:hover{background:rgba(255,69,58,.32);color:#fff}
+  /* An Adventure Jaxon borrows the level-panel shape but none of the Admin
+     Jaxon's red console styling — he wears his own world's colour, which
+     arrives as --cc from the character record. */
+  .admLv.adv{
+    border-color:color-mix(in srgb,var(--cc,#bf5af2) 42%,transparent);
+    background:color-mix(in srgb,var(--cc,#bf5af2) 10%,transparent);
+    font-family:var(--font);
+  }
+  .admLv.adv .lvTop{color:var(--ink);font-size:13px}
+  .admLv.adv .lvTop b{color:var(--cc,#bf5af2);font-size:12px}
+  .admLv.adv .lvXp{color:var(--mute);font-size:10.5px;margin-bottom:var(--s2)}
+  .admLv.adv .lvUn{color:var(--mute);font-size:11.5px;padding:3px 0}
+  .admLv.adv .lvUn b{color:var(--dim);font-weight:590}
+  .admLv.adv .lvUn.on{color:var(--dim)}
+  .admLv.adv .lvUn.on b{color:var(--accent)}
+  .admLv.adv .lvUn.on span::before{content:none}
+  .admLv.adv .lvRow button{
+    background:color-mix(in srgb,var(--cc,#bf5af2) 22%,transparent);
+    border-color:color-mix(in srgb,var(--cc,#bf5af2) 52%,transparent);
+    color:var(--ink);font-size:12px;min-height:34px;
+  }
+  .admLv.adv .lvRow button:hover{
+    background:color-mix(in srgb,var(--cc,#bf5af2) 36%,transparent);color:#fff;
+  }
+  body.mobile .admLv.adv .lvTop{font-size:18px}
+  body.mobile .admLv.adv .lvXp,body.mobile .admLv.adv .lvUn{font-size:15px}
+  body.mobile .admLv.adv .lvRow button{font-size:17px;min-height:var(--tap)}
   /* the Titan wears gold rather than red */
   .admLv.astro{border-color:rgba(255,214,10,.3);background:rgba(255,154,46,.07)}
   .admLv.astro .lvBar i{background:linear-gradient(90deg,#ff9a2e,var(--gold))}
@@ -2404,7 +2431,10 @@
 
   /* ------------------------------------------------------- the masthead */
   #menuTitle{
-    position:absolute;top:var(--s7);left:50%;transform:translateX(-50%);
+    position:absolute;top:var(--s7);left:50%;
+    /* centred with the translate property, never transform: the entrance
+       animation owns transform and would wipe this out on its last frame */
+    translate:-50% 0;
     text-align:center;z-index:4;pointer-events:none;width:100%;
   }
   #menuTitle h1{
@@ -2438,7 +2468,8 @@
      hovering it is what pushes the whole scene that way. */
   .worldPick{
     position:absolute;top:50%;width:330px;z-index:5;
-    transform:translateY(-50%);
+    translate:0 -50%;              /* centring lives here and nowhere else */
+    transform-origin:50% 50%;
     border-radius:var(--r-2xl);padding:var(--s4) var(--s4) var(--s4) var(--s3);
     text-align:left;gap:var(--s3);justify-content:flex-start;
     font:inherit;color:var(--ink);cursor:pointer;
@@ -2473,13 +2504,25 @@
                0 0 0 1px rgba(48,209,88,.4), 0 0 30px -6px rgba(48,209,88,.6);
   }
   /* a selected world is lifted a touch so the pair never reads as equal */
-  .worldPick.sel{transform:translateY(-50%) scale(1.035)}
+  /* A selected world reads larger and brighter than its neighbour. It does
+     NOT move: a control that shifts under the pointer on hover can shift
+     itself out from under the pointer, and then it judders between the two
+     states. Growing is safe — the box only ever opens up around the cursor. */
+  .worldPick.sel{transform:scale(1.035)}
+  .worldPick:hover:not([disabled]):not(.busy){
+    transform:scale(1.03);      /* grow only: no lift, no travel */
+    border-top-color:rgba(255,255,255,.34);
+    box-shadow:0 16px 40px rgba(0,0,0,.52), var(--glass-inner),
+               0 0 0 1px rgba(255,255,255,.10);
+  }
+  .worldPick.sel:hover:not([disabled]):not(.busy){transform:scale(1.055)}
+  .worldPick:active:not([disabled]):not(.busy){transform:scale(1.01)}
+  .worldPick.sel:active:not([disabled]):not(.busy){transform:scale(1.03)}
   /* while the ring is out, the plates step back rather than compete */
-  #ovMenu.ring .worldPick{opacity:0;pointer-events:none;transform:translateY(-50%) scale(.94)}
+  #ovMenu.ring .worldPick{opacity:0;pointer-events:none;transform:scale(.94)}
   #ovMenu.ring #menuTitle,#ovMenu.ring .cast{opacity:.3}
   #ovMenu.ring #chalRow{opacity:.45}
   #menuTitle,.cast,#chalRow{transition:opacity var(--t-panel) var(--e)}
-  .worldPick.sel:hover{transform:translateY(calc(-50% - 2px)) scale(1.05)}
 
   /* ====================================================== THE PLAY ORB ==
      The signature control. A glass shell with a lit core inside it, a
@@ -2682,7 +2725,7 @@
      Lower priority than the orb in every way: smaller, quieter, and off to
      the side rather than under it. */
   #menuNav{
-    position:absolute;left:50%;bottom:var(--s6);transform:translateX(-50%);
+    position:absolute;left:50%;bottom:var(--s6);translate:-50% 0;
     display:flex;gap:var(--s2);z-index:5;align-items:center;
   }
   .navBtn{
@@ -2693,7 +2736,7 @@
   .navBtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;
               stroke-linecap:round;stroke-linejoin:round}
   #chalRow{
-    position:absolute;left:50%;bottom:82px;transform:translateX(-50%);z-index:5;
+    position:absolute;left:50%;bottom:82px;translate:-50% 0;z-index:5;
     background:rgba(10,10,16,.5);
   }
   #ovMenu #help{bottom:124px}
@@ -2707,10 +2750,10 @@
   #ovMenu.intro #menuNav {animation:menuRise var(--t-screen) var(--e) 300ms both}
   #ovMenu.intro #chalRow {animation:menuRise var(--t-screen) var(--e) 260ms both}
   #ovMenu.intro #menuTL,#ovMenu.intro #menuTR{animation:menuRise 320ms var(--e) 80ms both}
-  @keyframes wpInL{from{opacity:0;transform:translate(-26px,-50%) scale(.94)}
-                   to  {opacity:1;transform:translateY(-50%) scale(1)}}
-  @keyframes wpInR{from{opacity:0;transform:translate(26px,-50%) scale(.94)}
-                   to  {opacity:1;transform:translateY(-50%) scale(1)}}
+  @keyframes wpInL{from{opacity:0;transform:translateX(-26px) scale(.94)}
+                   to  {opacity:1;transform:none}}
+  @keyframes wpInR{from{opacity:0;transform:translateX(26px) scale(.94)}
+                   to  {opacity:1;transform:none}}
   @keyframes orbIn{from{opacity:0;transform:translateY(26px) scale(.8)}
                    to  {opacity:1;transform:none}}
 
@@ -2729,14 +2772,12 @@
      comes in the sheet. */
   body.mobile .worldPick{
     position:absolute;top:auto;bottom:auto;width:620px;
-    transform:translateX(-50%);
+    translate:-50% 0;              /* the phone stacks them, centred */
   }
   body.mobile #pickAdv{left:50%;right:auto;top:152px}
   body.mobile #pickCla{left:50%;right:auto;top:300px}
-  body.mobile .worldPick.sel{transform:translateX(-50%) scale(1.03)}
-  body.mobile .worldPick.sel:hover{transform:translateX(-50%) scale(1.04)}
-  body.mobile #ovMenu.ring .worldPick{transform:translateX(-50%) scale(.94)}
-  body.mobile .worldPick.sel{transform:translateX(-50%) scale(1.03)}
+  /* nothing to restate: the centring is on `translate` and survives */
+  /* the plate scale rules need no phone copy: centring is on translate */
   body.mobile .worldPick .wpTxt b{font-size:24px}
   body.mobile .worldPick .wpTxt em{font-size:15px}
   body.mobile .worldPick .wpMeta{font-size:14px;padding:5px var(--s4)}
@@ -3752,6 +3793,10 @@
   </div>
 </div>
 
+<!-- The sound manifest, loaded as a plain script rather than fetched:
+     a game opened straight off the disk cannot fetch anything, and the
+     sound has to work there too. Missing? The game uses its synth. -->
+<script src="sounds/manifest.js"></script>
 <script>
 /* ---------------------------------------------------- decoration parts --- */
 function chain(x1, y1, x2, y2, n, w) {
@@ -7065,6 +7110,7 @@ const S = {
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
   /* the mixer. vol is master; these three are the buses under it. */
   volSfx:0.9, volAmb:0.55, volMusic:0.5,
+  combatLite:false,           /* thin out combat sound in deep waves */
   coins:0,                    /* the one authoritative coin balance */
   paused:false, dying:0, lastLeak:null, shakeT:0, shakeAmp:0, flash:0, bestAtStart:0,
   /* 0 = everything on, 1 = lean, 2 = leanest. Set by measured frame rate,
@@ -7138,6 +7184,7 @@ function loadSave() {
   S.volSfx   = numOr(j.volSfx,   0.9,  0, 1);
   S.volAmb   = numOr(j.volAmb,   0.55, 0, 1);
   S.volMusic = numOr(j.volMusic, 0.5,  0, 1);
+  S.combatLite = !!j.combatLite;
 
   /* per-character meta progression, validated field by field. A record
      naming a Jaxon that no longer exists is dropped rather than kept. */
@@ -7208,7 +7255,7 @@ function saveNow() {
       /* ---- v2 ---- */
       ver:SAVE_VER,
       coins:Math.max(0, Math.floor(S.coins || 0)),
-      volSfx:S.volSfx, volAmb:S.volAmb, volMusic:S.volMusic,
+      volSfx:S.volSfx, volAmb:S.volAmb, volMusic:S.volMusic, combatLite:S.combatLite ? 1 : 0,
       meta:S.meta, fpPaid:S.fpPaid, modeDone:S.modeDone
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
@@ -7315,6 +7362,9 @@ function syncMix() {
   set(BUS.sfx,    S.volSfx   === undefined ? 0.9  : S.volSfx);
   set(BUS.amb,    S.volAmb   === undefined ? 0.55 : S.volAmb);
   set(BUS.music,  S.volMusic === undefined ? 0.5  : S.volMusic);
+  /* Music is an <audio> element and never goes through the graph, so the
+     bus above does not reach it — it is told separately. */
+  try { syncMusicVol(); if (!S.sound) stopMusic(0.2); else syncMusic(); } catch (e) {}
 }
 
 /* iOS refuses to create or resume an AudioContext outside a user gesture, so
@@ -7325,6 +7375,10 @@ function unlockAudio() {
     buildAudioGraph();
     if (AC.state === 'suspended') AC.resume();
   } catch (e) {}
+  /* The first gesture is the earliest moment a browser will let us make a
+     sound, so it is also the earliest worth loading any. Safe to call
+     repeatedly — sndInit returns immediately once it has a mode. */
+  try { sndInit(); syncMusic(); } catch (e) {}
 }
 
 /* ---- the voice ---------------------------------------------------------
@@ -7400,6 +7454,368 @@ function voice(o) {
    straight on the destination, so the faders reach it. */
 function beep(freq, dur, type, vol, slide) {
   voice({ freq, dur:dur || 0.1, type:type || 'square', vol:vol || 0.05, to:slide, bus:'sfx' });
+}
+
+/* ========================================================================= *
+ *  THE SAMPLE LAYER                                                         *
+ *                                                                           *
+ *  The synth below is still here, but it is no longer the voice of the      *
+ *  game — it is the safety net. Everything audible now tries a real         *
+ *  recording first and only falls through to the oscillator if that         *
+ *  recording is missing, still loading, or the browser will not play it.    *
+ *  Nothing in this file can throw, and nothing waits on audio.              *
+ *                                                                           *
+ *  TWO WAYS TO PLAY, CHOSEN AT RUNTIME                                      *
+ *                                                                           *
+ *  A game opened straight off the disk cannot fetch anything — file:// has  *
+ *  no origin, so fetch() and XHR are both refused, and a MediaElementSource *
+ *  built from such a file is CORS-tainted and feeds the graph silence.      *
+ *  Served over http none of that applies. So the loader probes once and     *
+ *  picks:                                                                   *
+ *                                                                           *
+ *    'buffer'   fetch -> decodeAudioData -> AudioBufferSourceNode -> BUS.   *
+ *               The good path: real mixing, the limiter, sample-accurate    *
+ *               starts, pitch by playbackRate.                              *
+ *    'element'  a small pool of <audio> tags per sound, played directly     *
+ *               with their own volume. No bus routing is possible, so the   *
+ *               fader values are multiplied in by hand instead.             *
+ *                                                                           *
+ *  Both honour the same manifest, the same cooldowns and the same voice     *
+ *  caps, so the game sounds the same either way.                            *
+ * ========================================================================= */
+const SND = {
+  mode:null,            /* 'buffer' | 'element' | 'off' */
+  man:null,             /* the manifest, once it has arrived */
+  buf:Object.create(null),      /* id -> AudioBuffer          (buffer mode)  */
+  pool:Object.create(null),     /* id -> [HTMLAudioElement]   (element mode) */
+  live:Object.create(null),     /* id -> how many are sounding right now     */
+  last:Object.create(null),     /* id -> when it last started, ms            */
+  warned:Object.create(null),   /* id -> already complained about it         */
+  loaded:0, failed:0, total:0,
+  popBudget:0           /* pops allowed in the rest of this frame */
+};
+
+/* How many of a thing may overlap, and how often. Deep waves put hundreds
+   of pops a second through here; the budget is what keeps that a sound
+   effect rather than a wall of noise. Reduced intensity halves it again. */
+const SND_TUNE = {
+  popsPerFrame:3,       /* blob pops started per rendered frame */
+  reducedScale:0.5      /* multiplier on caps when intensity is Reduced */
+};
+const sndReduced = () => S.combatLite || S.perf >= 2;
+
+/* ---------------------------------------------------------------- load --
+   Nothing here blocks the game. The manifest arrives by <script>, and the
+   files are decoded in the background in two waves: the sounds the player
+   will hear in the first few seconds, then everything else. */
+function sndInit() {
+  if (SND.mode) return;
+  const man = window.JTD_SOUND_MANIFEST;
+  if (!man || !man.sounds) { SND.mode = 'off'; return; }
+  SND.man = man;
+  SND.total = Object.keys(man.sounds).length;
+
+  /* Which path can this page use? A file:// page is settled in advance —
+     it has no origin, so fetch is refused and probing for it would only
+     put a red line in the console on every single load. Anything served
+     is probed once for real, because a 404 or a bad MIME type is just as
+     disqualifying as a blocked scheme. */
+  if (location.protocol === 'file:') { SND.mode = 'element'; sndLoadAll(); return; }
+  const probe = man.sounds['ui/press'] || man.sounds[Object.keys(man.sounds)[0]];
+  fetch(probe.src)
+    .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); })
+    .then(ab => AC.decodeAudioData(ab.slice(0)))
+    .then(() => { SND.mode = 'buffer'; sndLoadAll(); })
+    .catch(() => { SND.mode = 'element'; sndLoadAll(); });
+}
+
+/* the ids worth having before anything else: the first clicks, the first
+   shots, the first pops */
+const SND_FIRST = [
+  'ui/press','ui/hover','ui/tap','ui/tab','ui/select','ui/open','ui/close','ui/deny',
+  'game/place','game/sell','game/purchase','game/wave_start','game/wave_clear',
+  'game/coin','game/orb_split','game/orb_merge',
+  'enemies/leak','enemies/elite_pop','enemies/hit_soft',
+  'car','pebble','shuriken','laser','bubble','scream'
+];
+
+function sndLoadAll() {
+  const ids = Object.keys(SND.man.sounds);
+  const first = ids.filter(id => SND_FIRST.includes(id));
+  const rest  = ids.filter(id => !SND_FIRST.includes(id) && !id.startsWith('music/'));
+  /* music is long and never needed in the first instant: it streams on
+     demand from its own element and is never decoded into memory */
+  const go = list => list.forEach(sndLoadOne);
+  go(first);
+  /* The rest only after the first frame has had its chance to paint.
+     requestIdleCallback has to be called ON window: pulling the bare
+     function reference out and calling it unbound throws Illegal
+     invocation, and inside a promise chain that failure is silent — the
+     second wave simply never loads and nobody finds out. */
+  const idle = window.requestIdleCallback
+    ? cb => window.requestIdleCallback(cb, { timeout:2000 })
+    : cb => setTimeout(cb, 220);
+  idle(() => go(rest));
+}
+
+function sndLoadOne(id) {
+  const m = SND.man.sounds[id];
+  if (!m) return;
+  if (SND.mode === 'buffer') {
+    fetch(m.src)
+      .then(r => { if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); })
+      .then(ab => AC.decodeAudioData(ab))
+      .then(buf => { SND.buf[id] = buf; SND.loaded++; })
+      .catch(() => { SND.failed++; sndWarn(id); });
+  } else {
+    /* one element now, the rest of the pool on demand — building every
+       voice of every sound up front is hundreds of idle decoders */
+    const el = sndMakeEl(id, m);
+    if (el) { SND.pool[id] = [el]; SND.loaded++; }
+  }
+}
+
+function sndMakeEl(id, m) {
+  try {
+    const el = new Audio(m.src);
+    /* crossOrigin must stay unset: setting it turns a file:// read into a
+       CORS request, which is refused, and the sound never loads at all */
+    el.preload = 'auto';
+    el.addEventListener('error', () => { sndWarn(id); }, { once:true });
+    return el;
+  } catch (e) { sndWarn(id); return null; }
+}
+
+/* one line per missing sound, ever — a flood of them is worse than silence */
+function sndWarn(id) {
+  if (SND.warned[id]) return;
+  SND.warned[id] = 1;
+  try { console.warn('[sound] missing or undecodable:', id, '— using the synth for it'); } catch (e) {}
+}
+
+/* ------------------------------------------------------------- the mix --
+   Buffer mode routes through BUS and the faders are already applied by the
+   graph. Element mode has no graph, so the same numbers are multiplied in
+   here instead — one function, so the two modes cannot drift apart. */
+function sndGain(m) {
+  const bus = m.bus === 'music' ? (S.volMusic === undefined ? 0.5 : S.volMusic)
+            : m.bus === 'amb'   ? (S.volAmb   === undefined ? 0.55 : S.volAmb)
+            :                     (S.volSfx   === undefined ? 0.9 : S.volSfx);
+  return (m.vol || 0.5) * bus * (S.vol || 0);
+}
+
+/* ------------------------------------------------------------- playing --
+   Returns true if the sample handled it. A false means "I could not", and
+   the caller falls through to the synth. A sound dropped on purpose — by
+   its cooldown or its voice cap — still returns TRUE: it was handled, and
+   replacing it with a beep would defeat the throttle entirely. */
+function playSample(id, o) {
+  o = o || {};
+  if (!S.sound || S.vol <= 0) return true;        /* muted: handled, silently */
+  if (SND.mode === 'off' || !SND.man) return false;
+  const m = SND.man.sounds[id];
+  if (!m) return false;
+
+  const now = performance.now();
+  const lite = sndReduced();
+  const cd = (o.cooldown === undefined ? m.cooldown : o.cooldown) * (lite ? 1.8 : 1);
+  if (cd && now - (SND.last[id] || -1e9) < cd) return true;      /* too soon */
+
+  let cap = o.max === undefined ? m.max : o.max;
+  if (lite) cap = Math.max(1, Math.round(cap * SND_TUNE.reducedScale));
+  if ((SND.live[id] || 0) >= cap) return true;                   /* too many */
+
+  const vol = sndGain(m) * (o.vol === undefined ? 1 : o.vol);
+  if (vol <= 0.0005) return true;
+  /* Pitch variance keeps a repeated one-shot from reading as a machine gun.
+     It is deliberately NOT tied to game speed: at 3x everything would go
+     chipmunk, which is the one thing that makes fast play unpleasant. */
+  const j = o.jitter === undefined ? m.jitter : o.jitter;
+  const rate = (o.rate || 1) * (1 + (Math.random() - 0.5) * (j || 0));
+
+  if (SND.mode === 'buffer') {
+    const b = SND.buf[id];
+    if (!b) return false;                       /* not decoded yet: use synth */
+    try {
+      const src = AC.createBufferSource(), g = AC.createGain();
+      src.buffer = b;
+      src.playbackRate.value = rate;
+      /* the bus already carries the faders in this mode */
+      g.gain.value = (m.vol || 0.5) * (o.vol === undefined ? 1 : o.vol);
+      src.connect(g).connect(BUS[m.bus] || BUS.sfx);
+      SND.live[id] = (SND.live[id] || 0) + 1;
+      src.onended = () => { SND.live[id] = Math.max(0, (SND.live[id] || 1) - 1); };
+      src.start();
+      SND.last[id] = now;
+      return true;
+    } catch (e) { return false; }
+  }
+
+  /* element mode */
+  const pool = SND.pool[id];
+  if (!pool) return false;
+  let el = pool.find(e => e.paused || e.ended || e.currentTime === 0);
+  if (!el) {
+    if (pool.length < cap) { el = sndMakeEl(id, m); if (el) pool.push(el); }
+    /* nothing free and the pool is full: steal the oldest rather than
+       starting a voice we cannot account for */
+    if (!el) el = pool[0];
+  }
+  if (!el) return false;
+  try {
+    el.volume = Math.max(0, Math.min(1, vol));
+    el.playbackRate = Math.max(0.5, Math.min(2, rate));
+    el.currentTime = 0;
+    const pr = el.play();
+    if (pr && pr.catch) pr.catch(() => {});
+    SND.live[id] = (SND.live[id] || 0) + 1;
+    const done = () => { SND.live[id] = Math.max(0, (SND.live[id] || 1) - 1); };
+    el.onended = done;
+    /* a stolen or looping element never fires 'ended', so release on a timer
+       as well — the count must come back down or the sound goes quiet */
+    setTimeout(done, Math.min(4000, ((m.dur || 0.4) * 1000) / Math.max(0.5, rate) + 60));
+    SND.last[id] = now;
+    return true;
+  } catch (e) { return false; }
+}
+
+/* ----------------------------------------------------------- the music --
+   Always an <audio> element, in both modes and on purpose. Routing music
+   through the graph needs a MediaElementSource, and that is exactly the
+   thing file:// taints into silence. Volume and crossfade are done on the
+   element, which works everywhere.
+   There is only ever one track playing and one fading out. */
+const MUS = { cur:null, curName:null, old:null, job:0 };
+
+function playMusic(name, fade) {
+  if (!SND.man) return;
+  const id = 'music/music_' + name + '_loop';
+  const m = SND.man.sounds[id];
+  if (!m) return;
+  /* Already playing it, or already on the way in? play() resolves a frame
+     or two after it is called, so "paused" alone is not enough to tell —
+     the name is claimed the instant the switch starts. */
+  if (MUS.curName === name) return;
+  fade = fade === undefined ? 1.2 : fade;
+
+  let el;
+  try { el = new Audio(m.src); } catch (e) { return; }
+  el.loop = true; el.preload = 'auto'; el.volume = 0;
+  el.addEventListener('error', () => sndWarn(id), { once:true });
+
+  /* whatever was playing fades out and is thrown away; keeping a pool of
+     paused music elements around is how a menu ends up playing twice */
+  if (MUS.cur) { MUS.old = MUS.cur; }
+  MUS.cur = el; MUS.curName = name;
+
+  const target = () => sndGain(m);
+  const p = el.play();
+  if (p && p.catch) p.catch(() => {});
+
+  clearInterval(MUS.job);
+  const t0 = performance.now();
+  MUS.job = setInterval(() => {
+    const k = Math.min(1, (performance.now() - t0) / (fade * 1000));
+    try { if (MUS.cur) MUS.cur.volume = Math.max(0, Math.min(1, target() * k)); } catch (e) {}
+    try { if (MUS.old) MUS.old.volume = Math.max(0, Math.min(1, (MUS.old._v0 || 0.5) * (1 - k))); } catch (e) {}
+    if (k >= 1) {
+      clearInterval(MUS.job); MUS.job = 0;
+      if (MUS.old) { try { MUS.old.pause(); MUS.old.src = ''; } catch (e) {} MUS.old = null; }
+    }
+  }, 50);
+  if (MUS.old) MUS.old._v0 = MUS.old.volume;
+}
+
+function stopMusic(fade) {
+  if (!MUS.cur) return;
+  const el = MUS.cur, v0 = el.volume;
+  MUS.cur = null; MUS.curName = null;
+  clearInterval(MUS.job);
+  const t0 = performance.now(), ms = (fade === undefined ? 0.6 : fade) * 1000;
+  const job = setInterval(() => {
+    const k = Math.min(1, (performance.now() - t0) / ms);
+    try { el.volume = Math.max(0, v0 * (1 - k)); } catch (e) {}
+    if (k >= 1) { clearInterval(job); try { el.pause(); el.src = ''; } catch (e) {} }
+  }, 50);
+}
+/* the faders have to reach the music while it is already playing */
+function syncMusicVol() {
+  if (!MUS.cur || !SND.man || MUS.job) return;
+  const m = SND.man.sounds['music/music_' + MUS.curName + '_loop'];
+  if (m) { try { MUS.cur.volume = Math.max(0, Math.min(1, sndGain(m))); } catch (e) {} }
+}
+
+/* What the music should be right now, worked out from the game rather than
+   set by hand at twenty call sites. Called on the events that can change it. */
+function musicForState() {
+  if (!S.sound || (S.volMusic !== undefined && S.volMusic <= 0)) return null;
+  if ($('ovMenu').classList.contains('on') || $('ovHub').classList.contains('on')
+      || $('ovColl').classList.contains('on')) return 'menu';
+  if (S.phase === 'menu' || S.phase === 'over') return 'menu';
+  if (S.bosses && S.bosses.length) return 'boss';
+  return 'battle';
+}
+function syncMusic() {
+  const want = musicForState();
+  if (want === MUS.curName) return;
+  if (!want) { stopMusic(); return; }
+  playMusic(want);
+}
+
+/* ------------------------------------------------------- game shorthand --
+   The three that fire in bulk get their own front doors, so the throttling
+   lives in one place rather than at every call site. */
+
+/* Most weapons are named after the sound they make, so the ammo key IS the
+   sample id. These six are not: either the pack named the sound after what
+   it does rather than what fires it, or the Jaxon has no single weapon at
+   all and the sound comes from whichever one just went off. */
+/* Is there a recording for this id? Call sites use it to decide whether
+   their own synth line is still needed. */
+const SAMPLED = id => !!(SND.man && SND.man.sounds[id]) && SND.mode !== 'off';
+
+const AMMO_SOUND = {
+  crusher:'slam',          /* Boss Crusher: the ground slam, not the swing */
+  boost:'overcharge',      /* Power Boost: the overcharge it hands out     */
+  wiper:'wipe',            /* Wave Wiper: the blast                        */
+  slayer:'slaydart',       /* Elite Slayer: the dart                       */
+  astro:'astro_claw',      /* the Titan's claws; his ring and guillotine
+                              have their own cues at their own call sites  */
+  multi:'laser',           /* a last resort — see below, these fire by wp  */
+  /* 'tri' is a rotation marker, not a weapon: shoot() resolves it to ice,
+     flame or drill before the sound is asked for. This is only here so a
+     stray call with the raw key still makes a noise. */
+  tri:'flame'
+};
+
+/* A tower fired. A multi-weapon Jaxon passes along whichever weapon really
+   went off — either the weapon itself, or the kind already resolved from
+   it, which is what the three-mode Jaxon does as he rotates through ice,
+   flame and drill. Everything else is named after its own sound. */
+function sfxShot(t, w) {
+  if (!t || !t.type) return;
+  const spec = TOWERS[t.type];
+  if (!spec) return false;
+  const id = (typeof w === 'string' ? w : (w && w.k)) || AMMO_SOUND[spec.ammo] || spec.ammo;
+  return playSample(id);
+}
+
+/* a blob died. Tier picks the sound, and the per-frame budget is what keeps
+   a forty-pop frame from becoming forty simultaneous voices. */
+function sfxPop(e) {
+  if (!e) return false;
+  if (SND.popBudget <= 0) return true;            /* budget spent: stay quiet */
+  SND.popBudget--;
+  if (e.elite >= 0) return playSample('enemies/elite_pop');
+  const tier = Math.max(1, Math.min(7, (e.tier || 0) + 1));
+  return playSample('enemies/pop_t' + tier + '_' + (1 + (Math.random()*3 | 0)),
+                    { max:6 });
+}
+/* refilled once per rendered frame, so the cap is per frame and not per second */
+function sndFrame() {
+  SND.popBudget = sndReduced()
+    ? Math.max(1, Math.round(SND_TUNE.popsPerFrame * SND_TUNE.reducedScale))
+    : SND_TUNE.popsPerFrame;
 }
 
 /* ---- named events -------------------------------------------------------
@@ -7497,11 +7913,34 @@ const SFX = {
                     voice({ freq:1680, dur:0.26, type:'sine', vol:0.02, to:2500, delay:0.08 }); }
 };
 
-/* The one way the interface asks for a sound. Unknown names are ignored
-   rather than thrown, so a typo can never take the game down with it. */
+/* Where the interface's named events live as real files. Anything not in
+   here has no recording and goes straight to the synth. */
+const SFX_SAMPLE = {
+  hover:'ui/hover', press:'ui/press', release:'ui/release', tap:'ui/tap',
+  tab:'ui/tab', select:'ui/select', open:'ui/open', close:'ui/close',
+  deny:'ui/deny', pieceLand:'ui/piece_land',
+  orbHover:'game/orb_hover', orbPress:'ui/press',
+  orbSplit:'game/orb_split', orbMerge:'game/orb_merge',
+  rocket:'game/rocket', warp:'game/warp', heli:'game/heli',
+  hatch:'game/hatch', wind:'game/wind',
+  unlock:'game/unlock', skillBuy:'game/skill_buy', coins:'game/coins_run',
+  victory:'game/victory', defeat:'game/defeat', freeplay:'game/freeplay'
+};
+
+/* The one way the interface asks for a sound.
+   A recording first; the oscillator only if there is not one, or it has
+   not finished loading, or the browser refused it. Unknown names are
+   ignored rather than thrown, so a typo can never take the game down. */
 function sfx(name, arg) {
+  const id = SFX_SAMPLE[name];
+  if (id && playSample(id)) return;
   const f = SFX[name];
   if (typeof f === 'function') { try { f(arg); } catch (e) {} }
+}
+/* toggle is the one event whose sound depends on its argument */
+function sfxToggle(on) {
+  if (playSample(on ? 'ui/toggle_on' : 'ui/toggle_off')) return;
+  try { SFX.toggle(on); } catch (e) {}
 }
 
 /* Hover is the one event that can become noise, so it is rate-limited and
@@ -10864,6 +11303,7 @@ function startWorld(id) {
   reset();
   usePath(v.path);
   banner(v.name.toUpperCase(), 'clear ' + v.goal + ' waves', v.shardCol);
+  playSample('game/wave_start');
   toast(v.name + ' — hold the line to wave ' + v.goal);
   beep(200, 0.8, 'triangle', 0.05, 700);
   return true;
@@ -10902,6 +11342,7 @@ function advWin() {
   $('endModes').textContent = 'Back to the solar map';
   setShop(false); hideTip();
   banner('SHARD RECOVERED', v.shard, v.shardCol);
+  playSample('game/shard');
   flashScreen(0.3);
   for (let i = 0; i < 4; i++) setTimeout(() => beep(500 + i*190, 0.2, 'triangle', 0.05), i*150);
   syncHUD();
@@ -11992,8 +12433,9 @@ function hurtEnemy(e, dmg, owner) {
     ledgerTick();                                 // Merchant Jaxon writes it down
     S.money += bounty;
     if (bounty >= 3) S.floats.push({ x:p.x, y:p.y - 26, txt:'+$' + Math.round(bounty), color:'#ffd83d', life:0.9 });
-    beep((e.elite >= 0 ? 220 : 520) + Math.random()*120, e.elite >= 0 ? 0.12 : 0.05, 'square', 0.03);
-  } else beep(300, 0.035, 'triangle', 0.018);
+    if (!sfxPop(e))
+      beep((e.elite >= 0 ? 220 : 520) + Math.random()*120, e.elite >= 0 ? 0.12 : 0.05, 'square', 0.03);
+  } else if (!playSample('enemies/hit_soft')) beep(300, 0.035, 'triangle', 0.018);
 }
 
 function hurtBoss(dmg, owner, b) {
@@ -12050,7 +12492,7 @@ function burst(x, y, color, n, spread) {
 function scream(t) {
   S.waves.push({ x:t.x, y:t.y, r:26, max:2100, owner:t, hitSet:new Set(), bossHit:false, dmg:SP(t).dmg });
   beep(760, 0.34, 'sawtooth', 0.05, 170);
-  t.shots++;
+  (t.shots++, sfxShot(t));
 }
 
 function fire(t, tx, ty) {
@@ -12071,7 +12513,7 @@ function fire(t, tx, ty) {
                    life:spec.ammo === 'yoyo' ? 6.0 : 2.6, owner:t });
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09, hue:spec.ammo==='rainbow'?0:null });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   noteFired(t, spec.ammo, spec.dmg, spec);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
   beep(t.type === 'ninja' ? 900 : (t.type === 'laser' ? 1250 : (t.type === 'rainbow' ? 1500 : 420)), 0.03, 'square', 0.014);
@@ -12100,7 +12542,7 @@ function adminTick(t, spec, dt, mul, override) {
     let bites = 0;
     while (t.beamAcc >= tick && bites < 6) {          // never more than a few per frame
       t.beamAcc -= tick; bites++;
-      t.shots++;
+      (t.shots++, sfxShot(t));
       adminBurst(t, t.beamTo.x, t.beamTo.y, spec.dmg, spec.splash, spec.splashR, '#ff2b2b');
     }
     if (bites && !t.beamHum) { t.beamHum = 0.35; beep(1300, 0.3, 'square', 0.012, 900); }
@@ -12125,7 +12567,7 @@ function adminTick(t, spec, dt, mul, override) {
         const L = Math.hypot(aim.x - t.x, aim.y - (t.y - 30)) || 1;
         const sp2 = S.shots[S.shots.length - 1];
         sp2.vx = sp2.vx/L*900; sp2.vy = sp2.vy/L*900;
-        t.shots++;
+        (t.shots++, sfxShot(t));
         beep(180, 0.14, 'square', 0.035, 380);
       }
     }
@@ -12177,7 +12619,7 @@ function crusherSlam(t, spec) {
                      dmg:Math.round(spec.dmg*1.6), exec:spec.execAt,
                      bossDmg:Math.round(spec.dmg*spec.bossMul*0.35), stun:0.55, col:'#ff7a2e' });
   }
-  t.slamFlash = 1; t.shots++;
+  t.slamFlash = 1; (t.shots++, sfxShot(t));
   beep(90, 0.5, 'sawtooth', 0.07, 40);
 }
 
@@ -12194,7 +12636,7 @@ function wiperBlast(t, spec) {
                      dmg:spec.blastDmg, exec:0, bossDmg:Math.round(spec.blastDmg*0.55),
                      push:60, col:'#3fa8ff' });
   }
-  t.shots++;
+  (t.shots++, sfxShot(t));
   /* deliberately no camera shake: the wipe comes round often enough that
      shaking on every one of them makes the board unreadable */
   flashScreen(0.16);
@@ -12237,7 +12679,7 @@ function buildCar(t, wp) {
   S.cars.push({ d:fwd ? 6 : PATH_LEN - 6, hp:spec.carHp, max:spec.carHp, kind:spec.carKind,
                 fwd, push:spec.carPush || 0, tow:fwd,
                 owner:t, hitSet:new Set(), bob:Math.random()*6 });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(fwd ? 150 : 200, 0.12, 'square', 0.03, fwd ? 300 : 420);
 }
 
@@ -12268,7 +12710,7 @@ function tipJarAt(x, y) {
     if (Math.hypot(t.x - x, t.y - y) > sp.range) continue;
     if (Math.random() > sp.tipChance) continue;
     const c = sp.tipMin + Math.floor(Math.random()*(sp.tipMax - sp.tipMin + 1));
-    coins += c; t.shots++; t.earned = (t.earned || 0) + c;
+    coins += c; (t.shots++, sfxShot(t)); t.earned = (t.earned || 0) + c;
   }
   return coins;
 }
@@ -12280,7 +12722,7 @@ function caddyPayout() {
     if (TOWERS[t.type].ammo !== 'caddy') continue;
     const sp = SP(t);
     const pay = Math.round(sp.caddyBase + sp.caddyWave*Math.max(0, S.wave - 1));
-    S.money += pay; paid += pay; t.shots++; t.earned = (t.earned || 0) + pay;
+    S.money += pay; paid += pay; (t.shots++, sfxShot(t)); t.earned = (t.earned || 0) + pay;
     S.floats.push({ x:t.x, y:t.y - 54, txt:'+$' + pay, color:'#b7e06a', life:1.9, big:true });
   }
   return paid;
@@ -12351,12 +12793,12 @@ function beamTick(t, wp) {
     if (inCone(t, p, spec.range + B.def.r, arc)) { hurtBoss(dmg, t, B); hits++; }
   }
   t.flash = 1;
-  if (hits) { t.shots++; beep(1400, 0.03, 'sine', 0.012); }
+  if (hits) { (t.shots++, sfxShot(t)); beep(1400, 0.03, 'sine', 0.012); }
 }
 
 /* Titan Tablet: each orbiting slab strobes where it stands. */
 function orbitFlash(t, wp) {
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(1250, 0.09, 'sine', 0.022, 700);
   for (let i = 0; i < wp.count; i++) {
     const a = t.orbA + i/wp.count*Math.PI*2;
@@ -12382,7 +12824,7 @@ function startShock(t, wp) {
 function releaseShock(t, wp) {
   S.shocks.push({ x:t.x, y:t.y - spriteH(t.type)*0.2, r:30, max:760, owner:t,
                   hitSet:new Set(), bossHit:false, wp });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(90, 0.5, 'sawtooth', 0.08, 40);
 }
 
@@ -12408,14 +12850,14 @@ function releaseVortex(t, wp) {
     g.held.push(e.id);
   }
   S.vortex.push(g);
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(140, 0.4, 'sawtooth', 0.06, 60);
 }
 
 function startShred(t, wp) {
   S.shreds.push({ id:++GID, x:t.x, y:t.y, owner:t, dmg:wp.dmg, tick:wp.tick,
                   t:wp.dur, dur:wp.dur, acc:0, grabR:wp.grabR });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(120, 0.5, 'sawtooth', 0.05, 60);
 }
 const TRI = ['ice','flame','drill'];
@@ -12434,10 +12876,11 @@ function shoot(t, wp, tx, ty) {
                    life:8.0, owner:t, wp, tx, ty });
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09 });
-  t.shots++;
+  (t.shots++, sfxShot(t, kind));
   noteFired(t, kind, wp.dmg, SP(t), wp);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
-  beep(kind === 'blackhole' ? 140 : kind === 'fireball' ? 320 : 1000, 0.035, 'square', 0.014);
+  if (!SAMPLED(kind))
+    beep(kind === 'blackhole' ? 140 : kind === 'fireball' ? 320 : 1000, 0.035, 'square', 0.014);
 }
 function fireBoom(x, y, wp, owner) {
   S.fx.push({ k:'fire', x, y, life:0.5, max:0.5, r:wp.boomR });
@@ -12472,7 +12915,7 @@ function releaseNova(t, wp) {
       e.cap = { x:g.x, y:g.y, a:Math.random()*6.283, r:26 + Math.random()*78, t:wp.hold, kind:'nova', src:g.id };
   }
   S.novas.push(g);
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(58, 1.0, 'sawtooth', 0.07, 900);
 }
 
@@ -12486,7 +12929,7 @@ function dropDisc(x, y, wp, owner) {
 /* Boombox Jaxon's stun ring. */
 function bassPulse(t, spec) {
   S.pulses.push({ x:t.x, y:t.y - 18, r:18, max:spec.range, owner:t, hitSet:new Set(), spec });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(66, 0.45, 'square', 0.06, 210);
 }
 
@@ -12607,7 +13050,7 @@ function fireMirror(t, aim, spec) {
                  hue:Math.random()*360, life:ammo === 'yoyo' ? 6.0 : 3.2, owner:t, mirrored:true,
                  wp:(src && src.wp) || null, tx:aim.x, ty:aim.y });
   t.copied = ammo; t.copyFlash = 1;
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(1350, 0.05, 'sine', 0.02, 900);
 }
 
@@ -12628,7 +13071,7 @@ function mirrorOwn(t, aim, spec, depth) {
                  bounce:0, bounceR:0, trap:0, reach:spec.range*1.3,
                  life:2.2, owner:t, dead:false, hitSet:new Set(), wp:null,
                  tx:aim.x, ty:aim.y });
-  t.shots++; t.copyFlash = 1;
+  (t.shots++, sfxShot(t)); t.copyFlash = 1;
   noteFired(t, 'prism', spec.ownDmg, spec);
   beep(1600, 0.05, 'sine', 0.022, 2400);
 }
@@ -12638,14 +13081,14 @@ function mirrorOwn(t, aim, spec, depth) {
    hits harder for a few seconds. */
 function whistleBlast(t, spec) {
   S.pulses.push({ x:t.x, y:t.y - 18, r:16, max:spec.range, owner:t, hitSet:new Set(), spec, kind:'whistle' });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(1500, 0.22, 'square', 0.03, 2300);
 }
 
 /* Pinwheel Jaxon: a gust that shoves the queue back down the trail. */
 function pinwheelGust(t, spec) {
   S.gusts.push({ x:t.x, y:t.y - 18, r:20, max:spec.range, owner:t, hitSet:new Set(), spec });
-  t.shots++;
+  (t.shots++, sfxShot(t));
   beep(320, 0.3, 'sine', 0.035, 900);
 }
 
@@ -12659,7 +13102,7 @@ function passSnacks(t, spec) {
     S.fx.push({ k:'snack', x:t.x, y:t.y - 30, tx:o.x, ty:o.y - 30, life:0.45, max:0.45 });
     fed++;
   }
-  if (fed) { t.shots++; beep(700, 0.1, 'triangle', 0.03, 1100); }
+  if (fed) { (t.shots++, sfxShot(t)); beep(700, 0.1, 'triangle', 0.03, 1100); }
   return fed;
 }
 
@@ -12672,7 +13115,7 @@ function directorCut(t, spec) {
     e.dbl = true;
   }
   for (const B of S.bosses) { B.stun = Math.max(B.stun || 0, spec.freeze*0.5); B.dbl = true; crackArmor(B, 'cut'); }
-  t.shots++;
+  (t.shots++, sfxShot(t));
   toast('CUT!');
   beep(200, 0.5, 'square', 0.06, 60);
 }
@@ -13657,7 +14100,7 @@ function update(dt) {
         t.cd = spec.cd * mul;
         const gain = Math.max(1, Math.min(bankCap(spec),
                               Math.round(spec.income + S.money*(spec.interest || 0))));
-        S.money += gain; t.shots++; t.earned = (t.earned || 0) + gain;
+        S.money += gain; (t.shots++, sfxShot(t)); t.earned = (t.earned || 0) + gain;
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+$' + gain, color:'#ffd83d', life:1.3 });
         bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
         syncHUD();
@@ -13675,7 +14118,7 @@ function update(dt) {
         if (aim) {
           t.cd = spec.cd * mul;
           t.face = aim.x < t.x ? -1 : 1;
-          t.flash = 1; t.shots++; t.recoil = 1;
+          t.flash = 1; (t.shots++, sfxShot(t)); t.recoil = 1;
           crusherSwing(t, spec, aim);
         } else t.cd = Math.min(t.cd, 0);
       }
@@ -13707,7 +14150,7 @@ function update(dt) {
                          chainR:230, splash:0, splashR:0, bounce:0, bounceR:0, trap:0,
                          reach:spec.range*1.4, life:4, owner:t, dead:false,
                          hitSet:new Set(), wp:null, tx:aim.x, ty:aim.y });
-          t.shots++;
+          (t.shots++, sfxShot(t));
           noteFired(t, 'cell', spec.cellDmg, spec);
           beep(1250, 0.05, 'triangle', 0.024, 1900);
         } else t.cd = Math.min(t.cd, 0);
@@ -13723,7 +14166,7 @@ function update(dt) {
                       life:6, dur:spec.surgeDur });
         S.floats.push({ x:t.x, y:t.y - 62, txt:'OVERCHARGE', color:'#6bf0a4', life:1.4, big:true });
         beep(520, 0.4, 'triangle', 0.05, 1500);
-        t.shots++;
+        (t.shots++, sfxShot(t));
       }
       if (t.surge > 0) t.surge -= dt;
       continue;
@@ -13743,7 +14186,7 @@ function update(dt) {
           t.cd = spec.cd * mul;
           const p = enemyPos(best);
           t.face = p.x < t.x ? -1 : 1;
-          t.flash = 1; t.shots++;
+          t.flash = 1; (t.shots++, sfxShot(t));
           best.slay = spec.slayMark;
           best.slayMul = spec.eliteMul;
           t.volleyAt = best;                     // the follow-up knows who
@@ -13782,7 +14225,7 @@ function update(dt) {
                          splash:0, splashR:0, bounce:0, bounceR:0, trap:0,
                          reach:spec.range*1.4, life:1.6, owner:t, dead:false,
                          hitSet:null, wp:null, tx:q.x, ty:q.y });
-          t.shots++;
+          (t.shots++, sfxShot(t));
           beep(1700, 0.03, 'square', 0.016, 1100);
         }
       } else { t.volleyN = 0; t.volleyAt = null; }
@@ -13797,7 +14240,7 @@ function update(dt) {
         if (aim) {
           t.cd = spec.cd * mul;
           t.face = aim.x < t.x ? -1 : 1;
-          t.flash = 1; t.shots++;
+          t.flash = 1; (t.shots++, sfxShot(t));
           /* a saw blade, thrown flat, that cuts through a whole queue and
              comes back to him afterwards */
           const oy = t.y - spriteH(artOf(t))*0.34;
@@ -13843,7 +14286,7 @@ function update(dt) {
       t.cd -= dt;
       if (t.cd <= 0 && S.health < LIFE_CAP) {
         t.cd = spec.cd * mul;
-        S.health = Math.min(LIFE_CAP, S.health + spec.heal); t.shots++;
+        S.health = Math.min(LIFE_CAP, S.health + spec.heal); (t.shots++, sfxShot(t));
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+' + spec.heal + ' life', color:'#ffcf9b', life:1.5 });
         bump('hpBox','gain'); beep(760, 0.16, 'sine', 0.03, 1050);
         syncHUD();
@@ -13922,7 +14365,7 @@ function update(dt) {
             const p = pointAt(B.d);
             if (Math.hypot(p.x - c.x, p.y - c.y) <= spec.cloudR + B.def.r) { hurtBoss(spec.dmg, t, B); hit++; }
           }
-          if (hit) { t.lit = true; c.flash = 1; t.shots++; }
+          if (hit) { t.lit = true; c.flash = 1; (t.shots++, sfxShot(t)); }
         }
         c.bolt -= dt;
         if (c.bolt <= 0) {                                  // the occasional proper strike
@@ -13950,7 +14393,7 @@ function update(dt) {
       t.cd -= dt;
       if (t.cd <= 0 && S.health < LIFE_CAP) {        // the nursery only holds so many cots
         t.cd = spec.cd * mul;
-        S.health = Math.min(LIFE_CAP, S.health + spec.heal); t.shots++;
+        S.health = Math.min(LIFE_CAP, S.health + spec.heal); (t.shots++, sfxShot(t));
         S.floats.push({ x:t.x, y:t.y - 46, txt:'+' + spec.heal + ' life', color:'#7dffb4', life:1.5 });
         if (spec.xtra.markAura) {                    // Triage: paint every blob on the board
           for (const e of S.enemies) if (!e.dead) { e.mark = Math.max(e.mark||0, 4); e.markMul = Math.max(e.markMul||1, 1.3); }
@@ -14025,7 +14468,7 @@ function update(dt) {
         }
       }
       t.lit = any;
-      if (any && t.cd <= 0) { t.cd = 1; t.shots++; }
+      if (any && t.cd <= 0) { t.cd = 1; (t.shots++, sfxShot(t)); }
       continue;
     }
 
@@ -14872,6 +15315,7 @@ function update(dt) {
     beep(660, 0.12, 'triangle', 0.04); setTimeout(() => beep(880, 0.16, 'triangle', 0.04), 110);
     /* a beaten personal best is the one thing worth interrupting for */
     if (!SB() && cleared > bestBefore && S.bestAtStart > 0) {
+      if (!playSample('game/new_best')) 0;
       banner('NEW BEST', 'Wave ' + cleared + ' · ' + M().name, '#ffd60a');
       flashScreen(0.18);
       for (let i = 0; i < 3; i++) setTimeout(() => beep(700 + i*220, 0.14, 'triangle', 0.05), i*120);
@@ -15405,6 +15849,7 @@ function drawPanel() {
     </div>
     ${TOWERS[t.type].ammo === 'astro' ? astroPanelRows(t)
         : t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
+        : !hasTiers(t) ? advPanelRows(t)
         : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
     ${aimRow(t)}
     ${linkRow(t)}
@@ -15423,6 +15868,7 @@ function drawPanel() {
     <div class="hint">${t.dbl ? DOUBLE[t.type].blurb : t.asc ? ASCEND[t.type].blurb
         : TOWERS[t.type].ammo === 'astro' ? 'He levels off the damage he deals each round. No paths, ever.'
         : TOWERS[t.type].ammo === 'admin' ? 'Levels are bought or earned. He has no paths.'
+        : !hasTiers(t) ? 'He is upgraded between runs, with coins, not during one.'
         : 'A tier 3 locks the other paths at tier 2'}</div>`;
 
   el.classList.add('on');
@@ -15490,6 +15936,8 @@ function drawPanel() {
      once. The confirm is a second click on the same button — no dialog to
      dismiss, nothing to read, and it forgets the question after a moment
      so a stray click never leaves the panel armed. */
+  const oc = $('pColl');
+  if (oc) oc.onclick = ev => { ev.stopPropagation(); deselect(); sfx('open'); openCollection(); };
   const sb2 = $('pSell');
   if (sb2) sb2.onclick = ev => {
     ev.stopPropagation();
@@ -15507,7 +15955,9 @@ function drawPanel() {
       return;
     }
     clearTimeout(sb2._t);
-    const x = S.selected; deselect(); sellTower(x);
+    const x = S.selected;
+    if (!x || !S.towers.includes(x)) { deselect(); return; }   /* already gone */
+    deselect(); sellTower(x);
   };
   $('pClose').onclick = ev => { ev.stopPropagation(); deselect(); };
 }
@@ -15541,6 +15991,46 @@ function aimRow(t) {
 
 /* The Titan shows what he has earned, and the one thing you can buy from
    him: the guillotine, on a boss wave, for a great deal of money. */
+/* Does this Jaxon have in-run upgrade tiers to show at all?
+   Most do. The two Adventure Jaxons are declared with empty tier arrays,
+   because everything they gain is bought between runs; the Titan and the
+   Admin Jaxon have their own level panels instead. Asking the DATA rather
+   than the ammo type means a third one can be added without touching
+   drawPanel again — and it is what stops an empty tier list reaching the
+   path renderer, which is what used to take the game down. */
+function hasTiers(t) {
+  const up = UPGRADES[t && t.type];
+  if (!up) return false;
+  return PATHS(t).every(p => up[p] && (up[p].tiers || []).length > 0);
+}
+
+/* The Adventure Jaxons' panel. They have no paths to sell during a run —
+   their damage, rate and reach come from the skill tree in the collection,
+   paid for with coins — so the panel shows what has been bought for them
+   so far and offers the one button that can change it. */
+function advPanelRows(t) {
+  const c = ADV_CHARS.find(x => x.tower === t.type);
+  const sp = SP(t), base = TOWERS[t.type];
+  const lv = c ? charLevel(c.id) : 0;
+  const world = c ? worldById(c.world) : null;
+  /* a stat only reads as "upgraded" when it actually is */
+  const pct = (from, to) => {
+    const up = Math.round((to/from - 1)*100);
+    return up > 0 ? "<b>+" + up + "%</b>" : "<b>&mdash;</b>";
+  };
+  const row = (name, better, body) =>
+    '<div class="lvUn' + (better ? " on" : "") + '"><span>' + name + '</span>' + body + '</div>';
+  return '<div class="admLv adv"' + (c ? ' style="--cc:' + c.col + '"' : '') + '>' +
+    '<div class="lvTop"><span>' + (world ? world.name + " Jaxon" : base.name) + '</span>' +
+      '<b>level ' + lv + '</b></div>' +
+    '<div class="lvXp">Upgraded between runs, with coins, from the collection.</div>' +
+    row("Damage",       sp.dmg > base.dmg,   pct(base.dmg, sp.dmg)) +
+    row("Rate of fire", sp.cd < base.cd,     pct(sp.cd, base.cd)) +
+    row("Range",        sp.range > base.range, pct(base.range, sp.range)) +
+    '<div class="lvRow"><button id="pColl">Open his skill tree</button></div>' +
+    '</div>';
+}
+
 function astroPanelRows(t) {
   const lv = astroLevel(t), sp = SP(t);
   const bar = Math.max(0, Math.min(1, (t.xp || 0)/astroNeed(t)));
@@ -18032,7 +18522,7 @@ function astroTick(t, spec, mul, dt, override) {
     const list = aim || astroTargets(t, spec.beams, R);
     if (list.length) {
       t.cd = spec.cd * mul;
-      t.shots++; t.flash = 1;
+      (t.shots++, sfxShot(t)); t.flash = 1;
       let i = 0;
       for (const g of list) astroBeam(t, astroTip(t, i++), g, spec.dmg, '#ffd83d', 1, spec.beamR);
       if (!S.perf) beep(1500, 0.04, 'sawtooth', 0.012, 1000);
@@ -18071,7 +18561,7 @@ function astroTick(t, spec, mul, dt, override) {
                      bounce:0, bounceR:0, trap:0, reach:R*1.4,
                      life:4, owner:t, dead:false, hitSet:new Set(), wp:null,
                      tx:g.x, ty:g.y });
-      t.shots++;
+      (t.shots++, sfxShot(t));
       beep(140, 0.5, 'square', 0.05, 520);
     }
   }
@@ -20191,7 +20681,7 @@ function fireAbility(id) {
   }
   if (a.fire(t)) {
     S.abilCd[id] = a.cd;
-    t.shots++;
+    (t.shots++, sfxShot(t));
     buildAbilityBar();
   }
 }
@@ -21904,6 +22394,7 @@ function drawSettings() {
     fader('stVol', 'Master', '', S.vol) +
     fader('stSfx', 'Effects', 'Shots, pops, interface.', S.volSfx) +
     fader('stAmb', 'Atmosphere', 'Engines, wind, the room around you.', S.volAmb) +
+    fader('stMus', 'Music', 'The menu, the battle and the boss themes.', S.volMusic) +
     '<h4>Game</h4>' +
     row('Default speed', 'Remembered for your next run.', seg('stSpeed', [[1,'1×'],[2,'2×'],[3,'3×']], S.speed)) +
     row('Auto-skip waves', 'Start the next wave on its own.', sw('stAuto', S.autoSkip)) +
@@ -21912,7 +22403,9 @@ function drawSettings() {
         seg('stPerf', [['auto','Auto'],['0','High'],['2','Fast']],
             S.perfLock === null ? 'auto' : String(S.perfLock))) +
     row('Screen shake', 'Knocks the camera on big hits.', sw('stShake', S.shake)) +
-    row('Colour-blind cues', 'Tags elites with a letter as well as a colour.', sw('stCb', S.cbCues));
+    row('Colour-blind cues', 'Tags elites with a letter as well as a colour.', sw('stCb', S.cbCues)) +
+    row('Combat sound', 'Reduced thins out the shots and pops in deep waves.',
+        seg('stLite', [['0','Full'],['1','Reduced']], S.combatLite ? '1' : '0'));
 
   const flip = (id, get, set) => {
     const b = $(id);
@@ -21921,7 +22414,7 @@ function drawSettings() {
       b.classList.toggle('on', get());
       b.setAttribute('aria-checked', get() ? 'true' : 'false');
       saveNow(); syncChips(); syncMix();
-      sfx('toggle', get());
+      sfxToggle(get());
     };
   };
   flip('stSound', () => S.sound, v => { S.sound = v; syncMix(); });
@@ -21944,6 +22437,7 @@ function drawSettings() {
   wireFader('stVol', v => S.vol = v,    'tap');
   wireFader('stSfx', v => S.volSfx = v, 'press');
   wireFader('stAmb', v => S.volAmb = v, 'wind');
+  wireFader('stMus', v => { S.volMusic = v; syncMusicVol(); }, null);
 
   const segPick = (id, apply) => $(id).querySelectorAll('button').forEach(b => b.onclick = () => {
     $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
@@ -21953,6 +22447,7 @@ function drawSettings() {
   });
   segPick('stSpeed', v => { S.speed = +v; });
   segPick('stPerf',  v => { S.perfLock = v === 'auto' ? null : +v; S.perfToasted = false; setPerf(); });
+  segPick('stLite',  v => { S.combatLite = v === '1'; });
 }
 
 /* ------------------------------------------------------------- banners ---
@@ -21978,8 +22473,18 @@ document.addEventListener('visibilitychange', () => {
   if (hidden) saveRun();               // the tab may not come back
   if (!hidden) last = performance.now();     // don't let a huge dt land on resume
   if (hidden && AC && AC.state === 'running') AC.suspend();
+  /* The context suspending silences the graph, but music is an element and
+     carries on regardless, so it is paused and resumed by hand. */
+  try {
+    if (hidden) { if (MUS.cur) MUS.cur.pause(); }
+    else {
+      if (AC && AC.state === 'suspended') AC.resume();
+      if (MUS.cur) { const p = MUS.cur.play(); if (p && p.catch) p.catch(() => {}); }
+    }
+  } catch (e) {}
 });
 let last = performance.now();
+let musicCheck = 0;
 /* --------------------------------------------------- performance mode ----
    Sampled twice a second. Deep waves start lean whatever the machine is
    doing, and a genuinely slow frame rate drops another level on top. */
@@ -22008,7 +22513,11 @@ function frame(now) {
   if (fpsAcc >= 0.5) { fpsAvg = fpsN/fpsAcc; fpsAcc = 0; fpsN = 0; setPerf(); }
   camKeys(dt);
   if (S.shakeT > 0) { S.shakeT = Math.max(0, S.shakeT - dt*2.6); if (!S.shakeT) S.shakeAmp = 0; }
-  syncAdmDot(); syncChrome(); hudMark();
+  syncAdmDot(); syncChrome(); hudMark(); sndFrame();
+  /* Checked on the clock, not on game time: game time does not advance on
+     the front page or while paused, which is exactly where the music has
+     to be right. syncMusic is a string compare when nothing has changed. */
+  if (now - musicCheck > 400) { musicCheck = now; syncMusic(); }
   if (S.flash > 0) { S.flash = Math.max(0, S.flash - dt*2.2); $('flash').style.opacity = S.flash; }
   if (S.paused) { if (!fieldHidden()) render(); requestAnimationFrame(frame); return; }
   /* the leak that ends the run plays out in slow motion before the screen */
