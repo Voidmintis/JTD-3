@@ -2188,6 +2188,895 @@
   }
   #rotate button:hover{background:rgba(255,255,255,.14)}
 
+
+  /* ==================================================================== *
+   *  LIQUID GLASS                                                        *
+   *                                                                      *
+   *  A material, not a filter. Four things make a surface read as glass   *
+   *  rather than as a grey box with rounded corners:                      *
+   *                                                                      *
+   *    BODY       a dark, slightly cool translucent fill with a vertical  *
+   *               gradient, so the surface has a top and a bottom.        *
+   *    RIM        a hairline that is brighter along the top edge than the *
+   *               bottom — the single strongest cue that something has    *
+   *               thickness. Done with an inset ring plus a gradient      *
+   *               border, not a flat 1px line.                            *
+   *    SPECULAR   a soft highlight that tracks the pointer. Real glass    *
+   *               moves its highlight when you move; this is what makes   *
+   *               the surface feel wet rather than printed.               *
+   *    DEPTH      an inner shadow under the rim and a drop shadow under   *
+   *               the whole thing, so it floats above the world instead   *
+   *               of being painted onto it.                               *
+   *                                                                      *
+   *  None of it uses backdrop-filter. Inside #ui that does nothing (see   *
+   *  the note on .overlay) and costs a full-screen pass, so the depth is  *
+   *  painted rather than sampled.                                         *
+   * ==================================================================== */
+  :root{
+    --glass-body:linear-gradient(
+        160deg,
+        rgba(42,45,62,.72) 0%,
+        rgba(25,27,40,.66) 46%,
+        rgba(18,19,30,.74) 100%);
+    --glass-rim:rgba(255,255,255,.16);
+    --glass-rim-dim:rgba(255,255,255,.05);
+    --glass-spec:rgba(255,255,255,.14);
+    --glass-shadow:0 10px 30px rgba(0,0,0,.46), 0 2px 6px rgba(0,0,0,.34);
+    --glass-inner:inset 0 1px 0 rgba(255,255,255,.16),
+                  inset 0 -1px 0 rgba(0,0,0,.34),
+                  inset 0 0 22px rgba(120,160,255,.045);
+    --cyan:#64d8ff;
+  }
+
+  .glass{
+    position:relative;
+    background:var(--glass-body);
+    border:1px solid var(--glass-rim-dim);
+    border-top-color:var(--glass-rim);
+    border-radius:var(--r-lg);
+    box-shadow:var(--glass-shadow), var(--glass-inner);
+    isolation:isolate;
+    overflow:hidden;
+  }
+  /* the specular sweep. --mx/--my are written by the pointer tracker in JS;
+     with no pointer they sit at the top-left third, which is where a light
+     source would be, so an untouched surface still looks lit. */
+  .glass::before{
+    content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(
+        180px 120px at var(--mx,32%) var(--my,22%),
+        var(--glass-spec), transparent 68%);
+    opacity:.85;
+    transition:opacity var(--t-hover) var(--e);
+  }
+  /* the thin bright band across the top third — the "wet" line */
+  .glass::after{
+    content:'';position:absolute;left:0;right:0;top:0;height:46%;pointer-events:none;z-index:0;
+    background:linear-gradient(180deg,rgba(255,255,255,.085),transparent);
+    border-radius:inherit;
+  }
+  .glass > *{position:relative;z-index:1}
+
+  /* ---- the interactive variant ---------------------------------------
+     Idle, hover, press, selected and disabled are five distinct looks, and
+     every one of them changes the LIGHT rather than just the fill — that
+     is what makes the control feel like an object being lit rather than a
+     div changing colour. */
+  .gbtn{
+    font:inherit;color:var(--ink);cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);
+    transition:transform var(--t-tap) var(--e),
+               box-shadow var(--t-hover) var(--e),
+               border-color var(--t-hover) var(--e),
+               background var(--t-hover) var(--e),
+               opacity var(--t-hover) var(--e);
+    will-change:transform;
+  }
+  .gbtn:hover:not([disabled]):not(.busy){
+    transform:translateY(-1.5px) scale(1.022);
+    border-top-color:rgba(255,255,255,.28);
+    box-shadow:0 14px 36px rgba(0,0,0,.5),
+               var(--glass-inner),
+               0 0 0 1px rgba(255,255,255,.07);
+  }
+  .gbtn:hover:not([disabled])::before{opacity:1}
+  /* press is a real compression: down AND in, briefly */
+  .gbtn:active:not([disabled]):not(.busy){
+    transform:translateY(0) scale(.972);
+    transition-duration:var(--t-tap);
+    box-shadow:0 3px 10px rgba(0,0,0,.5), var(--glass-inner);
+  }
+  .gbtn.sel{
+    border-color:rgba(10,132,255,.55);
+    border-top-color:rgba(120,190,255,.7);
+    box-shadow:0 12px 32px rgba(0,0,0,.46),
+               var(--glass-inner),
+               0 0 0 1px rgba(10,132,255,.4),
+               0 0 26px -6px rgba(10,132,255,.6);
+  }
+  .gbtn[disabled]{opacity:.42;cursor:not-allowed;transform:none}
+  .gbtn.busy{cursor:progress}
+
+  /* the ripple a major action leaves behind. One node, reused, driven by a
+     class — nothing is created per press. */
+  .gbtn .rip{
+    position:absolute;left:var(--rx,50%);top:var(--ry,50%);width:12px;height:12px;
+    margin:-6px 0 0 -6px;border-radius:50%;pointer-events:none;z-index:2;
+    background:radial-gradient(circle,rgba(255,255,255,.5),transparent 70%);
+    opacity:0;transform:scale(1);
+  }
+  .gbtn .rip.go{animation:ripple .55s var(--e-out) forwards}
+  @keyframes ripple{
+    0%  {opacity:.7;transform:scale(1)}
+    100%{opacity:0;transform:scale(22)}
+  }
+
+  /* a tinted glass: same material, a colour pushed through it */
+  .glass.tint-blue  {box-shadow:var(--glass-shadow), var(--glass-inner), inset 0 0 40px rgba(10,132,255,.14)}
+  .glass.tint-purple{box-shadow:var(--glass-shadow), var(--glass-inner), inset 0 0 40px rgba(168,85,247,.16)}
+  .glass.tint-cyan  {box-shadow:var(--glass-shadow), var(--glass-inner), inset 0 0 40px rgba(100,216,255,.14)}
+  .glass.tint-green {box-shadow:var(--glass-shadow), var(--glass-inner), inset 0 0 40px rgba(48,209,88,.14)}
+
+  /* ==================================================================== *
+   *  THE FRONT PAGE                                                      *
+   *                                                                      *
+   *  The world is the page. Everything else is arranged around its edges: *
+   *  utilities top-left, the wallet top-right, the two worlds either side *
+   *  of centre, and the one action at the bottom.                         *
+   * ==================================================================== */
+  #ovMenu{
+    gap:0;justify-content:flex-start;overflow:hidden;padding:0;
+    background:#0a0a10;                       /* the canvas paints the rest */
+  }
+  /* the living scene, behind everything the menu says */
+  #menuCv{
+    position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;
+    pointer-events:none;
+  }
+  /* a vignette so the edges of the frame hold the eye in the middle, and
+     so white text always has something dark under it */
+  #menuVig{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      radial-gradient(130% 92% at 50% 46%, transparent 42%, rgba(6,6,12,.62) 100%),
+      linear-gradient(180deg, rgba(6,6,12,.52) 0%, transparent 22%,
+                              transparent 62%, rgba(6,6,12,.74) 100%);
+  }
+  #ovMenu > *{z-index:2}
+  #menuCv,#menuVig{z-index:0}
+  #menuFx{z-index:1}
+
+  /* ------------------------------------------------- top-left utilities */
+  #menuTL{
+    position:absolute;top:var(--s5);left:var(--s5);z-index:6;
+    display:flex;gap:var(--s2);align-items:flex-start;
+  }
+  .gIcon{
+    width:56px;height:56px;border-radius:18px;padding:0;
+    flex-direction:column;gap:3px;
+  }
+  .gIcon svg{width:22px;height:22px;fill:none;stroke:var(--ink);stroke-width:1.8;
+             stroke-linecap:round;stroke-linejoin:round;opacity:.92}
+  .gIcon .lb{
+    font-size:8.5px;font-weight:590;letter-spacing:.01em;color:var(--dim);line-height:1;
+  }
+  .gIcon:hover .lb{color:var(--ink)}
+  /* the guidebook keeps its own dock so the first-run nudge can light it */
+  #bookDock{position:relative;top:auto;left:auto;transform:none;animation:none;z-index:6}
+  #bookNudge{
+    left:calc(100% + 10px);top:50%;transform:translateY(-50%);
+    font-size:12px;color:var(--cyan);
+  }
+  #bookBtn{
+    width:56px;height:56px;border-radius:18px;padding:0;width:56px;
+    flex-direction:column;gap:3px;font-size:8.5px;letter-spacing:0;
+    background:var(--glass-body);border:1px solid var(--glass-rim-dim);
+    border-top-color:var(--glass-rim);
+    box-shadow:var(--glass-shadow), var(--glass-inner);color:var(--ink);
+  }
+  #bookBtn em{font-size:8.5px;color:var(--dim);font-weight:590}
+  #bookBtn > svg:first-of-type{width:22px;height:22px}
+  #bookBtn > svg:first-of-type path{fill:var(--cyan)}
+  body.bookNudge #bookBtn{
+    border-color:rgba(100,216,255,.6);
+    box-shadow:0 0 30px -4px rgba(100,216,255,.7), var(--glass-shadow), var(--glass-inner);
+  }
+
+  /* ------------------------------------------------------- the wallet -- */
+  #menuTR{position:absolute;top:var(--s5);right:var(--s5);z-index:6;display:flex;gap:var(--s2)}
+  .wallet{
+    display:flex;align-items:center;gap:var(--s2);
+    padding:0 var(--s4);height:44px;border-radius:var(--r-full);
+  }
+  .wallet svg{width:20px;height:20px;flex:none}
+  .wallet b{
+    font-size:18px;font-weight:600;letter-spacing:-.02em;color:var(--gold);
+    font-variant-numeric:tabular-nums;
+  }
+  .wallet i{font-style:normal;font-size:11.5px;font-weight:590;color:var(--mute)}
+  /* a coin landing in the wallet */
+  .wallet.bumped{animation:walletPop .6s var(--e-out)}
+  @keyframes walletPop{
+    0%,100%{box-shadow:var(--glass-shadow), var(--glass-inner)}
+    30%    {box-shadow:var(--glass-shadow), var(--glass-inner),
+                       0 0 0 2px rgba(255,214,10,.55), 0 0 26px -4px rgba(255,214,10,.8)}
+  }
+
+  /* ------------------------------------------------------- the masthead */
+  #menuTitle{
+    position:absolute;top:var(--s7);left:50%;transform:translateX(-50%);
+    text-align:center;z-index:4;pointer-events:none;width:100%;
+  }
+  #menuTitle h1{
+    font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1;
+    color:#fff;text-shadow:0 2px 24px rgba(0,0,0,.7), 0 1px 2px rgba(0,0,0,.9);
+  }
+  #menuTitle h1 span{
+    background:linear-gradient(94deg,var(--cyan),#8fb8ff 42%,var(--purple));
+    -webkit-background-clip:text;background-clip:text;
+    color:transparent;-webkit-text-fill-color:transparent;
+    /* A text-shadow paints BEHIND the glyphs, so on transparent text it is
+       all you see — the gradient half must have none, and takes a halo
+       instead, which is drawn from the painted pixels rather than behind
+       them. */
+    text-shadow:none;
+    filter:drop-shadow(0 2px 14px rgba(100,160,255,.45))
+           drop-shadow(0 1px 2px rgba(0,0,0,.6));
+  }
+  #menuTitle .tagline{
+    font-size:12px;font-weight:590;color:rgba(255,255,255,.52);margin-top:var(--s2);
+    text-shadow:0 1px 6px rgba(0,0,0,.8);
+  }
+  /* The scene already has Jaxons standing in the field; a second strip of
+     them over the title was one cast list too many. */
+  #ovMenu .cast{display:none}
+  #ovMenu .cast img{height:34px}
+
+  /* ================================================== THE TWO WORLDS ====
+     Not buttons: two halves of the scene you can reach into. Each one is a
+     wide, low plate that sits over its own side of the environment, and
+     hovering it is what pushes the whole scene that way. */
+  .worldPick{
+    position:absolute;top:50%;width:330px;z-index:5;
+    transform:translateY(-50%);
+    border-radius:var(--r-2xl);padding:var(--s4) var(--s4) var(--s4) var(--s3);
+    text-align:left;gap:var(--s3);justify-content:flex-start;
+    font:inherit;color:var(--ink);cursor:pointer;
+  }
+  #pickAdv{left:7%}
+  #pickCla{right:7%}
+  .worldPick .wpArt{
+    width:62px;height:62px;border-radius:50%;flex:none;display:grid;place-items:center;
+    position:relative;overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 14px rgba(0,0,0,.45);
+  }
+  #pickAdv .wpArt{background:radial-gradient(circle at 36% 30%,#5b3fa8,#1a1030 78%)}
+  #pickCla .wpArt{background:radial-gradient(circle at 36% 30%,#7fd4ff,#1f6f3a 78%)}
+  .worldPick .wpArt img{width:46px;height:50px;object-fit:contain;transform:scale(1.18)}
+  .worldPick .wpTxt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+  .worldPick .wpTxt b{font-size:20px;font-weight:600;letter-spacing:-.025em;line-height:1.1}
+  .worldPick .wpTxt em{font-style:normal;font-size:12px;color:var(--dim);line-height:1.35}
+  .worldPick .wpMeta{
+    flex:none;font-size:11px;font-weight:600;padding:3px var(--s3);border-radius:var(--r-full);
+    background:rgba(255,255,255,.09);color:var(--dim);white-space:nowrap;
+  }
+  #pickAdv.sel .wpMeta{background:rgba(168,85,247,.22);color:#e3c8ff}
+  #pickCla.sel .wpMeta{background:rgba(48,209,88,.2);color:#9ff0b4}
+  #pickAdv.sel{
+    border-color:rgba(168,85,247,.55);border-top-color:rgba(210,160,255,.75);
+    box-shadow:0 12px 34px rgba(0,0,0,.5), var(--glass-inner),
+               0 0 0 1px rgba(168,85,247,.42), 0 0 30px -6px rgba(168,85,247,.7);
+  }
+  #pickCla.sel{
+    border-color:rgba(48,209,88,.5);border-top-color:rgba(150,255,190,.7);
+    box-shadow:0 12px 34px rgba(0,0,0,.5), var(--glass-inner),
+               0 0 0 1px rgba(48,209,88,.4), 0 0 30px -6px rgba(48,209,88,.6);
+  }
+  /* a selected world is lifted a touch so the pair never reads as equal */
+  .worldPick.sel{transform:translateY(-50%) scale(1.035)}
+  /* while the ring is out, the plates step back rather than compete */
+  #ovMenu.ring .worldPick{opacity:0;pointer-events:none;transform:translateY(-50%) scale(.94)}
+  #ovMenu.ring #menuTitle,#ovMenu.ring .cast{opacity:.3}
+  #ovMenu.ring #chalRow{opacity:.45}
+  #menuTitle,.cast,#chalRow{transition:opacity var(--t-panel) var(--e)}
+  .worldPick.sel:hover{transform:translateY(calc(-50% - 2px)) scale(1.05)}
+
+  /* ====================================================== THE PLAY ORB ==
+     The signature control. A glass shell with a lit core inside it, a
+     highlight that drifts, and six seams that only become visible when it
+     is about to come apart. */
+  #orbDock{
+    position:absolute;left:50%;bottom:252px;width:0;height:0;z-index:7;
+    transition:bottom 520ms var(--e);
+  }
+  /* opening lifts the whole dock, so six pieces on a 170px ring still
+     clear the challenge row and the nav underneath it */
+  #orbDock.open{bottom:392px}
+  #playOrb{
+    position:absolute;left:-74px;top:-74px;width:148px;height:148px;border-radius:50%;
+    padding:0;border:1px solid rgba(255,255,255,.2);
+    background:
+      radial-gradient(circle at 34% 26%, rgba(255,255,255,.34), transparent 52%),
+      radial-gradient(circle at 50% 118%, rgba(10,132,255,.5), transparent 62%),
+      linear-gradient(165deg, rgba(52,56,80,.82), rgba(16,17,28,.9));
+    box-shadow:
+      0 18px 48px rgba(0,0,0,.6),
+      0 0 0 1px rgba(255,255,255,.07),
+      inset 0 2px 0 rgba(255,255,255,.26),
+      inset 0 -14px 28px rgba(0,0,0,.44),
+      0 0 46px -10px rgba(10,132,255,.6);
+    cursor:pointer;display:grid;place-items:center;
+    transition:transform var(--t-hover) var(--e), box-shadow var(--t-hover) var(--e),
+               opacity 180ms var(--e);
+    will-change:transform;
+  }
+  /* the drifting highlight — a slow orbit, so the orb is never still */
+  #playOrb .sheen{
+    position:absolute;inset:0;border-radius:50%;pointer-events:none;
+    background:radial-gradient(54px 40px at var(--sx,38%) var(--sy,24%),
+               rgba(255,255,255,.3), transparent 70%);
+    animation:orbDrift 7.5s ease-in-out infinite;
+  }
+  @keyframes orbDrift{
+    0%,100%{--sx:34%;--sy:22%;opacity:.85}
+    50%    {--sx:62%;--sy:34%;opacity:1}
+  }
+  /* the core: the one solid, vivid thing on the page */
+  #playOrb .core{
+    position:absolute;inset:26px;border-radius:50%;pointer-events:none;
+    background:radial-gradient(circle at 38% 32%, #7ec6ff, var(--blue) 56%, #0050c8);
+    box-shadow:inset 0 -6px 14px rgba(0,0,0,.4), 0 0 24px rgba(10,132,255,.55);
+    transition:background 420ms var(--e), box-shadow 420ms var(--e), transform var(--t-hover) var(--e);
+  }
+  #playOrb svg{position:relative;z-index:2;width:46px;height:46px;
+               filter:drop-shadow(0 2px 5px rgba(0,0,0,.5))}
+  #playOrb svg path{fill:#fff}
+  #playOrb .lbl{
+    position:absolute;left:50%;bottom:-26px;transform:translateX(-50%);
+    font-size:12px;font-weight:600;color:rgba(255,255,255,.72);white-space:nowrap;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none;
+  }
+  #playOrb:hover{transform:scale(1.055)}
+  #playOrb:hover .core{transform:scale(1.03)}
+  #playOrb:active{transform:scale(.94);transition-duration:var(--t-tap)}
+  /* the orb takes the colour of whichever world is chosen */
+  #ovMenu.wAdv #playOrb .core{
+    background:radial-gradient(circle at 38% 32%, #e0b8ff, var(--purple) 56%, #6b1fae);
+    box-shadow:inset 0 -6px 14px rgba(0,0,0,.4), 0 0 26px rgba(168,85,247,.6);
+  }
+  #ovMenu.wAdv #playOrb{box-shadow:
+      0 18px 48px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07),
+      inset 0 2px 0 rgba(255,255,255,.26), inset 0 -14px 28px rgba(0,0,0,.44),
+      0 0 46px -10px rgba(168,85,247,.62)}
+  #ovMenu.wCla #playOrb .core{
+    background:radial-gradient(circle at 38% 32%, #b6ffd2, var(--accent) 56%, #0d7a30);
+    box-shadow:inset 0 -6px 14px rgba(0,0,0,.4), 0 0 26px rgba(48,209,88,.55);
+  }
+  #ovMenu.wCla #playOrb{box-shadow:
+      0 18px 48px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07),
+      inset 0 2px 0 rgba(255,255,255,.26), inset 0 -14px 28px rgba(0,0,0,.44),
+      0 0 46px -10px rgba(48,209,88,.55)}
+
+  /* ---- splitting ----------------------------------------------------
+     The orb does not fade. It compresses, the core collapses to a point,
+     and the six pieces leave from where it was. */
+  #playOrb.splitting{
+    animation:orbCollapse 420ms var(--e) forwards;pointer-events:none;
+  }
+  @keyframes orbCollapse{
+    0%  {transform:scale(1)}
+    26% {transform:scale(.86)}          /* the compression */
+    55% {transform:scale(1.08)}         /* the swell before it goes */
+    100%{transform:scale(.18);opacity:0}
+  }
+  #playOrb.splitting .core{animation:coreSingularity 420ms var(--e) forwards}
+  @keyframes coreSingularity{
+    0%  {transform:scale(1);filter:brightness(1)}
+    40% {transform:scale(1.25);filter:brightness(2.1)}
+    100%{transform:scale(.05);filter:brightness(.2)}
+  }
+  #playOrb.merging{animation:orbReform 420ms var(--e) backwards}
+  @keyframes orbReform{
+    0%  {transform:scale(.18);opacity:0}
+    60% {transform:scale(1.09);opacity:1}
+    100%{transform:scale(1);opacity:1}
+  }
+  #playOrb.gone{opacity:0;pointer-events:none;transform:scale(.18)}
+
+  /* ---- the six pieces ------------------------------------------------
+     Each one is a wedge of the orb that became a control. They are laid
+     out on a ring by JS (--px/--py) and travel there on a curve. */
+  #orbPieces{position:absolute;left:0;top:0;width:0;height:0;pointer-events:none}
+  #orbPieces.live{pointer-events:auto}
+  .piece{
+    position:absolute;left:-58px;top:-58px;width:116px;height:116px;
+    border-radius:50% 50% 50% 14px;      /* a shard, not a circle */
+    padding:0;cursor:pointer;font:inherit;color:var(--ink);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    border:1px solid rgba(255,255,255,.17);
+    border-top-color:rgba(255,255,255,.3);
+    background:
+      radial-gradient(circle at 34% 24%, rgba(255,255,255,.34), transparent 54%),
+      linear-gradient(158deg, color-mix(in srgb, var(--pc) 78%, #1a1c28) 0%,
+                              color-mix(in srgb, var(--pc) 34%, #0f1018) 62%,
+                              rgba(12,13,20,.95) 100%);
+    box-shadow:0 12px 30px rgba(0,0,0,.55),
+               inset 0 1px 0 rgba(255,255,255,.3),
+               inset 0 -12px 22px rgba(0,0,0,.34),
+               0 0 30px -6px var(--pc);
+    /* start life inside the orb, invisible */
+    transform:translate(0,0) scale(.2) rotate(-40deg);
+    opacity:0;
+    transition:transform 620ms var(--e), opacity 260ms var(--e),
+               box-shadow var(--t-hover) var(--e), border-color var(--t-hover) var(--e);
+    transition-delay:calc(var(--i) * 48ms);
+    will-change:transform,opacity;
+  }
+  /* every other piece mirrors its corner, so the ring is not six clones */
+  .piece:nth-child(even){border-radius:50% 50% 14px 50%}
+  #orbPieces.open .piece{
+    transform:translate(var(--px), var(--py)) scale(1) rotate(0deg);
+    opacity:1;
+  }
+  .piece .pIcon{width:34px;height:34px;object-fit:contain;transform:scale(1.2);
+                filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+  .piece .pNm{
+    font-size:11.5px;font-weight:600;letter-spacing:-.01em;line-height:1.1;
+    text-align:center;max-width:94px;text-shadow:0 1px 4px rgba(0,0,0,.8);
+  }
+  .piece .pBest{font-size:9.5px;font-weight:590;color:rgba(255,255,255,.72);
+                text-shadow:0 1px 3px rgba(0,0,0,.8)}
+  .piece:hover{
+    border-color:var(--pc);
+    box-shadow:0 18px 40px rgba(0,0,0,.6),
+               inset 0 1px 0 rgba(255,255,255,.3),
+               0 0 34px -6px var(--pc);
+  }
+  #orbPieces.open .piece:hover{
+    transform:translate(var(--px), var(--py)) scale(1.075) rotate(0deg);
+    transition-delay:0ms;
+  }
+  #orbPieces.open .piece:active{
+    transform:translate(var(--px), var(--py)) scale(.97);
+    transition-duration:var(--t-tap);transition-delay:0ms;
+  }
+  /* a trailing wisp behind a piece as it flies out */
+  .piece .trail{
+    position:absolute;inset:-6px;border-radius:inherit;pointer-events:none;z-index:-1;
+    background:radial-gradient(circle, color-mix(in srgb,var(--pc) 45%, transparent), transparent 70%);
+    opacity:0;
+  }
+  #orbPieces.open .piece .trail{animation:wisp 700ms var(--e-out) both;
+                                animation-delay:calc(var(--i) * 48ms)}
+  @keyframes wisp{0%{opacity:.85;transform:scale(.4)}100%{opacity:0;transform:scale(1.5)}}
+
+  /* ---- the X at the centre ------------------------------------------- */
+  #orbX{
+    position:absolute;left:-28px;top:-28px;width:56px;height:56px;border-radius:50%;
+    padding:0;display:none;place-items:center;cursor:pointer;
+    border:1px solid rgba(255,255,255,.18);
+    background:radial-gradient(circle at 36% 28%, rgba(255,255,255,.2), transparent 56%),
+               linear-gradient(160deg, rgba(40,42,58,.9), rgba(14,15,24,.94));
+    box-shadow:0 10px 26px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.2);
+    color:var(--dim);font-size:22px;line-height:1;
+    opacity:0;transform:scale(.4);
+    transition:opacity 220ms var(--e) 260ms, transform 320ms var(--e) 260ms,
+               color var(--t-hover) var(--e), border-color var(--t-hover) var(--e);
+  }
+  #orbPieces.open ~ #orbX,#orbX.on{display:grid;opacity:1;transform:scale(1)}
+  #orbX:hover{color:#fff;border-color:rgba(255,69,58,.6);
+              box-shadow:0 10px 26px rgba(0,0,0,.55), 0 0 22px -6px rgba(255,69,58,.7)}
+  #orbX:active{transform:scale(.9)}
+  /* with no world chosen the orb has no verb yet, so the prompt stands
+     in for its label rather than sitting under it */
+  #ovMenu:not(.wAdv):not(.wCla) #playOrb .lbl{display:none}
+  #orbHint{
+    position:absolute;left:50%;top:94px;transform:translateX(-50%);
+    font-size:12.5px;font-weight:590;color:rgba(255,255,255,.55);white-space:nowrap;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none;
+    transition:opacity var(--t-hover) var(--e);
+  }
+  #orbDock.open #orbHint{opacity:0}
+
+  /* ------------------------------------------------- secondary actions -
+     Lower priority than the orb in every way: smaller, quieter, and off to
+     the side rather than under it. */
+  #menuNav{
+    position:absolute;left:50%;bottom:var(--s6);transform:translateX(-50%);
+    display:flex;gap:var(--s2);z-index:5;align-items:center;
+  }
+  .navBtn{
+    height:40px;padding:0 var(--s4);border-radius:var(--r-full);
+    font-size:12.5px;font-weight:590;gap:var(--s2);color:var(--dim);
+  }
+  .navBtn:hover{color:var(--ink)}
+  .navBtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;
+              stroke-linecap:round;stroke-linejoin:round}
+  #chalRow{
+    position:absolute;left:50%;bottom:82px;transform:translateX(-50%);z-index:5;
+    background:rgba(10,10,16,.5);
+  }
+  #ovMenu #help{bottom:124px}
+
+  /* the menu's own entrance, band by band */
+  #ovMenu.intro #menuTitle{animation:menuRise var(--t-screen) var(--e) both}
+  #ovMenu.intro .cast    {animation:menuRise var(--t-screen) var(--e) 60ms both}
+  #ovMenu.intro #pickAdv {animation:wpInL 480ms var(--e) 110ms both}
+  #ovMenu.intro #pickCla {animation:wpInR 480ms var(--e) 110ms both}
+  #ovMenu.intro #orbDock {animation:orbIn 560ms var(--e) 200ms both}
+  #ovMenu.intro #menuNav {animation:menuRise var(--t-screen) var(--e) 300ms both}
+  #ovMenu.intro #chalRow {animation:menuRise var(--t-screen) var(--e) 260ms both}
+  #ovMenu.intro #menuTL,#ovMenu.intro #menuTR{animation:menuRise 320ms var(--e) 80ms both}
+  @keyframes wpInL{from{opacity:0;transform:translate(-26px,-50%) scale(.94)}
+                   to  {opacity:1;transform:translateY(-50%) scale(1)}}
+  @keyframes wpInR{from{opacity:0;transform:translate(26px,-50%) scale(.94)}
+                   to  {opacity:1;transform:translateY(-50%) scale(1)}}
+  @keyframes orbIn{from{opacity:0;transform:translateY(26px) scale(.8)}
+                   to  {opacity:1;transform:none}}
+
+  /* ---- the front page on a phone -------------------------------------
+     The two world plates stop flanking the orb and stack above it, because
+     at 844px of real width a 330px plate either side leaves the orb no
+     room at all. */
+  body.mobile #menuTitle h1{font-size:44px}
+  body.mobile #menuTitle{top:var(--s4)}
+  body.mobile #menuTitle .tagline{font-size:16px}
+  body.mobile #ovMenu .cast{display:none}
+  /* The two plates stop flanking the orb and stack above it — at 844 real
+     px wide a 330px plate either side leaves the orb nowhere to be. The
+     left/right offsets are set per-id because the desktop rule that places
+     them is also per-id, and an id beats two classes however late it
+     comes in the sheet. */
+  body.mobile .worldPick{
+    position:absolute;top:auto;bottom:auto;width:620px;
+    transform:translateX(-50%);
+  }
+  body.mobile #pickAdv{left:50%;right:auto;top:152px}
+  body.mobile #pickCla{left:50%;right:auto;top:300px}
+  body.mobile .worldPick.sel{transform:translateX(-50%) scale(1.03)}
+  body.mobile .worldPick.sel:hover{transform:translateX(-50%) scale(1.04)}
+  body.mobile #ovMenu.ring .worldPick{transform:translateX(-50%) scale(.94)}
+  body.mobile .worldPick.sel{transform:translateX(-50%) scale(1.03)}
+  body.mobile .worldPick .wpTxt b{font-size:24px}
+  body.mobile .worldPick .wpTxt em{font-size:15px}
+  body.mobile .worldPick .wpMeta{font-size:14px;padding:5px var(--s4)}
+  body.mobile .worldPick .wpArt{width:76px;height:76px}
+  body.mobile .worldPick .wpArt img{width:58px;height:62px}
+  body.mobile #orbDock{bottom:400px}
+  body.mobile #orbDock.open{bottom:452px}
+  body.mobile #chalRow{bottom:196px}
+  body.mobile #menuNav{bottom:var(--s5)}
+  /* while the ring is out it is the only thing being chosen between,
+     and on a phone it needs every band on the page */
+  body.mobile #ovMenu.ring #chalRow,
+  body.mobile #ovMenu.ring #menuNav{opacity:0;pointer-events:none}
+  #menuNav{transition:opacity var(--t-panel) var(--e)}
+  body.mobile .gIcon,body.mobile #bookBtn{width:var(--tap);height:var(--tap);border-radius:22px}
+  body.mobile .gIcon svg,body.mobile #bookBtn > svg:first-of-type{width:30px;height:30px}
+  body.mobile .gIcon .lb,body.mobile #bookBtn em{font-size:12px}
+  body.mobile .wallet{height:var(--tap);padding:0 var(--s5)}
+  body.mobile .wallet b{font-size:24px}
+  body.mobile .wallet i{font-size:15px}
+  body.mobile .navBtn{height:var(--tap);font-size:16px;padding:0 var(--s5)}
+  body.mobile .navBtn svg{width:20px;height:20px}
+  body.mobile .piece{left:-74px;top:-74px;width:148px;height:148px}
+  body.mobile .piece .pNm{font-size:15px;max-width:124px}
+  body.mobile .piece .pBest{font-size:12px}
+  body.mobile .piece .pIcon{width:44px;height:44px}
+  body.mobile #orbX{left:-36px;top:-36px;width:72px;height:72px;font-size:28px}
+  body.mobile #orbHint{font-size:16px}
+  body.portrait.mobile .worldPick{width:min(780px,94%)}
+  body.portrait.mobile #pickAdv{top:200px}
+  body.portrait.mobile #pickCla{top:360px}
+  body.portrait.mobile #orbDock{bottom:430px}
+  body.portrait.mobile #orbDock.open{bottom:470px}
+
+
+  /* ==================================================================== *
+   *  THE ADVENTURE JAXON COLLECTION                                      *
+   *  A grid of characters on the left, the chosen one and his tree on    *
+   *  the right. Two panes, one screen, no navigation to get lost in.     *
+   * ==================================================================== */
+  #ovColl{z-index:35;padding:0;gap:0;justify-content:flex-start;
+          background:radial-gradient(1300px 900px at 30% 40%,
+                     rgba(28,20,48,.95), rgba(7,6,14,.99) 72%)}
+  #collWrap{
+    position:relative;z-index:1;width:min(1300px,96%);height:min(90%,820px);margin:auto;
+    display:flex;flex-direction:column;
+    border-radius:var(--r-xl);overflow:hidden;
+    animation:dialogIn var(--t-panel) var(--e) both;
+  }
+  .clHead{
+    flex:none;display:flex;align-items:center;gap:var(--s4);
+    padding:var(--s4) var(--s5);border-bottom:1px solid var(--line-soft);
+  }
+  .clHead .t{font-size:19px;font-weight:600;letter-spacing:-.025em}
+  .clHead .s{flex:1;font-size:12.5px;color:var(--mute)}
+  .clHead .wallet{height:38px;padding:0 var(--s4)}
+  .clX{
+    font:inherit;font-size:18px;cursor:pointer;line-height:1;flex:none;
+    width:34px;height:34px;border-radius:50%;color:var(--dim);
+    background:rgba(255,255,255,.08);border:0;
+    transition:background var(--t-hover) var(--e),color var(--t-hover) var(--e);
+  }
+  .clX:hover{color:#fff;background:rgba(255,255,255,.18)}
+
+  .clMain{flex:1;display:flex;min-height:0}
+
+  /* ---- the roster ---- */
+  .clGrid{
+    flex:none;width:398px;padding:var(--s3);overflow-y:auto;
+    border-right:1px solid var(--line-soft);
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:var(--s2);align-content:start;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+  }
+  .cCard{
+    position:relative;text-align:left;font:inherit;color:inherit;cursor:pointer;
+    border-radius:var(--r-md);padding:var(--s3);
+    display:flex;flex-direction:column;gap:var(--s2);
+    border:1px solid var(--line-soft);background:rgba(255,255,255,.04);
+    transition:background var(--t-hover) var(--e),border-color var(--t-hover) var(--e),
+               transform var(--t-tap) var(--e);
+  }
+  .cCard:hover{background:rgba(255,255,255,.08);border-color:var(--line)}
+  .cCard:active{transform:scale(.985)}
+  .cCard.on{
+    border-color:color-mix(in srgb,var(--cc) 62%,transparent);
+    background:color-mix(in srgb,var(--cc) 14%,transparent);
+    box-shadow:0 0 0 1px color-mix(in srgb,var(--cc) 40%,transparent);
+  }
+  .cCard .cTop{display:flex;align-items:center;gap:var(--s2)}
+  .cCard .cPic{
+    width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:radial-gradient(circle at 36% 30%,#fff,#e6eaf0 72%,#ccd2db);
+    border:2px solid rgba(0,0,0,.45);overflow:hidden;
+  }
+  .cCard .cPic img{width:34px;height:38px;object-fit:contain;transform:scale(1.2)}
+  .cCard .cNm{display:block;font-size:13px;font-weight:590;line-height:1.15;
+              overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cCard .cSub{display:block;font-size:10.5px;color:var(--mute);margin-top:1px;
+               overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .cCard .cLv{
+    position:absolute;top:var(--s2);right:var(--s2);
+    font-size:10px;font-weight:600;padding:1px var(--s2);border-radius:var(--r-full);
+    background:color-mix(in srgb,var(--cc) 26%,transparent);color:#fff;
+  }
+  .cCard .cState{display:block;font-size:10.5px;font-weight:590}
+  .cCard.locked{opacity:.52}
+  .cCard.locked .cPic{filter:grayscale(1) brightness(.7)}
+  .cCard.locked .cState{color:var(--mute)}
+  .cCard.buyable .cState{color:var(--gold)}
+  .cCard.owned .cState{color:var(--accent)}
+  .cCard.soon{opacity:.34}
+  /* a silhouette for a Jaxon whose world is not built yet */
+  .cCard.soon .cPic img{filter:brightness(0) opacity(.5)}
+
+  /* ---- the detail pane ---- */
+  .clDetail{
+    flex:1;min-width:0;display:flex;flex-direction:column;
+    padding:var(--s5);overflow-y:auto;
+    scrollbar-width:thin;scrollbar-color:rgba(255,255,255,.2) transparent;
+  }
+  .dHead{display:flex;gap:var(--s4);align-items:flex-start;margin-bottom:var(--s4)}
+  .dPic{
+    width:104px;height:104px;border-radius:var(--r-lg);flex:none;display:grid;place-items:center;
+    background:radial-gradient(circle at 36% 28%,
+               color-mix(in srgb,var(--cc) 32%,#1a1c28), #10111a 76%);
+    border:1px solid color-mix(in srgb,var(--cc) 42%,transparent);
+    box-shadow:0 0 34px -12px var(--cc), inset 0 1px 0 rgba(255,255,255,.14);
+    overflow:hidden;
+  }
+  .dPic img{width:78px;height:86px;object-fit:contain;transform:scale(1.18)}
+  .dInfo{flex:1;min-width:0}
+  .dInfo h3{font-size:24px;font-weight:600;letter-spacing:-.03em;color:var(--cc)}
+  .dInfo .dTag{font-size:11.5px;font-weight:590;color:var(--mute);margin-top:2px}
+  .dInfo .dBl{font-size:13px;line-height:1.5;color:var(--dim);margin-top:var(--s2)}
+  .dStats{display:flex;gap:var(--s2);margin:var(--s4) 0}
+  .dStats div{
+    flex:1;min-width:0;background:rgba(255,255,255,.055);border-radius:var(--r-sm);
+    padding:var(--s2);text-align:center;
+  }
+  .dStats .k{font-size:10px;font-weight:590;color:var(--mute)}
+  .dStats .v{font-size:16px;font-weight:600;letter-spacing:-.02em;margin-top:1px}
+  .dStats .v.up{color:var(--accent)}
+  .dStats .v em{font-style:normal;font-size:11px;color:var(--accent);margin-left:3px}
+
+  .dGate{
+    padding:var(--s4);border-radius:var(--r-md);text-align:center;
+    background:rgba(255,255,255,.05);font-size:13px;color:var(--dim);line-height:1.5;
+  }
+  .dGate b{color:var(--ink)}
+  .dBuy{
+    width:100%;min-height:46px;border-radius:var(--btnR);font:inherit;font-size:14.5px;
+    font-weight:600;cursor:pointer;border:1px solid transparent;color:#fff;
+    background:var(--blue);box-shadow:0 2px 12px rgba(10,132,255,.35);
+    display:flex;align-items:center;justify-content:center;gap:var(--s2);
+    transition:background var(--t-hover) var(--e),transform var(--t-tap) var(--e);
+  }
+  .dBuy:hover{background:var(--blue-hi)}
+  .dBuy:active{transform:scale(.98)}
+  .dBuy[disabled]{background:rgba(255,255,255,.07);color:var(--mute);
+                  box-shadow:none;cursor:not-allowed;border-color:var(--line)}
+
+  /* ---- the skill tree ------------------------------------------------
+     Three columns of three with a capstone under them, and real lines
+     drawn between a node and its prerequisite so the shape of the
+     progression is visible before you read a word of it. */
+  .treeWrap{position:relative;margin-top:var(--s3);flex:1;min-height:0}
+  .treeHead{
+    display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s3);
+  }
+  .treeHead .th{font-size:14px;font-weight:600}
+  .treeHead .ts{flex:1;font-size:11.5px;color:var(--mute)}
+  .tree{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+        gap:var(--s3);padding-bottom:var(--s3)}
+  .tree svg.wires{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+  .tree svg.wires line{stroke:rgba(255,255,255,.22);stroke-width:2.5;stroke-linecap:round}
+  .tree svg.wires line.on{stroke:var(--cc);stroke-width:3;opacity:.9;
+                          filter:drop-shadow(0 0 5px color-mix(in srgb,var(--cc) 60%,transparent))}
+  .node{
+    position:relative;z-index:1;text-align:left;font:inherit;color:inherit;cursor:pointer;
+    border-radius:var(--r-md);padding:var(--s2) var(--s3);
+    border:1px solid var(--line-soft);background:rgba(16,17,26,.86);
+    display:flex;flex-direction:column;gap:2px;
+    transition:background var(--t-hover) var(--e),border-color var(--t-hover) var(--e),
+               transform var(--t-tap) var(--e),box-shadow var(--t-hover) var(--e);
+  }
+  .node .nTop{display:flex;align-items:center;gap:var(--s2)}
+  .node .nIc{
+    width:22px;height:22px;flex:none;border-radius:7px;display:grid;place-items:center;
+    background:rgba(255,255,255,.08);
+  }
+  .node .nIc svg{width:13px;height:13px;fill:var(--dim)}
+  .node .nNm{font-size:12px;font-weight:590;line-height:1.15;flex:1;min-width:0}
+  .node .nRank{font-size:10px;font-weight:600;color:var(--mute);flex:none;
+                font-variant-numeric:tabular-nums}
+  .node .nDs{font-size:10.5px;color:var(--mute);line-height:1.3}
+  .node .nCost{font-size:11px;font-weight:600;color:var(--gold);margin-top:2px}
+  .node .nCost svg{width:11px;height:11px;vertical-align:-1px;margin-right:2px}
+  /* the five states a node can be in, each visibly different */
+  .node.ok{border-color:color-mix(in srgb,var(--cc) 48%,transparent)}
+  .node.ok:hover{background:rgba(32,34,48,.94);
+                 box-shadow:0 0 0 1px color-mix(in srgb,var(--cc) 40%,transparent),
+                            0 8px 22px rgba(0,0,0,.45)}
+  .node.ok:active{transform:scale(.98)}
+  .node.ok .nIc{background:color-mix(in srgb,var(--cc) 26%,transparent)}
+  .node.ok .nIc svg{fill:#fff}
+  .node.poor{opacity:.8;cursor:not-allowed}
+  .node.poor .nCost{color:#ff8b82}
+  .node.locked{opacity:.44;cursor:not-allowed}
+  .node.maxed{
+    border-color:color-mix(in srgb,var(--accent) 50%,transparent);
+    background:rgba(48,209,88,.11);
+  }
+  .node.maxed .nIc{background:rgba(48,209,88,.3)}
+  .node.maxed .nIc svg{fill:#bdf5cf}
+  .node.maxed .nRank{color:var(--accent)}
+  .node.maxed .nCost{color:var(--accent)}
+  .node.cap{grid-column:1/-1}
+  .node.cap .nNm{font-size:13px}
+  /* a rank just bought */
+  .node.got{animation:nodePop .5s var(--e-out)}
+  @keyframes nodePop{
+    0%,100%{box-shadow:0 0 0 0 transparent}
+    35%    {box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 55%,transparent)}
+  }
+
+  body.mobile .clGrid{width:300px;grid-template-columns:1fr}
+  body.mobile .cCard .cNm{font-size:16px}
+  body.mobile .cCard .cSub,body.mobile .cCard .cState{font-size:13px}
+  body.mobile .dInfo h3{font-size:30px}
+  body.mobile .dInfo .dBl{font-size:16px}
+  body.mobile .dStats .k{font-size:13px}
+  body.mobile .dStats .v{font-size:21px}
+  body.mobile .node .nNm{font-size:15px}
+  body.mobile .node .nDs{font-size:13px}
+  body.mobile .node .nCost,body.mobile .node .nRank{font-size:14px}
+  body.mobile .clX{width:52px;height:52px;font-size:24px}
+  body.mobile .dBuy{min-height:var(--tap);font-size:18px}
+  @media (max-aspect-ratio: 1/1){
+    body.mobile .clMain{flex-direction:column}
+    body.mobile .clGrid{width:auto;max-height:38%;grid-template-columns:repeat(2,minmax(0,1fr));
+                        border-right:0;border-bottom:1px solid var(--line-soft)}
+  }
+
+
+  /* ==================================================================== *
+   *  THE CINEMATIC LAYER                                                 *
+   *  One canvas above every screen. display:none unless a sequence is    *
+   *  actually running, so it costs nothing at all the rest of the time.  *
+   * ==================================================================== */
+  #cineCv{
+    position:absolute;inset:0;width:100%;height:100%;display:none;
+    z-index:48;pointer-events:none;
+  }
+  #cineCv.on{display:block}
+  /* while a sequence runs, the board underneath is being set up and must
+     not take a stray click meant for the cinematic */
+  body.cine #ui > *:not(#cineCv):not(#cineSkip){pointer-events:none!important}
+  #cineSkip{
+    position:absolute;right:var(--s5);bottom:var(--s5);z-index:49;display:none;
+    font:inherit;font-size:12.5px;font-weight:590;cursor:pointer;
+    padding:0 var(--s4);min-height:36px;border-radius:var(--r-full);
+    color:var(--dim);background:rgba(10,10,16,.6);border:1px solid var(--line);
+    transition:color var(--t-hover) var(--e),background var(--t-hover) var(--e);
+  }
+  #cineSkip.on{display:block;animation:menuRise 220ms var(--e) both}
+  #cineSkip:hover{color:var(--ink);background:rgba(30,30,40,.8)}
+  body.mobile #cineSkip{font-size:16px;min-height:var(--tap);padding:0 var(--s5)}
+
+
+  /* ==================================================================== *
+   *  THE RESULTS SHEET                                                   *
+   *  Shown only on a win. Every figure is measured from the run; the      *
+   *  reward is the one thing that animates, because it is the one thing   *
+   *  the player just earned.                                             *
+   * ==================================================================== */
+  /* #scoreRow is a row of figures on the defeat sheet; the win sheet puts
+     several blocks into it instead, and those stack. */
+  #ovEnd.win #scoreRow{flex-direction:column;gap:0;align-items:center;width:100%}
+  #ovEnd.win h1{color:#fff}
+  .rsGrid{
+    display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);
+    width:min(640px,90vw);margin:0 auto;
+  }
+  .rsCell{
+    background:rgba(255,255,255,.055);border-radius:var(--r-md);
+    padding:var(--s3) var(--s2);text-align:center;
+    border:1px solid var(--line-soft);
+  }
+  .rsCell .k{font-size:11px;font-weight:590;color:var(--mute)}
+  .rsCell .v{font-size:22px;font-weight:600;letter-spacing:-.03em;margin-top:2px;
+             font-variant-numeric:tabular-nums}
+  /* the Jaxon who did the most work gets named */
+  .rsBest{
+    display:flex;align-items:center;gap:var(--s3);justify-content:center;
+    width:min(640px,90vw);margin:var(--s3) auto 0;
+    padding:var(--s2) var(--s4);border-radius:var(--r-md);
+    background:rgba(255,255,255,.045);border:1px solid var(--line-soft);
+  }
+  .rsBest .pic{
+    width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;
+    background:radial-gradient(circle at 36% 30%,#fff,#e6eaf0 72%,#ccd2db);
+    border:2px solid rgba(0,0,0,.45);overflow:hidden;
+  }
+  .rsBest .pic img{width:32px;height:36px;object-fit:contain;transform:scale(1.2)}
+  .rsBest .who{display:flex;flex-direction:column;text-align:left;gap:1px}
+  .rsBest .who b{font-size:14px;font-weight:600}
+  .rsBest .who em{font-style:normal;font-size:11.5px;color:var(--mute);
+                  font-variant-numeric:tabular-nums}
+  /* the reward itself */
+  .rsReward{
+    display:flex;align-items:center;justify-content:center;gap:var(--s3);
+    width:min(640px,90vw);margin:var(--s3) auto 0;
+    padding:var(--s3) var(--s5);border-radius:var(--r-md);
+    background:linear-gradient(180deg,rgba(255,214,10,.16),rgba(255,214,10,.07));
+    border:1px solid rgba(255,214,10,.34);
+  }
+  .rsReward .rl{font-size:12.5px;font-weight:590;color:var(--dim)}
+  .rsReward .rv{font-size:26px;font-weight:700;letter-spacing:-.03em;color:var(--gold);
+                font-variant-numeric:tabular-nums}
+  .rsReward .rc{font-size:12.5px;font-weight:590;color:var(--mute)}
+  .rsReward.paid{background:rgba(255,255,255,.05);border-color:var(--line)}
+  .rsReward.paid .rv{font-size:14px;color:var(--mute);font-weight:590}
+  /* the running balance */
+  .rsWallet{
+    display:flex;align-items:baseline;justify-content:center;gap:var(--s2);
+    margin-top:var(--s3);font-size:12.5px;font-weight:590;color:var(--mute);
+  }
+  .rsWallet b{font-size:19px;font-weight:600;color:var(--gold);
+              font-variant-numeric:tabular-nums}
+  .rsWallet i{font-style:normal}
+  body.mobile .rsCell .k{font-size:14px}
+  body.mobile .rsCell .v{font-size:28px}
+  body.mobile .rsBest .who b{font-size:18px}
+  body.mobile .rsBest .who em{font-size:15px}
+  body.mobile .rsReward .rv{font-size:32px}
+  body.mobile .rsReward .rl,body.mobile .rsReward .rc{font-size:16px}
+  body.mobile .rsWallet{font-size:16px}
+  body.mobile .rsWallet b{font-size:24px}
+
   /* ==================================================================== *
    *  MOBILE LAYOUT                                                       *
    *  Everything inside #ui lives in 1600x900 space and gets scaled down  *
@@ -2644,51 +3533,95 @@
     <div id="toast"></div>
 
     <div class="overlay on" id="ovMenu">
-      <div id="menuFx"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
+      <!-- the living world: one canvas, two environments, blended -->
+      <canvas id="menuCv" width="1600" height="900" aria-hidden="true"></canvas>
+      <div id="menuVig" aria-hidden="true"></div>
+      <!-- the mood layer the difficulty previews still tint -->
+      <div id="menuFx" aria-hidden="true"><div class="tl" id="tlA"></div><div class="tl" id="tlB"></div>
         <div id="menuRain"></div><div id="menuBolt"></div></div>
-      <div id="menuDim"></div>
-      <div id="bookDock">
-        <button id="bookBtn">
-          <svg width="34" height="34" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill="#0b2113" d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
+      <div id="menuDim" aria-hidden="true"></div>
+
+      <!-- top left: the two things that are not the game -->
+      <div id="menuTL">
+        <button class="glass gbtn gIcon" id="menuSettings" aria-label="Settings" title="Settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="3.2"/>
+            <path d="M19.4 14.6a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5v.2a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1h-.2a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1a1.6 1.6 0 0 0 1-1.5v-.2a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8v.1a1.6 1.6 0 0 0 1.5 1h.2a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>
           </svg>
-          Guidebook
-          <em>How to play</em>
-          <svg class="ants" aria-hidden="true"><rect/></svg>
+          <span class="lb">Settings</span>
         </button>
-        <span id="bookNudge">start here &rarr;</span>
+        <div id="bookDock">
+          <button class="gbtn" id="bookBtn" aria-label="Guidebook" title="How to play">
+            <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6.5a.5.5 0 0 0 0 1H19a1 1 0 1 1 0 2H6.5A2.5 2.5 0 0 1 4 19.5zM8 6h8v2H8zm0 4h8v2H8z"/>
+            </svg>
+            <em>Guide</em>
+            <svg class="ants" aria-hidden="true"><rect/></svg>
+          </button>
+          <span id="bookNudge">start here &rarr;</span>
+        </div>
       </div>
-      <div class="tagline">Select a Gamemode</div>
-      <h1>JAXON <span>TOWER DEFENSE</span></h1>
+
+      <!-- top right: the wallet, which is the whole point of the economy -->
+      <div id="menuTR">
+        <div class="glass wallet" id="coinBox" title="Coins earned from finished runs">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="12" cy="12" r="9" fill="#ffd60a"/>
+            <path fill="#8a6a00" d="M11 6h2v12h-2z"/>
+            <path fill="#8a6a00" d="M9 9.2c0-1.5 1.4-2.4 3-2.4s3 .8 3 2.2h-2c0-.4-.5-.7-1-.7s-1 .3-1 .8c0 1.6 4 .9 4 4 0 1.6-1.4 2.5-3 2.5s-3-.9-3-2.4h2c0 .5.5.9 1 .9s1-.3 1-.9c0-1.6-4-.8-4-4z"/>
+          </svg>
+          <b id="coinVal">0</b><i>coins</i>
+        </div>
+      </div>
+
+      <div id="menuTitle">
+        <h1>JAXON <span>TOWER DEFENSE</span></h1>
+        <div class="tagline" id="menuTag">Pick a world</div>
+      </div>
       <div class="cast" id="menuCast"></div>
-      <p id="menuSub">Forty-odd Jaxons, a boss every tenth wave, a colossus in the rain &mdash; and nine worlds with a shard of the Orb on each. Pick your fight.</p>
-      <div id="modeRow">
-        <div id="advSide">
-          <div class="sideLab">The campaign</div>
-          <div id="advCard"></div>
-        </div>
-        <div class="mDiv" aria-hidden="true"></div>
-        <div id="classicSide">
-          <div class="sideLab">Everything else</div>
-          <div id="classicDock">
-            <button id="classicBtn" aria-expanded="false" aria-controls="modeGrid">
-              <span class="cbGlow" aria-hidden="true"></span>
-              <span class="cbInner">
-                <span class="cbNm">Classic</span>
-                <span class="cbTeaser" id="cbTeaser">Easy &middot; Medium &middot; Hard &middot; Nightmare &middot; Sandbox &middot; Boss Rush</span>
-              </span>
-              <span class="cbChev" aria-hidden="true">&#9662;</span>
-            </button>
-            <div id="modeGrid" role="group" aria-label="Classic modes"></div>
-          </div>
-        </div>
+
+      <!-- the two worlds -->
+      <button class="glass gbtn worldPick" id="pickAdv" aria-pressed="false">
+        <span class="wpArt"><img id="advArt" src="" alt=""></span>
+        <span class="wpTxt"><b>Adventure</b><em>Nine worlds, nine shards, one Orb</em></span>
+        <span class="wpMeta" id="advMeta">0 / 9</span>
+      </button>
+      <button class="glass gbtn worldPick" id="pickCla" aria-pressed="false">
+        <span class="wpArt"><img id="claArt" src="" alt=""></span>
+        <span class="wpTxt"><b>Classic</b><em>Six ways to hold the nursery</em></span>
+        <span class="wpMeta" id="claMeta">6 modes</span>
+      </button>
+
+      <!-- the one action -->
+      <div id="orbDock">
+        <div id="orbPieces"></div>
+        <button id="playOrb" aria-label="Play">
+          <span class="sheen" aria-hidden="true"></span>
+          <span class="core" aria-hidden="true"></span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z"/></svg>
+          <span class="lbl" id="orbLbl">Play</span>
+        </button>
+        <button id="orbX" aria-label="Back">&times;</button>
+        <div id="orbHint">Choose Adventure or Classic</div>
       </div>
+
+      <!-- secondary destinations, deliberately quieter than the orb -->
+      <div id="menuNav">
+        <button class="glass gbtn navBtn" id="navJaxons">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.5 5 5.5.8-4 3.9 1 5.5-5-2.7-5 2.7 1-5.5-4-3.9 5.5-.8z"/></svg>
+          Adventure Jaxons
+        </button>
+        <button class="glass gbtn navBtn" id="bestsBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4v-7H4zm6 0h4V4h-4zm6 0h4v-11h-4z"/></svg>
+          Bests
+        </button>
+        <button class="glass gbtn navBtn" id="playBtn">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.1"/></svg>
+          How to play
+        </button>
+      </div>
+
       <div id="chalRow"></div>
-      <div id="menuRow">
-        <button id="bestsBtn">Bests</button>
-        <button id="playBtn">How to play</button>
-        <button id="menuSettings">Settings</button>
-      </div>
       <div id="help" data-touch="0" hidden>
         <div><kbd>Shop</kbd><span>Press the arrow tab at the bottom to slide the shop open, and again to close it.</span></div>
         <div><kbd>Hover</kbd><span>Point at a placed Jaxon for live stats &mdash; damage, pops, wave placed.</span></div>
@@ -2751,6 +3684,32 @@
 
     <div class="overlay" id="ovStats"><div id="statWrap"></div></div>
     <div class="overlay" id="ovBests"><div id="bestWrap"></div></div>
+
+    <!-- the cinematic layer: one canvas, above every screen, inert unless
+         a transition is actually running -->
+    <canvas id="cineCv" width="1600" height="900" aria-hidden="true"></canvas>
+    <button id="cineSkip">Skip</button>
+
+    <div class="overlay" id="ovColl">
+      <div class="glass" id="collWrap">
+        <div class="clHead">
+          <span class="t">Adventure Jaxons</span>
+          <span class="s" id="clSub"></span>
+          <div class="glass wallet" id="clWallet">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" fill="#ffd60a"/>
+              <path fill="#8a6a00" d="M11 6h2v12h-2z"/>
+              <path fill="#8a6a00" d="M9 9.2c0-1.5 1.4-2.4 3-2.4s3 .8 3 2.2h-2c0-.4-.5-.7-1-.7s-1 .3-1 .8c0 1.6 4 .9 4 4 0 1.6-1.4 2.5-3 2.5s-3-.9-3-2.4h2c0 .5.5.9 1 .9s1-.3 1-.9c0-1.6-4-.8-4-4z"/>
+            </svg><b id="clCoin">0</b><i>coins</i>
+          </div>
+          <button class="clX" id="clClose" aria-label="Close">&times;</button>
+        </div>
+        <div class="clMain">
+          <div class="clGrid" id="clGrid"></div>
+          <div class="clDetail" id="clDetail"></div>
+        </div>
+      </div>
+    </div>
 
     <div class="overlay" id="ovBook">
       <div id="bookWrap">
@@ -4983,9 +5942,13 @@ const upOf = (t, p) => (p === 'A' ? t.upA : p === 'B' ? t.upB : t.upC) || 0;
 const setUp = (t, p, v) => { if (p === 'A') t.upA = v; else if (p === 'B') t.upB = v; else t.upC = v; };
 
 function SP(t) {
+  /* METAV changes whenever an Adventure skill is bought, so a Jaxon already
+     on the board picks the new stats up on his next shot rather than
+     keeping the cached ones for the rest of the run. */
   const ver = (t.upA || 0)*16 + (t.upB || 0)*4 + (t.upC || 0) + (t.asc ? 1024 : 0)
             + (t.dbl ? 2048 : 0) + (t.lvl || 0)*4096
-            + Math.round((t.rangeUp || 0)*100)*4194304;
+            + Math.round((t.rangeUp || 0)*100)*4194304
+            + METAV*1073741824;
   if (t._spec && t._sv === ver) return t._spec;
   const base = TOWERS[t.type];
   const sp = Object.assign({}, base);
@@ -4997,6 +5960,12 @@ function SP(t) {
     for (let i = 0; i < (t.upB || 0); i++) applyMod(sp, up.B.tiers[i].mod);
     if (up.C) for (let i = 0; i < (t.upC || 0); i++) applyMod(sp, up.C.tiers[i].mod);
   }
+  /* Adventure Jaxons carry what the player has bought for them between
+     runs. It lands here, before Ascension, so the two compose the way two
+     in-run paths would — and it reaches ONLY the character it belongs to,
+     because metaMods() is keyed on the tower type. */
+  const mm = metaMods(t.type);
+  if (mm) for (const m of mm) applyMod(sp, m);
   /* An Ascended Jaxon carries every path at once and then some — see ASCEND */
   if (t.asc) ascendSpec(sp, t.type);
   if (t.dbl) dblSpec(sp, t.type);
@@ -5063,7 +6032,7 @@ function canBuyUp(t, path, tier) {
   return 'ok';
 }
 function buyUp(t, path, tier) {
-  if (canBuyUp(t, path, tier) !== 'ok') { beep(150, 0.08, 'square', 0.03); return false; }
+  if (canBuyUp(t, path, tier) !== 'ok') { sfx('deny'); return false; }
   const u = UPGRADES[t.type][path].tiers[tier-1];
   spend(u.cost);
   setUp(t, path, tier);
@@ -5178,7 +6147,7 @@ function startDouble(t) {
   if (!pair) { toast(dblWhy(t) || 'No pair ready'); return; }
   if (dblCount(t.type) >= DBL_MAX) { toast('There can only be one'); return; }
   const cost = dblCost(t.type);
-  if (!afford(cost)) { toast('Double Ascension costs ' + bigCash(cost)); beep(150, 0.08, 'square', 0.03); return; }
+  if (!afford(cost)) { toast('Double Ascension costs ' + bigCash(cost)); sfx('deny'); return; }
   spend(cost);
   const keep = t, other = pair.find(o => o !== t);
   S.fuse = { x:keep.x, y:keep.y, t:0, dur:1.5, type:keep.type,
@@ -5340,23 +6309,30 @@ const MODES = {
   easy:   { key:'easy', name:'Easy', mc:'#30d158', pips:1, menu:true, preview:'easy',
             tint:['rgba(30,190,80,.30)','rgba(6,26,14,.55)'],
             blurb:'More coins, gentler enemies. Learn and experiment.',
+            /* the wave this difficulty is WON at, and what clearing it pays
+               into the wallet. Past the goal the same run carries on as Free
+               Play. Both live here so no screen invents its own number. */
+            goal:30, reward:100,
             runTint:'rgba(40,200,90,.045)',
             money:150, lives:75, budget:0.75, eliteHp:0.72, spd:0.85, eliteShift:6,  eliteMul:0.6,
             bossHp:0.75, coin:1.3,  waveReward:1.3, leak:0.8,  cost:1,    refund:0.75, autoFrom:1 },
   normal: { key:'normal', name:'Medium', mc:'#ffd60a', pips:2, menu:true, preview:'medium',
             tint:['rgba(210,160,20,.26)','rgba(28,20,4,.55)'],
             blurb:'The standard fight. Fair pressure, fair rewards.',
+            goal:40, reward:200,
             money:120, lives:50, budget:1,    eliteHp:1,    spd:1,    eliteShift:0,  eliteMul:1,
             bossHp:1,    coin:1,    waveReward:1,   leak:1,    cost:1,    refund:0.70, autoFrom:1 },
   hard:   { key:'hard', name:'Hard', mc:'#ff9f0a', pips:3, menu:true, preview:'hard',
             tint:['rgba(210,50,30,.28)','rgba(30,6,4,.58)'],
             blurb:'Tougher elites and bosses. Money gets tight.',
+            goal:50, reward:300,
             runTint:'rgba(215,60,30,.055)',
             money:85,  lives:40, budget:1.18, eliteHp:1.32, spd:1.15, eliteShift:-3, eliteMul:1.3,
             bossHp:1.4,  coin:0.88, waveReward:0.8, leak:1.2,  cost:1.05, refund:0.62, autoFrom:5 },
   nightmare:{ key:'nightmare', name:'Nightmare', mc:'#bf5af2', pips:4, menu:true, preview:'nightmare',
             tint:['rgba(120,50,230,.34)','rgba(14,4,28,.62)'], storm:true,
             blurb:'Purple hell. Rain, brutal scaling, high scores only.',
+            goal:60, reward:500,
             runTint:'rgba(120,50,230,.11)', runStorm:true,
             money:60,  lives:30, budget:1.4,  eliteHp:1.62, spd:1.28, eliteShift:-6, eliteMul:1.7,
             bossHp:1.9,  coin:0.78, waveReward:0.6, leak:1.45, cost:1.1,  refund:0.55, autoFrom:10 },
@@ -6087,6 +7063,9 @@ const S = {
   placing:null, hovered:null, selected:null, shopOpen:false, autoSkip:false, autoTimer:0, ptrId:null,
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
+  /* the mixer. vol is master; these three are the buses under it. */
+  volSfx:0.9, volAmb:0.55, volMusic:0.5,
+  coins:0,                    /* the one authoritative coin balance */
   paused:false, dying:0, lastLeak:null, shakeT:0, shakeAmp:0, flash:0, bestAtStart:0,
   /* 0 = everything on, 1 = lean, 2 = leanest. Set by measured frame rate,
      with a floor from the wave number so deep runs never start heavy. */
@@ -6113,6 +7092,9 @@ const bMark = (o, b) => { (o.bHit || (o.bHit = new Set())).add(b); };
    worth remembering. Everything is optional and every read is defensive —
    a private window with storage blocked just plays with the defaults. */
 const SAVE_KEY = 'jtd3.save';
+/* Bumped whenever the shape of the blob changes. loadSave() migrates
+   anything older forward; it never rewrites the player's progress. */
+const SAVE_VER = 2;
 function loadSave() {
   let j;
   try { j = JSON.parse(localStorage.getItem(SAVE_KEY) || '{}'); } catch (e) { return; }
@@ -6144,6 +7126,76 @@ function loadSave() {
     for (const c of CHALLENGES) if (j.chal[c.id]) S.chal[c.id] = true;
   }
   S.tutorialDone = !!j.tutorial;
+
+  /* ---- v2 fields ------------------------------------------------------
+     Everything above this line predates the progression system. A v1 blob
+     simply has none of it, and every field below falls back to the value a
+     brand-new player would have — so an old save loads as a complete,
+     valid v2 save with an empty wallet rather than as an error. */
+  S.saveVer = (typeof j.ver === 'number' && j.ver > 0) ? j.ver : 1;
+
+  S.coins = numOr(j.coins, 0, 0, 1e12);
+  S.volSfx   = numOr(j.volSfx,   0.9,  0, 1);
+  S.volAmb   = numOr(j.volAmb,   0.55, 0, 1);
+  S.volMusic = numOr(j.volMusic, 0.5,  0, 1);
+
+  /* per-character meta progression, validated field by field. A record
+     naming a Jaxon that no longer exists is dropped rather than kept. */
+  S.meta = {};
+  if (j.meta && typeof j.meta === 'object') {
+    for (const k in j.meta) {
+      if (!ADV_CHARS.some(c => c.id === k)) continue;
+      const r = j.meta[k];
+      if (!r || typeof r !== 'object') continue;
+      const skills = {};
+      if (r.skills && typeof r.skills === 'object') {
+        const tree = SKILLS[k] || [];
+        for (const sid in r.skills) {
+          const node = tree.find(n => n.id === sid);
+          if (!node) continue;                       /* a skill since removed */
+          const rank = Math.floor(numOr(r.skills[sid], 0, 0, node.max || 1));
+          if (rank > 0) skills[sid] = rank;
+        }
+      }
+      S.meta[k] = { bought:!!r.bought, skills };
+    }
+  }
+  metaInit();
+
+  /* Free Play milestone bookkeeping, per run slot, so resuming a saved run
+     cannot re-award a milestone it already paid out. */
+  S.fpPaid = (j.fpPaid && typeof j.fpPaid === 'object') ? j.fpPaid : {};
+  /* which difficulties have already paid their completion reward */
+  S.modeDone = (j.modeDone && typeof j.modeDone === 'object') ? j.modeDone : {};
+
+  if (S.saveVer < SAVE_VER) migrateSave(S.saveVer);
+  S.saveVer = SAVE_VER;
+}
+
+/* a number from an untrusted blob, or the default */
+function numOr(v, dflt, lo, hi) {
+  if (typeof v !== 'number' || !isFinite(v)) return dflt;
+  return Math.max(lo, Math.min(hi, v));
+}
+
+/* ------------------------------------------------------ save migration ---
+   Runs once, on load, for any save older than the current version. Each
+   step only has to carry a save forward by one version, and they chain. */
+function migrateSave(from) {
+  if (from < 2) {
+    /* v1 -> v2. A player who already cleared worlds earned those Jaxons
+       before the wallet existed; they keep them, unlocked and free, rather
+       than being asked to buy back something they have already won. */
+    advInit();
+    for (const c of ADV_CHARS) {
+      if (c.world && S.adv.jaxons && S.adv.jaxons[c.world]) {
+        metaOf(c.id).bought = true;
+      }
+    }
+    /* and a modest founding balance so the new system is not a dead screen
+       for someone mid-campaign */
+    S.coins = Math.max(S.coins, shardCount() * 50);
+  }
 }
 function saveNow() {
   try {
@@ -6152,7 +7204,12 @@ function saveNow() {
       sound:S.sound, speed:S.speed, perfLock:S.perfLock,
       autoSkip:S.autoSkip, tutorial:S.tutorialDone ? 1 : 0,
       sbDiff:S.sbDiff, customs:S.customs, chal:S.chal,
-      vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0
+      vol:S.vol, shake:S.shake, cbCues:S.cbCues, book:BOOK.page, bookSeen:S.bookSeen ? 1 : 0,
+      /* ---- v2 ---- */
+      ver:SAVE_VER,
+      coins:Math.max(0, Math.floor(S.coins || 0)),
+      volSfx:S.volSfx, volAmb:S.volAmb, volMusic:S.volMusic,
+      meta:S.meta, fpPaid:S.fpPaid, modeDone:S.modeDone
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
@@ -6204,27 +7261,258 @@ function comboTick(dt) {
   $('comboN').textContent = c.boost > 0 ? Math.ceil(c.boost) + 's' : c.n;
 }
 
-/* -------------------------------------------------------------- audio ---- */
+/* ========================================================== AUDIO =========
+ *  Everything audible goes through here. There are no sound files: every
+ *  voice is synthesised on the spot, which is why the whole game is still
+ *  one HTML file and why nothing can fail to load.
+ *
+ *  The graph is a real mixing desk rather than a pile of oscillators
+ *  shouting at the destination:
+ *
+ *      voice -> bus (sfx | amb | music) -> master -> limiter -> out
+ *
+ *  Four faders, four saved values. A bus is the only thing a voice ever
+ *  connects to, so changing a fader moves everything on it at once and
+ *  nothing has to be told. The limiter on the end is what stops a wave of
+ *  forty Jaxons firing at once from clipping.
+ * ======================================================================== */
 let AC = null;
+const BUS = { master:null, sfx:null, amb:null, music:null, limiter:null };
+let audioReady = false;
+
+function buildAudioGraph() {
+  if (audioReady || !AC) return;
+  BUS.limiter = AC.createDynamicsCompressor();
+  /* a gentle ceiling, not an effect: it only works on the peaks a busy
+     wave produces and is inaudible the rest of the time */
+  BUS.limiter.threshold.value = -10;
+  BUS.limiter.knee.value = 6;
+  BUS.limiter.ratio.value = 12;
+  BUS.limiter.attack.value = 0.003;
+  BUS.limiter.release.value = 0.14;
+  BUS.limiter.connect(AC.destination);
+
+  BUS.master = AC.createGain();
+  BUS.master.connect(BUS.limiter);
+  for (const k of ['sfx','amb','music']) {
+    BUS[k] = AC.createGain();
+    BUS[k].connect(BUS.master);
+  }
+  audioReady = true;
+  syncMix();
+}
+
+/* The faders. Called whenever a slider moves, and once at build time. */
+function syncMix() {
+  if (!audioReady) return;
+  const t = AC.currentTime, on = S.sound ? 1 : 0;
+  const set = (node, v) => {
+    /* a short ramp, never a jump — a step on a gain node is an audible click */
+    node.gain.cancelScheduledValues(t);
+    node.gain.setTargetAtTime(Math.max(0.0001, v), t, 0.02);
+  };
+  set(BUS.master, (S.vol || 0) * on);
+  set(BUS.sfx,    S.volSfx   === undefined ? 0.9  : S.volSfx);
+  set(BUS.amb,    S.volAmb   === undefined ? 0.55 : S.volAmb);
+  set(BUS.music,  S.volMusic === undefined ? 0.5  : S.volMusic);
+}
+
 /* iOS refuses to create or resume an AudioContext outside a user gesture, so
    every first touch/click runs this before anything else. */
 function unlockAudio() {
   try {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    buildAudioGraph();
     if (AC.state === 'suspended') AC.resume();
   } catch (e) {}
 }
-function beep(freq, dur, type, vol, slide) {
-  if (!S.sound || S.vol <= 0) return;
+
+/* ---- the voice ---------------------------------------------------------
+   One oscillator, one envelope, optionally through a filter. Everything
+   the game makes is built out of these. */
+function voice(o) {
+  if (!S.sound || S.vol <= 0) return null;
   try {
     AC = AC || new (window.AudioContext || window.webkitAudioContext)();
-    const o = AC.createOscillator(), g = AC.createGain();
-    o.type = type || 'square'; o.frequency.value = freq;
-    if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(40, slide), AC.currentTime + dur);
-    g.gain.value = (vol || 0.05) * S.vol;
-    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime + dur);
-    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime + dur);
-  } catch (e) {}
+    buildAudioGraph();
+    if (AC.state === 'suspended') AC.resume();
+  } catch (e) { return null; }
+  if (!audioReady) return null;
+
+  const t0 = AC.currentTime + (o.delay || 0);
+  const dur = Math.max(0.01, o.dur || 0.1);
+  const bus = BUS[o.bus || 'sfx'] || BUS.sfx;
+
+  try {
+    const g = AC.createGain();
+    const peak = Math.max(0.0001, o.vol === undefined ? 0.05 : o.vol);
+    /* a real ADSR-ish shape. The tiny attack is what separates a note from
+       a click: ramping from zero rather than starting at full is audible. */
+    const atk = o.atk === undefined ? 0.006 : o.atk;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(peak, t0 + Math.min(atk, dur*0.5));
+    if (o.hold) g.gain.setValueAtTime(peak, t0 + Math.min(o.hold, dur*0.9));
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+
+    let tail = g;
+    if (o.filter) {
+      const f = AC.createBiquadFilter();
+      f.type = o.filter;
+      f.frequency.value = o.cut || 1200;
+      if (o.cutTo) f.frequency.exponentialRampToValueAtTime(Math.max(40, o.cutTo), t0 + dur);
+      f.Q.value = o.q === undefined ? 1 : o.q;
+      g.connect(f); tail = f;
+    }
+    tail.connect(bus);
+
+    let src;
+    if (o.noise) {
+      /* noise is a short buffer of random samples — wind, rotors, thrust */
+      const n = Math.max(1, Math.floor(AC.sampleRate * dur));
+      const buf = AC.createBuffer(1, n, AC.sampleRate);
+      const d = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < n; i++) {
+        const w = Math.random()*2 - 1;
+        /* brown-ish noise reads as air and engine; white reads as hiss */
+        last = o.noise === 'brown' ? (last + w*0.08)/1.02 : w;
+        d[i] = last * (o.noise === 'brown' ? 3.2 : 1);
+      }
+      src = AC.createBufferSource(); src.buffer = buf;
+      if (o.loop) src.loop = true;
+    } else {
+      src = AC.createOscillator();
+      src.type = o.type || 'sine';
+      src.frequency.setValueAtTime(Math.max(20, o.freq || 440), t0);
+      if (o.to) src.frequency.exponentialRampToValueAtTime(Math.max(20, o.to), t0 + dur);
+      if (o.detune) src.detune.value = o.detune;
+    }
+    src.connect(g);
+    src.start(t0);
+    src.stop(t0 + dur + 0.02);
+    return { src, gain:g, t0 };
+  } catch (e) { return null; }
+}
+
+/* ---- the old primitive, kept ------------------------------------------
+   197 call sites across the combat code still speak this language, and
+   they all sound right. It now simply lands on the sfx bus instead of
+   straight on the destination, so the faders reach it. */
+function beep(freq, dur, type, vol, slide) {
+  voice({ freq, dur:dur || 0.1, type:type || 'square', vol:vol || 0.05, to:slide, bus:'sfx' });
+}
+
+/* ---- named events -------------------------------------------------------
+ *  The interface never asks for a frequency. It asks for an event, and the
+ *  recipe lives here — one place to retune the whole game's feel.
+ *
+ *  Glass surfaces get short tonal clicks with a high partial over them;
+ *  that bright second voice is what makes a click read as glass rather
+ *  than as a beep. Machinery gets filtered noise. Rewards get intervals
+ *  that resolve upward.
+ * ----------------------------------------------------------------------- */
+const SFX = {
+  /* --- interface --- */
+  hover:    () => voice({ freq:2100, dur:0.03, type:'sine', vol:0.012, to:2550 }),
+  press:    () => { voice({ freq:520, dur:0.045, type:'triangle', vol:0.05, to:660 });
+                    voice({ freq:1980, dur:0.05, type:'sine', vol:0.022, to:2400 }); },
+  release:  () => voice({ freq:880, dur:0.06, type:'sine', vol:0.028, to:1180 }),
+  tap:      () => voice({ freq:1450, dur:0.035, type:'sine', vol:0.03, to:1760 }),
+  toggle:   on => voice({ freq:on ? 700 : 420, dur:0.07, type:'triangle', vol:0.035,
+                          to:on ? 1040 : 300 }),
+  tab:      () => { voice({ freq:960, dur:0.04, type:'triangle', vol:0.03, to:1180 });
+                    voice({ freq:2400, dur:0.04, type:'sine', vol:0.014 }); },
+  open:     () => { voice({ freq:360, dur:0.20, type:'sine', vol:0.045, to:760 });
+                    voice({ freq:1500, dur:0.22, type:'sine', vol:0.018, to:2600, delay:0.02 }); },
+  close:    () => { voice({ freq:700, dur:0.17, type:'sine', vol:0.04, to:300 });
+                    voice({ freq:2300, dur:0.14, type:'sine', vol:0.013, to:1200 }); },
+  deny:     () => { voice({ freq:200, dur:0.10, type:'square', vol:0.035, to:150 });
+                    voice({ freq:150, dur:0.12, type:'triangle', vol:0.025, to:110, delay:0.05 }); },
+
+  /* --- the play orb and its six pieces --- */
+  orbHover: () => { voice({ freq:1300, dur:0.08, type:'sine', vol:0.016, to:1700 });
+                    voice({ freq:2600, dur:0.09, type:'sine', vol:0.008, to:3200 }); },
+  orbPress: () => { voice({ freq:180, dur:0.26, type:'sine', vol:0.075, to:70 });
+                    voice({ freq:760, dur:0.20, type:'triangle', vol:0.045, to:300 });
+                    voice({ noise:'brown', dur:0.30, vol:0.05, filter:'lowpass', cut:900, cutTo:160 }); },
+  /* the split: a descending swell with six bright shards coming off it */
+  orbSplit: () => {
+    voice({ freq:140, dur:0.75, type:'sine', vol:0.08, to:48 });
+    voice({ noise:'brown', dur:0.7, vol:0.06, filter:'bandpass', cut:420, cutTo:1600, q:1.4 });
+    for (let i = 0; i < 6; i++)
+      voice({ freq:520 + i*165, dur:0.34, type:'sine', vol:0.03,
+              to:900 + i*230, delay:0.09 + i*0.055 });
+  },
+  /* each piece arriving at its seat */
+  pieceLand: i => { voice({ freq:700 + (i % 6)*120, dur:0.07, type:'triangle', vol:0.03,
+                            to:980 + (i % 6)*130 });
+                    voice({ freq:2500 + (i % 6)*180, dur:0.06, type:'sine', vol:0.012 }); },
+  /* the reverse: six shards falling back into one note */
+  orbMerge: () => {
+    for (let i = 0; i < 6; i++)
+      voice({ freq:1200 - i*110, dur:0.20, type:'sine', vol:0.022,
+              to:300, delay:i*0.035 });
+    voice({ freq:70, dur:0.5, type:'sine', vol:0.07, to:170, delay:0.2 });
+  },
+
+  /* --- cinematics --- */
+  rocket:   () => {
+    voice({ noise:'brown', dur:2.6, vol:0.085, filter:'lowpass', cut:280, cutTo:1500, bus:'amb' });
+    voice({ freq:46, dur:2.4, type:'sawtooth', vol:0.05, to:120, bus:'amb' });
+    voice({ freq:150, dur:0.5, type:'square', vol:0.04, to:60 });
+  },
+  warp:     () => { voice({ freq:220, dur:1.1, type:'sine', vol:0.05, to:2600 });
+                    voice({ noise:'white', dur:1.0, vol:0.03, filter:'highpass', cut:600, cutTo:5200, bus:'amb' }); },
+  heli:     () => {
+    /* rotors are a pulse, not a tone: a low thud repeated fast enough to
+       read as a rhythm rather than a note */
+    for (let i = 0; i < 20; i++)
+      voice({ freq:58, dur:0.09, type:'sine', vol:0.05, to:34, delay:i*0.115, bus:'amb' });
+    voice({ noise:'brown', dur:2.4, vol:0.06, filter:'lowpass', cut:520, bus:'amb' });
+  },
+  hatch:    () => { voice({ noise:'brown', dur:0.9, vol:0.055, filter:'bandpass', cut:300, cutTo:900, q:2 });
+                    voice({ freq:120, dur:0.7, type:'square', vol:0.03, to:66 });
+                    voice({ freq:900, dur:0.12, type:'triangle', vol:0.025, to:420, delay:0.7 }); },
+  wind:     () => voice({ noise:'white', dur:1.6, vol:0.035, filter:'bandpass',
+                          cut:700, cutTo:2100, q:0.8, bus:'amb' }),
+
+  /* --- progression --- */
+  select:   () => { voice({ freq:620, dur:0.07, type:'triangle', vol:0.035, to:880 });
+                    voice({ freq:2200, dur:0.07, type:'sine', vol:0.014 }); },
+  unlock:   () => [0,1,2,3].forEach(i =>
+                    voice({ freq:[523,659,784,1047][i], dur:0.26, type:'triangle',
+                            vol:0.045, delay:i*0.105 })),
+  skillBuy: () => { voice({ freq:660, dur:0.09, type:'triangle', vol:0.04, to:990 });
+                    voice({ freq:1320, dur:0.14, type:'sine', vol:0.026, to:1980, delay:0.06 }); },
+  coins:    n => { const k = Math.min(6, Math.max(1, n || 3));
+                   for (let i = 0; i < k; i++)
+                     voice({ freq:1180 + i*145, dur:0.085, type:'triangle',
+                             vol:0.028, to:1560 + i*160, delay:i*0.06 }); },
+  victory:  () => [0,1,2,3,4].forEach(i =>
+                    voice({ freq:[523,659,784,1047,1319][i], dur:0.42, type:'triangle',
+                            vol:0.05, delay:i*0.13 })),
+  defeat:   () => { voice({ freq:170, dur:0.6, type:'sawtooth', vol:0.055, to:62 });
+                    voice({ freq:300, dur:0.5, type:'triangle', vol:0.03, to:120, delay:0.1 }); },
+  freeplay: () => { voice({ freq:420, dur:0.22, type:'triangle', vol:0.04, to:840 });
+                    voice({ freq:1680, dur:0.26, type:'sine', vol:0.02, to:2500, delay:0.08 }); }
+};
+
+/* The one way the interface asks for a sound. Unknown names are ignored
+   rather than thrown, so a typo can never take the game down with it. */
+function sfx(name, arg) {
+  const f = SFX[name];
+  if (typeof f === 'function') { try { f(arg); } catch (e) {} }
+}
+
+/* Hover is the one event that can become noise, so it is rate-limited and
+   only ever fires for a pointer that can actually hover. */
+let lastHover = 0;
+function sfxHover() {
+  if (MOBILE) return;
+  const n = performance.now();
+  if (n - lastHover < 60) return;
+  lastHover = n;
+  sfx('hover');
 }
 
 /* ---------------------------------------------------------------- dom ---- */
@@ -6395,6 +7683,23 @@ function bump(id, cls) {
   if (n) n.classList.add('run');
 }
 
+/* While one of these owns the screen it is painted edge to edge and the
+   field behind it cannot be seen at all, so drawing the field is pure
+   waste — a full 1600x900 pass per frame for nothing. The pause and the
+   results sheet are NOT on the list: both are deliberately translucent,
+   and the board showing through them is the point.
+   The next frame after the screen closes draws normally, so there is
+   nothing to restore. */
+const OPAQUE_SCREENS = ['ovMenu', 'ovHub', 'ovColl'];
+function fieldHidden() {
+  if (CINE.kind) return true;                 /* a cinematic covers it too */
+  for (const id of OPAQUE_SCREENS) {
+    const el = $(id);
+    if (el && el.classList.contains('on')) return true;
+  }
+  return false;
+}
+
 /* ------------------------------------------------------ board chrome ----
    While a full-screen overlay owns the view, the board's own furniture is
    not something to read through the glass. It fades out, and comes back
@@ -6455,7 +7760,7 @@ function buildCats() {
   }).join('');
   $('cats').querySelectorAll('button').forEach(b => b.onclick = () => {
     setShopCat(b.dataset.c);
-    beep(560, 0.05, 'triangle', 0.028);
+    sfx('tab');
   });
 }
 function setShopCat(c) {
@@ -6545,11 +7850,11 @@ function setShop(open) {
   clearTimeout(setShop._t);
   if (open) {
     S.placing = null; S.dupe = null; setPlacingBanner(); syncShelf();
-    beep(660, 0.06, 'triangle', 0.03);
+    sfx('tap');
     setShop._t = setTimeout(() => $('shelf').classList.add('settled'), 900);
   } else {
     $('shelf').classList.remove('settled');
-    beep(440, 0.06, 'triangle', 0.025);
+    sfx('close');
   }
   hideTip();
 }
@@ -6570,26 +7875,26 @@ function setPlacingBanner() {
 
 function pick(key) {
   const block = chalBlocks(key);
-  if (block) { toast(TOWERS[key].name + ' is locked by ' + block); beep(150,0.08,'square',0.03); return; }
+  if (block) { toast(TOWERS[key].name + ' is locked by ' + block); sfx('deny'); return; }
   const gate = gateBlocks(key);
-  if (gate) { toast(TOWERS[key].name + ' unlocks at ' + gate); beep(150,0.08,'square',0.03); return; }
+  if (gate) { toast(TOWERS[key].name + ' unlocks at ' + gate); sfx('deny'); return; }
   /* the Titan only fits on his pad, so the board pulls all the way back to
      show it — and says so if the trees are still standing on it */
   if (TOWERS[key].bigPad) {
     const pad = plotById('astro');
     if (!plotCleared('astro')) {
       toast('Clear the Astro Pad first — ' + bigCash(plotCost(pad)));
-      beep(150, 0.08, 'square', 0.03);
+      sfx('deny');
     }
-    if (theAstro()) { toast('There is only ever one Titan'); beep(150,0.08,'square',0.03); return; }
+    if (theAstro()) { toast('There is only ever one Titan'); sfx('deny'); return; }
     S.cam.z = S.cam.min; camClamp();
     syncCamChip();
   }
-  if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); beep(150,0.08,'square',0.03); return; }
+  if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); sfx('deny'); return; }
   S.dupe = null;
   S.placing = key;
   syncShelf(); setPlacingBanner();
-  beep(760, 0.07, 'triangle', 0.035);
+  sfx('select');
   setTimeout(() => setShop(false), 160);     // drawer slides away so the field stays clear
 }
 
@@ -6648,18 +7953,18 @@ function startDuplicate(t) {
   /* copying an Ascended one still counts against the two you may have */
   if (t.dbl && dblCount(t.type) >= DBL_MAX) {
     toast('There can only be one ' + DOUBLE[t.type].name);
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   }
   if (t.asc && !t.dbl && ascCount(t.type) >= ASC_MAX) {
     toast('Already ' + ASC_MAX + ' Ascended ' + TOWERS[t.type].name + 's — that is the limit');
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   }
   if (!afford(cost)) {
     toast('Need ' + bigCash(cost) + ' to duplicate ' +
           (t.asc ? ASCEND[t.type].name : TOWERS[t.type].name));
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   }
   S.dupe = { type:t.type, upA:t.upA || 0, upB:t.upB || 0, upC:t.upC || 0,
@@ -6731,6 +8036,7 @@ function reset() {
   S.shakeT=0; S.shakeAmp=0; S.flash=0; $('flash').style.opacity = 0;
   $('banner').classList.remove('on');
   S.spawnQueue=0; S.spawnTimer=0; S.placing=null; S.hovered=null; S.autoTimer=0;
+  S.freePlay = false; S.fpFrom = 0; S.runKills = 0;   /* a fresh ledger */
   S.projSlow=0; S.plan=[]; S.dupe=null;
   deselect();
   S.affordable={};
@@ -6761,7 +8067,10 @@ const bestHere = () => bestOf(runKey());
 
 function showModes() {
   closeHub(); closeOrb();
-  setWheel(false);
+  closeCollection();
+  /* whatever the orb was doing, it is an orb again by the time the page
+     is on screen — a half-split ring must never survive a round trip */
+  orbReset();
   /* replay the opening once, by taking the class off and putting it back */
   const mv = $('ovMenu');
   mv.classList.remove('intro');
@@ -6769,13 +8078,31 @@ function showModes() {
   mv.classList.add('intro');
   setTimeout(fitMenu, 0);
   setTimeout(maybeNudge, 240);
-  $('ovEnd').classList.remove('on');
+  $('ovEnd').classList.remove('on', 'win');
   $('ovMenu').classList.add('on');
-  buildModeCards();
-  beep(700, 0.07, 'triangle', 0.03);
+  buildMenuFace();
+  msStart();                       /* the world only animates while it is seen */
+  setWorld(loadMenuPick(), true);  /* and remembers which half you were on */
+  sfx('open');
+}
+
+/* The orb's resting state, reachable from anywhere. Kills any animation in
+   flight so a page left mid-split cannot come back half-open. */
+function orbReset() {
+  clearTimeout(ORB.job);
+  ORB.state = 'orb';
+  const orb = $('playOrb'), p = $('orbPieces');
+  if (!orb) return;
+  orb.classList.remove('splitting', 'merging', 'gone');
+  p.classList.remove('open', 'live');
+  $('ovMenu').classList.remove('ring');
+  $('orbX').classList.remove('on');
+  $('orbDock').classList.remove('open');
+  setMenuMood(null);
 }
 function startMode(k) {
   pvStop(); setMenuMood(null); PV.picked = null;
+  msStop(); orbReset();
   S.mode = MODES[k] ? k : 'normal';
   S.best = bestHere();
   $('ovMenu').classList.remove('on');
@@ -7382,9 +8709,9 @@ function buildChalRow() {
 function openBests() {
   $('ovBests').classList.add('on');
   bestsRender();
-  beep(660, 0.06, 'triangle', 0.03);
+  sfx('tap');
 }
-function closeBests() { $('ovBests').classList.remove('on'); beep(440, 0.06, 'triangle', 0.025); }
+function closeBests() { $('ovBests').classList.remove('on'); sfx('close'); }
 function bestsRender() {
   const wrap = $('bestWrap');
   const keys = Object.keys(S.bests).filter(k => S.bests[k] > 0);
@@ -7461,82 +8788,1219 @@ function advFootLine() {
 }
 /* the pill flashes gold the first time it is drawn with a bigger number */
 let _lastShards = -1;
-function buildModeCards() {
-  const card = k => {
-    const m = MODES[k];
-    /* with rules on, the card shows the best under THOSE rules */
-    const c = chalList();
-    const best = bestOf(k + (c.length && k !== 'sandbox' ? '|' + c.join('+') : ''));
-    const pips = m.pips
-      ? [1,2,3,4].map(i => `<i class="${i <= m.pips ? 'on' : ''}"></i>`).join('')
-      : '<span class="freeform">free&nbsp;play</span>';
-    return `<button class="mcard" data-m="${k}" data-pv="${m.preview}" style="--mc:${m.mc}"
-                    aria-label="${m.name}. ${m.blurb}">
-        <div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>
-        <div class="mtop"><span class="mn">${m.name}</span><span class="pips">${pips}</span></div>
-        <div class="mb">${m.blurb}</div>
-        <div class="mfoot">
-          <span class="best">${m.scoreLabel || 'Best wave'} <b>${
-            k === 'bossrush'
-              ? (best ? best + '/' + RUSH.bosses + (rushTimeFor(c) ? ' · ' + fmtTime(rushTimeFor(c)) : '') : '—')
-              : (best || '—')}</b></span>
-          <span class="go">Play</span>
-        </div>
-      </button>`;
+/* ======================================================================= *
+ *  THE FRONT PAGE'S LIVING WORLD                                          *
+ *                                                                         *
+ *  One canvas holding two environments that share a single scene. Space is *
+ *  on the left, the nursery on the right, and the seam between them is a   *
+ *  curve that breathes rather than a straight edge — stars carry a little  *
+ *  way into the sky, and cloud light carries a little way into the dark.   *
+ *                                                                         *
+ *  MS.focus runs -1 (space) .. 0 (neither) .. +1 (nursery) and is eased    *
+ *  toward MS.want every frame. Everything else on the page reads it: the   *
+ *  seam moves, each side's brightness follows, and the orb takes its       *
+ *  colour from the sign. Nothing ever cuts — the whole page is one value   *
+ *  being interpolated.                                                     *
+ * ======================================================================= */
+const MS = {
+  cv:null, g:null, raf:0, t:0, last:0,
+  focus:0, want:0,
+  stars:null, clouds:null, hills:null, dust:null,
+  cast:[],                    /* which Jaxons are standing in the field */
+  mx:0.5, my:0.5              /* pointer, for a touch of parallax */
+};
+
+/* Deterministic scatter: the scene is identical every time the menu opens,
+   so it never looks like it reshuffled behind your back. */
+function msRand(seed) {
+  let x = seed * 16807 % 2147483647;
+  return () => (x = x * 16807 % 2147483647) / 2147483647;
+}
+
+function msBuild() {
+  const R = msRand(90210);
+  /* three depths of stars; the far ones barely move */
+  MS.stars = [0,1,2].map(L => {
+    const n = [90, 60, 34][L], out = [];
+    for (let i = 0; i < n; i++)
+      out.push({ x:R()*1180 - 60, y:R()*H, r:(0.7 + R()*1.5)*(1 + L*0.4),
+                 a:0.25 + R()*0.6, tw:R()*6.28, ts:0.5 + R()*1.6 });
+    return out;
+  });
+  /* clouds on the right, four slow banks at different depths */
+  MS.clouds = [];
+  for (let i = 0; i < 11; i++)
+    MS.clouds.push({ x:700 + R()*1100, y:60 + R()*330, s:0.5 + R()*1.1,
+                     v:4 + R()*9, L:i % 3 });
+  /* the rolling ground on the right */
+  MS.hills = [];
+  for (let L = 0; L < 3; L++) {
+    const pts = [];
+    for (let i = 0; i <= 16; i++)
+      pts.push({ x:620 + i*70, y:560 + L*58 + Math.sin(i*0.7 + L*2.1)*(26 - L*7) + R()*10 });
+    MS.hills.push(pts);
+  }
+  /* cosmic motes on the left */
+  MS.dust = [];
+  for (let i = 0; i < 26; i++)
+    MS.dust.push({ x:R()*780, y:R()*H, r:0.6 + R()*1.8, v:3 + R()*9,
+                   a:0.1 + R()*0.3, h:R() < 0.5 ? '#9db4ff' : '#c9a6ff' });
+
+  /* the cast standing in the nursery: real shelf Jaxons, cheap starters so
+     the picture reads as the game the player already knows */
+  const want = ['basic','slingshot','ninja','bubble','nurse','bedtime'];
+  MS.cast = want.filter(k => TOWERS[k]).map((k, i) => ({
+    /* starting right of the orb, which sits over the seam */
+    k, x:905 + i*126 + (i % 2)*16, y:598 + (i % 3)*26, s:0.62 + (i % 3)*0.07,
+    bob:i*1.1
+  }));
+}
+
+/* The seam. A sine curve down the screen whose centre slides with focus,
+   so choosing a side genuinely gives that side more of the page. */
+function msSeam(y) {
+  const base = 812 - MS.focus * 150;
+  return base
+       + Math.sin(y*0.0062 + MS.t*0.22) * 58
+       + Math.sin(y*0.0141 - MS.t*0.15) * 22;
+}
+
+function msDraw() {
+  const g = MS.g; if (!g) return;
+  const t = MS.t;
+  /* how lit each side is. Neither ever goes fully dark — an unchosen world
+     is quieter, not switched off. */
+  const spaceLit = 0.62 + Math.max(0, -MS.focus) * 0.38;
+  const claLit   = 0.60 + Math.max(0,  MS.focus) * 0.40;
+  const px = (MS.mx - 0.5), py = (MS.my - 0.5);
+
+  g.clearRect(0, 0, W, H);
+
+  /* ---------------------------------------------------------- SPACE --- */
+  const sky = g.createLinearGradient(0, 0, 760, H);
+  sky.addColorStop(0, '#0b0a1c');
+  sky.addColorStop(0.55, '#10102a');
+  sky.addColorStop(1, '#08070f');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+
+  g.save();
+  g.globalAlpha = spaceLit;
+  /* two nebulae, drifting against each other */
+  for (const n of [
+    { x:250, y:300, r:360, c:'rgba(120,60,220,', a:0.26, s:0.11 },
+    { x:520, y:620, r:300, c:'rgba(40,120,230,', a:0.20, s:-0.08 }
+  ]) {
+    const cx = n.x + Math.sin(t*n.s)*26 + px*18, cy = n.y + Math.cos(t*n.s*0.8)*18 + py*12;
+    const gr = g.createRadialGradient(cx, cy, 10, cx, cy, n.r);
+    gr.addColorStop(0, n.c + n.a + ')');
+    gr.addColorStop(1, n.c + '0)');
+    g.fillStyle = gr; g.beginPath(); g.arc(cx, cy, n.r, 0, 7); g.fill();
+  }
+  /* stars, three depths */
+  for (let L = 0; L < 3; L++) {
+    const dx = px*(2 + L*5), dy = py*(1 + L*3);
+    for (const st of MS.stars[L]) {
+      g.globalAlpha = spaceLit * st.a * (0.6 + Math.sin(t*st.ts + st.tw)*0.4);
+      g.fillStyle = L === 2 ? '#ffffff' : L === 1 ? '#dfe8ff' : '#aebbd8';
+      g.beginPath(); g.arc(st.x + dx, st.y + dy, st.r, 0, 7); g.fill();
+    }
+  }
+  g.globalAlpha = spaceLit;
+  /* motes rising */
+  for (const d of MS.dust) {
+    d.y -= d.v*0.016; if (d.y < -8) { d.y = H + 8; }
+    g.globalAlpha = spaceLit * d.a;
+    g.fillStyle = d.h;
+    g.beginPath(); g.arc(d.x + px*8, d.y, d.r, 0, 7); g.fill();
+  }
+  g.globalAlpha = 1;
+  /* three of the campaign's own planets, drawn from the world data so the
+     colours on the menu are the colours on the solar map */
+  msPlanet(g, 150 + px*6,  210 + py*5,  54, worldById('venus'),   spaceLit, t*0.3);
+  msPlanet(g, 206 + px*11, 714 + py*8,  78, worldById('jupiter'), spaceLit, t*0.21);
+  msPlanet(g, 596 + px*16, 158 + py*11, 30, worldById('mercury'), spaceLit, t*0.4);
+  /* clear of the Adventure plate, which sits at the left-centre */
+  msRocket(g, 492 + px*22, 618 + py*14, spaceLit, t);
+  g.restore();
+
+  /* -------------------------------------------------------- NURSERY ---
+     Clipped to the right of the seam, so the two worlds share one scene
+     rather than sitting in two boxes. */
+  g.save();
+  g.beginPath();
+  g.moveTo(W + 40, -40);
+  g.lineTo(W + 40, H + 40);
+  for (let y = H + 40; y >= -40; y -= 24) g.lineTo(msSeam(y), y);
+  g.closePath();
+  g.clip();
+  g.globalAlpha = claLit;
+
+  const day = g.createLinearGradient(0, 0, 0, 620);
+  day.addColorStop(0, '#2f7fd8');
+  day.addColorStop(0.55, '#79c2f0');
+  day.addColorStop(1, '#bfe6ff');
+  g.fillStyle = day; g.fillRect(0, 0, W, 640);
+
+  /* a low sun behind the clouds */
+  const sun = g.createRadialGradient(1320, 150, 10, 1320, 150, 240);
+  sun.addColorStop(0, 'rgba(255,248,210,.85)');
+  sun.addColorStop(1, 'rgba(255,240,190,0)');
+  g.fillStyle = sun; g.beginPath(); g.arc(1320, 150, 240, 0, 7); g.fill();
+
+  for (const c of MS.clouds) {
+    c.x -= c.v*0.016*(0.4 + c.L*0.35);
+    if (c.x < 560) c.x = W + 240;
+    msCloud(g, c.x + px*(3 + c.L*4), c.y + py*(2 + c.L*2), c.s, 0.5 + c.L*0.2);
+  }
+  /* ground */
+  const greens = ['#2f8f3e', '#36a046', '#3fb252'];
+  for (let L = 0; L < 3; L++) {
+    g.fillStyle = greens[L];
+    g.beginPath();
+    g.moveTo(560, H + 10);
+    for (const p of MS.hills[L]) g.lineTo(p.x + px*(2 + L*3), p.y + py*2);
+    g.lineTo(W + 40, H + 10);
+    g.closePath(); g.fill();
+  }
+  /* the trail, because it is the one shape the whole game is about */
+  g.strokeStyle = '#c98a3c'; g.lineWidth = 34; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath();
+  g.moveTo(620, 712); g.bezierCurveTo(880, 676, 1000, 790, 1240, 742);
+  g.bezierCurveTo(1420, 706, 1480, 790, W + 20, 760);
+  g.stroke();
+  g.strokeStyle = '#a86f28'; g.lineWidth = 4;
+  g.stroke();
+  /* the cast */
+  for (const c of MS.cast) msJaxon(g, c, t, px, py);
+  /* and something to shoot at */
+  msBlob(g, 1055 + Math.sin(t*0.45)*120, 762, 20, '#d04a4a', t);
+  msBlob(g, 1310 + Math.sin(t*0.37 + 2)*100, 748, 16, '#4a86d0', t);
+  g.restore();
+
+  /* ------------------------------------------------------- THE SEAM ---
+     A soft band of light along the curve so the two environments meet in
+     an atmosphere rather than at an edge. */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.globalAlpha = 0.5;
+  g.strokeStyle = 'rgba(150,190,255,.3)';
+  g.lineWidth = 120; g.filter = 'blur(24px)';
+  g.beginPath();
+  for (let y = -40; y <= H + 40; y += 24) {
+    const x = msSeam(y);
+    y === -40 ? g.moveTo(x, y) : g.lineTo(x, y);
+  }
+  g.stroke();
+  g.filter = 'none';
+  g.restore();
+
+  /* stars that have drifted over the seam into the daylight — the single
+     detail that sells the two worlds as one picture */
+  g.save();
+  g.globalAlpha = 0.5 * spaceLit;
+  for (const st of MS.stars[2]) {
+    const sx = st.x + 760;
+    if (sx < msSeam(st.y) || sx > W) continue;
+    g.globalAlpha = 0.45 * spaceLit * st.a * (0.5 + Math.sin(t*st.ts + st.tw)*0.5);
+    g.fillStyle = '#ffffff';
+    g.beginPath(); g.arc(sx, st.y*0.7, st.r*0.8, 0, 7); g.fill();
+  }
+  g.restore();
+}
+
+/* ---- the pieces of the scene ------------------------------------------ */
+function msPlanet(g, x, y, r, v, lit, spin) {
+  if (!v) return;
+  g.save();
+  g.globalAlpha = lit;
+  const gl = g.createRadialGradient(x, y, r*0.5, x, y, r*2.4);
+  gl.addColorStop(0, v.glow); gl.addColorStop(1, 'rgba(0,0,0,0)');
+  g.globalAlpha = lit*0.5; g.fillStyle = gl;
+  g.beginPath(); g.arc(x, y, r*2.4, 0, 7); g.fill();
+  g.globalAlpha = lit;
+  const d = g.createRadialGradient(x - r*0.34, y - r*0.34, r*0.1, x, y, r);
+  d.addColorStop(0, v.body); d.addColorStop(0.62, v.body); d.addColorStop(1, v.body2);
+  g.fillStyle = d; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+  /* a band or two, turning */
+  g.save();
+  g.beginPath(); g.arc(x, y, r, 0, 7); g.clip();
+  g.globalAlpha = lit*0.22; g.fillStyle = v.body2;
+  for (let i = 0; i < 3; i++) {
+    const yy = y - r + ((i*0.37 + spin*0.05) % 1)*r*2;
+    g.fillRect(x - r, yy, r*2, r*0.17);
+  }
+  g.restore();
+  /* night side */
+  g.globalAlpha = lit*0.34; g.fillStyle = '#05060d';
+  g.beginPath(); g.arc(x, y, r, 0.9, 0.9 + Math.PI); g.fill();
+  if (v.rings) {
+    g.globalAlpha = lit*0.75;
+    g.save(); g.translate(x, y); g.rotate(-0.35);
+    g.strokeStyle = 'rgba(228,214,150,.7)'; g.lineWidth = r*0.1;
+    g.beginPath(); g.ellipse(0, 0, r*2.05, r*0.5, 0, 0, 7); g.stroke();
+    g.restore();
+  }
+  g.restore();
+}
+
+/* the landmark on the space side: the ship the campaign leaves on */
+function msRocket(g, x, y, lit, t) {
+  const bob = Math.sin(t*0.6)*5;
+  g.save();
+  g.translate(x, y + bob);
+  g.globalAlpha = lit;
+  g.scale(1.15, 1.15);
+  /* exhaust */
+  const fl = 1 + Math.sin(t*9)*0.18;
+  const ex = g.createLinearGradient(0, 56, 0, 56 + 70*fl);
+  ex.addColorStop(0, 'rgba(255,230,140,.9)');
+  ex.addColorStop(0.45, 'rgba(255,140,40,.55)');
+  ex.addColorStop(1, 'rgba(255,60,20,0)');
+  g.fillStyle = ex;
+  g.beginPath(); g.moveTo(-13, 56); g.lineTo(13, 56);
+  g.quadraticCurveTo(0, 56 + 78*fl, -13, 56); g.fill();
+  /* body */
+  const bd = g.createLinearGradient(-22, 0, 22, 0);
+  bd.addColorStop(0, '#b9c2d2'); bd.addColorStop(0.42, '#f2f5fa'); bd.addColorStop(1, '#8d97a8');
+  g.fillStyle = bd;
+  g.beginPath();
+  g.moveTo(0, -74); g.quadraticCurveTo(24, -24, 22, 40);
+  g.lineTo(-22, 40); g.quadraticCurveTo(-24, -24, 0, -74); g.closePath(); g.fill();
+  /* fins */
+  g.fillStyle = '#d8453a';
+  g.beginPath(); g.moveTo(-22, 10); g.lineTo(-42, 56); g.lineTo(-22, 44); g.fill();
+  g.beginPath(); g.moveTo(22, 10);  g.lineTo(42, 56);  g.lineTo(22, 44);  g.fill();
+  g.beginPath(); g.moveTo(0, -74); g.quadraticCurveTo(13, -46, 11, -30);
+  g.lineTo(-11, -30); g.quadraticCurveTo(-13, -46, 0, -74); g.fill();
+  /* window */
+  g.fillStyle = '#1d3350';
+  g.beginPath(); g.arc(0, -12, 11, 0, 7); g.fill();
+  g.fillStyle = 'rgba(140,210,255,.9)';
+  g.beginPath(); g.arc(-3, -15, 7, 0, 7); g.fill();
+  g.strokeStyle = '#8d97a8'; g.lineWidth = 3;
+  g.beginPath(); g.arc(0, -12, 11, 0, 7); g.stroke();
+  /* nozzle */
+  g.fillStyle = '#5a6473';
+  g.beginPath(); g.moveTo(-15, 40); g.lineTo(15, 40); g.lineTo(11, 56); g.lineTo(-11, 56); g.fill();
+  g.restore();
+}
+
+function msCloud(g, x, y, s, a) {
+  g.save();
+  g.globalAlpha = a;
+  g.fillStyle = '#ffffff';
+  g.translate(x, y); g.scale(s, s);
+  for (const p of [[0,0,42],[36,8,32],[-34,10,30],[16,-16,28],[-16,-12,24]]) {
+    g.beginPath(); g.arc(p[0], p[1], p[2], 0, 7); g.fill();
+  }
+  g.globalAlpha = a*0.5; g.fillStyle = '#cfe4f5';
+  g.beginPath(); g.ellipse(0, 18, 54, 12, 0, 0, 7); g.fill();
+  g.restore();
+}
+
+/* a shelf Jaxon standing in the field, drawn from his own portrait image */
+function msJaxon(g, c, t, px, py) {
+  const img = IMG[c.k];
+  const bob = Math.sin(t*1.6 + c.bob)*3;
+  const w = 86*c.s, h = 94*c.s;
+  const x = c.x + px*5, y = c.y + bob + py*3;
+  g.save();
+  g.globalAlpha = 0.22; g.fillStyle = '#143d1c';
+  g.beginPath(); g.ellipse(x, y + h*0.46, w*0.4, w*0.14, 0, 0, 7); g.fill();
+  g.globalAlpha = 1;
+  if (img && img.complete && img.naturalWidth) g.drawImage(img, x - w/2, y - h/2, w, h);
+  g.restore();
+}
+
+function msBlob(g, x, y, r, col, t) {
+  const sq = 1 + Math.sin(t*4 + x*0.01)*0.07;
+  g.save();
+  g.globalAlpha = 0.24; g.fillStyle = '#143d1c';
+  g.beginPath(); g.ellipse(x, y + r*0.9, r*0.8, r*0.26, 0, 0, 7); g.fill();
+  g.globalAlpha = 1;
+  g.fillStyle = col;
+  g.beginPath(); g.ellipse(x, y, r/sq, r*sq, 0, 0, 7); g.fill();
+  g.fillStyle = 'rgba(255,255,255,.35)';
+  g.beginPath(); g.ellipse(x - r*0.3, y - r*0.34, r*0.26, r*0.18, -0.5, 0, 7); g.fill();
+  g.fillStyle = '#10140f';
+  g.beginPath(); g.arc(x - r*0.26, y - r*0.08, r*0.12, 0, 7); g.fill();
+  g.beginPath(); g.arc(x + r*0.26, y - r*0.08, r*0.12, 0, 7); g.fill();
+  g.restore();
+}
+
+/* ---- the loop ---------------------------------------------------------
+   Runs only while the front page is on screen, and stops dead otherwise —
+   a menu animating behind a running game is pure waste. */
+function msStart() {
+  MS.cv = MS.cv || $('menuCv');
+  if (!MS.cv) return;
+  if (!MS.g) MS.g = MS.cv.getContext('2d');
+  if (!MS.stars) msBuild();
+  if (MS.raf) return;
+  MS.last = performance.now();
+  const step = now => {
+    const dt = Math.min(0.05, (now - MS.last)/1000); MS.last = now;
+    MS.t += dt;
+    /* ease toward the chosen side. REDUCED jumps straight there. */
+    MS.focus += (MS.want - MS.focus) * (REDUCED ? 1 : Math.min(1, dt*4.2));
+    msDraw();
+    MS.raf = requestAnimationFrame(step);
   };
-  /* the six endless modes, laid out around the ring the Classic button
-     opens into. Six slots, evenly spaced, starting at the top. */
+  MS.raf = requestAnimationFrame(step);
+}
+function msStop() { cancelAnimationFrame(MS.raf); MS.raf = 0; }
+/* the scene is cheap, but it is not free: it idles whenever the tab does */
+function msFocus(v) { MS.want = Math.max(-1, Math.min(1, v)); }
+
+/* ======================================================================= *
+ *  THE PLAY ORB, AND THE SIX PIECES IT COMES APART INTO                   *
+ *                                                                         *
+ *  Choosing Classic does not swap one screen for another. The orb itself   *
+ *  compresses, its core collapses to a point, and six shards leave from    *
+ *  where it was and settle onto a ring — each one a real difficulty. The   *
+ *  X in the middle runs the whole thing backwards.                         *
+ *                                                                         *
+ *  ORB.state is the single source of truth: 'orb' | 'opening' | 'open' |   *
+ *  'closing'. Every entry point checks it, so hammering the orb or the X   *
+ *  can queue nothing, overlap nothing, and strand nothing half-open.       *
+ * ======================================================================= */
+const ORB = { state:'orb', world:null, job:0 };
+
+/* which world the orb is pointed at: 'adv' | 'cla' | null */
+function setWorld(w, quiet) {
+  if (ORB.state !== 'orb') return;
+  ORB.world = w;
+  const mv = $('ovMenu');
+  mv.classList.toggle('wAdv', w === 'adv');
+  mv.classList.toggle('wCla', w === 'cla');
+  $('pickAdv').classList.toggle('sel', w === 'adv');
+  $('pickCla').classList.toggle('sel', w === 'cla');
+  $('pickAdv').setAttribute('aria-pressed', w === 'adv' ? 'true' : 'false');
+  $('pickCla').setAttribute('aria-pressed', w === 'cla' ? 'true' : 'false');
+  msFocus(w === 'adv' ? -1 : w === 'cla' ? 1 : 0);
+  $('orbLbl').textContent = w === 'adv' ? 'Launch' : w === 'cla' ? 'Choose' : 'Play';
+  $('orbHint').textContent = w ? '' : 'Choose Adventure or Classic';
+  $('menuTag').textContent = w === 'adv' ? 'The campaign'
+                           : w === 'cla' ? 'Everything else' : 'Pick a world';
+  if (!quiet) sfx('select');
+  saveMenuPick(w);
+}
+/* the choice is remembered between visits, so Play is never a coin toss */
+function saveMenuPick(w) { try { localStorage.setItem('jtd3.pick', w || ''); } catch (e) {} }
+function loadMenuPick() { try { return localStorage.getItem('jtd3.pick') || null; } catch (e) { return null; } }
+
+/* Hovering a world leans the scene that way without committing to it; the
+   scene returns to the chosen side when the pointer leaves. */
+function peekWorld(w) {
+  if (ORB.state !== 'orb') return;
+  msFocus(w === 'adv' ? -1 : w === 'cla' ? 1 : (ORB.world === 'adv' ? -1 : ORB.world === 'cla' ? 1 : 0));
+}
+
+/* ---------------------------------------------------- building the six -
+   One piece per Classic mode that advertises itself. There are exactly six
+   of those, which is why the orb breaks into six — the number comes from
+   the game's data, not the other way round. */
+function buildOrbPieces() {
   const modes = MENU_MODES();
-  const RAD_X = 238, RAD_Y = 212;
-  $('modeGrid').innerHTML = modes.map((k, i) => {
-    const a = -Math.PI/2 + i*(Math.PI*2/modes.length);
-    return card(k)
-      .replace('style="--mc:', 'style="--wx:' + Math.round(Math.cos(a)*RAD_X) + 'px;' +
-                               '--wy:' + Math.round(Math.sin(a)*RAD_Y) + 'px;--i:' + i + ';--mc:');
+  const n = modes.length;
+  const RX = 258, RY = 172;
+  const c = chalList();
+  $('orbPieces').innerHTML = modes.map((k, i) => {
+    const m = MODES[k];
+    /* start at the top and go round; with six that is a clean hexagon */
+    const ang = -Math.PI/2 + i*(Math.PI*2/n);
+    const best = bestOf(k + (c.length && k !== 'sandbox' ? '|' + c.join('+') : ''));
+    const bestTxt = k === 'bossrush'
+      ? (best ? best + '/' + RUSH.bosses : '—')
+      : (best ? 'best ' + best : '—');
+    const art = MODE_ART[k] && TOWERS[MODE_ART[k]] ? PORTRAIT[MODE_ART[k]] : '';
+    return '<button class="piece" data-m="' + k + '"' +
+           ' style="--pc:' + m.mc + ';--i:' + i + ';' +
+           '--px:' + Math.round(Math.cos(ang)*RX) + 'px;' +
+           '--py:' + Math.round(Math.sin(ang)*RY) + 'px"' +
+           ' aria-label="' + m.name + '. ' + m.blurb.replace(/<[^>]+>/g, '') + '">' +
+             '<span class="trail" aria-hidden="true"></span>' +
+             (art ? '<img class="pIcon" src="' + art + '" alt="">' : '') +
+             '<span class="pNm">' + m.name + '</span>' +
+             '<span class="pBest">' + bestTxt + '</span>' +
+           '</button>';
   }).join('');
-  /* the campaign is the headline, not one of the folder */
-  advInit();
-  const av = MODES.adventure;
-  const n0 = shardCount();
-  $('advCard').innerHTML =
-    '<button class="mcard" data-m="adventure" data-pv="adventure" style="--mc:' + av.mc + '"' +
-    ' aria-label="Adventure. ' + av.blurb + '">' +
-      '<div class="art"><canvas></canvas><span class="glow"></span><span class="idle">preview</span></div>' +
-      '<div class="mtop"><span class="mn">Adventure</span>' +
-        '<span class="pips"><span class="freeform' + (_lastShards >= 0 && n0 > _lastShards ? ' gained' : '') +
-        '">' + n0 + '&nbsp;/&nbsp;' + ADV_TARGET + '&nbsp;shards</span></span></div>' +
-      '<div class="mb">Nine worlds, nine shards, one Orb. Take the solar map planet by planet and bring a Jaxon home off every one.</div>' +
-      '<div class="mfoot"><span class="best">' + advFootLine() +
-      '</span><span class="go">' + (n0 ? 'Continue' : 'Enter') + '</span></div>' +
-    '</button>';
-  _lastShards = n0;
-  buildChalRow();
-  $('ovMenu').querySelectorAll('.mcard').forEach(el => {
-    const k = el.dataset.m, pv = el.dataset.pv;
-    /* Pointer and keyboard both light the card up and shift the whole menu. */
-    el.addEventListener('mouseenter', () => {
-      if (MOBILE) return;
-      pvStart(el, pv);
-      beep(1180, 0.028, 'sine', 0.012, 1420);       // a tick, not a noise
-    });
-    el.addEventListener('mouseleave', () => { if (!MOBILE) pvStop(), setMenuMood(null); });
-    el.addEventListener('focus', () => pvStart(el, pv));
-    el.addEventListener('blur',  () => { if (PV.picked !== k) { pvStop(); setMenuMood(null); } });
-    el.addEventListener('click', () => {
-      /* Touch has no hover, so the first tap previews and the second plays.
-         A mouse plays on the first click, because it has already hovered. */
-      if (MOBILE && PV.picked !== k) {
-        PV.picked = k;
-        pvStart(el, pv);
-        toast('Tap ' + MODES[k].name + ' again to start');
-        return;
-      }
-      PV.picked = null;
-      if (k === 'adventure') { openHub(); return; }
+
+  $('orbPieces').querySelectorAll('.piece').forEach(el => {
+    const k = el.dataset.m;
+    el.addEventListener('mouseenter', () => { if (ORB.state === 'open') { sfxHover(); setMenuMood(MODES[k].preview); } });
+    el.addEventListener('mouseleave', () => { if (!MOBILE) setMenuMood(null); });
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (ORB.state !== 'open') return;      /* mid-animation clicks do nothing */
+      sfx('press');
       enterMode(k);
     });
   });
+}
+/* a face for each mode, borrowed from the shelf rather than invented */
+const MODE_ART = {
+  easy:'basic', normal:'slingshot', hard:'ninja',
+  nightmare:'bedtime', sandbox:'engineer', bossrush:'laser'
+};
+
+/* ------------------------------------------------------------ the split */
+function orbSplit() {
+  if (ORB.state !== 'orb') return;
+  ORB.state = 'opening';
+  clearTimeout(ORB.job);
+  buildOrbPieces();
+  const orb = $('playOrb'), pieces = $('orbPieces');
+  orb.classList.remove('merging', 'gone');
+  void orb.offsetWidth;
+  orb.classList.add('splitting');
+  sfx('orbPress');
+  /* the pieces leave as the core collapses, not after it */
+  ORB.job = setTimeout(() => {
+    sfx('orbSplit');
+    pieces.classList.add('open', 'live');
+    $('ovMenu').classList.add('ring');
+    orb.classList.add('gone');
+    $('orbDock').classList.add('open');
+    $('orbX').classList.add('on');
+    /* each shard announces its own arrival */
+    const n = pieces.children.length;
+    for (let i = 0; i < n; i++) setTimeout(() => sfx('pieceLand', i), 260 + i*48);
+    ORB.job = setTimeout(() => { ORB.state = 'open'; }, 300 + n*48);
+  }, 230);
+}
+
+/* ------------------------------------------------------------ and back */
+function orbMerge() {
+  if (ORB.state !== 'open' && ORB.state !== 'opening') return;
+  ORB.state = 'closing';
+  clearTimeout(ORB.job);
+  const orb = $('playOrb'), pieces = $('orbPieces');
+  pieces.classList.remove('live');            /* dead to input immediately */
+  pieces.classList.remove('open');            /* they fly home on the same curve */
+  $('ovMenu').classList.remove('ring');
+  $('orbX').classList.remove('on');
+  $('orbDock').classList.remove('open');
   setMenuMood(null);
+  sfx('orbMerge');
+  ORB.job = setTimeout(() => {
+    orb.classList.remove('splitting', 'gone');
+    void orb.offsetWidth;
+    orb.classList.add('merging');
+    ORB.job = setTimeout(() => {
+      orb.classList.remove('merging');
+      ORB.state = 'orb';
+    }, 420);
+  }, 380);
+}
+
+/* The orb's own press. Adventure launches; Classic comes apart. With
+   nothing chosen it asks, rather than guessing for you. */
+function orbPress() {
+  if (ORB.state === 'open') { orbMerge(); return; }
+  if (ORB.state !== 'orb') return;
+  if (!ORB.world) {
+    sfx('deny');
+    $('orbHint').textContent = 'Pick Adventure or Classic first';
+    $('pickAdv').classList.add('nudge'); $('pickCla').classList.add('nudge');
+    setTimeout(() => { $('pickAdv').classList.remove('nudge'); $('pickCla').classList.remove('nudge'); }, 900);
+    return;
+  }
+  if (ORB.world === 'adv') { sfx('orbPress'); enterAdventure(); return; }
+  orbSplit();
+}
+
+/* --------------------------------------------------- menu housekeeping -
+   What buildModeCards used to do for the old wheel, for the new page. */
+function buildMenuFace() {
+  advInit();
+  const n0 = shardCount();
+  $('advMeta').textContent = n0 + ' / ' + ADV_TARGET;
+  $('claMeta').textContent = MENU_MODES().length + ' modes';
+  const advArt = TOWERS.mercury ? PORTRAIT.mercury : PORTRAIT[ORDER[0]];
+  if ($('advArt')) $('advArt').src = advArt || '';
+  if ($('claArt')) $('claArt').src = PORTRAIT.basic || '';
+  $('pickAdv').querySelector('em').textContent =
+    n0 >= ADV_TARGET ? 'The Orb is whole' :
+    n0 ? n0 + ' of ' + ADV_TARGET + ' shards recovered' : 'Nine worlds, nine shards, one Orb';
+  _lastShards = n0;
+  buildChalRow();
+  syncCoins();
+  buildOrbPieces();
+}
+/* kept under its old name because the rest of the game calls it */
+function buildModeCards() { buildMenuFace(); }
+
+/* ------------------------------------------------------------- wiring - */
+function wireMenu() {
+  const orb = $('playOrb');
+  orb.addEventListener('click', ev => { ev.stopPropagation(); orbPress(); });
+  orb.addEventListener('mouseenter', () => { if (ORB.state === 'orb') sfx('orbHover'); });
+  $('orbX').addEventListener('click', ev => { ev.stopPropagation(); sfx('tap'); orbMerge(); });
+
+  for (const [id, w] of [['pickAdv','adv'], ['pickCla','cla']]) {
+    const el = $(id);
+    el.addEventListener('click', ev => {
+      ev.stopPropagation();
+      if (ORB.state !== 'orb') { orbMerge(); return; }
+      /* a second press on the world you have already chosen is Play */
+      if (ORB.world === w) { orbPress(); return; }
+      setWorld(w);
+    });
+    el.addEventListener('mouseenter', () => { if (!MOBILE) { sfxHover(); peekWorld(w); } });
+    el.addEventListener('mouseleave', () => { if (!MOBILE) peekWorld(null); });
+    el.addEventListener('focus', () => peekWorld(w));
+    el.addEventListener('blur',  () => peekWorld(null));
+  }
+
+  /* the glass surfaces track the pointer so their highlight moves with it */
+  document.addEventListener('pointermove', ev => {
+    const g = ev.target && ev.target.closest && ev.target.closest('.glass');
+    if (!g) return;
+    const r = g.getBoundingClientRect();
+    g.style.setProperty('--mx', ((ev.clientX - r.left)/r.width*100).toFixed(1) + '%');
+    g.style.setProperty('--my', ((ev.clientY - r.top)/r.height*100).toFixed(1) + '%');
+  }, { passive:true });
+
+  /* one ripple node per glass button, created once and reused */
+  document.addEventListener('pointerdown', ev => {
+    const g = ev.target && ev.target.closest && ev.target.closest('.gbtn');
+    if (!g || g.hasAttribute('disabled')) return;
+    let rip = g.querySelector(':scope > .rip');
+    if (!rip) { rip = document.createElement('span'); rip.className = 'rip'; g.appendChild(rip); }
+    const r = g.getBoundingClientRect();
+    rip.style.setProperty('--rx', (ev.clientX - r.left) + 'px');
+    rip.style.setProperty('--ry', (ev.clientY - r.top) + 'px');
+    rip.classList.remove('go'); void rip.offsetWidth; rip.classList.add('go');
+  }, { passive:true });
+
+  $('navJaxons').addEventListener('click', ev => { ev.stopPropagation(); sfx('open'); openCollection(); });
+}
+
+/* ======================================================================= *
+ *  CINEMATIC TRANSITIONS                                                  *
+ *                                                                         *
+ *  Two of them: a rocket into Adventure, a helicopter into Classic. Both   *
+ *  run on one canvas that sits above every screen and is display:none the  *
+ *  rest of the time, so nothing here costs anything while the game plays.  *
+ *                                                                         *
+ *  The rule that matters: the transition is a COVER, not a gate. The game  *
+ *  it is covering is started at the hand-off point in the middle of the    *
+ *  sequence, so by the time the canvas fades the board underneath is       *
+ *  already real, already laid out, and already the right size. Input is    *
+ *  blocked until it clears, and the whole thing can be skipped.            *
+ * ======================================================================= */
+const CINE = { cv:null, g:null, raf:0, t:0, dur:0, kind:null, done:null, handed:false, last:0 };
+
+function cineStop() {
+  cancelAnimationFrame(CINE.raf); CINE.raf = 0;
+  CINE.kind = null; CINE.handed = false;
+  const cv = $('cineCv');
+  if (cv) cv.classList.remove('on');
+  $('cineSkip').classList.remove('on');
+  document.body.classList.remove('cine');
+}
+
+/* Runs a sequence. 'hand' is the moment the real game is started behind
+   the cover; 'done' is when the cover comes off. */
+function cinePlay(kind, dur, hand, onHand, onDone) {
+  /* a second request always wins: finish the first one instantly rather
+     than letting two sequences fight over the same canvas */
+  if (CINE.kind) { if (!CINE.handed && CINE.onHand) CINE.onHand(); cineStop(); }
+  if (REDUCED) {                       /* no motion: straight to the point */
+    if (onHand) onHand();
+    if (onDone) onDone();
+    return;
+  }
+  CINE.cv = CINE.cv || $('cineCv');
+  if (!CINE.cv) { if (onHand) onHand(); if (onDone) onDone(); return; }
+  CINE.g = CINE.g || CINE.cv.getContext('2d');
+  CINE.kind = kind; CINE.t = 0; CINE.dur = dur;
+  CINE.handed = false; CINE.onHand = onHand; CINE.onDone = onDone;
+  CINE.hand = hand;
+  CINE.cv.classList.add('on');
+  document.body.classList.add('cine');
+  setTimeout(() => { if (CINE.kind) $('cineSkip').classList.add('on'); }, 450);
+  CINE.last = performance.now();
+  const step = now => {
+    const dt = Math.min(0.05, (now - CINE.last)/1000); CINE.last = now;
+    CINE.t += dt;
+    const k = Math.min(1, CINE.t / CINE.dur);
+    if (!CINE.handed && k >= CINE.hand) {
+      CINE.handed = true;
+      if (CINE.onHand) { try { CINE.onHand(); } catch (e) {} }
+    }
+    try { (CINE.kind === 'rocket' ? cineRocket : cineHeli)(CINE.g, k); } catch (e) {}
+    if (k >= 1) {
+      const d = CINE.onDone;
+      cineStop();
+      if (d) { try { d(); } catch (e) {} }
+      return;
+    }
+    CINE.raf = requestAnimationFrame(step);
+  };
+  CINE.raf = requestAnimationFrame(step);
+}
+
+/* skipping jumps to the end, but never skips the hand-off — the game still
+   gets started exactly once */
+function cineSkip() {
+  if (!CINE.kind) return;
+  if (!CINE.handed && CINE.onHand) { CINE.handed = true; try { CINE.onHand(); } catch (e) {} }
+  const d = CINE.onDone;
+  cineStop();
+  if (d) { try { d(); } catch (e) {} }
+}
+
+const ease = k => k < 0.5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
+const clamp01 = v => Math.max(0, Math.min(1, v));
+/* a sub-range of the timeline, remapped to 0..1 */
+const seg = (k, a, b) => clamp01((k - a)/(b - a));
+
+/* ----------------------------------------------------------- ROCKET ----
+ *  0.00 the sky brightens and the menu recedes
+ *  0.18 the camera closes on the ship
+ *  0.34 inside: the cockpit frame, the window, stars streaking past
+ *  0.55 the window swells until it is the whole screen  (hand-off)
+ *  0.80 the solar map is behind the glass
+ *  1.00 the frame is gone
+ */
+function cineRocket(g, k) {
+  g.clearRect(0, 0, W, H);
+  const approach = seg(k, 0, 0.34);
+  const inside   = seg(k, 0.30, 0.58);
+  const through  = seg(k, 0.46, 1);
+
+  /* deep space, always */
+  const sky = g.createLinearGradient(0, 0, W, H);
+  sky.addColorStop(0, '#0a0920'); sky.addColorStop(1, '#05040c');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+
+  /* streaking stars — the speed of the thing */
+  const warp = ease(inside)*1 + through*2.4;
+  g.save();
+  g.strokeStyle = 'rgba(214,230,255,.95)'; g.lineCap = 'round';
+  for (let i = 0; i < 220; i++) {
+    /* radius biased toward the middle so the porthole is never empty */
+    const a = (i*0.41) % 6.2832, rr = Math.pow(((i*53) % 1000)/1000, 1.7)*760 + 24;
+    const sx = W/2 + Math.cos(a)*rr, sy = H/2 + Math.sin(a)*rr*0.72;
+    const len = 8 + warp*(40 + (i % 11)*8);
+    g.globalAlpha = 0.3 + Math.min(0.68, warp*0.55);
+    g.lineWidth = 1.2 + warp*1.6;
+    g.beginPath();
+    g.moveTo(sx, sy);
+    g.lineTo(sx + Math.cos(a)*len, sy + Math.sin(a)*len*0.72);
+    g.stroke();
+  }
+  g.restore();
+
+  /* the destination, dead ahead and getting closer — a porthole with
+     nothing behind it is just a dark circle */
+  {
+    const grow = 0.3 + ease(inside)*0.8 + through*2.2;
+    const nx = W/2 + 40, ny = H*0.44 - 30;
+    const neb = g.createRadialGradient(nx, ny, 10, nx, ny, 300*grow);
+    neb.addColorStop(0, 'rgba(150,90,255,.5)');
+    neb.addColorStop(0.45, 'rgba(70,60,190,.22)');
+    neb.addColorStop(1, 'rgba(20,10,60,0)');
+    g.fillStyle = neb;
+    g.beginPath(); g.arc(nx, ny, 300*grow, 0, 7); g.fill();
+    msPlanet(g, nx, ny, 34*grow, worldById('neptune'), 1, CINE.t*0.4);
+    msPlanet(g, W/2 - 230, H*0.6, 16*grow, worldById('mars'), 0.9, CINE.t*0.3);
+  }
+
+  /* the ship, growing until we are inside it */
+  if (approach < 1) {
+    const sc = 0.5 + ease(approach)*5.5;
+    g.save();
+    g.globalAlpha = 1 - approach*0.9;
+    g.translate(W/2, H*0.56);
+    g.scale(sc, sc);
+    g.translate(-W/2, -H*0.56);
+    msRocket(g, W/2, H*0.5, 1, CINE.t*2);
+    g.restore();
+  }
+
+  /* the cockpit: a dark frame with a round window cut out of it, and the
+     window opens until it is the whole screen */
+  if (inside > 0) {
+    const open = ease(through);
+    const r = 248 + open*1460;
+    g.save();
+    g.globalAlpha = Math.min(1, inside*2) * (1 - clamp01((k - 0.9)/0.1));
+    /* The hull is the rectangle MINUS the window, cut by winding. The arc
+       has to be exactly one turn: swept past 2π anticlockwise it overlaps
+       itself, and the surplus arrives with a winding number the fill does
+       not cancel — which paints a wedge straight across the glass. */
+    g.beginPath();
+    g.rect(0, 0, W, H);
+    g.arc(W/2, H*0.47, r, 0, Math.PI*2, true);
+    g.fillStyle = '#10121a'; g.fill();
+    /* instrument light along the bottom of the hull */
+    const lamp = g.createLinearGradient(0, H - 190, 0, H);
+    lamp.addColorStop(0, 'rgba(90,140,255,0)');
+    lamp.addColorStop(1, 'rgba(70,120,255,.3)');
+    g.fillStyle = lamp; g.fillRect(0, H - 190, W, 190);
+    /* the window frame */
+    g.strokeStyle = '#2e3446'; g.lineWidth = 22;
+    g.beginPath(); g.arc(W/2, H*0.47, r, 0, 7); g.stroke();
+    g.strokeStyle = 'rgba(190,220,255,.4)'; g.lineWidth = 4;
+    g.beginPath(); g.arc(W/2, H*0.47, r - 13, 0, 7); g.stroke();
+    /* bolts around the rim, while the rim is still on screen */
+    if (r < 980) {
+      g.fillStyle = '#4a5265';
+      for (let i = 0; i < 16; i++) {
+        const a = i*0.3927;
+        g.beginPath(); g.arc(W/2 + Math.cos(a)*r, H*0.47 + Math.sin(a)*r, 5, 0, 7); g.fill();
+      }
+    }
+    /* a sheen across the glass */
+    g.save();
+    g.beginPath(); g.arc(W/2, H*0.47, Math.max(0, r - 15), 0, 7); g.clip();
+    const sh = g.createLinearGradient(W/2 - r, H*0.47 - r, W/2 + r*0.4, H*0.47 + r);
+    sh.addColorStop(0, 'rgba(255,255,255,.11)');
+    sh.addColorStop(0.42, 'rgba(255,255,255,0)');
+    g.fillStyle = sh; g.fillRect(W/2 - r, H*0.47 - r, r*2, r*2);
+    g.restore();
+    g.restore();
+  }
+
+  /* and out */
+  if (k > 0.88) {
+    g.globalAlpha = seg(k, 0.88, 1);
+    g.fillStyle = '#05040c';
+    g.globalCompositeOperation = 'destination-out';
+    g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+  }
+}
+
+/* -------------------------------------------------------- HELICOPTER ---
+ *  0.00 black, rotors spinning up
+ *  0.14 the cabin: ribbed walls, a strut, the light from outside
+ *  0.34 the floor hatch starts to open                       (hand-off)
+ *  0.55 looking down through it at the board far below
+ *  0.78 the opening swallows the frame as we drop toward it
+ *  1.00 gone
+ */
+function cineHeli(g, k) {
+  g.clearRect(0, 0, W, H);
+  const cabin = seg(k, 0.08, 0.3);
+  const open  = seg(k, 0.3, 0.62);
+  const dive  = seg(k, 0.6, 1);
+
+  g.fillStyle = '#07080c'; g.fillRect(0, 0, W, H);
+
+  /* the hatch, an iris in the floor. Its hole is where the board shows. */
+  const hw = 300 + ease(open)*520 + ease(dive)*1700;
+  const hh = 150 + ease(open)*280 + ease(dive)*1100;
+  const cx = W/2, cy = H*0.6;
+
+  /* the cabin interior, drawn as everything that is NOT the hole */
+  g.save();
+  g.globalAlpha = Math.min(1, cabin*1.6);
+  g.beginPath();
+  g.rect(0, 0, W, H);
+  g.ellipse(cx, cy, hw, hh, 0, 0, Math.PI*2, true);   /* exactly one turn */
+  g.clip();
+
+  const wall = g.createLinearGradient(0, 0, 0, H);
+  wall.addColorStop(0, '#191d26'); wall.addColorStop(0.5, '#10131a'); wall.addColorStop(1, '#0a0c11');
+  g.fillStyle = wall; g.fillRect(0, 0, W, H);
+  /* ribs down the fuselage */
+  g.strokeStyle = 'rgba(255,255,255,.055)'; g.lineWidth = 9;
+  for (let i = -1; i < 9; i++) {
+    const x = i*210 + 60;
+    g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 60, H); g.stroke();
+  }
+  /* webbing seats either side */
+  g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 5;
+  for (const sx of [120, W - 120]) {
+    g.beginPath(); g.moveTo(sx - 70, 250); g.lineTo(sx + 70, 250); g.stroke();
+    for (let i = -2; i <= 2; i++) {
+      g.beginPath(); g.moveTo(sx + i*34, 250); g.lineTo(sx + i*34, 380); g.stroke();
+    }
+  }
+  /* a strut across the ceiling, and the lamp on it */
+  g.fillStyle = '#232936'; g.fillRect(0, 96, W, 30);
+  const lamp = g.createRadialGradient(cx, 140, 10, cx, 140, 430);
+  lamp.addColorStop(0, 'rgba(255,214,120,.26)');
+  lamp.addColorStop(1, 'rgba(255,200,90,0)');
+  g.fillStyle = lamp; g.beginPath(); g.arc(cx, 140, 430, 0, 7); g.fill();
+  /* the rotor's shadow sweeping the cabin — the one thing that says
+     "helicopter" rather than "dark room" */
+  const rot = CINE.t*11;
+  g.save();
+  g.globalAlpha = 0.12 + Math.sin(rot)*0.05;
+  g.fillStyle = '#000';
+  for (let i = 0; i < 3; i++) {
+    const a = rot + i*2.094;
+    g.save(); g.translate(cx, 150); g.rotate(a);
+    g.fillRect(-900, -16, 1800, 32);
+    g.restore();
+  }
+  g.restore();
+  /* daylight spilling up through the open hatch onto the walls */
+  if (open > 0) {
+    const up = g.createRadialGradient(cx, cy, hh*0.4, cx, cy, hh*3.2);
+    up.addColorStop(0, 'rgba(150,215,255,' + (0.26*open).toFixed(3) + ')');
+    up.addColorStop(1, 'rgba(150,215,255,0)');
+    g.fillStyle = up; g.fillRect(0, 0, W, H);
+  }
+  g.restore();
+
+  /* what is through the hole: the ground, a long way down */
+  g.save();
+  g.beginPath(); g.ellipse(cx, cy, hw, hh, 0, 0, 7); g.clip();
+  const far = 1 - ease(dive)*0.55;         /* the ground rushing up */
+  const haze = g.createLinearGradient(0, cy - hh, 0, cy + hh);
+  haze.addColorStop(0, '#7db7e8'); haze.addColorStop(1, '#3f9a4e');
+  g.fillStyle = haze; g.fillRect(cx - hw, cy - hh, hw*2, hh*2);
+  g.save();
+  g.translate(cx, cy); g.scale(far, far); g.translate(-cx, -cy);
+  /* fields below */
+  g.fillStyle = '#39a049';
+  g.fillRect(cx - 1400, cy - 500, 2800, 1400);
+  g.fillStyle = '#2f8f3e';
+  for (let i = -5; i < 6; i++) g.fillRect(cx + i*230 - 60, cy - 500, 110, 1400);
+  /* the trail, seen from above */
+  g.strokeStyle = '#c98a3c'; g.lineWidth = 56; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath();
+  g.moveTo(cx - 900, cy - 150);
+  g.bezierCurveTo(cx - 300, cy - 280, cx + 150, cy + 60, cx + 820, cy - 90);
+  g.stroke();
+  /* and things on it */
+  for (let i = 0; i < 5; i++) {
+    const t2 = (CINE.t*0.12 + i*0.2) % 1;
+    const bx = cx - 900 + t2*1720, by = cy - 150 + Math.sin(t2*3.1)*120;
+    msBlob(g, bx, by, 17, i % 2 ? '#d04a4a' : '#4a86d0', CINE.t);
+  }
+  g.restore();
+  /* thin cloud drifting between us and the ground — altitude, not scenery */
+  g.globalAlpha = 0.16;
+  msCloud(g, cx - 700 + ((CINE.t*110) % 2000), cy + hh*0.42, 2.2, 0.8);
+  msCloud(g, cx - 1500 + ((CINE.t*80) % 2400), cy - hh*0.5, 1.7, 0.7);
+  g.globalAlpha = 1;
+  g.restore();
+
+  /* the hatch doors and their rim */
+  if (dive < 0.85) {
+    g.save();
+    g.globalAlpha = Math.min(1, cabin*1.6) * (1 - dive);
+    g.strokeStyle = '#2b313f'; g.lineWidth = 18;
+    g.beginPath(); g.ellipse(cx, cy, hw, hh, 0, 0, 7); g.stroke();
+    g.strokeStyle = 'rgba(255,230,160,.35)'; g.lineWidth = 4;
+    g.beginPath(); g.ellipse(cx, cy, hw - 10, hh - 10, 0, 0, 7); g.stroke();
+    /* warning hatching on the lip, while there is a lip to see */
+    if (hw < 900) {
+      g.save();
+      g.beginPath(); g.ellipse(cx, cy, hw + 26, hh + 22, 0, 0, 7);
+      g.ellipse(cx, cy, hw + 8, hh + 6, 0, 0, 7, true);
+      g.clip();
+      for (let i = -30; i < 30; i++) {
+        g.fillStyle = i % 2 ? '#d8a000' : '#1a1a1a';
+        g.save(); g.translate(cx, cy); g.rotate(0.6);
+        g.fillRect(i*34, -hh - 60, 34, hh*2 + 120);
+        g.restore();
+      }
+      g.restore();
+    }
+    g.restore();
+  }
+
+  /* the dark at each end */
+  if (k < 0.1) { g.globalAlpha = 1 - k/0.1; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
+  if (k > 0.9) {
+    g.globalCompositeOperation = 'destination-out';
+    g.globalAlpha = seg(k, 0.9, 1);
+    g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  }
+}
+
+/* --------------------------------------------------- the two entrances -
+   Both do the same three things in the same order: close the menu, start
+   the real thing at the hand-off, and let the cover come off after. */
+function enterAdventure() {
+  if (CINE.kind) return;
+  sfx('rocket');
+  setTimeout(() => sfx('warp'), 900);
+  $('ovMenu').classList.remove('on');
+  msStop();
+  cinePlay('rocket', 2.6, 0.55,
+    () => { openHub(); },
+    () => { orbReset(); });
+}
+
+/* Classic: the helicopter runs over whatever startFresh/resumeRun set up. */
+function enterClassicRun(go) {
+  if (CINE.kind) { go(); return; }
+  sfx('heli');
+  setTimeout(() => sfx('hatch'), 1000);
+  setTimeout(() => sfx('wind'), 1750);
+  $('ovMenu').classList.remove('on');
+  msStop();
+  cinePlay('heli', 2.9, 0.34, go, () => { orbReset(); });
+}
+
+/* ======================================================================= *
+ *  THE COLLECTION SCREEN                                                  *
+ *                                                                         *
+ *  Every Adventure Jaxon the campaign has to give, in the order the solar  *
+ *  map hands them out. A card says which of the three states he is in and  *
+ *  nothing more; the pane on the right is where the detail lives.          *
+ *                                                                         *
+ *  Nothing on this screen decides anything. Every button asks the same     *
+ *  functions the game logic uses — skillState(), recruitChar(), buySkill() *
+ *  — and then draws whatever they said. A disabled button is a RESULT of   *
+ *  the rules, never the enforcement of them.                              *
+ * ======================================================================= */
+let COLL = { pick:null };
+
+const COIN_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+  '<circle cx="12" cy="12" r="9" fill="#ffd60a"/>' +
+  '<path fill="#8a6a00" d="M11 6h2v12h-2z"/></svg>';
+
+const NODE_ICON = {
+  flame:'M12 2c1 4-3 5-3 9a3 3 0 0 0 6 0c0-1-.4-2-1-3 2 1 3 3 3 5a5 5 0 0 1-10 0c0-5 5-6 5-11z',
+  bolt: 'M13 2 4 14h6l-1 8 9-12h-6z',
+  ring: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4a5 5 0 1 1 0 10 5 5 0 0 1 0-10z',
+  snow: 'M11 2h2v20h-2zM2.6 7l1 -1.7 17.8 10.3 -1 1.7zM3.6 17.3 21.4 7l1 1.7L4.6 19z',
+  star: 'M12 3l2.6 5.6 6.1.8-4.5 4.3 1.2 6.1L12 16.9 6.6 19.8l1.2-6.1L3.3 9.4l6.1-.8z'
+};
+const icoSvg = k => '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' +
+  (NODE_ICON[k] || NODE_ICON.star) + '"/></svg>';
+
+function openCollection() {
+  if (!COLL.pick) {
+    /* open on the first Jaxon he can actually do something with */
+    const c = ADV_CHARS.find(x => charEarned(x.id) && !charBought(x.id))
+           || ADV_CHARS.find(x => charBought(x.id))
+           || ADV_CHARS[0];
+    COLL.pick = c.id;
+  }
+  $('ovColl').classList.add('on');
+  collRender();
+}
+function closeCollection() {
+  if (!$('ovColl').classList.contains('on')) return;
+  $('ovColl').classList.remove('on');
+  sfx('close');
+}
+
+function collRender() { collGrid(); collDetail(); syncCoins(); }
+
+function collGrid() {
+  const owned = ADV_CHARS.filter(c => charBought(c.id)).length;
+  const earned = ADV_CHARS.filter(c => charEarned(c.id)).length;
+  $('clSub').textContent = owned + ' recruited \u00b7 ' + earned + ' of ' +
+                           ADV_CHARS.length + ' worlds cleared';
+  $('clGrid').innerHTML = ADV_CHARS.map(c => {
+    const built = !!c.tower;
+    const got = charEarned(c.id), bought = charBought(c.id);
+    const lv = charLevel(c.id);
+    const cls = !built ? 'soon' : bought ? 'owned' : got ? 'buyable' : 'locked';
+    const state = !built ? 'World in progress'
+                : bought ? 'Recruited'
+                : got ? c.cost + ' coins'
+                : 'Clear ' + worldById(c.world).name;
+    return '<button class="cCard ' + cls + (COLL.pick === c.id ? ' on' : '') +
+           '" data-c="' + c.id + '" style="--cc:' + c.col + '">' +
+      (bought && lv ? '<span class="cLv">Lv ' + lv + '</span>' : '') +
+      '<span class="cTop">' +
+        '<span class="cPic">' + (built ? '<img src="' + PORTRAIT[c.tower] + '" alt="">' : '') + '</span>' +
+        '<span style="min-width:0"><span class="cNm">' + c.name + '</span>' +
+        '<span class="cSub">' + worldById(c.world).name + ' \u00b7 ' + c.tag + '</span></span>' +
+      '</span>' +
+      '<span class="cState">' + state + '</span>' +
+    '</button>';
+  }).join('');
+  $('clGrid').querySelectorAll('.cCard').forEach(el => {
+    el.onclick = () => {
+      if (COLL.pick === el.dataset.c) return;
+      COLL.pick = el.dataset.c;
+      sfx('tab');
+      collRender();
+    };
+  });
+}
+
+function collDetail() {
+  const c = charById(COLL.pick);
+  const d = $('clDetail');
+  if (!c) { d.innerHTML = ''; return; }
+  d.style.setProperty('--cc', c.col);
+
+  const built = !!c.tower;
+  const got = charEarned(c.id), bought = charBought(c.id);
+
+  /* The stats are read off the real tower through the real pipeline: a
+     bare copy for the base, and a live SP() for what he is now. The
+     difference IS the progression, so the panel can never disagree with
+     what the Jaxon does on the field. */
+  let statsHtml = '';
+  if (built) {
+    const base = TOWERS[c.tower];
+    const now = SP({ type:c.tower, upA:0, upB:0, upC:0 });
+    const pct = (a, b) => {
+      const up = Math.round((b/a - 1)*100);
+      return up > 0 ? '<em>+' + up + '%</em>' : '';
+    };
+    const dps = sp => sp.cd ? Math.round(sp.dmg / sp.cd) : sp.dmg;
+    statsHtml =
+      '<div class="dStats">' +
+        '<div><div class="k">Damage</div><div class="v' + (now.dmg > base.dmg ? ' up' : '') + '">' +
+          bigNum(Math.round(now.dmg)) + pct(base.dmg, now.dmg) + '</div></div>' +
+        '<div><div class="k">Every</div><div class="v' + (now.cd < base.cd ? ' up' : '') + '">' +
+          now.cd.toFixed(2) + 's</div></div>' +
+        '<div><div class="k">Range</div><div class="v' + (now.range > base.range ? ' up' : '') + '">' +
+          Math.round(now.range) + pct(base.range, now.range) + '</div></div>' +
+        '<div><div class="k">Damage/s</div><div class="v">' + bigNum(dps(now)) + '</div></div>' +
+      '</div>';
+  }
+
+  /* the gate, or the recruit button, or the tree */
+  let body = '';
+  if (!built) {
+    body = '<div class="dGate">His world is still being built. ' +
+           '<b>' + worldById(c.world).name + '</b> will add him to the shelf when it opens.</div>';
+  } else if (!got) {
+    body = '<div class="dGate">Locked. Clear <b>' + worldById(c.world).name +
+           '</b> on the solar map and he joins the shelf for good.</div>';
+  } else if (!bought) {
+    const can = (S.coins || 0) >= c.cost;
+    body = '<div class="dGate" style="margin-bottom:var(--s3)">You have won him. ' +
+           'Recruit him into the collection to open his skill tree.</div>' +
+           '<button class="dBuy" id="dRecruit"' + (can ? '' : ' disabled') + '>' +
+           (can ? 'Recruit for ' + c.cost + ' coins'
+                : 'Need ' + (c.cost - (S.coins || 0)) + ' more coins') + '</button>';
+  } else {
+    body = collTree(c);
+  }
+
+  d.innerHTML =
+    '<div class="dHead">' +
+      '<div class="dPic">' + (built ? '<img src="' + PORTRAIT[c.tower] + '" alt="">' : '') + '</div>' +
+      '<div class="dInfo">' +
+        '<h3>' + c.name + '</h3>' +
+        '<div class="dTag">' + worldById(c.world).name + ' \u00b7 ' + c.tag +
+          (bought ? ' \u00b7 level ' + charLevel(c.id) : '') + '</div>' +
+        '<div class="dBl">' + (built ? TOWERS[c.tower].blurb : c.blurb) + '</div>' +
+      '</div>' +
+    '</div>' + statsHtml + body;
+
+  const rb = $('dRecruit');
+  if (rb) rb.onclick = () => { if (recruitChar(c.id)) collRender(); };
+  collWire(c);
+}
+
+/* ---- the tree ---------------------------------------------------------
+   Laid out by the node's own (col,tier), so the data decides the shape
+   and the renderer has no opinion about it. */
+function collTree(c) {
+  const tree = skillsFor(c.id);
+  if (!tree.length) {
+    return '<div class="dGate">No skill tree for this Jaxon yet.</div>';
+  }
+  const spent = charSpent(c.id);
+  const rows = Math.max(...tree.map(n => n.tier)) + 1;
+
+  let cells = '';
+  for (let tier = 0; tier < rows; tier++) {
+    for (let col = 0; col < 3; col++) {
+      const node = tree.find(n => n.tier === tier && n.col === col);
+      if (!node) {
+        /* a capstone spans the row; anything else leaves a gap */
+        const cap = tree.find(n => n.tier === tier && n.col === 1 && n.id.endsWith('cap'));
+        if (cap && col !== 1) continue;
+        if (!cap) cells += '<span></span>';
+        continue;
+      }
+      const isCap = node.id.endsWith('cap');
+      if (isCap && col !== 1) continue;
+      const st = skillState(c.id, node.id);
+      const rank = rankOf(c.id, node.id);
+      const price = rank >= node.max ? 0 : nodeCost(node, rank);
+      cells +=
+        '<button class="node ' + st + (isCap ? ' cap' : '') + '" data-n="' + node.id + '"' +
+          ' id="nd_' + node.id + '"' +
+          ' aria-label="' + node.name + '. ' + node.desc + '">' +
+          '<span class="nTop">' +
+            '<span class="nIc">' + icoSvg(node.icon) + '</span>' +
+            '<span class="nNm">' + node.name + '</span>' +
+            '<span class="nRank">' + rank + '/' + node.max + '</span>' +
+          '</span>' +
+          '<span class="nDs">' + node.desc + '</span>' +
+          '<span class="nCost">' + (st === 'maxed' ? 'Complete'
+            : st === 'locked' ? 'Locked'
+            : COIN_SVG + price) + '</span>' +
+        '</button>';
+    }
+  }
+
+  /* the wires. Drawn after layout, from real element positions, so they
+     always meet the nodes wherever the grid put them. */
+  return '<div class="treeWrap">' +
+    '<div class="treeHead"><span class="th">Skill tree</span>' +
+      '<span class="ts">' + spent + ' coins invested \u00b7 upgrades apply the moment they are bought</span>' +
+    '</div>' +
+    '<div class="tree" id="clTree"><svg class="wires" id="clWires"></svg>' + cells + '</div>' +
+  '</div>';
+}
+
+function collWire(c) {
+  const tree = $('clTree');
+  if (!tree) return;
+  tree.querySelectorAll('.node').forEach(el => {
+    el.onclick = () => {
+      const sid = el.dataset.n;
+      if (!buySkill(c.id, sid)) return;
+      collRender();
+      /* re-find it after the redraw and mark the rank that just landed */
+      const got = $('nd_' + sid);
+      if (got) { got.classList.add('got'); setTimeout(() => got.classList.remove('got'), 520); }
+    };
+    el.onmouseenter = () => { if (!MOBILE && el.classList.contains('ok')) sfxHover(); };
+  });
+  drawWires(c);
+}
+
+/* Connect each node to its prerequisite with a real line. Measured from
+   the laid-out DOM, so it survives any column count or wrap. */
+function drawWires(c) {
+  const tree = $('clTree'), svg = $('clWires');
+  if (!tree || !svg) return;
+  const box = tree.getBoundingClientRect();
+  const sc = box.width ? (tree.offsetWidth / box.width) : 1;
+  let out = '';
+  for (const node of skillsFor(c.id)) {
+    for (const p of (node.needs || [])) {
+      const a = $('nd_' + p), b = $('nd_' + node.id);
+      if (!a || !b) continue;
+      const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect();
+      const x1 = (ra.left + ra.width/2 - box.left)*sc, y1 = (ra.bottom - box.top)*sc;
+      const x2 = (rb.left + rb.width/2 - box.left)*sc, y2 = (rb.top - box.top)*sc;
+      const pn = skillsFor(c.id).find(n => n.id === p);
+      const lit = pn && rankOf(c.id, p) >= (pn.max || 1);
+      out += '<line class="' + (lit ? 'on' : '') + '" x1="' + x1.toFixed(1) + '" y1="' + y1.toFixed(1) +
+             '" x2="' + x2.toFixed(1) + '" y2="' + y2.toFixed(1) + '"/>';
+    }
+  }
+  svg.innerHTML = out;
+}
+
+/* the wallet, everywhere it is shown at once */
+function syncCoins() {
+  const n = Math.max(0, Math.floor(S.coins || 0));
+  for (const id of ['coinVal', 'clCoin']) { const el = $(id); if (el) el.textContent = n; }
+}
+/* a coin landing is worth a glance */
+function coinFlash() {
+  for (const id of ['coinBox', 'clWallet']) {
+    const el = $(id); if (!el) continue;
+    el.classList.remove('bumped'); void el.offsetWidth; el.classList.add('bumped');
+  }
 }
 
 /* ---------------------------------------------------------- menu mood ---
@@ -8052,6 +10516,313 @@ for (const v of WORLDS) {
   v.eliteAt = out;
 }
 const worldById = id => WORLDS.find(v => v.id === id) || null;
+
+/* ======================================================================= *
+ *  ADVENTURE JAXONS — THE COLLECTION AND THEIR PROGRESSION                *
+ *                                                                         *
+ *  Every world leaves a Jaxon behind. Two of those Jaxons are built and    *
+ *  stand on the shelf; the other seven belong to worlds that are not       *
+ *  finished yet, and they say so rather than pretending to exist.          *
+ *                                                                         *
+ *  A character has two separate gates, and they are not the same thing:    *
+ *                                                                         *
+ *    EARNED   you cleared his world. This is the campaign's reward and     *
+ *             cannot be bought — it is what S.adv.jaxons already tracks.   *
+ *    BOUGHT   you then paid coins to recruit him into the collection,      *
+ *             which is what opens his skill tree.                         *
+ *                                                                         *
+ *  Both must be true before a tree can be spent into. Nothing here grants  *
+ *  a Jaxon you have not won.                                              *
+ * ======================================================================= */
+/* Recruitment prices, in one table rather than scattered through the UI.
+   They rise with the world's place in the campaign. */
+const ADV_COST = {
+  mercury:150, venus:300, earth:450, moon:600, mars:800,
+  jupiter:1000, saturn:1300, uranus:1600, neptune:2000
+};
+
+const ADV_CHARS = WORLDS.map(v => ({
+  id:v.id,
+  world:v.id,
+  name:v.jaxonName || (v.name + ' Jaxon'),
+  tower:TOWERS[v.id] ? v.id : null,     /* the real shelf tower, if built */
+  cost:ADV_COST[v.id] === undefined ? 300 : ADV_COST[v.id],
+  tag:v.tag,
+  col:v.shardCol,
+  blurb:v.blurb
+}));
+
+/* ---------------------------------------------------------- skill trees -
+   Three branches of three, plus a capstone that needs two of them. Every
+   node's effect is an applyMod payload — the exact same language the
+   in-run upgrade tiers speak — so SP() applies them through the code that
+   already exists rather than through a second parallel stat system.
+
+   'per' is the effect of ONE rank. A node with max:3 applies it 3 times.  */
+function branch(pre, col, tier, name, desc, cost, max, per, icon, needs) {
+  return { id:pre, col, tier, name, desc, cost, max, per, icon, needs:needs || null };
+}
+
+const SKILLS = {
+  /* ---- Mercury Jaxon: embers, bursts, and crust-cracking ---- */
+  mercury:[
+    branch('m_heat1', 0, 0, 'Hotter Embers',  'Every ember lands harder.',            120, 3, { dmg:1.10 }, 'flame'),
+    branch('m_heat2', 0, 1, 'Deep Burn',      'The burn he leaves behind bites more.', 260, 3, { mul:{ burnDps:1.18 } }, 'flame', ['m_heat1']),
+    branch('m_heat3', 0, 2, 'Crust Breaker',  'Bursts hit far harder for their size.', 520, 2, { mul:{ splash:1.25 } }, 'flame', ['m_heat2']),
+
+    branch('m_rate1', 1, 0, 'Quick Hands',    'He throws faster.',                     140, 3, { cd:0.93 }, 'bolt'),
+    branch('m_rate2', 1, 1, 'Hot Barrel',     'Embers leave him quicker.',             280, 3, { speed:1.12 }, 'bolt', ['m_rate1']),
+    branch('m_rate3', 1, 2, 'Furnace Feed',   'A real step up in rate of fire.',       560, 2, { cd:0.88 }, 'bolt', ['m_rate2']),
+
+    branch('m_rng1',  2, 0, 'Long Throw',     'He reaches further down the trail.',    110, 3, { range:1.07 }, 'ring'),
+    branch('m_rng2',  2, 1, 'Wide Burst',     'The burst covers more ground.',         250, 3, { mul:{ splashR:1.12 } }, 'ring', ['m_rng1']),
+    branch('m_rng3',  2, 2, 'Scorched Earth', 'Burst radius again, and then some.',    540, 2, { mul:{ splashR:1.20 } }, 'ring', ['m_rng2']),
+
+    branch('m_cap',   1, 3, 'Sovereign Ember','Everything he throws is worth a third more, and it flies.',
+           1400, 1, { dmg:1.33, speed:1.2 }, 'star', ['m_heat3','m_rate3'])
+  ],
+
+  /* ---- Venus Jaxon: a slow, enormous, corrosive globe ---- */
+  venus:[
+    branch('v_cor1', 0, 0, 'Stronger Acid',  'The globe hits harder.',                 160, 3, { dmg:1.11 }, 'flame'),
+    branch('v_cor2', 0, 1, 'Caustic Air',    'What crawls away burns worse.',          320, 3, { mul:{ burnDps:1.22 } }, 'flame', ['v_cor1']),
+    branch('v_cor3', 0, 2, 'Dissolution',    'A serious lift to the splash itself.',   640, 2, { mul:{ splash:1.28 } }, 'flame', ['v_cor2']),
+
+    branch('v_prs1', 1, 0, 'Thicker Air',    'Everything caught slows harder.',        180, 3, { mul:{ slowMul:0.94 } }, 'snow'),
+    branch('v_prs2', 1, 1, 'Pressure Drop',  'He throws noticeably faster.',           340, 3, { cd:0.92 }, 'bolt', ['v_prs1']),
+    branch('v_prs3', 1, 2, 'Storm Front',    'Faster again, and the globe travels.',   680, 2, { cd:0.90, speed:1.15 }, 'bolt', ['v_prs2']),
+
+    branch('v_sat1', 2, 0, 'Wider Cloud',    'The cloud opens further.',               150, 3, { mul:{ splashR:1.11 } }, 'ring'),
+    branch('v_sat2', 2, 1, 'Deeper Reach',   'He covers more of the trail.',           330, 3, { range:1.08 }, 'ring', ['v_sat1']),
+    branch('v_sat3', 2, 2, 'Total Saturation','Cloud radius, properly.',               660, 2, { mul:{ splashR:1.22 } }, 'ring', ['v_sat2']),
+
+    branch('v_cap',  1, 3, 'Sulphur Lord',   'A third more damage and a wider cloud on everything he throws.',
+           1600, 1, { dmg:1.33, mul:{ splashR:1.15 } }, 'star', ['v_cor3','v_sat3'])
+  ]
+};
+
+/* ------------------------------------------------------------ the store -
+   One record per character, created on demand so a save that predates a
+   character still works the moment that character exists. */
+function metaInit() {
+  if (!S.meta || typeof S.meta !== 'object') S.meta = {};
+  for (const c of ADV_CHARS) {
+    const r = S.meta[c.id];
+    if (!r || typeof r !== 'object') S.meta[c.id] = { bought:false, skills:{} };
+    else if (!r.skills || typeof r.skills !== 'object') r.skills = {};
+  }
+  return S.meta;
+}
+function metaOf(id) { metaInit(); return S.meta[id] || (S.meta[id] = { bought:false, skills:{} }); }
+
+/* Has the campaign handed this Jaxon over? */
+const charEarned = id => { const c = charById(id); return !!(c && c.world && advHas(c.world)); };
+/* Has the player then recruited him? */
+const charBought = id => !!metaOf(id).bought;
+/* Is he usable — earned, recruited, and actually built? */
+const charReady  = id => charEarned(id) && charBought(id) && !!(charById(id) || {}).tower;
+const charById   = id => ADV_CHARS.find(c => c.id === id) || null;
+const skillsFor  = id => SKILLS[id] || [];
+const rankOf     = (id, sid) => metaOf(id).skills[sid] || 0;
+
+/* The level a character reads at: one per rank bought, which is the only
+   number the collection screen ever shows as "level". */
+function charLevel(id) {
+  const m = metaOf(id);
+  let n = 0;
+  for (const k in m.skills) n += m.skills[k] || 0;
+  return n;
+}
+/* total coins sunk into him, for the detail panel */
+function charSpent(id) {
+  let n = 0;
+  for (const node of skillsFor(id)) n += nodeCostTotal(node, rankOf(id, node.id));
+  return n;
+}
+/* a node's rank N costs a little more than rank N-1 */
+const nodeCost = (node, rank) => Math.round(node.cost * Math.pow(1.55, rank));
+function nodeCostTotal(node, ranks) {
+  let n = 0;
+  for (let i = 0; i < ranks; i++) n += nodeCost(node, i);
+  return n;
+}
+
+/* ------------------------------------------------------- can he buy it? -
+   The single authority. Every path into a purchase asks this, and the UI
+   only ever reflects what it says — it never decides for itself. */
+function skillState(id, sid) {
+  const c = charById(id);
+  if (!c) return 'missing';
+  if (!charEarned(id)) return 'unearned';       /* world not cleared */
+  if (!charBought(id)) return 'unrecruited';    /* not paid for yet */
+  const node = skillsFor(id).find(n => n.id === sid);
+  if (!node) return 'missing';
+  const rank = rankOf(id, sid);
+  if (rank >= (node.max || 1)) return 'maxed';
+  /* every prerequisite must be at full rank, not merely started */
+  for (const p of (node.needs || [])) {
+    const pn = skillsFor(id).find(n => n.id === p);
+    if (!pn || rankOf(id, p) < (pn.max || 1)) return 'locked';
+  }
+  return S.coins >= nodeCost(node, rank) ? 'ok' : 'poor';
+}
+
+/* ====================================================== THE RUN ECONOMY ===
+ *  Coins are the campaign's currency: they come out of finished runs and
+ *  go into recruiting and upgrading Adventure Jaxons. They are not the
+ *  in-run money — that is still S.money, still spent on towers, and the
+ *  two never touch.
+ *
+ *  Two ways to earn, and both are guarded against paying twice:
+ *
+ *    COMPLETION  clearing a difficulty's goal wave pays MODES[k].reward,
+ *                once per difficulty+challenge combination, ever.
+ *    FREE PLAY   every tenth wave past the goal pays FP_RATE, tracked per
+ *                run slot so resuming a saved run cannot re-bank a
+ *                milestone it already paid.
+ *
+ *  Sandbox earns nothing — its numbers are cosmetic by design, and a mode
+ *  that hands out infinite money must not hand out coins.
+ * ======================================================================== */
+const FP_EVERY = 10;      /* a milestone every N free-play waves */
+const FP_RATE  = 10;      /* and what each one pays              */
+
+/* the wave a run is won at, or 0 if it has no finish */
+function modeGoal() {
+  if (SB() || BR() || S.titan) return 0;
+  if (AD()) { const v = advWorld(); return v ? v.goal : 0; }
+  const m = MODES[S.mode];
+  return (m && m.goal) || 0;
+}
+const modeReward = () => { const m = MODES[S.mode]; return (m && m.reward) || 0; };
+/* has this run already passed its finish and carried on? */
+const inFreePlay = () => !!S.freePlay;
+
+/* A difficulty pays its completion reward once. The key carries the
+   challenges too, so a clean Medium and a one-life Medium are different
+   achievements rather than the same one paid twice. */
+function completionPaid(key) { return !!(S.modeDone && S.modeDone[key]); }
+
+function payCompletion() {
+  const key = runKey(), amount = modeReward();
+  if (!amount || SB()) return 0;
+  if (completionPaid(key)) return 0;             /* already banked, ever */
+  if (!S.modeDone) S.modeDone = {};
+  S.modeDone[key] = 1;
+  return coinsAdd(amount);
+}
+
+/* Free Play milestones. Keyed on the run slot so a run put down and picked
+   up again resumes its own ledger instead of starting a fresh one. */
+function fpKey() { return runKey(); }
+function fpPaidCount() {
+  if (!S.fpPaid) S.fpPaid = {};
+  return S.fpPaid[fpKey()] || 0;
+}
+/* Pays for every whole milestone reached since the last time this ran.
+   Called once per wave clear, so a run that somehow jumps several waves
+   still pays each milestone exactly once and never pays a partial one. */
+function payFreePlay(clearedWave) {
+  if (!inFreePlay() || SB()) return 0;
+  const goal = S.fpFrom || 0;
+  const past = Math.max(0, clearedWave - goal);
+  const earned = Math.floor(past / FP_EVERY);
+  const already = fpPaidCount();
+  if (earned <= already) return 0;
+  const n = earned - already;
+  S.fpPaid[fpKey()] = earned;
+  const paid = coinsAdd(n * FP_RATE);
+  if (paid) {
+    sfx('coins', n);
+    S.floats.push({ x:W/2, y:H/2 - 90, txt:'+' + paid + ' coins', color:'#ffd60a', life:2.2, big:true });
+    toast('Free Play milestone — +' + paid + ' coins');
+  }
+  return paid;
+}
+
+/* ------------------------------------------------------------- the bank -
+   All coin movement goes through these two. Nothing anywhere else touches
+   S.coins, so there is exactly one place a balance can change and exactly
+   one place it is written down. */
+function coinsAdd(n, why) {
+  n = Math.floor(n);
+  if (!isFinite(n) || n <= 0) return 0;
+  S.coins = Math.max(0, Math.floor(S.coins || 0) + n);
+  saveNow(); syncCoins(); coinFlash();
+  return n;
+}
+function coinsSpend(n) {
+  n = Math.floor(n);
+  if (!isFinite(n) || n < 0) return false;
+  if ((S.coins || 0) < n) return false;         /* never goes negative */
+  S.coins = Math.floor(S.coins) - n;
+  saveNow(); syncCoins();
+  return true;
+}
+
+/* ------------------------------------------------------------ recruiting */
+function recruitChar(id) {
+  const c = charById(id);
+  if (!c) return false;
+  if (!charEarned(id)) { toast('Clear ' + worldById(c.world).name + ' first'); sfx('deny'); return false; }
+  if (charBought(id))  return false;
+  if (!coinsSpend(c.cost)) { toast('Need ' + c.cost + ' coins for ' + c.name); sfx('deny'); return false; }
+  metaOf(id).bought = true;
+  saveNow();
+  sfx('unlock');
+  toast(c.name + ' recruited');
+  return true;
+}
+
+/* -------------------------------------------------------- buying a skill */
+function buySkill(id, sid) {
+  const st = skillState(id, sid);
+  if (st !== 'ok') {
+    sfx('deny');
+    toast(st === 'poor' ? 'Not enough coins'
+        : st === 'locked' ? 'Finish the skill above it first'
+        : st === 'maxed' ? 'Already at full rank'
+        : st === 'unrecruited' ? 'Recruit him first'
+        : 'Clear his world first');
+    return false;
+  }
+  const node = skillsFor(id).find(n => n.id === sid);
+  const rank = rankOf(id, sid);
+  const price = nodeCost(node, rank);
+  if (!coinsSpend(price)) { sfx('deny'); return false; }   /* second check: the bank decides */
+  metaOf(id).skills[sid] = rank + 1;
+  metaBump();                      /* every live tower of his re-reads its stats */
+  saveNow();
+  sfx('skillBuy');
+  return true;
+}
+
+/* ------------------------------------------------- meta -> real gameplay -
+   SP() caches a tower's stats against a version number built from its
+   upgrades. Meta progression has to be part of that number, or a tower
+   placed before a skill was bought would keep its old stats for the rest
+   of the run. METAV is bumped on every purchase and folded into the key. */
+let METAV = 1;
+function metaBump() { METAV++; }
+
+/* The mods a character's bought skills add up to, rebuilt only when
+   something actually changed rather than on every stat read. */
+const metaCache = {};
+function metaMods(type) {
+  const c = ADV_CHARS.find(x => x.tower === type);
+  if (!c) return null;
+  const hit = metaCache[type];
+  if (hit && hit.v === METAV) return hit.list;
+  const list = [];
+  if (charBought(c.id)) {
+    for (const node of skillsFor(c.id)) {
+      const r = rankOf(c.id, node.id);
+      for (let i = 0; i < r; i++) list.push(node.per);
+    }
+  }
+  metaCache[type] = { v:METAV, list };
+  return list;
+}
 const AD = () => S.mode === 'adventure';
 const advWorld = () => (AD() ? worldById(S.world) : null);
 
@@ -8082,7 +10853,7 @@ function startWorld(id) {
   const v = worldById(id);
   if (!v || !worldOpen(v)) {
     toast(v ? worldWhy(v) : 'Not yet');
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return false;
   }
   closeHub(); closeOrb();
@@ -8562,7 +11333,7 @@ function hubPlate(v) {
   if (cont) cont.onclick = ev => { ev.stopPropagation(); resumeRun('adventure:' + v.id); };
 }
 function hubEnter(v) {
-  if (!worldOpen(v)) { toast(worldWhy(v)); beep(150, 0.08, 'square', 0.03); return; }
+  if (!worldOpen(v)) { toast(worldWhy(v)); sfx('deny'); return; }
   if (HUB.zoom) return;
   HUB.zoom = { v, t:0, fired:false };
   hubPlate(null);
@@ -8829,10 +11600,12 @@ function enterMode(k, world) {
   return true;
 }
 function startFresh(k, world) {
-  beep(660, 0.1, 'triangle', 0.04, 1180);          // the one confirm
+  sfx('press');
   dropRun(world ? 'adventure:' + world : k);
+  /* A world is already inside Adventure, so it gets no helicopter — it was
+     flown in by the rocket. Everything classic deploys. */
   if (world) return startWorld(world);
-  startMode(k);
+  enterClassicRun(() => startMode(k));
   return true;
 }
 const ago = ts => {
@@ -9763,15 +12536,15 @@ function endLink(pick) {
     toast(TOWERS[t.type].name + ' copies whoever fired last again');
   } else if (pick === t) {
     toast('It cannot copy itself');
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   } else if (TOWERS[pick.type].noMirror) {
     toast('Nothing copies a ' + TOWERS[pick.type].name);
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   } else if (Math.hypot(pick.x - t.x, pick.y - t.y) > SP(t).range) {
     toast(TOWERS[pick.type].name + ' is outside the ring');
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return;
   } else {
     t.copyOf = pick;
@@ -10171,7 +12944,7 @@ function sbSpawn(u, at) {
   }
   if (capped) toast(isBoss ? 'Boss cap reached (' + BOSS_CAP + ') — spawned ' + made
                            : 'Entity cap reached (' + cap + ') — spawned ' + made);
-  else if (made) beep(520, 0.07, 'triangle', 0.03);
+  else if (made) sfx('tap');
 }
 /* the furthest along anything is allowed to be dropped in */
 const ADD_MAX = 0.68;
@@ -12086,6 +14859,10 @@ function update(dt) {
     saveRun();                                  // the run is safe to keep here
     /* a world mission is over the moment its wave goal is met */
     if (AD() && advWorld() && cleared >= advWorld().goal) { advWin(); return; }
+    /* ...and so is a classic difficulty, which now has a finish line too.
+       Past it the same run carries straight on as Free Play. */
+    if (!inFreePlay() && modeGoal() && cleared >= modeGoal()) { modeWin(cleared); return; }
+    payFreePlay(cleared);
     if (!S.tutorialDone) { S.tutorialDone = true; saveNow(); }   // they have got it
     S.waves = []; S.cars = []; S.holes = []; S.shreds = []; S.vortex = []; S.shocks = [];
     S.discs = []; S.novas = []; S.pulses = []; S.gusts = []; S.clouds = [];
@@ -12115,8 +14892,147 @@ function update(dt) {
   syncHUD();
 }
 
+/* ======================================================= THE RESULTS SHEET ==
+ *  Shown when a run is actually WON — never when it ends in a leak, and
+ *  never for Sandbox. Everything on it is measured from the run that just
+ *  happened; nothing here invents a number, and a statistic the run cannot
+ *  supply is left off rather than filled in.
+ * ========================================================================= */
+
+/* What the run actually did, read off the real state. */
+function runStats() {
+  let dmg = 0, best = null;
+  for (const t of S.towers) {
+    dmg += t.dmg || 0;
+    if (!best || (t.dmg || 0) > (best.dmg || 0)) best = t;
+  }
+  return {
+    waves:  Math.max(0, S.wave - 1),
+    kills:  S.pops || 0,
+    dmg:    Math.round(dmg),
+    towers: S.towers.length,
+    best,
+    earned: Math.max(0, Math.round((S.money - S.money0) + S.spent)),  /* income, not balance */
+    time:   Math.round(S.runT || 0)
+  };
+}
+
+/* A run reaches its goal wave. Pay once, then show the sheet. */
+function modeWin(cleared) {
+  if (S.phase === 'over') return;
+  S.phase = 'over';
+  dropRun(slotKey());
+  const md = MODES[S.mode] || MODES.normal;
+  const paid = payCompletion();                 /* the only place this is called */
+  saveNow();
+  showResults({
+    title: md.name + ' complete',
+    sub: 'You held the nursery for all ' + cleared + ' waves.',
+    mode: chalName(runKey()),
+    cleared,
+    reward: paid,
+    already: paid === 0 && modeReward() > 0,
+    canFree: true
+  });
+}
+
+/* Built once and reused; the sheet is a panel in #ovEnd, not a new overlay. */
+function showResults(o) {
+  const r = runStats();
+  const row = (k, v, cls) =>
+    '<div class="rsCell"><div class="k">' + k + '</div><div class="v' +
+    (cls ? ' ' + cls : '') + '">' + v + '</div></div>';
+
+  const bestTower = r.best && r.best.dmg > 0
+    ? '<div class="rsBest">' +
+        '<span class="pic"><img src="' + PORTRAIT[artOf(r.best)] + '" alt=""></span>' +
+        '<span class="who"><b>' + (TOWERS[r.best.type] || {}).name + '</b>' +
+        '<em>top damage &middot; ' + bigNum(Math.round(r.best.dmg)) + '</em></span>' +
+      '</div>'
+    : '';
+
+  const rewardBlock = o.reward > 0
+    ? '<div class="rsReward"><span class="rl">Completion reward</span>' +
+        '<b class="rv" id="rsCoinGain">+' + o.reward + '</b>' +
+        '<span class="rc">coins</span></div>'
+    : o.already
+    ? '<div class="rsReward paid"><span class="rl">Completion reward</span>' +
+        '<b class="rv">already claimed</b></div>'
+    : '';
+
+  $('ovEnd').classList.add('win');
+  $('endTitle').textContent = o.title;
+  $('endText').textContent = o.sub;
+  $('scoreRow').innerHTML =
+    '<div class="rsGrid">' +
+      row('Waves cleared', o.cleared) +
+      row('Enemies popped', bigNum(r.kills)) +
+      row('Damage dealt', bigNum(r.dmg)) +
+      row('Jaxons built', r.towers) +
+      row('Earned this run', bigCash(r.earned)) +
+      row('Time', fmtTime(r.time)) +
+    '</div>' +
+    bestTower + rewardBlock +
+    '<div class="rsWallet"><span>Wallet</span><b id="rsWallet">' +
+      (S.coins || 0) + '</b><i>coins</i></div>';
+
+  /* the two ways out */
+  $('againBtn').textContent = o.canFree ? 'Free Play' : 'Play again';
+  $('againBtn').dataset.act = o.canFree ? 'free' : 'again';
+  $('endModes').textContent = 'Main menu';
+
+  $('ovEnd').classList.add('on');
+  setShop(false); hideTip(); deselect();
+  sfx('victory');
+  flashScreen(0.22);
+  /* the balance counts up to its new value; the number itself was already
+     banked by payCompletion, so an interrupted animation cannot change it */
+  if (o.reward > 0) countUp($('rsWallet'), (S.coins || 0) - o.reward, S.coins || 0, 900);
+  syncHUD(); syncCoins();
+}
+
+/* A plain tween for a number in the DOM. Cancels its own previous run so
+   reopening a screen cannot leave two of them fighting over one element. */
+function countUp(el, from, to, ms) {
+  if (!el) return;
+  cancelAnimationFrame(el._cu || 0);
+  if (REDUCED) { el.textContent = Math.round(to); return; }
+  const t0 = performance.now();
+  const step = now => {
+    const k = Math.min(1, (now - t0)/ms);
+    const e = 1 - Math.pow(1 - k, 3);
+    el.textContent = Math.round(from + (to - from)*e);
+    if (k < 1) el._cu = requestAnimationFrame(step);
+  };
+  el._cu = requestAnimationFrame(step);
+}
+
+/* ----------------------------------------------------------- Free Play --
+   The same run, carried on past its finish. Nothing is reset: the towers,
+   the money and the board all stay exactly as they were. The only changes
+   are that the goal no longer applies and the milestone ledger starts
+   counting from the wave that was just won. */
+function startFreePlay() {
+  const goal = modeGoal() || Math.max(0, S.wave - 1);
+  S.freePlay = true;
+  S.fpFrom = goal;
+  if (!S.fpPaid) S.fpPaid = {};
+  S.fpPaid[fpKey()] = 0;                 /* fresh ledger from the goal wave */
+  S.phase = 'build';
+  S.autoTimer = 2.0;
+  $('ovEnd').classList.remove('on', 'win');
+  sfx('freeplay');
+  banner('FREE PLAY', FP_RATE + ' coins every ' + FP_EVERY + ' waves', '#64d8ff');
+  toast('Free Play — the waves keep coming');
+  saveRun(); saveNow(); syncHUD();
+}
+
 function endGame() {
   const survived = Math.max(0, S.wave - 1), best = Math.max(bestHere(), survived);
+  /* a defeat is never a win sheet, and never pays a completion reward */
+  $('ovEnd').classList.remove('win');
+  $('againBtn').textContent = 'Play again';
+  $('againBtn').dataset.act = 'again';
   dropRun(slotKey());
   /* a failed world says which world, and offers the map back */
   if (AD() && advWorld()) {
@@ -12199,7 +15115,7 @@ function startAscend(t) {
   if (!trio) { toast(ascWhy(t) || 'No trio ready'); return; }
   if (ascCount(t.type) >= ASC_MAX) { toast('Already two Ascended of that Jaxon'); return; }
   const cost = ascCost(t.type);
-  if (!afford(cost)) { toast('Ascension costs ' + bigCash(cost)); beep(150, 0.08, 'square', 0.03); return; }
+  if (!afford(cost)) { toast('Ascension costs ' + bigCash(cost)); sfx('deny'); return; }
   spend(cost);
   /* the survivor is the one the player had open, standing where he stands */
   const keep = trio.includes(t) ? t : trio[0];
@@ -12426,7 +15342,7 @@ function selectTower(t) {
   if (MOBILE && S.shopOpen) setShop(false);
   hideTip();
   drawPanel();
-  beep(680, 0.05, 'triangle', 0.028);
+  sfx('select');
 }
 function deselect() {
   if (!S.selected) return;
@@ -12529,12 +15445,12 @@ function drawPanel() {
   const ux = $('pUnlink');
   if (ux) ux.onclick = ev => { ev.stopPropagation(); t.copyOf = null; drawPanel();
                                toast(TOWERS[t.type].name + ' copies whoever fired last again');
-                               beep(420, 0.06, 'triangle', 0.026); };
+                               sfx('tap'); };
   el.querySelectorAll('.aimB').forEach(b => b.onclick = ev => {
     ev.stopPropagation();
     t.aim = b.dataset.aim;
     el.querySelectorAll('.aimB').forEach(x => x.classList.toggle('on', x === b));
-    beep(620, 0.05, 'triangle', 0.026);
+    sfx('tap');
   });
   const sn = $('pSnap');
   if (sn) sn.onclick = ev => { ev.stopPropagation(); if (astroSnap(false)) drawPanel(); };
@@ -12587,7 +15503,7 @@ function drawPanel() {
         sb2.classList.remove('arm');
         sb2.innerHTML = sb2.dataset.was || 'Sell';
       }, 2800);
-      beep(380, 0.06, 'triangle', 0.028);
+      sfx('tap');
       return;
     }
     clearTimeout(sb2._t);
@@ -12936,7 +15852,7 @@ function buyPlot(p) {
   const cost = plotCost(p);
   if (!afford(cost)) {
     toast('Clearing the ' + p.name + ' costs ' + bigCash(cost));
-    beep(150, 0.08, 'square', 0.03);
+    sfx('deny');
     return false;
   }
   spend(cost);
@@ -15236,12 +18152,12 @@ function astroSnap(force) {
   if (!t) { toast('No Titan Astro Jaxon on the board'); return false; }
   if (t.arrive > 0) { toast('He has not landed yet'); return false; }
   const B = S.bosses[0];
-  if (!B) { toast('The guillotine needs a boss'); beep(150, 0.08, 'square', 0.03); return false; }
+  if (!B) { toast('The guillotine needs a boss'); sfx('deny'); return false; }
   if (!force) {
-    if (t.snapWave === S.wave) { toast('One guillotine a boss wave'); beep(150,0.08,'square',0.03); return false; }
+    if (t.snapWave === S.wave) { toast('One guillotine a boss wave'); sfx('deny'); return false; }
     if (!afford(ASTRO.snapCost)) {
       toast('The guillotine costs ' + bigCash(ASTRO.snapCost));
-      beep(150,0.08,'square',0.03); return false;
+      sfx('deny'); return false;
     }
     spend(ASTRO.snapCost); t.snapWave = S.wave; syncHUD();
   }
@@ -16622,7 +19538,7 @@ function canvasPos(ev) {
   return { x:(sx - W/2)/c.z + c.x, y:(sy - H/2)/c.z + c.y };
 }
 function sellTower(t) {
-  if (hasChal('nosell')) { toast('No Sell — he stays where he is'); beep(150,0.08,'square',0.03); return; }
+  if (hasChal('nosell')) { toast('No Sell — he stays where he is'); sfx('deny'); return; }
   const refund = refundOf(t);
   /* Recycler Jaxon digs a little extra out of anything scrapped beside him.
      Best single rate only — stacking Recyclers would print money. */
@@ -16651,9 +19567,9 @@ function tryPlaceAt(x, y, silent) {
   const spec = TOWERS[S.placing], dup = S.dupe;
   const cost = dup ? dup.cost : costOf(S.placing);
   if (!afford(cost)) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
-  if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); beep(150, 0.08, 'square', 0.03); } return false; }
+  if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); sfx('deny'); } return false; }
   if (spec.bigPad && theAstro()) {
-    if (!silent) { toast('There is only ever one Titan'); beep(150, 0.08, 'square', 0.03); }
+    if (!silent) { toast('There is only ever one Titan'); sfx('deny'); }
     cancelPlacing(); return false;
   }
   if (dup && dup.asc && ascCount(S.placing) >= ASC_MAX) {
@@ -16776,7 +19692,7 @@ cv.addEventListener('pointerdown', ev => {
       else {
         S.plotArm = { id:sign.id, until:S.t + 4 };
         toast((MOBILE ? 'Tap' : 'Click') + ' the sign again to pay ' + bigCash(plotCost(sign)));
-        beep(520, 0.07, 'triangle', 0.03);
+        sfx('tap');
       }
       return;
     }
@@ -16845,7 +19761,7 @@ window.addEventListener('keydown', ev => {
     const id = cycleAim(S.selected, ev.shiftKey ? -1 : 1);
     const label = (AIMS.find(a => a[0] === id) || [])[1];
     toast(TOWERS[S.selected.type].name + ' targets ' + label);
-    beep(620, 0.05, 'triangle', 0.026);
+    sfx('tap');
     drawPanel();
     return;
   }
@@ -16869,10 +19785,11 @@ window.addEventListener('keydown', ev => {
     if (ev.key === 'Enter') $('ldContinue').click();
     return;
   }
+  if ($('ovColl').classList.contains('on')) { if (ev.key === 'Escape') closeCollection(); return; }
   if ($('ovOrb').classList.contains('on')) { if (ev.key === 'Escape') closeOrb(); return; }
   if (HUB.open) { if (ev.key === 'Escape') hubToMenu(); return; }
   if (ev.key === 'Escape' && $('ovMenu').classList.contains('on')
-      && $('classicDock').classList.contains('open')) { setWheel(false); return; }
+      && ORB.state !== 'orb') { orbMerge(); return; }
   if (ev.key === 'Escape') {
     if (S.paused) { setPause(false); return; }
     if ($('sbAsc').classList.contains('on')) { closeSbAsc(); return; }
@@ -17033,14 +19950,20 @@ $('playBtn').onclick = () => {
   beep(h.hidden ? 420 : 700, 0.06, 'triangle', 0.03);
 };
 $('againBtn').onclick = () => {
-  $('ovEnd').classList.remove('on');
+  /* After a win this button continues the same run into Free Play; after a
+     loss it is an ordinary restart. The dataset says which, so the two can
+     never be confused by whatever was on screen before. */
+  if ($('againBtn').dataset.act === 'free') { startFreePlay(); return; }
+  $('ovEnd').classList.remove('on', 'win');
   /* a finished run is not a run to come back to */
   dropRun(slotKey());
   if (AD() && S.world) startWorld(S.world); else startMode(S.mode);
 };
 $('ldContinue').onclick = () => {
   const p = _pendingStart; closeLoad();
-  if (p) resumeRun(p.key);
+  if (!p) return;
+  if (p.world) { resumeRun(p.key); return; }
+  enterClassicRun(() => resumeRun(p.key));
 };
 $('ldNew').onclick = () => {
   const p = _pendingStart; closeLoad();
@@ -17049,34 +19972,26 @@ $('ldNew').onclick = () => {
 $('ldBack').onclick = () => { const wasAdv = _pendingStart && _pendingStart.world; closeLoad();
   if (wasAdv) openHub(); else showModes(); };
 $('endModes').onclick = () => {
+  $('ovEnd').classList.remove('win');
   /* a world sends you back to the map it came off, not to the mode list */
   if (AD()) { $('ovEnd').classList.remove('on'); openHub(); return; }
   showModes();
 };
-/* Classic is a folder. It blooms open from its own centre and closes on
-   anything that is not one of its cards. */
+/* The old Classic folder became the orb's six pieces. setWheel keeps its
+   name because the rest of the game uses it to mean "put the menu back to
+   its resting state", and that is still exactly what it does. */
 function setWheel(on) {
-  const dock = $('classicDock');
-  if (!dock) return;
-  const was = dock.classList.contains('open');
-  dock.classList.toggle('open', on);
-  $('classicBtn').setAttribute('aria-expanded', on ? 'true' : 'false');
-  if (on !== was) {
-    beep(on ? 620 : 420, 0.07, 'triangle', on ? 0.035 : 0.026, on ? 980 : 320);
-    if (!on) { pvStop(); setMenuMood(null); }
-    setTimeout(fitMenu, 0);
-  }
+  if (on) orbSplit(); else if (ORB.state !== 'orb') orbMerge();
 }
-$('classicBtn').onclick = ev => { ev.stopPropagation(); setWheel(!$('classicDock').classList.contains('open')); };
-$('classicBtn').addEventListener('mouseenter', () => { if (!MOBILE) beep(1180, 0.028, 'sine', 0.012, 1420); });
-for (const id of ['bestsBtn','playBtn','menuSettings','bookBtn']) {
+for (const id of ['bestsBtn','playBtn','menuSettings','bookBtn','navJaxons']) {
   const b = $(id);
-  if (b) b.addEventListener('mouseenter', () => { if (!MOBILE) beep(1020, 0.026, 'sine', 0.01, 1240); });
+  if (b) b.addEventListener('mouseenter', () => { if (!MOBILE) sfxHover(); });
 }
+/* a press on bare sky closes the ring, the way clicking off a menu should */
 $('ovMenu').addEventListener('pointerdown', ev => {
-  if (!$('classicDock').classList.contains('open')) return;
-  if (ev.target.closest && (ev.target.closest('#classicDock'))) return;
-  setWheel(false);
+  if (ORB.state !== 'open') return;
+  if (ev.target.closest && ev.target.closest('#orbDock')) return;
+  orbMerge();
 });
 $('hubBack').onclick = hubToMenu;
 $('hubOrb').onclick = openOrb;
@@ -17142,7 +20057,7 @@ $('sbTab').onclick = () => setSb(!S.sbOpen);
 $('autoBtn').onclick = () => {
   if (!S.autoSkip && S.wave < M().autoFrom) {
     toast('Auto-skip unlocks at wave ' + M().autoFrom + ' in ' + M().name);
-    beep(150, 0.08, 'square', 0.03); return;
+    sfx('deny'); return;
   }
   S.autoSkip = !S.autoSkip;
   if (S.autoSkip) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4);
@@ -17349,12 +20264,12 @@ function openStats() {
   STAT.open = true;
   $('ovStats').classList.add('on');
   statsRender();
-  beep(660, 0.06, 'triangle', 0.03);
+  sfx('tap');
 }
 function closeStats() {
   STAT.open = false;
   $('ovStats').classList.remove('on');
-  beep(440, 0.06, 'triangle', 0.025);
+  sfx('close');
 }
 function statsRender() {
   const wrap = $('statWrap');
@@ -18863,13 +21778,13 @@ function openBook(from) {
   $('ovBook').classList.add('on');
   bookRender();
   bookLoop();
-  beep(660, 0.07, 'triangle', 0.03);
+  sfx('open');
 }
 function closeBook() {
   $('ovBook').classList.remove('on');
   cancelAnimationFrame(BOOK.raf); BOOK.raf = 0;
   saveNow();
-  beep(440, 0.06, 'triangle', 0.025);
+  sfx('close');
 }
 function bookGo(i) {
   BOOK.page = Math.max(0, Math.min(GUIDE.length - 1, i));
@@ -18936,17 +21851,19 @@ function setPause(on, fromMenu) {
   $('pauseBtn').classList.toggle('on', S.paused);
   $('pauseBtn').textContent = S.paused ? 'Paused' : 'Pause';
   if (S.paused) {
-    $('pauseTag').textContent = fromMenu ? 'Settings'
-      : M().name + ' · wave ' + S.wave;
+    $('pauseTag').textContent = fromMenu ? '' : M().name + ' · wave ' + S.wave;
+    /* from the front page there is no game to be paused — the heading says
+       what the sheet actually is */
+    ov.querySelector('h1').textContent = fromMenu ? 'Settings' : 'Paused';
     ov.classList.toggle('fromMenu', !!fromMenu);
     $('pauseBtns').style.display = fromMenu ? 'none' : '';
     setShop(false); hideTip(); cancelPlacing();
     if (fromMenu) openSettings(true); else closeSettings();
-    beep(300, 0.09, 'triangle', 0.03, 220);
+    sfx('open');
   } else {
     closeSettings();
     $('pauseBtns').style.display = '';
-    beep(520, 0.08, 'triangle', 0.03, 700);
+    sfx('close');
     last = performance.now();                  // no monster dt on resume
   }
 }
@@ -18975,12 +21892,18 @@ function drawSettings() {
   const seg = (id, opts, cur) => '<div class="segbtn" id="' + id + '">' + opts.map(o =>
     '<button data-v="' + o[0] + '"' + (String(o[0]) === String(cur) ? ' class="on"' : '') + '>' +
     o[1] + '</button>').join('') + '</div>';
+  /* one fader per bus — the graph already mixes them, this just moves the
+     handle and tells it to */
+  const fader = (id, name, desc, v) => row(name, desc,
+    '<input type="range" id="' + id + '" min="0" max="100" value="' + Math.round((v || 0)*100) +
+    '"><span class="val" id="' + id + 'V">' + Math.round((v || 0)*100) + '%</span>');
 
   p.innerHTML =
     '<h4>Sound</h4>' +
-    row('Sound effects', 'Every pop, shot and boss stinger.', sw('stSound', S.sound)) +
-    row('Volume', '', '<input type="range" id="stVol" min="0" max="100" value="' +
-        Math.round(S.vol*100) + '"><span class="val" id="stVolV">' + Math.round(S.vol*100) + '%</span>') +
+    row('Sound', 'Everything the game makes.', sw('stSound', S.sound)) +
+    fader('stVol', 'Master', '', S.vol) +
+    fader('stSfx', 'Effects', 'Shots, pops, interface.', S.volSfx) +
+    fader('stAmb', 'Atmosphere', 'Engines, wind, the room around you.', S.volAmb) +
     '<h4>Game</h4>' +
     row('Default speed', 'Remembered for your next run.', seg('stSpeed', [[1,'1×'],[2,'2×'],[3,'3×']], S.speed)) +
     row('Auto-skip waves', 'Start the next wave on its own.', sw('stAuto', S.autoSkip)) +
@@ -18997,26 +21920,36 @@ function drawSettings() {
       set(!get());
       b.classList.toggle('on', get());
       b.setAttribute('aria-checked', get() ? 'true' : 'false');
-      saveNow(); syncChips();
-      beep(get() ? 660 : 300, 0.06, 'triangle', 0.03);
+      saveNow(); syncChips(); syncMix();
+      sfx('toggle', get());
     };
   };
-  flip('stSound', () => S.sound, v => S.sound = v);
+  flip('stSound', () => S.sound, v => { S.sound = v; syncMix(); });
   flip('stShake', () => S.shake, v => { S.shake = v; if (!v) { S.shakeT = 0; S.shakeAmp = 0; } });
   flip('stCb',    () => S.cbCues, v => S.cbCues = v);
   flip('stAuto',  () => S.autoSkip, v => { S.autoSkip = v; if (v) S.autoTimer = Math.min(S.autoTimer || 1.4, 1.4); });
 
-  $('stVol').oninput = ev => {
-    S.vol = Math.max(0, Math.min(1, (+ev.target.value || 0)/100));
-    $('stVolV').textContent = Math.round(S.vol*100) + '%';
+  /* A fader moves the live bus as it is dragged, and only writes to the
+     save when the drag ends — dragging must not hammer localStorage. */
+  const wireFader = (id, set, demo) => {
+    const el = $(id);
+    if (!el) return;
+    el.oninput = ev => {
+      set(Math.max(0, Math.min(1, (+ev.target.value || 0)/100)));
+      $(id + 'V').textContent = ev.target.value + '%';
+      syncMix();
+    };
+    el.onchange = () => { saveNow(); if (demo) sfx(demo); };
   };
-  $('stVol').onchange = () => { saveNow(); beep(620, 0.09, 'triangle', 0.05); };
+  wireFader('stVol', v => S.vol = v,    'tap');
+  wireFader('stSfx', v => S.volSfx = v, 'press');
+  wireFader('stAmb', v => S.volAmb = v, 'wind');
 
   const segPick = (id, apply) => $(id).querySelectorAll('button').forEach(b => b.onclick = () => {
     $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
     apply(b.dataset.v);
     saveNow(); syncChips();
-    beep(560, 0.06, 'triangle', 0.03);
+    sfx('tab');
   });
   segPick('stSpeed', v => { S.speed = +v; });
   segPick('stPerf',  v => { S.perfLock = v === 'auto' ? null : +v; S.perfToasted = false; setPerf(); });
@@ -19077,7 +22010,7 @@ function frame(now) {
   if (S.shakeT > 0) { S.shakeT = Math.max(0, S.shakeT - dt*2.6); if (!S.shakeT) S.shakeAmp = 0; }
   syncAdmDot(); syncChrome(); hudMark();
   if (S.flash > 0) { S.flash = Math.max(0, S.flash - dt*2.2); $('flash').style.opacity = S.flash; }
-  if (S.paused) { render(); requestAnimationFrame(frame); return; }
+  if (S.paused) { if (!fieldHidden()) render(); requestAnimationFrame(frame); return; }
   /* the leak that ends the run plays out in slow motion before the screen */
   if (S.dying > 0) {
     S.dying -= dt;
@@ -19095,7 +22028,7 @@ function frame(now) {
     for (const f of S.fx) f.life -= dt;
     S.fx = S.fx.filter(f => f.life > 0);
   }
-  render();
+  if (!fieldHidden()) render();
   requestAnimationFrame(frame);
 }
 
@@ -19271,7 +22204,20 @@ loadSave();
    yet, and the shelf refreshes once it has. */
 fitAll(); syncHelp(); makeGrass(); buildShelf();
 syncChips(); syncHUD(); requestAnimationFrame(frame);
-loadImages(() => { syncShelf(); });
+
+/* the front page: wire it, light it, and remember which world you were on */
+metaInit();
+wireMenu();
+buildMenuFace();
+setWorld(loadMenuPick(), true);
+msStart();
+$('cineSkip').onclick = ev => { ev.stopPropagation(); cineSkip(); };
+$('clClose').onclick = ev => { ev.stopPropagation(); closeCollection(); };
+$('ovColl').addEventListener('click', ev => { if (ev.target.id === 'ovColl') closeCollection(); });
+
+/* a portrait is worth having before the scene draws it, so the cast and
+   the world plates refresh once the art has landed */
+loadImages(() => { syncShelf(); buildMenuFace(); });
 </script>
 </body>
 </html>
