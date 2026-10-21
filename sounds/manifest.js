@@ -5,7 +5,7 @@
  *  without touching a line of game code; the engine re-reads all of it.
  *
  *    src       where the file lives, relative to index.html
- *    bus       sfx | amb | music  — which fader it answers to
+ *    bus       sfx | amb  — which fader it answers to
  *    vol       0..1, this sound's own level before the faders
  *    cooldown  ms that must pass before this id may sound again
  *    max       how many copies may overlap at once
@@ -375,7 +375,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/coin": {
    "src": "sounds/game/coin.mp3",
    "bus": "sfx",
-   "vol": 0.4,
+   "vol": 0.6,
    "cooldown": 35,
    "max": 5,
    "jitter": 0.05,
@@ -474,7 +474,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/place": {
    "src": "sounds/game/place.mp3",
    "bus": "sfx",
-   "vol": 0.6,
+   "vol": 0.8,
    "cooldown": 50,
    "max": 3,
    "jitter": 0.05,
@@ -483,7 +483,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/purchase": {
    "src": "sounds/game/purchase.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.75,
    "cooldown": 60,
    "max": 3,
    "jitter": 0.05,
@@ -501,7 +501,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/sell": {
    "src": "sounds/game/sell.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.75,
    "cooldown": 90,
    "max": 2,
    "jitter": 0.05,
@@ -546,7 +546,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/upgrade": {
    "src": "sounds/game/upgrade.mp3",
    "bus": "sfx",
-   "vol": 0.6,
+   "vol": 0.8,
    "cooldown": 90,
    "max": 2,
    "jitter": 0.05,
@@ -573,7 +573,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/wave_clear": {
    "src": "sounds/game/wave_clear.mp3",
    "bus": "sfx",
-   "vol": 0.6,
+   "vol": 0.8,
    "cooldown": 300,
    "max": 1,
    "jitter": 0,
@@ -582,7 +582,7 @@ window.JTD_SOUND_MANIFEST = {
   "game/wave_start": {
    "src": "sounds/game/wave_start.mp3",
    "bus": "sfx",
-   "vol": 0.6,
+   "vol": 0.8,
    "cooldown": 300,
    "max": 1,
    "jitter": 0,
@@ -596,33 +596,6 @@ window.JTD_SOUND_MANIFEST = {
    "max": 1,
    "jitter": 0,
    "dur": 2.5
-  },
-  "music/music_battle_loop": {
-   "src": "sounds/music/music_battle_loop.mp3",
-   "bus": "music",
-   "vol": 0.8,
-   "cooldown": 0,
-   "max": 1,
-   "jitter": 0,
-   "dur": 13.714
-  },
-  "music/music_boss_loop": {
-   "src": "sounds/music/music_boss_loop.mp3",
-   "bus": "music",
-   "vol": 0.8,
-   "cooldown": 0,
-   "max": 1,
-   "jitter": 0,
-   "dur": 11.429
-  },
-  "music/music_menu_loop": {
-   "src": "sounds/music/music_menu_loop.mp3",
-   "bus": "music",
-   "vol": 0.8,
-   "cooldown": 0,
-   "max": 1,
-   "jitter": 0,
-   "dur": 20
   },
   "acid": {
    "src": "sounds/projectiles/acid.mp3",
@@ -1149,7 +1122,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/back": {
    "src": "sounds/ui/back.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.75,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1158,7 +1131,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/close": {
    "src": "sounds/ui/close.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.65,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1167,7 +1140,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/confirm": {
    "src": "sounds/ui/confirm.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.7,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1176,7 +1149,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/deny": {
    "src": "sounds/ui/deny.mp3",
    "bus": "sfx",
-   "vol": 0.5,
+   "vol": 0.75,
    "cooldown": 140,
    "max": 1,
    "jitter": 0.04,
@@ -1185,7 +1158,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/hover": {
    "src": "sounds/ui/hover.mp3",
    "bus": "sfx",
-   "vol": 0.22,
+   "vol": 0.4,
    "cooldown": 70,
    "max": 1,
    "jitter": 0.04,
@@ -1194,7 +1167,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/open": {
    "src": "sounds/ui/open.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.65,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1203,7 +1176,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/piece_land": {
    "src": "sounds/ui/piece_land.mp3",
    "bus": "sfx",
-   "vol": 0.45,
+   "vol": 0.7,
    "cooldown": 0,
    "max": 6,
    "jitter": 0.04,
@@ -1212,7 +1185,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/press": {
    "src": "sounds/ui/press.mp3",
    "bus": "sfx",
-   "vol": 0.5,
+   "vol": 0.95,
    "cooldown": 40,
    "max": 2,
    "jitter": 0.04,
@@ -1221,7 +1194,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/release": {
    "src": "sounds/ui/release.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.9,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1230,7 +1203,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/select": {
    "src": "sounds/ui/select.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.8,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1239,7 +1212,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/tab": {
    "src": "sounds/ui/tab.mp3",
    "bus": "sfx",
-   "vol": 0.42,
+   "vol": 0.8,
    "cooldown": 40,
    "max": 2,
    "jitter": 0.04,
@@ -1248,7 +1221,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/tap": {
    "src": "sounds/ui/tap.mp3",
    "bus": "sfx",
-   "vol": 0.42,
+   "vol": 0.85,
    "cooldown": 40,
    "max": 2,
    "jitter": 0.04,
@@ -1257,7 +1230,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/toggle_off": {
    "src": "sounds/ui/toggle_off.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.75,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,
@@ -1266,7 +1239,7 @@ window.JTD_SOUND_MANIFEST = {
   "ui/toggle_on": {
    "src": "sounds/ui/toggle_on.mp3",
    "bus": "sfx",
-   "vol": 0.55,
+   "vol": 0.75,
    "cooldown": 40,
    "max": 3,
    "jitter": 0.04,

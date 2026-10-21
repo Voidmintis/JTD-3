@@ -1,6 +1,6 @@
 # JTD 3 — sound
 
-139 files, 2.4 MB, all CC0. From the **JaxonTD-Sounds** pack; the Kenney
+136 files, 1.6 MB, all CC0. Sound effects only — no music. From the **JaxonTD-Sounds** pack; the Kenney
 `ui/` sounds are genuine Kenney downloads, everything else was generated for
 that pack. No attribution is required.
 
@@ -10,7 +10,6 @@ sounds/
   projectiles/   58   one per weapon, named after the game's own `ammo` key
   enemies/       37   blob pops (7 tiers x 3 variants), elites, bosses, leaks
   game/          27   placing, selling, waves, coins, victory, the cinematics
-  music/          3   seamless 20s loops: menu, battle, boss
   manifest.js         the tuning sheet — see below
 ```
 
@@ -21,7 +20,7 @@ sounds/
 ```js
 "enemies/pop_t3_2": {
   "src": "sounds/enemies/pop_t3_2.mp3",
-  "bus": "sfx",        // sfx | amb | music — which fader it answers to
+  "bus": "sfx",        // sfx | amb — which fader it answers to
   "vol": 0.45,         // its own level, before the faders
   "cooldown": 16,      // ms before this id may sound again
   "max": 6,            // how many copies may overlap
@@ -53,10 +52,6 @@ are genuinely different:
 Both honour the same manifest, so the game sounds the same either way.
 Serving it is better — run `npx serve` or `python -m http.server` in the
 game folder — but nothing requires it.
-
-Music is always an `<audio>` element in both modes, deliberately: routing it
-through the graph needs a `MediaElementSource`, which is the exact thing
-`file://` silences.
 
 ## If a sound is missing
 

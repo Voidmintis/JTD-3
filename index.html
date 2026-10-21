@@ -7109,7 +7109,7 @@ const S = {
   affordable:{}, mouse:{x:-999,y:-999,in:false,down:false},
   speed:1, sound:true, vol:0.8, shake:true, cbCues:false, t:0,
   /* the mixer. vol is master; these three are the buses under it. */
-  volSfx:0.9, volAmb:0.55, volMusic:0.5,
+  volSfx:0.9, volAmb:0.55,
   combatLite:false,           /* thin out combat sound in deep waves */
   coins:0,                    /* the one authoritative coin balance */
   paused:false, dying:0, lastLeak:null, shakeT:0, shakeAmp:0, flash:0, bestAtStart:0,
@@ -7183,7 +7183,6 @@ function loadSave() {
   S.coins = numOr(j.coins, 0, 0, 1e12);
   S.volSfx   = numOr(j.volSfx,   0.9,  0, 1);
   S.volAmb   = numOr(j.volAmb,   0.55, 0, 1);
-  S.volMusic = numOr(j.volMusic, 0.5,  0, 1);
   S.combatLite = !!j.combatLite;
 
   /* per-character meta progression, validated field by field. A record
@@ -7255,7 +7254,7 @@ function saveNow() {
       /* ---- v2 ---- */
       ver:SAVE_VER,
       coins:Math.max(0, Math.floor(S.coins || 0)),
-      volSfx:S.volSfx, volAmb:S.volAmb, volMusic:S.volMusic, combatLite:S.combatLite ? 1 : 0,
+      volSfx:S.volSfx, volAmb:S.volAmb, combatLite:S.combatLite ? 1 : 0,
       meta:S.meta, fpPaid:S.fpPaid, modeDone:S.modeDone
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
@@ -7324,7 +7323,7 @@ function comboTick(dt) {
  *  forty Jaxons firing at once from clipping.
  * ======================================================================== */
 let AC = null;
-const BUS = { master:null, sfx:null, amb:null, music:null, limiter:null };
+const BUS = { master:null, sfx:null, amb:null, limiter:null };
 let audioReady = false;
 
 function buildAudioGraph() {
@@ -7341,7 +7340,9 @@ function buildAudioGraph() {
 
   BUS.master = AC.createGain();
   BUS.master.connect(BUS.limiter);
-  for (const k of ['sfx','amb','music']) {
+  /* two buses: the things the game does, and the air around them. There
+     is no music bus — the game has no music. */
+  for (const k of ['sfx','amb']) {
     BUS[k] = AC.createGain();
     BUS[k].connect(BUS.master);
   }
@@ -7359,12 +7360,8 @@ function syncMix() {
     node.gain.setTargetAtTime(Math.max(0.0001, v), t, 0.02);
   };
   set(BUS.master, (S.vol || 0) * on);
-  set(BUS.sfx,    S.volSfx   === undefined ? 0.9  : S.volSfx);
-  set(BUS.amb,    S.volAmb   === undefined ? 0.55 : S.volAmb);
-  set(BUS.music,  S.volMusic === undefined ? 0.5  : S.volMusic);
-  /* Music is an <audio> element and never goes through the graph, so the
-     bus above does not reach it — it is told separately. */
-  try { syncMusicVol(); if (!S.sound) stopMusic(0.2); else syncMusic(); } catch (e) {}
+  set(BUS.sfx,    S.volSfx === undefined ? 0.9  : S.volSfx);
+  set(BUS.amb,    S.volAmb === undefined ? 0.55 : S.volAmb);
 }
 
 /* iOS refuses to create or resume an AudioContext outside a user gesture, so
@@ -7378,7 +7375,7 @@ function unlockAudio() {
   /* The first gesture is the earliest moment a browser will let us make a
      sound, so it is also the earliest worth loading any. Safe to call
      repeatedly — sndInit returns immediately once it has a mode. */
-  try { sndInit(); syncMusic(); } catch (e) {}
+  try { sndInit(); } catch (e) {}
 }
 
 /* ---- the voice ---------------------------------------------------------
@@ -7392,6 +7389,8 @@ function voice(o) {
     if (AC.state === 'suspended') AC.resume();
   } catch (e) { return null; }
   if (!audioReady) return null;
+  /* a synth note means audio is legal now, so the pack may as well load */
+  if (!SND.mode) { try { sndInit(); } catch (e) {} }
 
   const t0 = AC.currentTime + (o.delay || 0);
   const dur = Math.max(0.01, o.dur || 0.1);
@@ -7542,9 +7541,7 @@ const SND_FIRST = [
 function sndLoadAll() {
   const ids = Object.keys(SND.man.sounds);
   const first = ids.filter(id => SND_FIRST.includes(id));
-  const rest  = ids.filter(id => !SND_FIRST.includes(id) && !id.startsWith('music/'));
-  /* music is long and never needed in the first instant: it streams on
-     demand from its own element and is never decoded into memory */
+  const rest  = ids.filter(id => !SND_FIRST.includes(id));
   const go = list => list.forEach(sndLoadOne);
   go(first);
   /* The rest only after the first frame has had its chance to paint.
@@ -7598,9 +7595,8 @@ function sndWarn(id) {
    graph. Element mode has no graph, so the same numbers are multiplied in
    here instead — one function, so the two modes cannot drift apart. */
 function sndGain(m) {
-  const bus = m.bus === 'music' ? (S.volMusic === undefined ? 0.5 : S.volMusic)
-            : m.bus === 'amb'   ? (S.volAmb   === undefined ? 0.55 : S.volAmb)
-            :                     (S.volSfx   === undefined ? 0.9 : S.volSfx);
+  const bus = m.bus === 'amb' ? (S.volAmb === undefined ? 0.55 : S.volAmb)
+                              : (S.volSfx === undefined ? 0.9  : S.volSfx);
   return (m.vol || 0.5) * bus * (S.vol || 0);
 }
 
@@ -7677,89 +7673,6 @@ function playSample(id, o) {
     SND.last[id] = now;
     return true;
   } catch (e) { return false; }
-}
-
-/* ----------------------------------------------------------- the music --
-   Always an <audio> element, in both modes and on purpose. Routing music
-   through the graph needs a MediaElementSource, and that is exactly the
-   thing file:// taints into silence. Volume and crossfade are done on the
-   element, which works everywhere.
-   There is only ever one track playing and one fading out. */
-const MUS = { cur:null, curName:null, old:null, job:0 };
-
-function playMusic(name, fade) {
-  if (!SND.man) return;
-  const id = 'music/music_' + name + '_loop';
-  const m = SND.man.sounds[id];
-  if (!m) return;
-  /* Already playing it, or already on the way in? play() resolves a frame
-     or two after it is called, so "paused" alone is not enough to tell —
-     the name is claimed the instant the switch starts. */
-  if (MUS.curName === name) return;
-  fade = fade === undefined ? 1.2 : fade;
-
-  let el;
-  try { el = new Audio(m.src); } catch (e) { return; }
-  el.loop = true; el.preload = 'auto'; el.volume = 0;
-  el.addEventListener('error', () => sndWarn(id), { once:true });
-
-  /* whatever was playing fades out and is thrown away; keeping a pool of
-     paused music elements around is how a menu ends up playing twice */
-  if (MUS.cur) { MUS.old = MUS.cur; }
-  MUS.cur = el; MUS.curName = name;
-
-  const target = () => sndGain(m);
-  const p = el.play();
-  if (p && p.catch) p.catch(() => {});
-
-  clearInterval(MUS.job);
-  const t0 = performance.now();
-  MUS.job = setInterval(() => {
-    const k = Math.min(1, (performance.now() - t0) / (fade * 1000));
-    try { if (MUS.cur) MUS.cur.volume = Math.max(0, Math.min(1, target() * k)); } catch (e) {}
-    try { if (MUS.old) MUS.old.volume = Math.max(0, Math.min(1, (MUS.old._v0 || 0.5) * (1 - k))); } catch (e) {}
-    if (k >= 1) {
-      clearInterval(MUS.job); MUS.job = 0;
-      if (MUS.old) { try { MUS.old.pause(); MUS.old.src = ''; } catch (e) {} MUS.old = null; }
-    }
-  }, 50);
-  if (MUS.old) MUS.old._v0 = MUS.old.volume;
-}
-
-function stopMusic(fade) {
-  if (!MUS.cur) return;
-  const el = MUS.cur, v0 = el.volume;
-  MUS.cur = null; MUS.curName = null;
-  clearInterval(MUS.job);
-  const t0 = performance.now(), ms = (fade === undefined ? 0.6 : fade) * 1000;
-  const job = setInterval(() => {
-    const k = Math.min(1, (performance.now() - t0) / ms);
-    try { el.volume = Math.max(0, v0 * (1 - k)); } catch (e) {}
-    if (k >= 1) { clearInterval(job); try { el.pause(); el.src = ''; } catch (e) {} }
-  }, 50);
-}
-/* the faders have to reach the music while it is already playing */
-function syncMusicVol() {
-  if (!MUS.cur || !SND.man || MUS.job) return;
-  const m = SND.man.sounds['music/music_' + MUS.curName + '_loop'];
-  if (m) { try { MUS.cur.volume = Math.max(0, Math.min(1, sndGain(m))); } catch (e) {} }
-}
-
-/* What the music should be right now, worked out from the game rather than
-   set by hand at twenty call sites. Called on the events that can change it. */
-function musicForState() {
-  if (!S.sound || (S.volMusic !== undefined && S.volMusic <= 0)) return null;
-  if ($('ovMenu').classList.contains('on') || $('ovHub').classList.contains('on')
-      || $('ovColl').classList.contains('on')) return 'menu';
-  if (S.phase === 'menu' || S.phase === 'over') return 'menu';
-  if (S.bosses && S.bosses.length) return 'boss';
-  return 'battle';
-}
-function syncMusic() {
-  const want = musicForState();
-  if (want === MUS.curName) return;
-  if (!want) { stopMusic(); return; }
-  playMusic(want);
 }
 
 /* ------------------------------------------------------- game shorthand --
@@ -7916,8 +7829,11 @@ const SFX = {
 /* Where the interface's named events live as real files. Anything not in
    here has no recording and goes straight to the synth. */
 const SFX_SAMPLE = {
-  hover:'ui/hover', press:'ui/press', release:'ui/release', tap:'ui/tap',
-  tab:'ui/tab', select:'ui/select', open:'ui/open', close:'ui/close',
+  /* press is the most-pressed thing in the game, so it gets a sound with
+     some body to it. ui/press is a 12ms transient — fine as a light tap,
+     far too thin to carry a button. */
+  hover:'ui/hover', press:'ui/select', release:'ui/release', tap:'ui/press',
+  tab:'ui/tab', select:'ui/confirm', open:'ui/open', close:'ui/close',
   deny:'ui/deny', pieceLand:'ui/piece_land',
   orbHover:'game/orb_hover', orbPress:'ui/press',
   orbSplit:'game/orb_split', orbMerge:'game/orb_merge',
@@ -7953,6 +7869,15 @@ function sfxHover() {
   lastHover = n;
   sfx('hover');
 }
+
+/* The first gesture anywhere on the page is what every browser's autoplay
+   policy waits for, so that is where the audio starts — not on the game
+   canvas, which the front page covers completely. Capture phase, so it
+   runs before anything calls stopPropagation on the way up, and once:true
+   so it costs nothing for the rest of the session. */
+['pointerdown', 'touchstart', 'keydown', 'mousedown'].forEach(ev =>
+  addEventListener(ev, () => { try { unlockAudio(); } catch (e) {} },
+                   { once:true, capture:true, passive:true }));
 
 /* ---------------------------------------------------------------- dom ---- */
 const $ = id => document.getElementById(id);
@@ -22394,7 +22319,6 @@ function drawSettings() {
     fader('stVol', 'Master', '', S.vol) +
     fader('stSfx', 'Effects', 'Shots, pops, interface.', S.volSfx) +
     fader('stAmb', 'Atmosphere', 'Engines, wind, the room around you.', S.volAmb) +
-    fader('stMus', 'Music', 'The menu, the battle and the boss themes.', S.volMusic) +
     '<h4>Game</h4>' +
     row('Default speed', 'Remembered for your next run.', seg('stSpeed', [[1,'1×'],[2,'2×'],[3,'3×']], S.speed)) +
     row('Auto-skip waves', 'Start the next wave on its own.', sw('stAuto', S.autoSkip)) +
@@ -22437,7 +22361,6 @@ function drawSettings() {
   wireFader('stVol', v => S.vol = v,    'tap');
   wireFader('stSfx', v => S.volSfx = v, 'press');
   wireFader('stAmb', v => S.volAmb = v, 'wind');
-  wireFader('stMus', v => { S.volMusic = v; syncMusicVol(); }, null);
 
   const segPick = (id, apply) => $(id).querySelectorAll('button').forEach(b => b.onclick = () => {
     $(id).querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
@@ -22473,18 +22396,9 @@ document.addEventListener('visibilitychange', () => {
   if (hidden) saveRun();               // the tab may not come back
   if (!hidden) last = performance.now();     // don't let a huge dt land on resume
   if (hidden && AC && AC.state === 'running') AC.suspend();
-  /* The context suspending silences the graph, but music is an element and
-     carries on regardless, so it is paused and resumed by hand. */
-  try {
-    if (hidden) { if (MUS.cur) MUS.cur.pause(); }
-    else {
-      if (AC && AC.state === 'suspended') AC.resume();
-      if (MUS.cur) { const p = MUS.cur.play(); if (p && p.catch) p.catch(() => {}); }
-    }
-  } catch (e) {}
+  if (!hidden && AC && AC.state === 'suspended') { try { AC.resume(); } catch (e) {} }
 });
 let last = performance.now();
-let musicCheck = 0;
 /* --------------------------------------------------- performance mode ----
    Sampled twice a second. Deep waves start lean whatever the machine is
    doing, and a genuinely slow frame rate drops another level on top. */
@@ -22514,10 +22428,6 @@ function frame(now) {
   camKeys(dt);
   if (S.shakeT > 0) { S.shakeT = Math.max(0, S.shakeT - dt*2.6); if (!S.shakeT) S.shakeAmp = 0; }
   syncAdmDot(); syncChrome(); hudMark(); sndFrame();
-  /* Checked on the clock, not on game time: game time does not advance on
-     the front page or while paused, which is exactly where the music has
-     to be right. syncMusic is a string compare when nothing has changed. */
-  if (now - musicCheck > 400) { musicCheck = now; syncMusic(); }
   if (S.flash > 0) { S.flash = Math.max(0, S.flash - dt*2.2); $('flash').style.opacity = S.flash; }
   if (S.paused) { if (!fieldHidden()) render(); requestAnimationFrame(frame); return; }
   /* the leak that ends the run plays out in slow motion before the screen */
