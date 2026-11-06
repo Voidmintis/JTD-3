@@ -5063,6 +5063,140 @@ VARIANTS.infmirror = { ultra:'infmirror', wide:true,
    over the top of this — take the kit away and he is one of the family. */
 /* The two worlds that are open. Both are Jaxons first: the visor is up,
    the mask is off to one side, and the pacifier is where it always was. */
+/* ----------------------------------------------- the outer seven's kit --
+   Each is one recognisable prop behind the ordinary Jaxon body. The rule
+   the whole cast follows still applies: take the gear away and a Jaxon is
+   standing there. */
+ULTRA_KIT.earth = {
+  back:() => `<g stroke="#0c2a06" stroke-width="10" stroke-linejoin="round">
+      <path d="M60 300 C 10 250, 30 170, 96 186 C 110 120, 190 118, 200 182 Z" fill="#2e7a28"/>
+      <path d="M400 300 C 450 250, 430 170, 364 186 C 350 120, 270 118, 260 182 Z" fill="#2e7a28"/>
+    </g>
+    <g fill="#7fd46a" opacity=".85">
+      <ellipse cx="120" cy="226" rx="34" ry="18" transform="rotate(-24 120 226)"/>
+      <ellipse cx="340" cy="226" rx="34" ry="18" transform="rotate(24 340 226)"/>
+    </g>`,
+  front:() => `<g fill="#9fffb8" opacity=".55">
+      <circle cx="150" cy="150" r="9"/><circle cx="312" cy="128" r="7"/><circle cx="238" cy="96" r="6"/>
+    </g>`
+};
+ULTRA_KIT.moon = {
+  back:() => `<g stroke="#1a1f26" stroke-width="10" stroke-linejoin="round">
+      <circle cx="230" cy="250" r="150" fill="none" stroke="#5c6673" stroke-width="14"/>
+      <rect x="150" y="150" width="160" height="60" rx="18" fill="#3e4650"/>
+    </g>
+    <g fill="#dfe4ea" opacity=".9">
+      <circle cx="186" cy="180" r="12"/><circle cx="230" cy="180" r="12"/><circle cx="274" cy="180" r="12"/>
+    </g>`,
+  front:() => `<g fill="none" stroke="#eef2f8" stroke-width="5" opacity=".5">
+      <circle cx="230" cy="250" r="186"/>
+    </g>`
+};
+ULTRA_KIT.mars = {
+  back:() => `<g stroke="#3a0c02" stroke-width="10" stroke-linejoin="round">
+      <path d="M90 420 L 60 250 L 130 236 L 152 418 Z" fill="#9a5a3c"/>
+      <path d="M370 420 L 400 250 L 330 236 L 308 418 Z" fill="#9a5a3c"/>
+      <rect x="168" y="150" width="124" height="96" rx="20" fill="#b03a1a"/>
+    </g>
+    <g fill="#ffb07a" opacity=".9">
+      <rect x="190" y="176" width="80" height="12" rx="6"/>
+      <rect x="190" y="204" width="80" height="12" rx="6"/>
+    </g>`,
+  front:() => `<g fill="#ff7a4a" opacity=".45">
+      <ellipse cx="230" cy="470" rx="190" ry="34"/>
+    </g>`
+};
+ULTRA_KIT.jupiter = {
+  back:() => `<defs><radialGradient id="jupEye" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#fff0dc"/><stop offset="0.4" stop-color="#d8744a"/>
+      <stop offset="1" stop-color="rgba(120,40,10,0)"/></radialGradient></defs>
+    <g opacity=".9"><ellipse cx="230" cy="250" rx="220" ry="170" fill="url(#jupEye)"/></g>
+    <g stroke="#4a1606" stroke-width="9" opacity=".8">
+      <path d="M20 180 Q 230 140 440 180" fill="none"/>
+      <path d="M10 260 Q 230 310 450 260" fill="none"/>
+      <path d="M20 340 Q 230 300 440 340" fill="none"/>
+    </g>`,
+  front:() => `<g fill="none" stroke="#ffd08a" stroke-width="6" opacity=".6">
+      <ellipse cx="230" cy="250" rx="86" ry="62"/>
+    </g>`
+};
+ULTRA_KIT.saturn = {
+  back:() => `<g stroke="#2a2404" stroke-width="9">
+      <ellipse cx="230" cy="276" rx="250" ry="66" fill="none" stroke="#c9b05a" stroke-width="20"/>
+      <ellipse cx="230" cy="276" rx="300" ry="82" fill="none" stroke="#ffeeb0" stroke-width="9" opacity=".7"/>
+    </g>`,
+  front:() => `<g fill="#fff6d0" opacity=".75">
+      <circle cx="78" cy="268" r="8"/><circle cx="384" cy="286" r="8"/>
+      <circle cx="150" cy="300" r="5"/><circle cx="320" cy="252" r="5"/>
+    </g>`
+};
+ULTRA_KIT.uranus = {
+  back:() => `<g stroke="#062028" stroke-width="10" stroke-linejoin="round">
+      <path d="M100 410 L 70 220 L 128 210 L 158 406 Z" fill="#1e7a8a"/>
+      <path d="M360 410 L 390 220 L 332 210 L 302 406 Z" fill="#1e7a8a"/>
+    </g>
+    <g fill="#bff2fa" opacity=".9">
+      <path d="M100 250 l 18 -40 l 18 40 z"/><path d="M324 250 l 18 -40 l 18 40 z"/>
+    </g>
+    <g stroke="#7fe4f5" stroke-width="6" opacity=".7" fill="none">
+      <path d="M118 196 q 14 -46 0 -80"/><path d="M342 196 q -14 -46 0 -80"/>
+    </g>`,
+  front:() => `<g fill="#dff8ff" opacity=".6">
+      <circle cx="140" cy="120" r="6"/><circle cx="330" cy="96" r="5"/><circle cx="236" cy="70" r="7"/>
+    </g>`
+};
+ULTRA_KIT.neptune = {
+  back:() => `<defs><radialGradient id="nepDeep" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#8fb0ff"/><stop offset="1" stop-color="rgba(18,48,106,0)"/>
+    </radialGradient></defs>
+    <g opacity=".75"><circle cx="230" cy="250" r="230" fill="url(#nepDeep)"/></g>
+    <g stroke="#030818" stroke-width="10" stroke-linejoin="round">
+      <path d="M230 90 L 206 170 L 254 170 Z" fill="#2a4aa8"/>
+      <path d="M150 140 L 140 220 L 182 206 Z" fill="#2a4aa8"/>
+      <path d="M310 140 L 320 220 L 278 206 Z" fill="#2a4aa8"/>
+    </g>`,
+  front:() => `<g fill="none" stroke="#8fb0ff" stroke-width="5" opacity=".55">
+      <path d="M60 360 q 60 -26 120 0 t 120 0 t 120 0"/>
+      <path d="M60 410 q 60 26 120 0 t 120 0 t 120 0"/>
+    </g>`
+};
+
+VARIANTS.earth = { ultra:'earth', wide:true,
+                    suitLite:'#cfffb8', suit:'#4aa83c', suitDark:'#1d5212',
+                    arm:'#8a6a3c', armDark:'#2e2008',
+                    outline:'#0c2a06', outlineWidth:7,
+                    pacG:'#7fd46a', pacGD:'#245c18', pacO:'#d8e86a', pacOD:'#5a6a10' };
+VARIANTS.moon = { ultra:'moon', wide:true,
+                    suitLite:'#ffffff', suit:'#b8c6d8', suitDark:'#5c6673',
+                    arm:'#8d97a8', armDark:'#2e353e',
+                    outline:'#1a1f26', outlineWidth:7,
+                    pacG:'#dfe4ea', pacGD:'#767e88', pacO:'#f2f5fa', pacOD:'#8d97a8' };
+VARIANTS.mars = { ultra:'mars', wide:true,
+                    suitLite:'#ffd0b0', suit:'#c9502a', suitDark:'#6a2408',
+                    arm:'#9a5a3c', armDark:'#3a1408',
+                    outline:'#2a0a02', outlineWidth:7,
+                    pacG:'#ffb07a', pacGD:'#8a4010', pacO:'#e07a4a', pacOD:'#6a2408' };
+VARIANTS.jupiter = { ultra:'jupiter', wide:true,
+                    suitLite:'#fff0dc', suit:'#c9a184', suitDark:'#6a4424',
+                    arm:'#8a6a4a', armDark:'#2e2010',
+                    outline:'#2e1206', outlineWidth:7,
+                    pacG:'#ffd08a', pacGD:'#8a5a10', pacO:'#d8744a', pacOD:'#4a1606' };
+VARIANTS.saturn = { ultra:'saturn', wide:true,
+                    suitLite:'#fff6d0', suit:'#c9b05a', suitDark:'#6a5410',
+                    arm:'#8a7a28', armDark:'#2a2404',
+                    outline:'#241e04', outlineWidth:7,
+                    pacG:'#ffeeb0', pacGD:'#8a7a28', pacO:'#e8d078', pacOD:'#6a5410' };
+VARIANTS.uranus = { ultra:'uranus', wide:true,
+                    suitLite:'#e8fcff', suit:'#6fd8e8', suitDark:'#135460',
+                    arm:'#1e7a8a', armDark:'#062028',
+                    outline:'#04161a', outlineWidth:7,
+                    pacG:'#bff2fa', pacGD:'#2a6a7a', pacO:'#7fe4f5', pacOD:'#1a6474' };
+VARIANTS.neptune = { ultra:'neptune', wide:true,
+                    suitLite:'#dde6ff', suit:'#3a6fd8', suitDark:'#101c5a',
+                    arm:'#2a4aa8', armDark:'#060e2e',
+                    outline:'#030818', outlineWidth:7,
+                    pacG:'#8fb0ff', pacGD:'#1a2a6a', pacO:'#6b8bff', pacOD:'#101c5a' };
+
 VARIANTS.mercury = { ultra:'mercury', wide:true,
                     suitLite:'#ffd0a8', suit:'#c9662a', suitDark:'#7a2c08',
                     arm:'#5c4b42', armDark:'#1a1410',
@@ -5484,6 +5618,13 @@ const UPGRADES = {
     A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   /* the adventure Jaxons arrive finished; what they are is the reward */
   mercury: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  earth:   { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  moon:    { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  mars:    { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  jupiter: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  saturn:  { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  uranus:  { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  neptune: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   venus:   { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   tipjar: {
     A: { name:"Fuller Jar", tiers:[
@@ -6573,7 +6714,7 @@ const eSpeed = e => (e.spd !== undefined ? e.spd
                     * waveRamp()
                     * (e.slow > 0 && !(e.imm > 0) ? e.slowMul : 1)   // a Solar Drone shrugs it off
                     * (e.stun > 0 ? 0 : 1)
-                    * (e.haste || 1) * scorchHaste(e);
+                    * (e.haste || 1) * scorchHaste(e) * goadNear(e);
 const eRad   = e => (e.cust ? e.cust.r : e.elite >= 0 ? eliteAt(e.elite).r : E_R*mobMod(e, 'r'));
 const eAbility = e => (e.elite >= 0 ? eliteAt(e.elite).ability : null);
 
@@ -6590,7 +6731,7 @@ function enemyAbility(e, ab) {
     let n = 0;
     for (const o of S.enemies) {
       if (n >= 8) break;
-      if (o === e || o.dead || o.hp >= o.max) continue;
+      if (o === e || o.dead || o.hp >= o.max || o.noHeal > 0) continue;
       const q = enemyPos(o);
       if (Math.hypot(q.x - p.x, q.y - p.y) > el.healR) continue;
       o.hp = Math.min(o.max, o.hp + o.max*0.04); n++;
@@ -6786,6 +6927,34 @@ const TOWERS = {
              splash:54, splashR:170, baseXtra:{ slowHit:1, burnHit:1 }, adv:'venus',
              blurb:'A globe of the air that world breathes. 96 on the hit and 54 across 170, and whatever survives it crawls away burning.',
              tags:[['Adventure','t-rain'],['Splash','t-aoe'],['Corrodes','t-single']] },
+  earth:   { name:'Earth Jaxon', cost:14500, range:380, cd:0.5, dmg:150, speed:1050, ammo:'seedshot',
+             splash:95, splashR:210, baseXtra:{ slowHit:1 }, adv:'earth',
+             blurb:'Brought home off our own ground. A seed pod that bursts for 95 across 210 and leaves whatever walks out of it slowed.',
+             tags:[['Adventure','t-rain'],['Splash','t-aoe'],['Slows','t-single']] },
+  moon:    { name:'Luna Jaxon', cost:24000, range:520, cd:0.28, dmg:210, speed:1900, ammo:'lunar',
+             pierce:3, baseXtra:{ wardBreak:1 }, adv:'moon',
+             blurb:'Low gravity, long reach. A dust lance every 0.28s for 210 that punches through three, and nothing can hide behind a ward from him.',
+             tags:[['Adventure','t-rain'],['Pierce','t-single'],['Long Range','t-fast']] },
+  mars:    { name:'Mars Jaxon', cost:42000, range:420, cd:0.62, dmg:560, speed:1200, ammo:'rustshot',
+             splash:300, splashR:230, baseXtra:{ burnHit:1, antiHeal:1 }, adv:'mars',
+             blurb:'Rust in a bottle. 560 on the hit, 300 across 230, and anything it touches stops being healed.',
+             tags:[['Adventure','t-rain'],['Splash','t-aoe'],['Anti-Heal','t-single']] },
+  jupiter: { name:'Jupiter Jaxon', cost:88000, range:470, cd:0.09, dmg:290, speed:2300, ammo:'stormshot',
+             baseXtra:{ chainHit:1 }, adv:'jupiter',
+             blurb:'The storm, bottled and pointed. 290 every 0.09 seconds, and the bolt steps to whatever is standing next to it.',
+             tags:[['Adventure','t-rain'],['Rapid Fire','t-fast'],['Chains','t-aoe']] },
+  saturn:  { name:'Saturn Jaxon', cost:165000, range:560, cd:0.8, dmg:2600, speed:1400, ammo:'ringshot',
+             splash:1500, splashR:300, pierce:5, baseXtra:{ shellBreak:1 }, adv:'saturn',
+             blurb:'A thrown ring that keeps going. 2.6k through five of them, 1.5k across 300, and it takes the crust off the first one it meets.',
+             tags:[['Adventure','t-rain'],['Pierce','t-single'],['Splash','t-aoe']] },
+  uranus:  { name:'Uranus Jaxon', cost:340000, range:600, cd:0.34, dmg:7400, speed:1800, ammo:'frostshot',
+             splash:4200, splashR:280, baseXtra:{ slowHit:1, freezeHit:1 }, adv:'uranus',
+             blurb:'The cold that world keeps. 7.4k on the hit and 4.2k across 280, and what survives it barely moves.',
+             tags:[['Adventure','t-rain'],['Splash','t-aoe'],['Freezes','t-single']] },
+  neptune: { name:'Neptune Jaxon', cost:760000, range:680, cd:0.22, dmg:26000, speed:2100, ammo:'deepshot',
+             splash:14000, splashR:340, pierce:4, baseXtra:{ slowHit:1, burnHit:1, antiHeal:1 }, adv:'neptune',
+             blurb:'The last thing the campaign gives you. 26k every 0.22s through four, 14k across 340, slowing and burning, and nothing it hits heals again.',
+             tags:[['Adventure','t-rain'],['Ultra','t-rain'],['Splash','t-aoe']] },
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
      else, and no Mirror can steal a single shot off him. */
   astro:   { name:'Titan Astro Jaxon', cost:1500000, range:2600, cd:0.22, dmg:900000, ammo:'astro',
@@ -6842,6 +7011,10 @@ const ROLE = {
   caddy:['income'],                   admin:[],
   astro:['dps','splash','late','ultra'],
   mercury:['dps','splash','adv'],     venus:['dps','splash','adv'],
+  earth:['dps','splash','adv'],       moon:['dps','adv'],
+  mars:['dps','splash','adv'],        jupiter:['dps','adv'],
+  saturn:['dps','splash','adv','late'], uranus:['dps','splash','adv','late'],
+  neptune:['dps','splash','adv','late','ultra'],
   crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
   slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
   infmirror:['dps','splash','late','ultra'],
@@ -7039,9 +7212,27 @@ const BOSS_THEME = {
             bar1:'#ff2d2d', bar2:'#3fa8ff', num:'#ffffff', label:'#9fdcff',
             stamp:true, sparkle:true, vary:true, wings:true, split:true }
 };
-/* the one thing on Mercury with a name and a bar */
+/* One per world, so a world boss wears its own planet rather than a
+   borrowed palette from the classic ladder. */
 BOSS_THEME.mercury = { bg:'#1a0e06', glyph:'#ffb02e', head:'#fff0d8', ring:'#7a3200', ring2:'#ffb02e',
                        bar1:'#e05a10', bar2:'#ffd0a0', num:'#ffe8cc', label:'#ffb877' };
+BOSS_THEME.venusB  = { bg:'#1a1202', glyph:'#ffd83d', head:'#fff6cc', ring:'#6a5008', ring2:'#e8d078',
+                       bar1:'#c9a020', bar2:'#ffe98a', num:'#fff2c0', label:'#ffd83d', sparkle:true };
+BOSS_THEME.earthB  = { bg:'#04140a', glyph:'#7fd46a', head:'#e8ffe0', ring:'#1e5a30', ring2:'#39ff88',
+                       bar1:'#2e9a3c', bar2:'#9fffb8', num:'#dcffcc', label:'#8fe89a' };
+BOSS_THEME.moonB   = { bg:'#0c1014', glyph:'#dfe4ea', head:'#ffffff', ring:'#4a545f', ring2:'#eef2f8',
+                       bar1:'#8d97a8', bar2:'#ffffff', num:'#eef2f8', label:'#cfd4da', scan:true };
+BOSS_THEME.marsB   = { bg:'#160602', glyph:'#ff7a4a', head:'#ffe0c8', ring:'#6a2008', ring2:'#ff9a5a',
+                       bar1:'#c93c14', bar2:'#ffb07a', num:'#ffd8c0', label:'#ff9a7a' };
+BOSS_THEME.jupB    = { bg:'#160e04', glyph:'#ffd08a', head:'#fff0dc', ring:'#7a4a18', ring2:'#ff9a4a',
+                       bar1:'#d8744a', bar2:'#ffd08a', num:'#ffe8d0', label:'#ffc08a', vary:true };
+BOSS_THEME.satB    = { bg:'#141004', glyph:'#ffe98a', head:'#fff6d0', ring:'#6a5a10', ring2:'#ffeeb0',
+                       bar1:'#c9b05a', bar2:'#fff6d0', num:'#fff2c0', label:'#ffe98a', sparkle:true };
+BOSS_THEME.uraB    = { bg:'#04141a', glyph:'#7fe4f5', head:'#cdf6ff', ring:'#12505c', ring2:'#bff2fa',
+                       bar1:'#2a9ab0', bar2:'#bff2fa', num:'#cdf6ff', label:'#7fe4f5', glow:true };
+BOSS_THEME.nepB    = { bg:'#030818', glyph:'#8fb0ff', head:'#dde6ff', ring:'#12306a', ring2:'#6b8bff',
+                       bar1:'#2a4aa8', bar2:'#8fb0ff', num:'#dde6ff', label:'#8fb0ff',
+                       vary:true, split:true };
 
 const GLYPHS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎ0123456789ABCDEF#$%&@';
 
@@ -10557,6 +10748,41 @@ function rushTick(dt) {
    Everything here is still an ordinary enemy as far as the engine is
    concerned — same list, same damage, same targeting, same drawing. What
    makes them Mercurian is a handful of flags read in three places. */
+/* ------------------------------------------------------------- VENUS ---
+   Heavy, swollen and veiled. Nothing here is fast; everything here is
+   harder to hurt the further away you stand. */
+const VEN_MOB = {
+  bloom:  { name:'Acid Bloom',     hp:62,  spd:150, r:20, leak:3, coin:3.0,
+            fill:'#b8d06a', edge:'#455a12', text:'#141a04',
+            veil:0.55, veilNear:170, veilFar:460,
+            note:'The haze eats a shot that has travelled. Build close.' },
+  spore:  { name:'Drift Spore',    hp:104, spd:206, r:18, leak:3, coin:3.6,
+            fill:'#f0d070', edge:'#8a6a10', text:'#241f00', drone:1,
+            note:'Leaves the road on the thermals and shrugs off a slow.' },
+  fume:   { name:'Fume Witch',     hp:180, spd:132, r:24, leak:4, coin:5.4,
+            fill:'#c9d06a', edge:'#4a5210', text:'#141a04',
+            veil:0.7, veilNear:140, veilFar:420,
+            mender:1, menderPeriod:3.6, menderPct:0.07, menderR:150,
+            note:'Veiled AND it patches the bloom around it. Get beside it.' },
+  brine:  { name:'Brineback',      hp:260, spd:104, r:29, leak:5, coin:6.4,
+            fill:'#9aa86a', edge:'#3a4218', text:'#101404', shell:0.24,
+            note:'Crusted in salt. Open it before the damage counts.' },
+  lord:   { name:'Sulphur Lord',   hp:2200, spd:72, r:45, leak:26, coin:48,
+            fill:'#6a8a3c', edge:'#1e2a06', text:'#f0ffe0',
+            veil:0.6, veilNear:190, veilFar:520, shell:0.22, look:'armour', big:1,
+            note:'The landmark. Veiled and plated, so he has to be met up close.' }
+};
+const VEN_RAMP = 1.1;
+function venPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('bloom', 7 + Math.round(wave*1.8));
+  if (wave >= 3)  add('spore', 1 + Math.floor((wave - 3)/2));
+  if (wave >= 6)  add('fume',  1 + Math.floor((wave - 6)/4));
+  if (wave >= 10) add('brine', 1 + Math.floor((wave - 10)/3));
+  if (wave % 5 === 0) add('lord', wave >= 22 ? 2 : 1);
+  return advShuffle(out, wave, 'lord');
+}
+
 const MERC_MOB = {
   mite:   { name:'Scorch Mite',    hp:15,   spd:344, r:14, leak:2,  coin:1.9,
             fill:'#ffb02e', edge:'#7a3a00', text:'#241200',
@@ -10612,6 +10838,13 @@ function makeWorldMob(v, k) {
   e.kind = k;
   e.cust = { r:m.r, look:m.look || null, fill:m.fill, edge:m.edge, text:m.text, name:m.name };
   if (m.shell) { e.shellSoak = m.shell; e.shellHp = hp*0.5; e.shellMax = hp*0.5; }
+  if (m.veil)  { e.veil = m.veil; e.veilNear = m.veilNear || 150; e.veilFar = m.veilFar || 430; }
+  if (m.splitInto) { e.splitInto = m.splitInto; e.splitN = m.splitN || 2; }
+  if (m.mender) { e.mender = 1; e.menderPeriod = m.menderPeriod; e.menderPct = m.menderPct;
+                  e.menderR = m.menderR; }
+  if (m.warden) { e.warden = 1; e.wardPeriod = m.wardPeriod; e.wardDur = m.wardDur; }
+  if (m.goad)  { e.goad = m.goad; e.goadR = m.goadR; }
+  if (m.chill) { e.chill = m.chill; e.chillR = m.chillR; }
   if (m.drone) { e.drone = 1; e.dPhase = Math.random()*6.28; e.immCd = 2 + Math.random()*2; }
   if (m.echo) e.echo = 1;
   if (m.big) {
@@ -10645,7 +10878,141 @@ function shellSoak(e, dmg, owner) {
   }
   return dmg*e.shellSoak;
 }
-/* 2. the drone. It wanders off the asphalt and, every few seconds, stops
+/* 2. the splitter. Killing it is not the end of it — it comes apart into
+      a litter of whatever it was carrying, at the point it died. One big
+      target becomes several small ones, which is a different problem for
+      a single-target Jaxon than it is for splash. */
+function splitEnemy(e) {
+  if (!e.splitInto || !e.splitN) return;
+  const v = advWorld();
+  if (!v || !v.mob || !v.mob[e.splitInto]) return;
+  /* a hard ceiling on the board: a chain of splitters in a deep wave is
+     how a tower defence turns into a slideshow */
+  if (S.enemies.length > 210) return;
+  for (let i = 0; i < e.splitN; i++) {
+    const c = makeWorldMob(v, e.splitInto);
+    c.d = Math.max(0, e.d - 10 - i*14);     /* fanned out behind the parent */
+    c.hp = c.max = Math.max(1, Math.round(c.max * 0.9));
+    S.enemies.push(c);
+  }
+  const p = enemyPos(e);
+  burst(p.x, p.y, e.cust ? e.cust.fill : '#ffffff', 10);
+}
+
+/* ---- 3. the mender: tops up whatever is in front of it ---------------- */
+function menderTick(e, dt) {
+  e.menderCd = (e.menderCd === undefined ? 2.2 : e.menderCd) - dt;
+  if (e.menderCd > 0) return;
+  e.menderCd = e.menderPeriod || 3.2;
+  const p = enemyPos(e), R = e.menderR || 150;
+  let healed = 0;
+  for (const o of S.enemies) {
+    if (o === e || o.dead || o.hp >= o.max || o.noHeal > 0) continue;
+    const q = enemyPos(o);
+    if (Math.hypot(q.x - p.x, q.y - p.y) > R) continue;
+    o.hp = Math.min(o.max, o.hp + Math.round(o.max * (e.menderPct || 0.08)));
+    healed++;
+    if (healed >= 6) break;                 /* capped, so a pack cannot stall */
+  }
+  if (healed) S.fx.push({ k:'mend', x:p.x, y:p.y, r:R, life:0.45, max:0.45 });
+}
+
+/* ---- 3a. the veil: Venus. Distance is the defence --------------------
+   The haze eats a shot in proportion to how far it travelled. Nothing is
+   immune and nothing is safe: a Jaxon beside the road does full damage, a
+   Jaxon across the map does a fraction. It is the only world where WHERE
+   you build matters more than what you build. */
+function veilSoak(e, dmg, owner) {
+  if (!e.veil || !owner || owner.x === undefined) return dmg;
+  const p = enemyPos(e);
+  const d = Math.hypot(owner.x - p.x, owner.y - p.y);
+  const near = e.veilNear || 150, far = e.veilFar || 430;
+  if (d <= near) return dmg;                       /* beside it: everything */
+  const k = Math.min(1, (d - near)/(far - near));
+  return dmg * (1 - k*(e.veil || 0.7));            /* across the map: little */
+}
+
+/* ---- 3b. the riders the Adventure Jaxons bring home -------------------
+   antiHeal   Mars and Neptune: a mender cannot touch what they have hit
+   wardBreak  Luna: a warden's immune window ends the moment she lands one
+   freezeHit  Uranus: a hard, brief stop rather than another slow
+   chainHit   Jupiter: the bolt steps to one more body nearby            */
+function advRiders(e, sp, owner) {
+  if (!sp || !sp.xtra) return;
+  if (sp.xtra.antiHeal) e.noHeal = Math.max(e.noHeal || 0, 4);
+  if (sp.xtra.wardBreak && e.ward > 0) {
+    e.ward = 0; e.wardCd = Math.max(e.wardCd || 0, 2);
+    const p = enemyPos(e);
+    S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.3, max:0.3, r:eRad(e)*1.5 });
+  }
+  if (sp.xtra.freezeHit) e.stun = Math.max(e.stun || 0, 0.45);
+  if (sp.xtra.chainHit && !e._chained) {
+    /* one step only, and the hop is marked so a chain cannot feed itself */
+    const p = enemyPos(e);
+    let best = null, bd = 200;
+    for (const o of S.enemies) {
+      if (o === e || o.dead || o._chained) continue;
+      const q = enemyPos(o), d = Math.hypot(q.x - p.x, q.y - p.y);
+      if (d < bd) { bd = d; best = o; }
+    }
+    if (best) {
+      best._chained = 1;
+      const q = enemyPos(best);
+      S.fx.push({ k:'chain', x:p.x, y:p.y, x2:q.x, y2:q.y, life:0.16, max:0.16 });
+      hurtEnemy(best, Math.round((sp.dmg || 0)*0.55), owner);
+      best._chained = 0;
+    }
+  }
+}
+
+/* ---- 4. the warden: a short, announced window of immunity ------------- */
+function wardenTick(e, dt) {
+  e.wardCd = (e.wardCd === undefined ? 4 : e.wardCd) - dt;
+  if (e.ward > 0) { e.ward -= dt; return; }
+  if (e.wardCd <= 0) {
+    e.wardCd = e.wardPeriod || 7;
+    e.ward = e.wardDur || 1.6;              /* short on purpose: wait it out */
+    const p = enemyPos(e);
+    S.fx.push({ k:'ward', x:p.x, y:p.y, r:eRad(e)*2.4, life:0.4, max:0.4, col:'#9fdcff' });
+  }
+}
+
+/* ---- 5. the goad: everything near it moves faster --------------------- */
+/* the goad as the mover sees it: its own aura never speeds itself up, or
+   a pack of them would compound into something unplayable */
+function goadNear(e) {
+  if (!S.enemies.length) return 1;
+  const p = enemyPos(e);
+  let m = 1;
+  for (const o of S.enemies) {
+    if (o === e || !o.goad || o.dead) continue;
+    const q = enemyPos(o);
+    if (Math.hypot(q.x - p.x, q.y - p.y) <= (o.goadR || 180)) m = Math.max(m, o.goad);
+  }
+  return m;
+}
+const goadAt = (x, y) => {
+  let m = 1;
+  for (const e of S.enemies) {
+    if (!e.goad || e.dead) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - x, p.y - y) <= (e.goadR || 180)) m = Math.max(m, e.goad);
+  }
+  return m;
+};
+
+/* ---- 6. the chill: Jaxons near it reload slower ----------------------- */
+const chillAt = (x, y) => {
+  let m = 1;
+  for (const e of S.enemies) {
+    if (!e.chill || e.dead) continue;
+    const p = enemyPos(e);
+    if (Math.hypot(p.x - x, p.y - y) <= (e.chillR || 190)) m = Math.max(m, e.chill);
+  }
+  return m;
+};
+
+/* 2b. the drone. It wanders off the asphalt and, every few seconds, stops
       caring that it has been slowed. */
 function droneTick(e, dt) {
   e.off = Math.sin(S.t*1.5 + e.dPhase)*27;
@@ -10701,6 +11068,262 @@ function scorchHaste(e) {
     if (Math.hypot(p.x - s2.x, (p.y - s2.y)*1.9) <= s2.r) return SCORCH.haste;
   }
   return 1;
+}
+
+/* ======================================================================= *
+ *  THE SEVEN REMAINING WORLDS                                             *
+ *                                                                         *
+ *  Mercury set the shape and every world keeps it: a handful of ordinary  *
+ *  blobs that each do ONE legible thing, a landmark that turns up on the  *
+ *  fives, a ramp, and a boss waiting on the goal wave.                    *
+ *                                                                         *
+ *  What makes them different is the QUESTION each one asks:               *
+ *                                                                         *
+ *    Earth     splitters — one target becomes four. Splash, or drown.     *
+ *    Moon      wardens — short immune windows. Sustained fire, not burst. *
+ *    Mars      menders — the pack heals itself. Kill order matters.       *
+ *    Jupiter   goads — a speed aura. Deal with the leader first.          *
+ *    Saturn    shells and swarms together. Open the crust, then sweep.    *
+ *    Uranus    chills — your Jaxons reload slower near them. Reach.       *
+ *    Neptune   all of it, at once, with a sting in the last wave.         *
+ * ======================================================================= */
+
+/* ------------------------------------------------------------- EARTH --- */
+const EARTH_MOB = {
+  seed:   { name:'Nursery Seed',  hp:34,  spd:232, r:16, leak:2, coin:2.2,
+            fill:'#7fd46a', edge:'#245c18', text:'#0c1a06',
+            note:'The ordinary one. Everything else here is worse.' },
+  pod:    { name:'Split Pod',     hp:150, spd:150, r:27, leak:4, coin:5.2,
+            fill:'#4aa83c', edge:'#163f0e', text:'#e8ffe0',
+            splitInto:'seed', splitN:3,
+            note:'Comes apart into three Seeds. Splash answers it; one big hit does not.' },
+  creeper:{ name:'Creeper',       hp:96,  spd:276, r:18, leak:3, coin:3.4,
+            fill:'#d8e86a', edge:'#5a6a10', text:'#141a04', drone:1,
+            note:'Runs the verge rather than the road, and shrugs a slow off.' },
+  bark:   { name:'Barkback',      hp:210, spd:124, r:29, leak:5, coin:6.0,
+            fill:'#8a6a3c', edge:'#2e2008', text:'#ffe8c0', shell:0.2,
+            note:'Bark over the top. Break it before the damage counts.' },
+  warden: { name:'Grove Warden',  hp:1500, spd:88, r:44, leak:24, coin:40,
+            fill:'#2e7a28', edge:'#0c2a06', text:'#dcffcc',
+            splitInto:'pod', splitN:2, look:'armour', big:1,
+            note:'The landmark. Kills into two Split Pods, so finish it somewhere open.' }
+};
+const EARTH_RAMP = 1.099;
+function earthPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('seed', 7 + Math.round(wave*1.8));
+  if (wave >= 3)  add('creeper', 1 + Math.floor((wave - 3)/2));
+  if (wave >= 5)  add('pod',     1 + Math.floor((wave - 5)/2));
+  if (wave >= 9)  add('bark',    1 + Math.floor((wave - 9)/3));
+  if (wave % 5 === 0) add('warden', wave >= 20 ? 2 : 1);
+  return advShuffle(out, wave, 'warden');
+}
+
+/* -------------------------------------------------------------- MOON --- */
+const MOON_MOB = {
+  dust:   { name:'Dustling',      hp:46,  spd:196, r:16, leak:2, coin:2.6,
+            fill:'#dfe4ea', edge:'#767e88', text:'#171b20',
+            note:'Low gravity, long stride. Nothing clever, just steady.' },
+  ward:   { name:'Static Ward',   hp:170, spd:146, r:25, leak:4, coin:5.8,
+            fill:'#b8c6d8', edge:'#3e4a58', text:'#121820',
+            warden:1, wardPeriod:6.5, wardDur:1.5,
+            note:'Goes immune for a second and a half, on a timer. Wait it out.' },
+  hop:    { name:'Hopper',        hp:88,  spd:300, r:17, leak:3, coin:3.2,
+            fill:'#f2f5fa', edge:'#8d97a8', text:'#171b20', drone:1,
+            note:'Bounds off the track between craters.' },
+  slag:   { name:'Regolith',      hp:250, spd:112, r:30, leak:5, coin:6.4,
+            fill:'#8d97a8', edge:'#2e353e', text:'#eef2f8', shell:0.22,
+            note:'Packed dust crust. Soaks until it is cracked open.' },
+  sentry: { name:'Lunar Sentry',  hp:1900, spd:80, r:45, leak:26, coin:46,
+            fill:'#5c6673', edge:'#1a1f26', text:'#eef2f8',
+            warden:1, wardPeriod:8, wardDur:1.8, look:'armour', big:1,
+            note:'The landmark. Immune in bursts, so bring something that never stops.' }
+};
+const MOON_RAMP = 1.102;
+function moonPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('dust', 8 + Math.round(wave*1.7));
+  if (wave >= 3)  add('hop',  1 + Math.floor((wave - 3)/2));
+  if (wave >= 6)  add('ward', 1 + Math.floor((wave - 6)/2));
+  if (wave >= 10) add('slag', 1 + Math.floor((wave - 10)/3));
+  if (wave % 5 === 0) add('sentry', wave >= 20 ? 2 : 1);
+  return advShuffle(out, wave, 'sentry');
+}
+
+/* -------------------------------------------------------------- MARS --- */
+const MARS_MOB = {
+  grit:   { name:'Grit',          hp:58,  spd:224, r:16, leak:2, coin:2.8,
+            fill:'#e07a4a', edge:'#6a2408', text:'#1a0a04',
+            note:'Rust and wind. The baseline.' },
+  mender: { name:'Rust Mender',   hp:190, spd:140, r:25, leak:4, coin:6.2,
+            fill:'#ffb07a', edge:'#8a4010', text:'#1a0a04',
+            mender:1, menderPeriod:3.0, menderPct:0.09, menderR:160,
+            note:'Patches everything near it. Kill the mender, then the pack.' },
+  digger: { name:'Digger',        hp:120, spd:258, r:19, leak:3, coin:3.8,
+            fill:'#c9a07a', edge:'#5a3a18', text:'#1a0a04', drone:1,
+            note:'Tunnels off the road and ignores a slow now and then.' },
+  ironcap:{ name:'Ironcap',       hp:320, spd:118, r:30, leak:6, coin:7.0,
+            fill:'#9a5a3c', edge:'#3a1408', text:'#ffe0c8', shell:0.24,
+            note:'Oxide plate. Most of a hit is wasted until it is off.' },
+  colossus:{name:'Rust Colossus', hp:2600, spd:76, r:46, leak:28, coin:54,
+            fill:'#b03a1a', edge:'#3a0c02', text:'#ffd8c0',
+            mender:1, menderPeriod:4.0, menderPct:0.06, menderR:220,
+            look:'armour', big:1,
+            note:'The landmark. Heals its own escort, so it has to go first.' }
+};
+const MARS_RAMP = 1.108;
+function marsPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('grit', 8 + Math.round(wave*1.9));
+  if (wave >= 3)  add('digger',  1 + Math.floor((wave - 3)/2));
+  if (wave >= 6)  add('mender',  1 + Math.floor((wave - 6)/4));
+  if (wave >= 10) add('ironcap', 1 + Math.floor((wave - 10)/3));
+  if (wave % 5 === 0) add('colossus', wave >= 24 ? 2 : 1);
+  return advShuffle(out, wave, 'colossus');
+}
+
+/* ----------------------------------------------------------- JUPITER --- */
+const JUP_MOB = {
+  gust:   { name:'Gustling',      hp:74,  spd:268, r:16, leak:2, coin:3.0,
+            fill:'#e8c89a', edge:'#7a5428', text:'#1a1204',
+            note:'Thin and quick, carried along by the band.' },
+  goad:   { name:'Stormcaller',   hp:230, spd:152, r:26, leak:4, coin:7.0,
+            fill:'#ffd08a', edge:'#8a5a10', text:'#1a1204',
+            goad:1.42, goadR:190,
+            note:'Everything around it moves half again as fast. Take it early.' },
+  band:   { name:'Bandrider',     hp:160, spd:208, r:21, leak:3, coin:4.4,
+            fill:'#c9a184', edge:'#5a3a1c', text:'#fff0dc', drone:1,
+            note:'Rides the band off the road and sheds a slow.' },
+  anvil:  { name:'Pressure Anvil',hp:430, spd:110, r:32, leak:6, coin:8.2,
+            fill:'#8a6a4a', edge:'#2e2010', text:'#ffe8d0', shell:0.26,
+            note:'Compressed shell. Needs a real hit to open.' },
+  eye:    { name:'The Eye',       hp:4200, spd:72, r:50, leak:32, coin:70,
+            fill:'#d8744a', edge:'#4a1606', text:'#ffe0cc',
+            goad:1.3, goadR:260, shell:0.2, look:'armour', big:1,
+            note:'The landmark. Hurries the whole storm along behind it.' }
+};
+const JUP_RAMP = 1.112;
+function jupPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('gust', 9 + Math.round(wave*2.0));
+  if (wave >= 3)  add('band',  1 + Math.floor((wave - 3)/2));
+  if (wave >= 6)  add('goad',  1 + Math.floor((wave - 6)/5));
+  if (wave >= 11) add('anvil', 1 + Math.floor((wave - 11)/3));
+  if (wave % 5 === 0) add('eye', wave >= 30 ? 2 : 1);
+  return advShuffle(out, wave, 'eye');
+}
+
+/* ------------------------------------------------------------ SATURN --- */
+const SAT_MOB = {
+  shard:  { name:'Ice Shard',     hp:92,  spd:244, r:15, leak:2, coin:3.2,
+            fill:'#ffeeb0', edge:'#8a7a28', text:'#1a1600',
+            note:'Chips off the ring. Small, fast, endless.' },
+  cluster:{ name:'Ring Cluster',  hp:300, spd:148, r:28, leak:4, coin:7.6,
+            fill:'#e8d078', edge:'#6a5410', text:'#1a1600',
+            splitInto:'shard', splitN:4,
+            note:'Four Ice Shards in a trench coat. Splash, or it doubles the wave.' },
+  weaver: { name:'Ring Weaver',   hp:260, spd:170, r:24, leak:4, coin:7.0,
+            fill:'#fff6d0', edge:'#8a7a40', text:'#1a1600',
+            mender:1, menderPeriod:3.4, menderPct:0.07, menderR:170,
+            note:'Reknits the cluster behind it.' },
+  plate:  { name:'Shepherd',      hp:560, spd:106, r:33, leak:6, coin:9.0,
+            fill:'#c9b05a', edge:'#4a3a08', text:'#1a1600', shell:0.28,
+            note:'Moon-shepherd plating. Thick, slow, and worth the focus.' },
+  warden2:{ name:'Ring Warden',   hp:6200, spd:70, r:52, leak:34, coin:86,
+            fill:'#8a7a28', edge:'#2a2404', text:'#fff2c0',
+            splitInto:'cluster', splitN:2, warden:1, wardPeriod:9, wardDur:1.6,
+            look:'armour', big:1,
+            note:'The landmark. Immune in bursts and leaves two Clusters behind it.' }
+};
+const SAT_RAMP = 1.116;
+function satPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('shard', 10 + Math.round(wave*2.1));
+  if (wave >= 3)  add('cluster', 1 + Math.floor((wave - 3)/2));
+  if (wave >= 7)  add('weaver',  1 + Math.floor((wave - 7)/4));
+  if (wave >= 12) add('plate',   1 + Math.floor((wave - 12)/3));
+  if (wave % 5 === 0) add('warden2', wave >= 34 ? 2 : 1);
+  return advShuffle(out, wave, 'warden2');
+}
+
+/* ------------------------------------------------------------ URANUS --- */
+const URA_MOB = {
+  flake:  { name:'Flake',         hp:120, spd:252, r:15, leak:2, coin:3.6,
+            fill:'#bff2fa', edge:'#2a6a7a', text:'#04161a',
+            note:'Thin ice, moving fast.' },
+  chiller:{ name:'Chill Spire',   hp:360, spd:140, r:27, leak:5, coin:9.0,
+            fill:'#7fe4f5', edge:'#1a6474', text:'#04161a',
+            chill:1.55, chillR:200,
+            note:'Jaxons near it reload half again as slow. Outrange it or kill it fast.' },
+  drift:  { name:'Drifter',       hp:210, spd:230, r:20, leak:3, coin:5.0,
+            fill:'#d8f8ff', edge:'#3a7a8a', text:'#04161a', drone:1,
+            note:'Wanders the tilt and shrugs a slow.' },
+  glacier:{ name:'Glacier',       hp:760, spd:100, r:34, leak:7, coin:10.5,
+            fill:'#6fd8e8', edge:'#1a5464', text:'#04161a',
+            shell:0.3, warden:1, wardPeriod:8, wardDur:1.4,
+            note:'Crust AND a cold snap of immunity. The hardest ordinary blob here.' },
+  monarch:{ name:'Frost Monarch', hp:9000, spd:66, r:54, leak:38, coin:110,
+            fill:'#1e7a8a', edge:'#062028', text:'#cdf6ff',
+            chill:1.4, chillR:300, shell:0.24, look:'armour', big:1,
+            note:'The landmark. Slows every Jaxon it walks past.' }
+};
+const URA_RAMP = 1.12;
+function uraPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('flake', 10 + Math.round(wave*2.2));
+  if (wave >= 3)  add('drift',   1 + Math.floor((wave - 3)/2));
+  if (wave >= 7)  add('chiller', 1 + Math.floor((wave - 7)/5));
+  if (wave >= 13) add('glacier', 1 + Math.floor((wave - 13)/3));
+  if (wave % 5 === 0) add('monarch', wave >= 38 ? 2 : 1);
+  return advShuffle(out, wave, 'monarch');
+}
+
+/* ----------------------------------------------------------- NEPTUNE --- */
+const NEP_MOB = {
+  mote:   { name:'Deep Mote',     hp:165, spd:262, r:15, leak:2, coin:4.2,
+            fill:'#8fb0ff', edge:'#1a2a6a', text:'#040a1a',
+            note:'The last world does not have a gentle one. This is it.' },
+  siren:  { name:'Siren',         hp:470, spd:150, r:26, leak:5, coin:11,
+            fill:'#6b8bff', edge:'#101c5a', text:'#dde6ff',
+            goad:1.38, goadR:210, mender:1, menderPeriod:3.6, menderPct:0.06, menderR:180,
+            note:'Hurries the pack AND heals it. Everything else gets easier once it is down.' },
+  abyss:  { name:'Abyssal',       hp:620, spd:168, r:24, leak:5, coin:11.5,
+            fill:'#3a6fd8', edge:'#0a1844', text:'#dde6ff',
+            warden:1, wardPeriod:6, wardDur:1.5, drone:1,
+            note:'Immune in bursts and off the road while it does it.' },
+  leviath:{ name:'Leviathan',     hp:1400, spd:96, r:36, leak:8, coin:14,
+            fill:'#2a4aa8', edge:'#060e2e', text:'#cfe0ff',
+            shell:0.32, splitInto:'mote', splitN:3,
+            note:'Plated, and it comes apart into three Motes.' },
+  herald: { name:'Deep Herald',   hp:16000, spd:62, r:56, leak:44, coin:150,
+            fill:'#12306a', edge:'#030818', text:'#bcd4ff',
+            chill:1.35, chillR:280, warden:1, wardPeriod:10, wardDur:1.8,
+            shell:0.25, look:'armour', big:1,
+            note:'The landmark, and a rehearsal for what is waiting past Neptune.' }
+};
+const NEP_RAMP = 1.126;
+function nepPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('mote', 11 + Math.round(wave*2.3));
+  if (wave >= 2)  add('abyss',   1 + Math.floor((wave - 2)/3));
+  if (wave >= 6)  add('siren',   1 + Math.floor((wave - 6)/6));
+  if (wave >= 10) add('leviath', 1 + Math.floor((wave - 10)/3));
+  if (wave % 5 === 0) add('herald', wave >= 42 ? 2 : 1);
+  return advShuffle(out, wave, 'herald');
+}
+
+/* The same shuffle every world uses: varied within a wave, identical every
+   time you play that wave. A run is a fixed test, not a lottery — and the
+   landmark never leads, so the escort is always seen first. */
+function advShuffle(out, wave, last) {
+  let sd = 1337 + wave*7919;
+  const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+  for (let i = out.length - 1; i > 0; i--) {
+    const j = Math.floor(rnd()*(i + 1));
+    const t = out[i]; out[i] = out[j]; out[j] = t;
+  }
+  if (last) out.sort((a, b) => (a === last ? 1 : 0) - (b === last ? 1 : 0));
+  return out;
 }
 
 /* ------------------------------------------------------- a scripted wave */
@@ -10806,7 +11429,9 @@ const WORLDS = [
     play:true, needs:'mercury',
     path:[[0,755],[1450,755],[1450,602],[150,602],[150,450],[1480,450],
           [1480,297],[120,297],[120,145],[1600,145]],
-    sky:'venus', money:210, lives:40,
+    sky:'venus', money:210, lives:40, runTint:'rgba(200,180,60,.05)',
+    ramp:VEN_RAMP, plan:venPlan, mob:VEN_MOB,
+    finale:{ name:'The Sulphur Queen', hp:34000, r:120, speed:66, leak:40, theme:'venusB' },
     spd:1.0, budget:1.16, eliteShift:-2, eliteMul:1.25, bossHp:1.15, coin:0.95,
     blob:'a bloom',
     /* heavy, swollen, and in no hurry at all */
@@ -10841,34 +11466,203 @@ const WORLDS = [
       { fill:'#3a4a22', edge:'#0e1206', text:'#e8ff9a' }
     ]
   },
-  { id:'earth',   name:'Earth',   order:3, ring:410, ang:-8,  r:25,
+  /* ------------------------------------------------------------- EARTH --
+     The nursery's own ground, gone wrong. A path that doubles back on
+     itself three times, because splitters are only fair if a splash Jaxon
+     can cover two legs at once. */
+  { id:'earth', name:'Earth', order:3, ring:410, ang:-8, r:25,
     body:'#3f7fd0', body2:'#12406a', glow:'rgba(90,160,240,.5)',
-    tag:'Home', diff:3, goal:35, blurb:'The nursery itself. Something is already here.',
-    shard:'Cradle Shard', shardCol:'#3fa8ff', jaxonName:'Earth Jaxon', needs:'venus' },
-  { id:'moon',    name:'The Moon', order:4, ring:410, ang:-8, moonOf:'earth', off:52, r:10,
+    tag:'Home', diff:3, goal:25,
+    blurb:'The nursery itself, overgrown. Everything here comes apart into something smaller.',
+    shard:'Cradle Shard', shardCol:'#3fa8ff',
+    jaxon:'earth', jaxonName:'Earth Jaxon',
+    play:true, needs:'venus',
+    path:[[0,180],[1180,180],[1180,340],[250,340],[250,500],[1350,500],
+          [1350,660],[180,660],[180,820],[1600,820]],
+    sky:'earth', money:300, lives:45, runTint:'rgba(70,180,90,.05)',
+    ramp:EARTH_RAMP, plan:earthPlan, mob:EARTH_MOB,
+    finale:{ name:'Cradle Warden', hp:52000, r:120, speed:68, leak:42, theme:'earthB' },
+    spd:1.0, budget:1.0, eliteShift:0, eliteMul:1.0, bossHp:1.0, coin:1.05,
+    blob:'a seed',
+    mobs:[{ n:'Seed', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#7fd46a', edge:'#245c18', text:'#0c1a06' },
+      { fill:'#4aa83c', edge:'#163f0e', text:'#e8ffe0' },
+      { fill:'#d8e86a', edge:'#5a6a10', text:'#141a04' },
+      { fill:'#8a6a3c', edge:'#2e2008', text:'#ffe8c0' },
+      { fill:'#2e7a28', edge:'#0c2a06', text:'#dcffcc' },
+      { fill:'#1e5a30', edge:'#06200c', text:'#dcffcc' },
+      { fill:'#123c20', edge:'#041406', text:'#b8ffc8' }
+    ] },
+
+  /* -------------------------------------------------------------- MOON --
+     Low gravity, long sightlines. One enormous sweeping path with very few
+     corners, so the immune windows are spent in the open where you can see
+     them happen. */
+  { id:'moon', name:'The Moon', order:4, ring:410, ang:-8, moonOf:'earth', off:52, r:10,
     body:'#cfd4da', body2:'#7a8088', glow:'rgba(220,228,238,.5)',
-    tag:'Silent', diff:2, goal:25, blurb:'Grey dust and no air to carry a scream.',
-    shard:'Dust Shard', shardCol:'#e8eef7', jaxonName:'Luna Jaxon', needs:'earth' },
-  { id:'mars',    name:'Mars',    order:5, ring:520, ang:10,  r:21,
+    tag:'Silent', diff:4, goal:28,
+    blurb:'Grey dust and no air to carry a scream. Some of it cannot be hurt at all, for a moment.',
+    shard:'Dust Shard', shardCol:'#e8eef7',
+    jaxon:'moon', jaxonName:'Luna Jaxon',
+    play:true, needs:'earth',
+    path:[[0,760],[300,760],[520,560],[520,200],[900,200],[900,430],
+          [1180,620],[1180,300],[1420,140],[1600,140]],
+    sky:'moon', money:340, lives:42, runTint:'rgba(200,214,235,.045)',
+    ramp:MOON_RAMP, plan:moonPlan, mob:MOON_MOB,
+    finale:{ name:'Sea of Silence', hp:74000, r:124, speed:64, leak:46, theme:'moonB' },
+    spd:1.02, budget:1.06, eliteShift:-1, eliteMul:1.08, bossHp:1.08, coin:1.0,
+    blob:'a dustling',
+    mobs:[{ n:'Dustling', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#dfe4ea', edge:'#767e88', text:'#171b20' },
+      { fill:'#b8c6d8', edge:'#3e4a58', text:'#121820' },
+      { fill:'#f2f5fa', edge:'#8d97a8', text:'#171b20' },
+      { fill:'#8d97a8', edge:'#2e353e', text:'#eef2f8' },
+      { fill:'#5c6673', edge:'#1a1f26', text:'#eef2f8' },
+      { fill:'#3e4650', edge:'#10141a', text:'#dfe4ea' },
+      { fill:'#242a32', edge:'#080a0e', text:'#cfd4da' }
+    ] },
+
+  /* -------------------------------------------------------------- MARS --
+     A long red haul with two tight knots in it. The knots are where the
+     menders want to stand, which is exactly why they are there. */
+  { id:'mars', name:'Mars', order:5, ring:520, ang:10, r:21,
     body:'#c1502a', body2:'#6a2408', glow:'rgba(230,110,60,.5)',
-    tag:'Rust', diff:4, goal:40, blurb:'Red iron, thin wind, and a very long walk.',
-    shard:'Rust Shard', shardCol:'#ff5a3c', jaxonName:'Mars Jaxon', needs:'moon' },
+    tag:'Rust', diff:5, goal:32,
+    blurb:'Red iron and a very long walk. Half of it heals the other half.',
+    shard:'Rust Shard', shardCol:'#ff5a3c',
+    jaxon:'mars', jaxonName:'Mars Jaxon',
+    play:true, needs:'moon',
+    path:[[0,140],[560,140],[560,330],[200,330],[200,520],[760,520],
+          [760,250],[1120,250],[1120,700],[420,700],[420,860],[1600,860]],
+    sky:'mars', money:380, lives:40, runTint:'rgba(230,110,50,.055)',
+    ramp:MARS_RAMP, plan:marsPlan, mob:MARS_MOB,
+    finale:{ name:'Oxide Tyrant', hp:120000, r:128, speed:60, leak:50, theme:'marsB' },
+    spd:1.05, budget:1.12, eliteShift:-2, eliteMul:1.16, bossHp:1.15, coin:0.98,
+    blob:'a grit',
+    mobs:[{ n:'Grit', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#e07a4a', edge:'#6a2408', text:'#1a0a04' },
+      { fill:'#ffb07a', edge:'#8a4010', text:'#1a0a04' },
+      { fill:'#c9a07a', edge:'#5a3a18', text:'#1a0a04' },
+      { fill:'#9a5a3c', edge:'#3a1408', text:'#ffe0c8' },
+      { fill:'#b03a1a', edge:'#3a0c02', text:'#ffd8c0' },
+      { fill:'#7a2810', edge:'#240800', text:'#ffd8c0' },
+      { fill:'#4a1808', edge:'#140400', text:'#ffb89a' }
+    ] },
+
+  /* ----------------------------------------------------------- JUPITER --
+     Enormous and open. Three long straights where a speed aura really
+     tells, and nowhere to hide from one. */
   { id:'jupiter', name:'Jupiter', order:6, ring:680, ang:-16, r:42,
     body:'#c9a184', body2:'#7a5638', glow:'rgba(220,180,140,.5)',
-    tag:'Storm', diff:5, goal:45, blurb:'A storm older than the nursery, and it has not finished.',
-    shard:'Storm Shard', shardCol:'#ffb04a', jaxonName:'Jupiter Jaxon', needs:'mars' },
-  { id:'saturn',  name:'Saturn',  order:7, ring:820, ang:6,   r:36, rings:true,
+    tag:'Storm', diff:6, goal:36,
+    blurb:'A storm older than the nursery. Something in it makes the rest run.',
+    shard:'Storm Shard', shardCol:'#ffb04a',
+    jaxon:'jupiter', jaxonName:'Jupiter Jaxon',
+    play:true, needs:'mars',
+    path:[[0,220],[1500,220],[1500,420],[100,420],[100,620],[1500,620],
+          [1500,800],[0,800]],
+    sky:'jupiter', money:460, lives:40, runTint:'rgba(225,170,110,.055)',
+    ramp:JUP_RAMP, plan:jupPlan, mob:JUP_MOB,
+    finale:{ name:'The Great Red', hp:240000, r:136, speed:58, leak:56, theme:'jupB' },
+    spd:1.08, budget:1.2, eliteShift:-3, eliteMul:1.26, bossHp:1.26, coin:0.96,
+    blob:'a gustling',
+    mobs:[{ n:'Gustling', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#e8c89a', edge:'#7a5428', text:'#1a1204' },
+      { fill:'#ffd08a', edge:'#8a5a10', text:'#1a1204' },
+      { fill:'#c9a184', edge:'#5a3a1c', text:'#fff0dc' },
+      { fill:'#8a6a4a', edge:'#2e2010', text:'#ffe8d0' },
+      { fill:'#d8744a', edge:'#4a1606', text:'#ffe0cc' },
+      { fill:'#9a4428', edge:'#2e0c02', text:'#ffe0cc' },
+      { fill:'#5a2410', edge:'#180600', text:'#ffc8a8' }
+    ] },
+
+  /* ------------------------------------------------------------ SATURN --
+     A ring, obviously. The path circles the middle twice before it leaves,
+     so a Jaxon in the centre covers both passes — if you can afford one. */
+  { id:'saturn', name:'Saturn', order:7, ring:820, ang:6, r:36, rings:true,
     body:'#d8c878', body2:'#8a7a28', glow:'rgba(230,215,140,.5)',
-    tag:'Ringed', diff:6, goal:50, blurb:'Ice and rock in a perfect circle. Do not step off.',
-    shard:'Ring Shard', shardCol:'#ffe98a', jaxonName:'Saturn Jaxon', needs:'jupiter' },
-  { id:'uranus',  name:'Uranus',  order:8, ring:960, ang:-4,  r:29,
+    tag:'Ringed', diff:7, goal:40,
+    blurb:'Ice and rock in a perfect circle. Break one and you have made four more.',
+    shard:'Ring Shard', shardCol:'#ffe98a',
+    jaxon:'saturn', jaxonName:'Saturn Jaxon',
+    play:true, needs:'jupiter',
+    path:[[0,500],[220,500],[220,180],[1380,180],[1380,720],[380,720],
+          [380,330],[1200,330],[1200,580],[560,580],[560,440],[1600,440]],
+    sky:'saturn', money:520, lives:38, runTint:'rgba(230,214,140,.05)',
+    ramp:SAT_RAMP, plan:satPlan, mob:SAT_MOB,
+    finale:{ name:'Shepherd Prime', hp:460000, r:142, speed:56, leak:62, theme:'satB' },
+    spd:1.1, budget:1.26, eliteShift:-4, eliteMul:1.34, bossHp:1.36, coin:0.94,
+    blob:'a shard',
+    mobs:[{ n:'Ice Shard', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#ffeeb0', edge:'#8a7a28', text:'#1a1600' },
+      { fill:'#e8d078', edge:'#6a5410', text:'#1a1600' },
+      { fill:'#fff6d0', edge:'#8a7a40', text:'#1a1600' },
+      { fill:'#c9b05a', edge:'#4a3a08', text:'#1a1600' },
+      { fill:'#8a7a28', edge:'#2a2404', text:'#fff2c0' },
+      { fill:'#5a5014', edge:'#161200', text:'#fff2c0' },
+      { fill:'#332c08', edge:'#0a0800', text:'#ffe98a' }
+    ] },
+
+  /* ------------------------------------------------------------ URANUS --
+     Tipped on its side, and so is the map: a tight serpentine where a
+     chill aura can touch four Jaxons at once. Range is the answer. */
+  { id:'uranus', name:'Uranus', order:8, ring:960, ang:-4, r:29,
     body:'#6fd8e8', body2:'#1e7a8a', glow:'rgba(120,220,240,.5)',
-    tag:'Frozen', diff:7, goal:55, blurb:'Tipped on its side and colder than anything you own.',
-    shard:'Frost Shard', shardCol:'#7fe9ff', jaxonName:'Uranus Jaxon', needs:'saturn' },
+    tag:'Frozen', diff:8, goal:44,
+    blurb:'Colder than anything you own, and it reaches your Jaxons before they reach it.',
+    shard:'Frost Shard', shardCol:'#7fe9ff',
+    jaxon:'uranus', jaxonName:'Uranus Jaxon',
+    play:true, needs:'saturn',
+    path:[[0,120],[760,120],[760,270],[140,270],[140,420],[760,420],
+          [760,570],[140,570],[140,720],[760,720],[760,860],[1600,860]],
+    sky:'uranus', money:600, lives:36, runTint:'rgba(110,216,232,.055)',
+    ramp:URA_RAMP, plan:uraPlan, mob:URA_MOB,
+    finale:{ name:'Hoarfrost King', hp:900000, r:146, speed:54, leak:68, theme:'uraB' },
+    spd:1.12, budget:1.32, eliteShift:-5, eliteMul:1.44, bossHp:1.48, coin:0.92,
+    blob:'a flake',
+    mobs:[{ n:'Flake', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#bff2fa', edge:'#2a6a7a', text:'#04161a' },
+      { fill:'#7fe4f5', edge:'#1a6474', text:'#04161a' },
+      { fill:'#d8f8ff', edge:'#3a7a8a', text:'#04161a' },
+      { fill:'#6fd8e8', edge:'#1a5464', text:'#04161a' },
+      { fill:'#1e7a8a', edge:'#062028', text:'#cdf6ff' },
+      { fill:'#12505c', edge:'#04161a', text:'#cdf6ff' },
+      { fill:'#0a3038', edge:'#010a0c', text:'#9fe8f8' }
+    ] },
+
+  /* ----------------------------------------------------------- NEPTUNE --
+     The last light. Every job the campaign taught, together, on a path
+     with no short legs at all. */
   { id:'neptune', name:'Neptune', order:9, ring:1100, ang:-20, r:28,
     body:'#3a6fd8', body2:'#12306a', glow:'rgba(80,130,240,.55)',
-    tag:'The Edge', diff:8, goal:60, blurb:'The last light. Whatever holds the Orb is out here.',
-    shard:'Deep Shard', shardCol:'#6b8bff', jaxonName:'Neptune Jaxon', needs:'uranus' }
+    tag:'The Edge', diff:9, goal:50,
+    blurb:'The last light before the dark. Whatever holds the Orb is out past this.',
+    shard:'Deep Shard', shardCol:'#6b8bff',
+    jaxon:'neptune', jaxonName:'Neptune Jaxon',
+    play:true, needs:'uranus',
+    path:[[0,460],[380,460],[380,140],[1240,140],[1240,340],[620,340],
+          [620,620],[1400,620],[1400,860],[260,860],[260,700],[0,700]],
+    sky:'neptune', money:720, lives:35, runTint:'rgba(70,110,230,.06)',
+    ramp:NEP_RAMP, plan:nepPlan, mob:NEP_MOB,
+    finale:{ name:'The Deep Herald', hp:2200000, r:152, speed:52, leak:76, theme:'nepB' },
+    spd:1.14, budget:1.4, eliteShift:-6, eliteMul:1.56, bossHp:1.62, coin:0.9,
+    blob:'a mote',
+    mobs:[{ n:'Deep Mote', s:1.0, r:1.0 }],
+    elites:{}, tiers:[
+      { fill:'#8fb0ff', edge:'#1a2a6a', text:'#040a1a' },
+      { fill:'#6b8bff', edge:'#101c5a', text:'#dde6ff' },
+      { fill:'#3a6fd8', edge:'#0a1844', text:'#dde6ff' },
+      { fill:'#2a4aa8', edge:'#060e2e', text:'#cfe0ff' },
+      { fill:'#12306a', edge:'#030818', text:'#bcd4ff' },
+      { fill:'#0a1e48', edge:'#01040e', text:'#bcd4ff' },
+      { fill:'#050f28', edge:'#000206', text:'#9fc0ff' }
+    ] }
 ];
 for (const v of WORLDS) {
   if (!v.elites) continue;
@@ -11284,10 +12078,122 @@ function advWin() {
    it instead of rebuilding it at a different brightness.
 
    The shading is not here: one falloff covers the lot, see groundShade. */
+/* ======================================================================= *
+ *  THE SKIES OF THE OUTER SEVEN                                           *
+ *                                                                         *
+ *  Mercury and Venus were drawn by hand before there were nine worlds,    *
+ *  and they still are — they are tuned and they work. Everything after    *
+ *  them reads from this table instead: three ground colours, a light to   *
+ *  sit under, and a weather flag. One renderer, seven worlds, and a new   *
+ *  one costs five lines rather than fifty.                                *
+ * ======================================================================= */
+const SKY = {
+  earth:   { g:['#2a5c30','#1d4423','#0f2a16'], lit:'rgba(180,255,190,.22)',
+             lx:0.28, ly:-0.1, weather:'pollen', wc:'#cfff9a',
+             haze:'rgba(120,200,120,.05)' },
+  moon:    { g:['#6a6e76','#4a4e56','#26292e'], lit:'rgba(240,248,255,.30)',
+             lx:0.68, ly:-0.14, weather:'none',
+             haze:'rgba(200,214,235,.03)' },
+  mars:    { g:['#7a3a22','#582616','#30140c'], lit:'rgba(255,190,140,.22)',
+             lx:0.2, ly:-0.12, weather:'dust', wc:'#e8a070',
+             haze:'rgba(230,120,60,.06)' },
+  jupiter: { g:['#7a5a3c','#5a3e28','#2e1e12'], lit:'rgba(255,215,160,.24)',
+             lx:0.5, ly:-0.16, weather:'bands', wc:'#ffd08a',
+             haze:'rgba(220,160,90,.07)' },
+  saturn:  { g:['#6a5e28','#4a421a','#26210a'], lit:'rgba(255,245,190,.26)',
+             lx:0.74, ly:-0.1, weather:'ring', wc:'#ffeeb0',
+             haze:'rgba(230,214,140,.05)' },
+  uranus:  { g:['#1c5a66','#133f49','#08222a'], lit:'rgba(190,245,255,.26)',
+             lx:0.34, ly:-0.12, weather:'snow', wc:'#dff8ff',
+             haze:'rgba(110,216,232,.06)' },
+  neptune: { g:['#142a5e','#0e1d42','#060e22'], lit:'rgba(150,185,255,.24)',
+             lx:0.6, ly:-0.14, weather:'deep', wc:'#9fc0ff',
+             haze:'rgba(70,110,230,.07)' }
+};
+/* the scatter is built once per world and reused, so weather costs a loop
+   and not an allocation every frame */
+const SKY_BITS = {};
+function skyBits(key) {
+  if (SKY_BITS[key]) return SKY_BITS[key];
+  let sd = 991 + key.length*7717;
+  const rnd = () => { sd = (sd*1664525 + 1013904223) >>> 0; return sd/4294967296; };
+  const out = [];
+  for (let i = 0; i < 70; i++)
+    out.push({ x:rnd()*W, y:rnd()*H, r:0.6 + rnd()*2.2, v:8 + rnd()*44,
+               a:0.12 + rnd()*0.4, p:rnd()*6.28 });
+  SKY_BITS[key] = out;
+  return out;
+}
+
+function skyGeneric(v, x0, y0, x1, y1) {
+  const k = SKY[v.sky];
+  if (!k) return false;
+  const w = x1 - x0, h = y1 - y0;
+  /* the ground, lit from one direction so the whole world agrees where
+     the light is */
+  const g = ctx.createLinearGradient(W*k.lx, H*k.ly, W*(1 - k.lx*0.6), H*1.15);
+  g.addColorStop(0, k.g[0]); g.addColorStop(0.45, k.g[1]); g.addColorStop(1, k.g[2]);
+  ctx.fillStyle = g; ctx.fillRect(x0, y0, w, h);
+
+  /* the light itself */
+  const sx = W*k.lx, sy = H*k.ly;
+  const lit = ctx.createRadialGradient(sx, sy, 40, sx, sy, W*0.78);
+  lit.addColorStop(0, k.lit);
+  lit.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = lit; ctx.fillRect(x0, y0, w, h);
+
+  /* a flat tint over everything, so the world reads as one place */
+  ctx.fillStyle = k.haze; ctx.fillRect(x0, y0, w, h);
+
+  if (S.perf >= 2 || k.weather === 'none') return true;   /* lean mode: ground only */
+
+  const t = S.t;
+  ctx.save();
+  if (k.weather === 'bands') {
+    /* Jupiter: the storm runs in horizontal belts that slide past */
+    ctx.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 7; i++) {
+      const yy = ((i*150 + t*(9 + i*5)) % (H + 420)) - 210;
+      if (yy + 110 < y0 || yy - 110 > y1) continue;
+      const bg = ctx.createLinearGradient(0, yy - 110, 0, yy + 110);
+      bg.addColorStop(0, 'rgba(255,200,130,0)');
+      bg.addColorStop(0.5, 'rgba(255,200,130,' + (0.035 + (i % 3)*0.012).toFixed(3) + ')');
+      bg.addColorStop(1, 'rgba(255,200,130,0)');
+      ctx.fillStyle = bg; ctx.fillRect(x0, Math.max(y0, yy - 110), w, 220);
+    }
+  } else if (k.weather === 'ring') {
+    /* Saturn: the rings cast long shadow bars across the ground */
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = '#1a1604';
+    ctx.save(); ctx.translate(W*0.5, H*0.3); ctx.rotate(-0.22);
+    for (let i = -6; i < 7; i++) ctx.fillRect(-1400, i*78 + Math.sin(t*0.2 + i)*3, 2800, 26);
+    ctx.restore();
+  } else {
+    /* everything else is particles: pollen drifts up, dust and snow fall,
+       the deep just hangs there and pulses */
+    const bits = skyBits(v.sky);
+    ctx.globalCompositeOperation = 'lighter';
+    for (const b of bits) {
+      let bx = b.x, by = b.y;
+      if (k.weather === 'pollen')      { by = H - ((b.y + t*b.v) % (H + 40)); bx += Math.sin(t*0.6 + b.p)*22; }
+      else if (k.weather === 'dust')   { bx = ((b.x + t*b.v*2.2) % (W + 60)) - 30; by += Math.sin(t*0.9 + b.p)*9; }
+      else if (k.weather === 'snow')   { by = ((b.y + t*b.v*0.7) % (H + 40)) - 20; bx += Math.sin(t*0.5 + b.p)*16; }
+      else                             { by += Math.sin(t*0.35 + b.p)*14; bx += Math.cos(t*0.27 + b.p)*10; }
+      if (bx < x0 - 8 || bx > x1 + 8 || by < y0 - 8 || by > y1 + 8) continue;
+      ctx.globalAlpha = b.a * (k.weather === 'deep' ? 0.5 + Math.sin(t*1.4 + b.p)*0.35 : 1) * 0.6;
+      ctx.fillStyle = k.wc;
+      ctx.beginPath(); ctx.arc(bx, by, b.r, 0, 7); ctx.fill();
+    }
+  }
+  ctx.restore();
+  return true;
+}
+
 function worldGround(x0, y0, x1, y1) {
   const v = advWorld();
   if (!v) return false;
   const w = x1 - x0, h = y1 - y0;
+  if (SKY[v.sky]) return skyGeneric(v, x0, y0, x1, y1);
   if (v.sky === 'mercury') {
     /* regolith. Grey-orange dust, lit hard from the sun sitting just off
        the top-left corner, with everything's shadow pointing the same way
@@ -11377,9 +12283,27 @@ function worldGround(x0, y0, x1, y1) {
 const drawWorldGround = () => worldGround(0, 0, W, H);
 
 /* the trail, in the colours of whatever you are standing on */
+/* The road has to read against its own ground before it has to look nice:
+   a brown track on Jupiter's brown dust is a map you cannot plan on. Each
+   trail is picked to sit the other side of its sky in VALUE, not only in
+   hue — [shadow, kerb, surface, sheen]. */
 const WORLD_TRAIL = {
   mercury:['rgba(0,0,0,.32)', '#241a14', '#5e4a3c', 'rgba(255,220,180,.06)'],
-  venus:  ['rgba(0,0,0,.28)', '#4a2c04', '#8a5a12', 'rgba(255,240,190,.07)']
+  venus:  ['rgba(0,0,0,.28)', '#4a2c04', '#8a5a12', 'rgba(255,240,190,.07)'],
+  /* a packed-earth lane through the green */
+  earth:  ['rgba(0,0,0,.34)', '#2a1c0c', '#8a6a3a', 'rgba(255,240,200,.07)'],
+  /* the one trodden line across the regolith, pale because the dust is */
+  moon:   ['rgba(0,0,0,.42)', '#3a4049', '#aeb7c4', 'rgba(255,255,255,.10)'],
+  /* old basalt: dark, so the rust either side keeps its colour */
+  mars:   ['rgba(0,0,0,.40)', '#1a0e08', '#4a3028', 'rgba(255,190,150,.07)'],
+  /* a storm-slate causeway, the only cool thing on Jupiter */
+  jupiter:['rgba(0,0,0,.44)', '#1c1426', '#4e3f66', 'rgba(220,200,255,.09)'],
+  /* ring ice laid flat, bright against the olive */
+  saturn: ['rgba(0,0,0,.36)', '#4a4438', '#cfd2dc', 'rgba(255,255,255,.12)'],
+  /* methane frost, paler and bluer than the teal it crosses */
+  uranus: ['rgba(0,0,0,.34)', '#2a4a54', '#b6dce8', 'rgba(255,255,255,.11)'],
+  /* the one lit road in the dark, so the last world still reads */
+  neptune:['rgba(0,0,0,.46)', '#1a2a52', '#6f8ec8', 'rgba(200,220,255,.10)']
 };
 
 /* ======================================================= the solar map ==
@@ -12326,12 +13250,21 @@ function hurtEnemy(e, dmg, owner) {
     const arm = eliteAt(e.elite).armour;
     if (arm) dmg = Math.max(dmg*0.2, dmg - arm);
   }
+  /* a warden's window is the one thing in the game that reads as "wait":
+     it is short, it is drawn, and nothing gets through it */
+  if (e.ward > 0) {
+    const p = enemyPos(e);
+    S.floats.push({ x:p.x, y:p.y - 30, txt:'warded', color:'#9fdcff', life:0.5 });
+    return;
+  }
+  if (e.veil) dmg = veilSoak(e, dmg, owner);
   if (e.shellHp > 0) dmg = shellSoak(e, dmg, owner);
   const before = e.hp;
   e.hp -= dmg; e.hit = 1;
   if (owner) owner.dmg += Math.min(dmg, before);
   if (e.hp > 0) {
     onHit(e, owner);
+    if (owner && owner.type) advRiders(e, SP(owner), owner);
     if (owner && owner.type && SP(owner).xtra.exec && e.hp <= e.max*0.10) e.hp = 0;   // finish the wounded
   }
   if (e.hp <= 0) {
@@ -12339,6 +13272,7 @@ function hurtEnemy(e, dmg, owner) {
     burst(p.x, p.y, enemyFill({ elite:e.elite, hp:before }), e.elite >= 0 ? 26 : 13);
     e.dead = true; S.pops++;
     if (e.echo) dropScorch(e);                 // Heat Echo leaves the fire behind
+    if (e.splitInto) splitEnemy(e);            // and a splitter leaves its litter
     comboPop();
     if (owner) owner.pops++;
     if (S.titan && e.siege) {
@@ -13808,6 +14742,9 @@ function update(dt) {
     e.hit = Math.max(0, e.hit - dt*6);
     if (e.slow > 0) e.slow -= dt;
     if (e.drone) droneTick(e, dt);             // wanders, and ignores a slow now and then
+    if (e.mender) menderTick(e, dt);           // tops up the pack in front of it
+    if (e.noHeal > 0) e.noHeal -= dt;          // and cannot while this is running
+    if (e.warden) wardenTick(e, dt);           // brief, announced immunity
     if (e.stun > 0) e.stun -= dt;
     if (e.bub > 0) e.bub -= dt;
     if (e.mark > 0) { e.mark -= dt; if (e.mark <= 0) e.markMul = 1; }
@@ -13996,7 +14933,10 @@ function update(dt) {
     if (t.fireSlow > 0) t.fireSlow -= dt;                // a Jammer elite is standing nearby
     if (t.scramble > 0) t.scramble -= dt;                // the Warden's pulse wearing off
     /* the Admin Jaxon's field is the other half of amplify() */
+    /* a Chill Spire reaches the Jaxon, not the blob: standing in one is
+       what makes Uranus a question about range rather than damage */
     const mul = (t.rateMul || 1) * (t.fireSlow > 0 ? 1.3 : 1)
+              * chillAt(t.x, t.y)
               * (t.admField ? 1/(1 + ADM.field.rate) : 1)
               * (S.overdrive > 0 ? 0.5 : 1)
               * (S.combo.boost > 0 ? 1/(1 + COMBO.rate) : 1);
@@ -16599,7 +17539,14 @@ function gateOf() {
   const v = advWorld();
   if (!v) return null;
   return { mercury:['#c9b6a4', '#5e4a3c', '#ff7a2e'],
-           venus:  ['#e8d8a0', '#6a5010', '#8fbf5a'] }[v.sky] || null;
+           venus:  ['#e8d8a0', '#6a5010', '#8fbf5a'],
+           earth:  ['#cfe8b0', '#2a4418', '#7fd46a'],
+           moon:   ['#e8eef8', '#4a545f', '#cfe0ff'],
+           mars:   ['#ffcaa8', '#5a2a18', '#ff7a4a'],
+           jupiter:['#ffe0b8', '#4a3420', '#ffb04a'],
+           saturn: ['#fff2cc', '#5a4e20', '#ffe98a'],
+           uranus: ['#d8f6ff', '#17505c', '#7fe4f5'],
+           neptune:['#dde6ff', '#16306a', '#6b8bff'] }[v.sky] || null;
 }
 function drawField() {
   if (S.titan) { drawSiegeField(); drawTitanFx(); drawTitan(); return; }
@@ -18059,6 +19006,87 @@ function drawShot(s) {
       ctx.fillStyle = 'rgba(255,140,40,.55)';
       for (let i = 1; i <= 2; i++) {
         ctx.beginPath(); ctx.arc(-i*9, Math.sin(S.t*24 + i)*2.5, 6 - i*1.6, 0, 7); ctx.fill();
+      }
+      break;
+
+    case 'seedshot':
+      /* a seed pod, tumbling, with a leaf still on it */
+      ctx.rotate(s.spin);
+      orb('#cfff9a', '#2e7a28', 22, true);
+      ctx.fillStyle = '#7fd46a';
+      ctx.beginPath(); ctx.ellipse(10, -6, 8, 4, -0.6, 0, 7); ctx.fill();
+      break;
+
+    case 'lunar':
+      /* a dust lance: long, pale, and travelling point first */
+      ctx.rotate(s.a);
+      ctx.fillStyle = '#eef2f8';
+      ctx.beginPath(); ctx.moveTo(18, 0); ctx.lineTo(-14, -5); ctx.lineTo(-10, 0);
+      ctx.lineTo(-14, 5); ctx.closePath(); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(200,220,255,.4)';
+      ctx.beginPath(); ctx.ellipse(-16, 0, 12, 3, 0, 0, 7); ctx.fill();
+      break;
+
+    case 'rustshot':
+      /* a wad of oxide, shedding flakes */
+      ctx.rotate(s.a); orb('#ffb07a', '#8a2c08', 23, true);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(255,140,70,.5)';
+      for (let i = 1; i <= 3; i++) {
+        ctx.beginPath();
+        ctx.arc(-i*8, Math.sin(S.t*18 + i*2)*4, 5 - i, 0, 7); ctx.fill();
+      }
+      break;
+
+    case 'stormshot':
+      /* a bolt, drawn as a jag rather than a ball */
+      ctx.rotate(s.a);
+      ctx.strokeStyle = '#fff0dc'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(-14, 0); ctx.lineTo(-4, -6); ctx.lineTo(2, 4); ctx.lineTo(14, -2);
+      ctx.stroke();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = 'rgba(255,200,120,.7)'; ctx.lineWidth = 11;
+      ctx.stroke();
+      break;
+
+    case 'ringshot':
+      /* a thrown ring, seen edge on and spinning */
+      ctx.rotate(s.spin);
+      ctx.strokeStyle = '#ffeeb0'; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(0, 0, 21, 8, 0, 0, 7); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,246,208,.5)'; ctx.lineWidth = 12;
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.beginPath(); ctx.ellipse(0, 0, 21, 8, 0, 0, 7); ctx.stroke();
+      break;
+
+    case 'frostshot':
+      /* a shard of the ice, with the cold coming off it */
+      ctx.rotate(s.spin);
+      ctx.fillStyle = '#dff8ff'; ctx.strokeStyle = '#1a6474'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i < 6; i++) {
+        const a2 = i*1.047, r2 = i % 2 ? 9 : 20;
+        i ? ctx.lineTo(Math.cos(a2)*r2, Math.sin(a2)*r2)
+          : ctx.moveTo(Math.cos(a2)*r2, Math.sin(a2)*r2);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(160,230,255,.35)';
+      ctx.beginPath(); ctx.arc(0, 0, 26, 0, 7); ctx.fill();
+      break;
+
+    case 'deepshot':
+      /* the last one the campaign hands over: a bead of the deep with a
+         pressure wake behind it */
+      ctx.rotate(s.a);
+      orb('#dde6ff', '#101c5a', 26, true);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 1; i <= 3; i++) {
+        ctx.strokeStyle = 'rgba(140,176,255,' + (0.4 - i*0.1).toFixed(2) + ')';
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.arc(-i*11, 0, 7 + i*3, -0.9, 0.9); ctx.stroke();
       }
       break;
 
@@ -19738,6 +20766,42 @@ function render() {
         ctx.arc(f.x + Math.cos(a)*rr, f.y + Math.sin(a)*rr*0.36 - k*26, 5*(1-k) + 1.5, 0, 7);
         ctx.fill();
       }
+      ctx.restore();
+    } else if (f.k === 'ward') {
+      /* a warden closing: a ring that snaps shut, so the immune window is
+         something the player SEES start rather than infers from numbers */
+      const k = 1 - f.life/f.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (1 - k)*0.9;
+      ctx.strokeStyle = f.col || '#9fdcff'; ctx.lineWidth = 4 + (1 - k)*4;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*(0.4 + k*0.9), 0, 7); ctx.stroke();
+      ctx.restore();
+    } else if (f.k === 'mend') {
+      /* a mender working: a soft pulse out to everything it reached */
+      const k = 1 - f.life/f.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (1 - k)*0.5;
+      const g = ctx.createRadialGradient(f.x, f.y, 2, f.x, f.y, f.r*(0.3 + k*0.8));
+      g.addColorStop(0, 'rgba(160,255,190,.5)'); g.addColorStop(1, 'rgba(160,255,190,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(f.x, f.y, f.r*(0.3 + k*0.8), 0, 7); ctx.fill();
+      ctx.restore();
+    } else if (f.k === 'chain') {
+      /* Jupiter's bolt stepping to the next body: a jag between two points */
+      const k = 1 - f.life/f.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = 1 - k;
+      const jag = (w, col) => {
+        ctx.strokeStyle = col; ctx.lineWidth = w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        ctx.beginPath(); ctx.moveTo(f.x, f.y);
+        for (let i = 1; i <= 4; i++) {
+          const tt = i/4;
+          const nx = f.x + (f.x2 - f.x)*tt + (i < 4 ? Math.sin(i*2.7 + f.x)*14 : 0);
+          const ny = f.y + (f.y2 - f.y)*tt + (i < 4 ? Math.cos(i*2.1 + f.y)*14 : 0);
+          ctx.lineTo(nx, ny);
+        }
+        ctx.stroke();
+      };
+      jag(9, 'rgba(255,200,120,.45)'); jag(3, '#fff0dc');
       ctx.restore();
     } else if (f.k === 'shatter') {
       /* a pane breaking: shards thrown outward, catching the light */
