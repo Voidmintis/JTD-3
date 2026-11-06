@@ -2147,6 +2147,25 @@
   }
   #cats button.coachOn{border-radius:var(--r-full)}
   @media (prefers-reduced-motion:reduce){ .coachOn{animation:none} }
+  /* the node waiting on its second press */
+  .node.arm{
+    outline:2px solid var(--gold);outline-offset:3px;
+    animation:armPulse 1s ease-in-out infinite;
+  }
+  @keyframes armPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(255,214,10,.45)}
+    50%    {box-shadow:0 0 0 10px rgba(255,214,10,0)}
+  }
+  .clArm{
+    display:none;margin-top:var(--s3);padding:var(--s3) var(--s4);
+    border-radius:var(--r-md);background:rgba(255,214,10,.08);
+    border:1px solid rgba(255,214,10,.3);font-size:13px;line-height:1.45;
+  }
+  .clArm.on{display:block;animation:menuRise 180ms var(--e) both}
+  .clArm b{font-weight:650;color:var(--ink)}
+  .clArm .c{color:var(--gold);font-weight:650}
+  .clArm em{display:block;font-style:normal;color:var(--dim);font-size:12px;margin-top:2px}
+  @media (prefers-reduced-motion:reduce){ .node.arm{animation:none} }
   #flash{
     position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:17;
     mix-blend-mode:screen;
@@ -7053,8 +7072,9 @@ const TOWERS = {
              blurb:'The storm, bottled and pointed. 290 every 0.09 seconds, and the bolt steps to whatever is standing next to it.',
              tags:[['Adventure','t-rain'],['Rapid Fire','t-fast'],['Chains','t-aoe']] },
   saturn:  { name:'Saturn Jaxon', cost:165000, range:560, cd:0.8, dmg:2600, speed:1400, ammo:'ringshot',
-             splash:1500, splashR:300, pierce:5, baseXtra:{ shellBreak:1 }, adv:'saturn',
-             blurb:'A thrown ring that keeps going. 2.6k through five of them, 1.5k across 300, and it takes the crust off the first one it meets.',
+             splash:1500, splashR:300, pierce:5, shellCut:0.55,
+             baseXtra:{ shellBreak:1 }, adv:'saturn',
+             blurb:'A thrown ring that keeps going. 2.6k through five of them, 1.5k across 300, and it shears better than half the crust off the first one it meets. His skill tree takes that to all of it.',
              tags:[['Adventure','t-rain'],['Pierce','t-single'],['Splash','t-aoe']] },
   uranus:  { name:'Uranus Jaxon', cost:340000, range:600, cd:0.34, dmg:7400, speed:1800, ammo:'frostshot',
              splash:4200, splashR:280, baseXtra:{ slowHit:1, freezeHit:1 }, adv:'uranus',
@@ -12076,15 +12096,54 @@ function collTree(c) {
       '<span class="ts">' + spent + ' coins invested \u00b7 upgrades apply the moment they are bought</span>' +
     '</div>' +
     '<div class="tree" id="clTree"><svg class="wires" id="clWires"></svg>' + cells + '</div>' +
+    '<div class="clArm" id="clArm"></div>' +
   '</div>';
 }
 
+/* which node is waiting for its second press */
+const SKILL_ARM = { sid:null, job:0 };
+function skillDisarm() {
+  clearTimeout(SKILL_ARM.job);
+  SKILL_ARM.sid = null;
+  document.querySelectorAll('.node.arm').forEach(n => n.classList.remove('arm'));
+  const b = $('clArm');
+  if (b) b.classList.remove('on');
+}
+function skillArm(c, sid, el) {
+  skillDisarm();
+  const node = skillsFor(c.id).find(n => n.id === sid);
+  if (!node) return;
+  const rank = rankOf(c.id, sid);
+  const price = nodeCost(node, rank);
+  SKILL_ARM.sid = sid;
+  el.classList.add('arm');
+  const b = $('clArm');
+  if (b) {
+    b.innerHTML =
+      '<b>' + node.name + '</b> \u00b7 rank ' + (rank + 1) + ' of ' + node.max +
+      ' <span class="c">' + price.toLocaleString() + ' coins</span>' +
+      '<em>' + node.desc + ' &mdash; press again to buy. This cannot be undone.</em>';
+    b.classList.add('on');
+  }
+  sfx('select');
+  SKILL_ARM.job = setTimeout(skillDisarm, 4000);
+}
+
 function collWire(c) {
+  skillDisarm();
   const tree = $('clTree');
   if (!tree) return;
   tree.querySelectorAll('.node').forEach(el => {
     el.onclick = () => {
       const sid = el.dataset.n;
+      /* anything that is not a legal purchase says so immediately and
+         never arms — there is nothing to confirm about a locked node */
+      if (skillState(c.id, sid) !== 'ok') { buySkill(c.id, sid); return; }
+      if (SKILL_ARM.sid !== sid) {
+        skillArm(c, sid, el);
+        return;
+      }
+      skillDisarm();
       if (!buySkill(c.id, sid)) return;
       collRender();
       /* re-find it after the redraw and mark the rank that just landed */
@@ -12438,12 +12497,18 @@ function makeWorldMob(v, k) {
 function shellSoak(e, dmg, owner) {
   if (!e.shellHp || e.shellHp <= 0) return dmg;
   /* Mercury's own Jaxon came back knowing how to open these */
-  if (owner && owner.type && SP(owner).xtra.shellBreak) {
-    e.shellHp = 0;
-    const p = enemyPos(e);
-    S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.34, max:0.34, r:eRad(e)*1.6 });
-    beep(300, 0.14, 'square', 0.035, 90);
-    return dmg;
+  if (owner && owner.type) {
+    const osp = SP(owner);
+    if (osp.xtra.shellBreak) {
+      /* shellCut is the share of the crust taken off. It defaults to all
+         of it, which is what this always did. */
+      const cut = Math.min(1, osp.shellCut === undefined ? RIDER.shellCut : osp.shellCut);
+      e.shellHp = Math.max(0, e.shellHp - (e.shellMax || e.shellHp)*cut);
+      const p = enemyPos(e);
+      S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.34, max:0.34, r:eRad(e)*1.6 });
+      beep(300, 0.14, 'square', 0.035, 90);
+      return dmg;
+    }
   }
   e.shellHp -= dmg;
   if (e.shellHp <= 0) {
@@ -12513,35 +12578,62 @@ function veilSoak(e, dmg, owner) {
    wardBreak  Luna: a warden's immune window ends the moment she lands one
    freezeHit  Uranus: a hard, brief stop rather than another slow
    chainHit   Jupiter: the bolt steps to one more body nearby            */
+/* the defaults every rider used to have hard-coded. A skill node raises
+   the number on the Jaxon; the rider reads the Jaxon. */
+const RIDER = {
+  healBlock:4,      /* seconds a no-heal mark holds        */
+  wardHold:2,       /* seconds before a warden may re-ward */
+  freezeT:0.45,     /* seconds of hard stop                */
+  chainMul:0.55,    /* share of the hit the chain carries  */
+  chainR:200,       /* how far it reaches for the next one */
+  chainN:1,         /* how many times it steps             */
+  slowT:0.7,        /* seconds a slowHit holds             */
+  slowPow:0.55,     /* how far down it takes them; LOWER is stronger */
+  burnT:3.5,        /* seconds a burn runs for             */
+  burnRate:0.10,    /* share of the hit it deals per second */
+  shellCut:1        /* share of the crust taken off        */
+};
 function advRiders(e, sp, owner) {
   if (!sp || !sp.xtra) return;
-  if (sp.xtra.antiHeal) e.noHeal = Math.max(e.noHeal || 0, 4);
+  if (sp.xtra.antiHeal) e.noHeal = Math.max(e.noHeal || 0, sp.healBlock || RIDER.healBlock);
   if (sp.xtra.wardBreak && e.ward > 0) {
-    e.ward = 0; e.wardCd = Math.max(e.wardCd || 0, 2);
+    e.ward = 0;
+    e.wardCd = Math.max(e.wardCd || 0, sp.wardHold || RIDER.wardHold);
     const p = enemyPos(e);
     S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.3, max:0.3, r:eRad(e)*1.5 });
   }
-  if (sp.xtra.freezeHit) e.stun = Math.max(e.stun || 0, 0.45);
+  if (sp.xtra.freezeHit) e.stun = Math.max(e.stun || 0, sp.freezeT || RIDER.freezeT);
   /* the Celestial's two: a short drag toward the point of impact, and
      armour that counts for a third of what it says it does */
   if (sp.xtra.pull) e.pull = Math.max(e.pull || 0, 0.5);
   if (sp.xtra.crush && e.shellSoak) e.shellSoak = Math.min(e.shellSoak, e.shellSoak*0.34);
   if (sp.xtra.chainHit && !e._chained) {
-    /* one step only, and the hop is marked so a chain cannot feed itself */
-    const p = enemyPos(e);
-    let best = null, bd = 200;
-    for (const o of S.enemies) {
-      if (o === e || o.dead || o._chained) continue;
-      const q = enemyPos(o), d = Math.hypot(q.x - p.x, q.y - p.y);
-      if (d < bd) { bd = d; best = o; }
-    }
-    if (best) {
+    /* Every body the walk has already touched stays marked until the
+       whole walk is done, so a two-step chain cannot bounce back and
+       forth between the same pair for free damage. */
+    const steps = Math.max(1, Math.round(sp.chainN || RIDER.chainN));
+    const reach = sp.chainR || RIDER.chainR;
+    const share = sp.chainMul || RIDER.chainMul;
+    const walked = [e];
+    e._chained = 1;
+    let from = e;
+    for (let n = 0; n < steps; n++) {
+      const p = enemyPos(from);
+      let best = null, bd = reach;
+      for (const o of S.enemies) {
+        if (o.dead || o._chained) continue;
+        const q = enemyPos(o), d = Math.hypot(q.x - p.x, q.y - p.y);
+        if (d < bd) { bd = d; best = o; }
+      }
+      if (!best) break;
       best._chained = 1;
+      walked.push(best);
       const q = enemyPos(best);
       S.fx.push({ k:'chain', x:p.x, y:p.y, x2:q.x, y2:q.y, life:0.16, max:0.16 });
-      hurtEnemy(best, Math.round((sp.dmg || 0)*0.55), owner);
-      best._chained = 0;
+      hurtEnemy(best, Math.round((sp.dmg || 0)*share), owner);
+      from = best;
     }
+    for (const o of walked) o._chained = 0;
   }
 }
 
@@ -13557,7 +13649,7 @@ const SKILLS = {
   /* ---- Mercury Jaxon: embers, bursts, and crust-cracking ---- */
   mercury:[
     branch('m_heat1', 0, 0, 'Hotter Embers',  'Every ember lands harder.',            120, 3, { dmg:1.10 }, 'flame'),
-    branch('m_heat2', 0, 1, 'Deep Burn',      'The burn he leaves behind bites more.', 260, 3, { mul:{ burnDps:1.18 } }, 'flame', ['m_heat1']),
+    branch('m_heat2', 0, 1, 'Deep Burn',      'The burn he leaves behind bites more.', 260, 3, { add:{ burnRate:0.022 } }, 'flame', ['m_heat1']),
     branch('m_heat3', 0, 2, 'Crust Breaker',  'Bursts hit far harder for their size.', 520, 2, { mul:{ splash:1.25 } }, 'flame', ['m_heat2']),
 
     branch('m_rate1', 1, 0, 'Quick Hands',    'He throws faster.',                     140, 3, { cd:0.93 }, 'bolt'),
@@ -13575,10 +13667,10 @@ const SKILLS = {
   /* ---- Venus Jaxon: a slow, enormous, corrosive globe ---- */
   venus:[
     branch('v_cor1', 0, 0, 'Stronger Acid',  'The globe hits harder.',                 160, 3, { dmg:1.11 }, 'flame'),
-    branch('v_cor2', 0, 1, 'Caustic Air',    'What crawls away burns worse.',          320, 3, { mul:{ burnDps:1.22 } }, 'flame', ['v_cor1']),
+    branch('v_cor2', 0, 1, 'Caustic Air',    'What crawls away burns worse.',          320, 3, { add:{ burnRate:0.026 } }, 'flame', ['v_cor1']),
     branch('v_cor3', 0, 2, 'Dissolution',    'A serious lift to the splash itself.',   640, 2, { mul:{ splash:1.28 } }, 'flame', ['v_cor2']),
 
-    branch('v_prs1', 1, 0, 'Thicker Air',    'Everything caught slows harder.',        180, 3, { mul:{ slowMul:0.94 } }, 'snow'),
+    branch('v_prs1', 1, 0, 'Thicker Air',    'Everything caught slows harder.',        180, 3, { add:{ slowPow:-0.035 } }, 'snow'),
     branch('v_prs2', 1, 1, 'Pressure Drop',  'He throws noticeably faster.',           340, 3, { cd:0.92 }, 'bolt', ['v_prs1']),
     branch('v_prs3', 1, 2, 'Storm Front',    'Faster again, and the globe travels.',   680, 2, { cd:0.90, speed:1.15 }, 'bolt', ['v_prs2']),
 
@@ -13588,7 +13680,134 @@ const SKILLS = {
 
     branch('v_cap',  1, 3, 'Sulphur Lord',   'A third more damage and a wider cloud on everything he throws.',
            1600, 1, { dmg:1.33, mul:{ splashR:1.15 } }, 'star', ['v_cor3','v_sat3'])
-  ]
+  ],
+
+  /* ---- Earth Jaxon: a seed pod that bursts and leaves them slowed ---- */
+  earth:[
+    branch('e_slw1', 0, 0, 'Clinging Vines', 'What walks out of the burst is slower still.', 180, 3, { add:{ slowPow:-0.03 } }, 'snow'),
+    branch('e_slw2', 0, 1, 'Deep Roots',     'The slow holds on for longer.',                380, 3, { add:{ slowT:0.18 } }, 'snow', ['e_slw1']),
+    branch('e_slw3', 0, 2, 'Overgrowth',     'A hard slow, and the burst covers more.',      760, 2, { add:{ slowPow:-0.05 }, mul:{ splashR:1.12 } }, 'snow', ['e_slw2']),
+
+    branch('e_pod1', 1, 0, 'Fatter Pods',    'Every pod lands harder.',                      200, 3, { dmg:1.10 }, 'flame'),
+    branch('e_pod2', 1, 1, 'Seed Shrapnel',  'The burst itself hits much harder.',           400, 3, { mul:{ splash:1.20 } }, 'flame', ['e_pod1']),
+    branch('e_pod3', 1, 2, 'Harvest',        'Damage again, across the board.',              800, 2, { dmg:1.16, mul:{ splash:1.14 } }, 'flame', ['e_pod2']),
+
+    branch('e_fld1', 2, 0, 'Long Furrow',    'He works further down the trail.',             170, 3, { range:1.07 }, 'ring'),
+    branch('e_fld2', 2, 1, 'Broadcast',      'Pods leave him faster.',                       370, 3, { cd:0.93 }, 'bolt', ['e_fld1']),
+    branch('e_fld3', 2, 2, 'Whole Field',    'A wider burst and a longer reach.',            740, 2, { range:1.1, mul:{ splashR:1.16 } }, 'ring', ['e_fld2']),
+
+    branch('e_cap',  1, 3, 'Cradle Warden',  'A third more out of everything, and the slow bites properly.',
+           2000, 1, { dmg:1.33, mul:{ splash:1.2 }, add:{ slowPow:-0.07 } }, 'star', ['e_slw3','e_pod3'])
+  ],
+
+  /* ---- Luna Jaxon: a dust lance through three, and no ward holds ---- */
+  moon:[
+    branch('l_lnc1', 0, 0, 'Sharper Lance',  'The lance punches through one more.',          300, 2, { add:{ pierce:1 } }, 'bolt'),
+    branch('l_lnc2', 0, 1, 'No Hiding',      'A broken ward also stays broken for longer.',  600, 3, { add:{ wardHold:0.7 } }, 'star', ['l_lnc1']),
+    branch('l_lnc3', 0, 2, 'Through Them All','Two more bodies on every shot.',              1100, 2, { add:{ pierce:1 } }, 'bolt', ['l_lnc2']),
+
+    branch('l_grv1', 1, 0, 'Low Gravity',    'Lances leave him faster.',                     280, 3, { cd:0.93 }, 'bolt'),
+    branch('l_grv2', 1, 1, 'Vacuum Flight',  'And travel a great deal quicker.',             560, 3, { speed:1.16 }, 'bolt', ['l_grv1']),
+    branch('l_grv3', 1, 2, 'Escape Velocity','A real step up in rate of fire.',              1120, 2, { cd:0.87 }, 'bolt', ['l_grv2']),
+
+    branch('l_dst1', 2, 0, 'Heavier Dust',   'Every lance lands harder.',                    260, 3, { dmg:1.10 }, 'flame'),
+    branch('l_dst2', 2, 1, 'Horizon Sight',  'He reaches most of the way across.',           540, 3, { range:1.09 }, 'ring', ['l_dst1']),
+    branch('l_dst3', 2, 2, 'Sea of Silence', 'Damage, properly.',                            1080, 2, { dmg:1.18 }, 'flame', ['l_dst2']),
+
+    branch('l_cap',  1, 3, 'Tide Breaker',   'A third more damage, one more body pierced, and he never stops.',
+           2600, 1, { dmg:1.33, cd:0.9, add:{ pierce:1 } }, 'star', ['l_lnc3','l_grv3'])
+  ],
+
+  /* ---- Mars Jaxon: rust. Nothing he touches is healed again. ---- */
+  mars:[
+    branch('r_rot1', 0, 0, 'Deeper Rust',    'The burn he leaves eats faster.',              400, 3, { add:{ burnRate:0.024 } }, 'flame'),
+    branch('r_rot2', 0, 1, 'Nothing Mends',  'The no-heal mark holds for much longer.',      800, 3, { add:{ healBlock:1.5 } }, 'star', ['r_rot1']),
+    branch('r_rot3', 0, 2, 'Oxidation',      'Burn again, and it spreads with the splash.',  1600, 2, { add:{ burnRate:0.03 }, mul:{ splashR:1.1 } }, 'flame', ['r_rot2']),
+
+    branch('r_hit1', 1, 0, 'Heavier Bottle', 'Every throw lands harder.',                    420, 3, { dmg:1.10 }, 'flame'),
+    branch('r_hit2', 1, 1, 'Wider Spray',    'The splash itself hits much harder.',          840, 3, { mul:{ splash:1.2 } }, 'flame', ['r_hit1']),
+    branch('r_hit3', 1, 2, 'Tyrant Round',   'Damage and splash together.',                  1680, 2, { dmg:1.16, mul:{ splash:1.14 } }, 'flame', ['r_hit2']),
+
+    branch('r_spd1', 2, 0, 'Quick Pour',     'He throws faster.',                            380, 3, { cd:0.93 }, 'bolt'),
+    branch('r_spd2', 2, 1, 'Thin Air',       'And the bottle flies quicker and further.',    780, 3, { speed:1.14, range:1.06 }, 'ring', ['r_spd1']),
+    branch('r_spd3', 2, 2, 'Dust Storm',     'A serious lift to rate of fire.',              1560, 2, { cd:0.88 }, 'bolt', ['r_spd2']),
+
+    branch('r_cap',  1, 3, 'Oxide Tyrant',   'A third more damage, a wider spray, and rust that will not come off.',
+           3400, 1, { dmg:1.33, mul:{ splashR:1.18 }, add:{ healBlock:2 } }, 'star', ['r_rot3','r_hit3'])
+  ],
+
+  /* ---- Jupiter Jaxon: a bolt every 0.09s that steps sideways ---- */
+  jupiter:[
+    branch('j_chn1', 0, 0, 'Second Arc',     'The chain hop carries more of the hit.',       700, 3, { add:{ chainMul:0.12 } }, 'bolt'),
+    branch('j_chn2', 0, 1, 'Wider Step',     'It reaches further to find the next one.',     1400, 3, { add:{ chainR:46 } }, 'ring', ['j_chn1']),
+    branch('j_chn3', 0, 2, 'Forked Storm',   'The bolt steps twice instead of once.',        2800, 1, { add:{ chainN:1 } }, 'bolt', ['j_chn2']),
+
+    branch('j_rte1', 1, 0, 'Faster Weather', 'He fires faster.',                             740, 3, { cd:0.94 }, 'bolt'),
+    branch('j_rte2', 1, 1, 'Charged Air',    'Bolts cross the gap quicker.',                 1480, 3, { speed:1.14 }, 'bolt', ['j_rte1']),
+    branch('j_rte3', 1, 2, 'Perpetual',      'Rate of fire, properly.',                      2960, 2, { cd:0.9 }, 'bolt', ['j_rte2']),
+
+    branch('j_pwr1', 2, 0, 'Harder Strike',  'Every bolt lands harder.',                     720, 3, { dmg:1.10 }, 'flame'),
+    branch('j_pwr2', 2, 1, 'Eye of the Storm','He covers more of the trail.',                1460, 3, { range:1.09 }, 'ring', ['j_pwr1']),
+    branch('j_pwr3', 2, 2, 'The Great Red',  'Damage, properly.',                            2920, 2, { dmg:1.18 }, 'flame', ['j_pwr2']),
+
+    branch('j_cap',  1, 3, 'Stormfather',    'A third more damage and a chain that takes most of it with it.',
+           6000, 1, { dmg:1.33, add:{ chainMul:0.2 } }, 'star', ['j_chn3','j_rte3'])
+  ],
+
+  /* ---- Saturn Jaxon: a ring through five that strips the crust ---- */
+  saturn:[
+    branch('s_shl1', 0, 0, 'Edged Ring',     'A deeper shear: 15% more of the crust each rank.', 1300, 3, { add:{ shellCut:0.15 } }, 'star'),
+    branch('s_shl2', 0, 1, 'Ringed Volley',  'One more body on every throw.',                2600, 2, { add:{ pierce:1 } }, 'bolt', ['s_shl1']),
+    branch('s_shl3', 0, 2, 'Shepherd Prime', 'Nothing keeps its armour, and the burst is bigger for it.',
+           5200, 1, { add:{ shellCut:0.3 }, mul:{ splash:1.3 } }, 'flame', ['s_shl2']),
+
+    branch('s_hit1', 1, 0, 'Denser Ice',     'Every ring lands harder.',                     1400, 3, { dmg:1.10 }, 'flame'),
+    branch('s_hit2', 1, 1, 'Shattering',     'The splash hits much harder.',                 2800, 3, { mul:{ splash:1.2 } }, 'flame', ['s_hit1']),
+    branch('s_hit3', 1, 2, 'Cassini',        'Damage and splash together.',                  5600, 2, { dmg:1.16, mul:{ splash:1.14 } }, 'flame', ['s_hit2']),
+
+    branch('s_rch1', 2, 0, 'Longer Throw',   'He reaches further.',                          1250, 3, { range:1.08 }, 'ring'),
+    branch('s_rch2', 2, 1, 'Faster Spin',    'Rings leave him quicker.',                     2500, 3, { cd:0.92 }, 'bolt', ['s_rch1']),
+    branch('s_rch3', 2, 2, 'Wide Orbit',     'The burst opens a great deal further.',        5000, 2, { mul:{ splashR:1.2 } }, 'ring', ['s_rch2']),
+
+    branch('s_cap',  1, 3, 'Lord of Rings',  'A third more damage, one more body, and a wider burst.',
+           11000, 1, { dmg:1.33, add:{ pierce:1 }, mul:{ splashR:1.15 } }, 'star', ['s_shl3','s_hit3'])
+  ],
+
+  /* ---- Uranus Jaxon: the cold. What survives it barely moves. ---- */
+  uranus:[
+    branch('u_frz1', 0, 0, 'Harder Freeze',  'The hard stop lasts longer.',                  2400, 3, { add:{ freezeT:0.14 } }, 'snow'),
+    branch('u_frz2', 0, 1, 'Black Ice',      'And what thaws out of it is slower.',          4800, 3, { add:{ slowPow:-0.035 } }, 'snow', ['u_frz1']),
+    branch('u_frz3', 0, 2, 'Hoarfrost',      'A real freeze, and it spreads with the splash.',9600, 2, { add:{ freezeT:0.2 }, mul:{ splashR:1.12 } }, 'snow', ['u_frz2']),
+
+    branch('u_hit1', 1, 0, 'Colder Shard',   'Every shard lands harder.',                    2600, 3, { dmg:1.10 }, 'flame'),
+    branch('u_hit2', 1, 1, 'Flash Frost',    'The splash hits much harder.',                 5200, 3, { mul:{ splash:1.2 } }, 'flame', ['u_hit1']),
+    branch('u_hit3', 1, 2, 'Absolute',       'Damage, properly.',                            10400, 2, { dmg:1.18 }, 'flame', ['u_hit2']),
+
+    branch('u_rch1', 2, 0, 'Clear Air',      'He reaches further down the trail.',           2300, 3, { range:1.08 }, 'ring'),
+    branch('u_rch2', 2, 1, 'Quick Hands',    'Shards leave him faster.',                     4600, 3, { cd:0.92 }, 'bolt', ['u_rch1']),
+    branch('u_rch3', 2, 2, 'Whiteout',       'The burst opens much further.',                9200, 2, { mul:{ splashR:1.2 } }, 'ring', ['u_rch2']),
+
+    branch('u_cap',  1, 3, 'Hoarfrost King', 'A third more damage, a longer freeze, and a wider burst.',
+           20000, 1, { dmg:1.33, add:{ freezeT:0.3 }, mul:{ splashR:1.15 } }, 'star', ['u_frz3','u_hit3'])
+  ],
+
+  /* ---- Neptune Jaxon: the last one the campaign gives you ---- */
+  neptune:[
+    branch('n_deep1', 0, 0, 'Pressure',      'Every bead lands harder.',                     5000, 3, { dmg:1.10 }, 'flame'),
+    branch('n_deep2', 0, 1, 'Crushing Depth','One more body on every shot.',                 10000, 2, { add:{ pierce:1 } }, 'bolt', ['n_deep1']),
+    branch('n_deep3', 0, 2, 'The Abyss',     'Damage and splash together, properly.',        20000, 2, { dmg:1.18, mul:{ splash:1.16 } }, 'flame', ['n_deep2']),
+
+    branch('n_cold1', 1, 0, 'Deeper Cold',   'What he hits moves slower.',                   5200, 3, { add:{ slowPow:-0.035 } }, 'snow'),
+    branch('n_cold2', 1, 1, 'Nothing Mends', 'The no-heal mark holds much longer.',          10400, 3, { add:{ healBlock:1.6 } }, 'star', ['n_cold1']),
+    branch('n_cold3', 1, 2, 'Deep Herald',   'The burn eats faster and reaches further.',    20800, 2, { add:{ burnRate:0.03 }, mul:{ splashR:1.12 } }, 'flame', ['n_cold2']),
+
+    branch('n_fast1', 2, 0, 'Current',       'Beads leave him faster.',                      4800, 3, { cd:0.93 }, 'bolt'),
+    branch('n_fast2', 2, 1, 'Dark Water',    'He covers more of the trail.',                 9600, 3, { range:1.08 }, 'ring', ['n_fast1']),
+    branch('n_fast3', 2, 2, 'Undertow',      'A serious lift to rate of fire.',              19200, 2, { cd:0.88 }, 'bolt', ['n_fast2']),
+
+    branch('n_cap',  1, 3, 'The Deep Itself','A third more damage, one more body, and he never stops.',
+           44000, 1, { dmg:1.33, cd:0.9, add:{ pierce:1 } }, 'star', ['n_deep3','n_cold3'])
+  ],
 };
 
 /* ------------------------------------------------------------ the store -
@@ -15444,8 +15663,19 @@ function onHit(e, owner) {
   if (!owner || !owner.type) return;
   const sp = SP(owner), x = sp.xtra;
   if (!x) return;
-  if (x.slowHit) { e.slow = 0.7; e.slowMul = Math.min(e.slow > 0 ? e.slowMul : 1, 0.55); }
-  if (x.burnHit && e.burn <= 0) { e.burn = 3.5; e.burnDps = Math.max(1, punch(sp)*0.10); e.burnOwner = owner; }
+  if (x.slowHit) {
+    /* slowPow is how far down the slow takes them, so LOWER is stronger
+       and a node that deepens a slow subtracts. Floored, because a slow
+       that reaches zero is a stun with no telegraph. */
+    const pow = Math.max(0.2, sp.slowPow === undefined ? RIDER.slowPow : sp.slowPow);
+    e.slow = sp.slowT || RIDER.slowT;
+    e.slowMul = Math.min(e.slow > 0 ? e.slowMul : 1, pow);
+  }
+  if (x.burnHit && e.burn <= 0) {
+    e.burn = sp.burnT || RIDER.burnT;
+    e.burnDps = Math.max(1, punch(sp)*(sp.burnRate === undefined ? RIDER.burnRate : sp.burnRate));
+    e.burnOwner = owner;
+  }
   if (x.stunHit && Math.random() < 0.2) e.stun = Math.max(e.stun || 0, 0.4);
   if (x.markHit) { e.mark = Math.max(e.mark || 0, 2.5); e.markMul = Math.max(e.markMul || 1, 1.3); }
 }
@@ -24178,8 +24408,12 @@ function statsRender() {
    It is not in any menu. Pull the camera back far enough that the lawn is
    only part of what you can see, and a small brown button appears out in
    the grass. It asks for a code, and it does not hint at the code. */
-const ADMIN_CODE = '231236';
-const ADM_UI = { open:false, ok:false, buy:1 };
+const ADMIN_CODE = '231236';      /* the board */
+const META_CODE  = '660961';      /* and the save */
+/* ok: the board is unlocked. meta: the save is too — a strictly larger
+   grant, which is why the second code implies the first and never the
+   other way round. */
+const ADM_UI = { open:false, ok:false, meta:false, buy:1 };
 
 /* the button lives out in the park, north-west of the lawn */
 function syncAdmDot() {
@@ -24201,6 +24435,109 @@ function openAdmin() {
   admRender();
   beep(90, 0.3, 'square', 0.05, 240);
 }
+/* Everything in here writes the save, so everything in here calls
+   saveNow and then re-dresses whatever is on screen. Nothing is silent:
+   a cheat that does not tell you it worked is indistinguishable from a
+   cheat that did not. */
+function admWireMeta() {
+  const say = m => { const el = $('admMetaMsg'); if (el) el.textContent = m; };
+  const after = () => {
+    saveNow(); buildShelf(); syncShelf(); syncCoins();
+    if (HUB.open) { syncHubChrome(); hubPlate(null); }
+  };
+
+  $('admAllJax').onclick = () => {
+    advInit();
+    let n = 0;
+    for (const v of WORLDS) if (v.jaxon && !S.adv.jaxons[v.jaxon]) { S.adv.jaxons[v.jaxon] = 1; n++; }
+    /* and the recruit flags, or they are unlocked but not owned */
+    for (const c of ADV_CHARS) metaOf(c.id).bought = true;
+    metaBump();
+    after();
+    say(n + ' Jaxon' + (n === 1 ? '' : 's') + ' unlocked and recruited');
+    toast('Every Adventure Jaxon unlocked');
+  };
+
+  $('admAllShard').onclick = () => {
+    advInit();
+    for (const v of WORLDS) { S.adv.shards[v.id] = 1; S.adv.cleared[v.id] = 1; }
+    after();
+    say('9 / 9 shards \u00b7 the Orb is whole');
+    toast('All shards recovered');
+  };
+
+  $('admCoins').onclick = () => {
+    S.coins = 9999999;
+    after();
+    say('Wallet set to 9,999,999');
+    toast('Coins granted');
+  };
+
+  $('admVoid').onclick = () => {
+    advInit();
+    S.adv.forceVoid = 1;
+    after();
+    say('The Black Hole is on the map regardless of the jar');
+    toast('Finale unlocked');
+  };
+
+  $('admCel').onclick = () => {
+    advInit();
+    S.adv.forceCelestial = 1;
+    after();
+    say('Celestial tier on the shelf');
+    toast('Celestial Jaxon unlocked');
+  };
+
+  $('admSkipTell').onclick = () => {
+    advInit();
+    S.adv.threatSeen = 1;
+    saveNow();
+    say('The threat sequence will not play again');
+    toast('Cutscenes marked seen');
+  };
+
+  $('admFight').onclick = () => {
+    advInit();
+    S.adv.forceVoid = 1; S.adv.threatSeen = 1;
+    saveNow();
+    closeAdmin();
+    closeHub();
+    startVoid();
+  };
+
+  /* the one that can undo an hour of someone's evening */
+  $('admReset').onclick = () => {
+    const b = $('admReset');
+    if (b.dataset.armed !== '1') {
+      b.dataset.armed = '1';
+      b.textContent = 'PRESS AGAIN TO WIPE';
+      say('This deletes shards, world clears, Jaxons, coins, skill nodes, ' +
+          'the Celestial tier and every seen-cutscene flag.');
+      beep(120, 0.3, 'sawtooth', 0.05, 70);
+      setTimeout(() => {
+        if (!$('admReset')) return;
+        $('admReset').dataset.armed = '';
+        $('admReset').textContent = 'RESET TO VANILLA';
+      }, 5000);
+      return;
+    }
+    /* back to the state a brand new save is in, and nothing else is
+       touched: Classic bests, settings and the sound mix all survive */
+    S.adv = { shards:{}, cleared:{}, jaxons:{}, best:{} };
+    S.coins = 0;
+    S.meta = {};
+    metaBump();
+    after();
+    b.dataset.armed = '';
+    b.textContent = 'RESET TO VANILLA';
+    say('Adventure meta is back to vanilla.');
+    toast('Adventure progress wiped');
+    shakeScreen(12, 0.5);
+    beep(80, 0.6, 'sawtooth', 0.07, 40);
+  };
+}
+
 function closeAdmin() {
   ADM_UI.open = false;
   $('ovAdmin').classList.remove('on');
@@ -24220,9 +24557,13 @@ function admRender() {
       '</div>';
     const go = () => {
       const v = ($('admIn').value || '').trim();
-      if (v === ADMIN_CODE) {
+      if (v === ADMIN_CODE || v === META_CODE) {
         ADM_UI.ok = true;
+        /* the second code grants everything the first does AND the
+           campaign section; the first alone never shows it */
+        ADM_UI.meta = ADM_UI.meta || (v === META_CODE);
         beep(880, 0.16, 'triangle', 0.05, 1400);
+        if (v === META_CODE) beep(1320, 0.2, 'triangle', 0.04, 1800);
         admRender();
       } else {
         const m = $('admMsg');
@@ -24282,7 +24623,30 @@ function admRender() {
         '<input type="text" value="' + shortHp(Math.round(SP(t).dmg)) + ' / 0.1s" readonly></div>'
      : '');
 
+  /* ---- the campaign, only behind the second code ---- */
+  if (ADM_UI.meta) {
+    advInit();
+    w.innerHTML +=
+      '<h4>Campaign</h4>' +
+      '<div class="admRow"><label>Adventure Jaxons</label>' +
+        '<button id="admAllJax">UNLOCK ALL</button>' +
+        '<button id="admAllShard">ALL SHARDS</button></div>' +
+      '<div class="admRow"><label>Jaxon coins</label>' +
+        '<button id="admCoins">GRANT 9,999,999</button></div>' +
+      '<div class="admRow"><label>Finale</label>' +
+        '<button id="admVoid">OPEN BLACK HOLE</button>' +
+        '<button id="admCel">CELESTIAL</button></div>' +
+      '<div class="admRow"><label>Jump there</label>' +
+        '<button id="admFight">FIGHT VORATH</button>' +
+        '<button id="admSkipTell">SKIP CUTSCENES</button></div>' +
+      '<h4 style="color:#ff6a5c">Danger</h4>' +
+      '<div class="admRow"><label>Adventure meta</label>' +
+        '<button id="admReset" style="border-color:#ff6a5c;color:#ff6a5c">RESET TO VANILLA</button></div>' +
+      '<div class="msg" id="admMetaMsg" style="font-size:11.5px;color:#8a5a52;min-height:16px"></div>';
+  }
+
   $('admClose').onclick = closeAdmin;
+  if (ADM_UI.meta) admWireMeta();
   const num = id => Math.max(0, Math.round(+$(id).value || 0));
   $('admMoneyGo').onclick = () => { S.money = num('admMoney'); syncHUD(); syncShelf(); toast('Coins set'); };
   $('admLivesGo').onclick = () => { S.health = Math.max(1, num('admLives')); syncHUD(); toast('Lives set'); };
