@@ -14895,11 +14895,16 @@ function drawVoidNode(g, hot) {
   }
   /* the tick, if it is already done */
   if (voidBeaten()) {
+    /* small, and sitting on the rim rather than across the horizon: the
+       accretion disc is the only thing that says what this is, and a tick
+       drawn over it says "a planet you finished" instead */
     g.save();
-    g.strokeStyle = '#7dffb4'; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.translate(x + R*0.72, y - R*0.72);
+    g.fillStyle = 'rgba(8,16,12,.85)';
+    g.beginPath(); g.arc(0, 0, 13, 0, 7); g.fill();
+    g.strokeStyle = '#7dffb4'; g.lineWidth = 2.6; g.lineCap = 'round'; g.lineJoin = 'round';
     g.beginPath();
-    g.moveTo(x - R*0.4, y + R*0.02); g.lineTo(x - R*0.08, y + R*0.32);
-    g.lineTo(x + R*0.44, y - R*0.34);
+    g.moveTo(-5.5, 0.2); g.lineTo(-1.6, 4.4); g.lineTo(6, -4.6);
     g.stroke();
     g.restore();
   }
