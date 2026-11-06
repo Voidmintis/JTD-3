@@ -1626,10 +1626,13 @@
     display:flex;align-items:center;gap:var(--s5);margin:var(--s3) 0 var(--s4);
     padding:var(--s4);border-radius:var(--r-lg);background:rgba(255,255,255,.04);
   }
-  .orbCube .ocArt svg path{stroke:rgba(191,90,242,.45);stroke-width:2;fill:rgba(120,60,220,.12)}
-  .orbCube .ocArt svg .c2{fill:rgba(191,90,242,.2)}
-  .orbCube .ocArt svg .c3{fill:rgba(80,40,160,.24)}
-  .orbCube.ready .ocArt svg path{stroke:#f0e4ff;fill:rgba(191,90,242,.4)}
+  /* the jar is a canvas now — the old SVG cube said "a cube exists", the
+     jar says "it is four ninths full", which is the question being asked */
+  .orbCube .ocArt{flex:0 0 auto;width:124px;height:172px;display:block}
+  /* every canvas in the game is absolutely positioned by default
+     (line ~148); this one is a flex item and has to say so */
+  .orbCube .ocArt canvas{position:static;inset:auto;width:124px;height:172px;display:block}
+  .orbCube.ready .ocArt canvas{filter:drop-shadow(0 0 18px rgba(191,90,242,.55))}
   .orbCube .ocTxt{flex:1;min-width:0}
   .orbCube .ocTxt b{display:block;font-size:16px;font-weight:600;letter-spacing:-.02em;color:#f0e4ff}
   .orbCube .ocTxt span{display:block;font-size:12.5px;line-height:1.45;color:var(--dim);margin-top:var(--s1)}
@@ -2085,6 +2088,65 @@
     78% {opacity:1;transform:translate(-50%,-50%) scale(1)}
     100%{opacity:0;transform:translate(-50%,-54%) scale(1)}
   }
+  /* --------------------------------------------------- the notification -
+     Deliberately not styled like anything else in the game: it is pretending
+     to be the operating system, so it borrows the OS's cadence — a short
+     spring down, a quiet hold, a slide back up — and the OS's shape: a wide
+     low-radius capsule, an app tile on the left, title over body text. */
+  #note{
+    position:absolute;left:50%;top:18px;width:420px;max-width:calc(100% - 32px);
+    translate:-50% 0;
+    display:none;align-items:center;gap:12px;
+    padding:11px 14px;border-radius:22px;z-index:60;pointer-events:none;
+    background:rgba(32,32,36,.82);
+    -webkit-backdrop-filter:saturate(180%) blur(26px);
+    backdrop-filter:saturate(180%) blur(26px);
+    border:.5px solid rgba(255,255,255,.14);
+    box-shadow:0 10px 34px rgba(0,0,0,.44),0 1px 0 rgba(255,255,255,.07) inset;
+    font-family:var(--ui-font,inherit);
+  }
+  #note.on{display:flex;animation:noteIn 3.5s cubic-bezier(.32,.72,0,1) both}
+  #note .ic{
+    flex:0 0 auto;width:38px;height:38px;border-radius:9px;
+    background:linear-gradient(160deg,#2b1248,#120626);
+    display:grid;place-items:center;font-size:19px;
+    box-shadow:0 1px 0 rgba(255,255,255,.12) inset;
+  }
+  #note .tx{flex:1;min-width:0}
+  #note .tt{
+    font-size:13.5px;font-weight:650;color:#fff;letter-spacing:-.01em;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #note .tb{
+    font-size:13.5px;font-weight:400;color:rgba(255,255,255,.88);
+    line-height:1.3;margin-top:1px;
+  }
+  #note .tm{font-size:12px;color:rgba(255,255,255,.5);align-self:flex-start;margin-top:2px}
+  @keyframes noteIn{
+    0%   {opacity:0;translate:-50% -140%;scale:.94}
+    7%   {opacity:1;translate:-50% 6%;  scale:1.01}
+    11%  {translate:-50% 0;             scale:1}
+    88%  {opacity:1;translate:-50% 0;   scale:1}
+    100% {opacity:0;translate:-50% -140%;scale:.96}
+  }
+  body.mobile #note{width:calc(100% - 24px);top:12px}
+  @media (prefers-reduced-motion:reduce){
+    #note.on{animation:noteFade 3.5s linear both}
+    @keyframes noteFade{0%{opacity:0}4%{opacity:1}92%{opacity:1}100%{opacity:0}}
+  }
+  /* a ring that breathes on the thing you should look at next */
+  .coachOn{
+    position:relative;
+    animation:coachPulse 2.4s ease-in-out infinite;
+    outline:2px solid rgba(191,90,242,.9);
+    outline-offset:3px;border-radius:inherit;
+  }
+  @keyframes coachPulse{
+    0%,100%{box-shadow:0 0 0 0 rgba(191,90,242,.5)}
+    50%    {box-shadow:0 0 0 12px rgba(191,90,242,0)}
+  }
+  #cats button.coachOn{border-radius:var(--r-full)}
+  @media (prefers-reduced-motion:reduce){ .coachOn{animation:none} }
   #flash{
     position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:17;
     mix-blend-mode:screen;
@@ -3542,6 +3604,12 @@
 
     <div id="bossbars"></div>
     <div id="banner"><div class="bt"></div><div class="bs"></div></div>
+    <!-- the one notification the game ever sends -->
+    <div id="note" role="status" aria-live="polite">
+      <div class="ic">🟣</div>
+      <div class="tx"><div class="tt"></div><div class="tb"></div></div>
+      <div class="tm">now</div>
+    </div>
     <div id="flash"></div>
 
     <div id="drawer">
@@ -5161,6 +5229,46 @@ ULTRA_KIT.neptune = {
     </g>`
 };
 
+ULTRA_KIT.celestial = {
+  back:() => `<defs>
+      <radialGradient id="celDisc" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0" stop-color="#ffb13a"/>
+        <stop offset=".55" stop-color="rgba(184,58,18,.5)"/>
+        <stop offset="1" stop-color="rgba(20,4,30,0)"/>
+      </radialGradient>
+      <radialGradient id="celVoid" cx="0.5" cy="0.5" r="0.5">
+        <stop offset=".62" stop-color="#05030b"/>
+        <stop offset=".78" stop-color="#2a1040"/>
+        <stop offset="1" stop-color="rgba(42,16,64,0)"/>
+      </radialGradient>
+    </defs>
+    <g opacity=".9"><circle cx="230" cy="248" r="238" fill="url(#celVoid)"/></g>
+    <g opacity=".8"><ellipse cx="230" cy="250" rx="236" ry="66" fill="url(#celDisc)"/></g>
+    <g stroke="#1a0a28" stroke-width="9" stroke-linecap="round" opacity=".92">
+      <rect x="40"  y="186" width="62" height="13" rx="6" fill="#3a2654" transform="rotate(-24 71 192)"/>
+      <rect x="360" y="186" width="62" height="13" rx="6" fill="#3a2654" transform="rotate(24 391 192)"/>
+      <rect x="74"  y="300" width="46" height="12" rx="6" fill="#2e1e46" transform="rotate(14 97 306)"/>
+      <rect x="342" y="300" width="46" height="12" rx="6" fill="#2e1e46" transform="rotate(-14 365 306)"/>
+    </g>`,
+  front:() => `<g>
+      <ellipse cx="230" cy="352" rx="54" ry="50" fill="#05030b"/>
+      <ellipse cx="230" cy="352" rx="40" ry="16" fill="none" stroke="#ffac3a" stroke-width="7" opacity=".9"/>
+      <ellipse cx="230" cy="352" rx="24" ry="9"  fill="none" stroke="#fff2d2" stroke-width="5" opacity=".85"/>
+      <circle  cx="230" cy="352" r="12" fill="#000000"/>
+      <path d="M194 330 a 52 48 0 0 1 72 0" fill="none" stroke="rgba(0,0,0,.85)" stroke-width="12"/>
+      <ellipse cx="230" cy="352" rx="54" ry="50" fill="none" stroke="#ff8a2e" stroke-width="4" opacity=".55"/>
+    </g>
+    <g fill="none" stroke="#ff6a4a" stroke-width="6" stroke-linecap="round" opacity=".95">
+      <path d="M186 214 l 14 -9 l 14 9 l 14 -9"/>
+      <path d="M248 214 l 14 -9 l 14 9 l 14 -9"/>
+    </g>`
+};
+VARIANTS.celestial = { ultra:'celestial', wide:true,
+                    suitLite:'#6a4a9a', suit:'#2e1a4e', suitDark:'#120826',
+                    arm:'#241438', armDark:'#0a0416',
+                    outline:'#07030e', outlineWidth:8,
+                    pacG:'#ff9a2e', pacGD:'#8a3208', pacO:'#bf5af2', pacOD:'#3a0a5a' };
+
 VARIANTS.earth = { ultra:'earth', wide:true,
                     suitLite:'#cfffb8', suit:'#4aa83c', suitDark:'#1d5212',
                     arm:'#8a6a3c', armDark:'#2e2008',
@@ -5625,6 +5733,7 @@ const UPGRADES = {
   saturn:  { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   uranus:  { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   neptune: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
+  celestial:{ levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   venus:   { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   tipjar: {
     A: { name:"Fuller Jar", tiers:[
@@ -6955,6 +7064,23 @@ const TOWERS = {
              splash:14000, splashR:340, pierce:4, baseXtra:{ slowHit:1, burnHit:1, antiHeal:1 }, adv:'neptune',
              blurb:'The last thing the campaign gives you. 26k every 0.22s through four, 14k across 340, slowing and burning, and nothing it hits heals again.',
              tags:[['Adventure','t-rain'],['Ultra','t-rain'],['Splash','t-aoe']] },
+  /* ------------------------------------------------------------------ *
+   *  CELESTIAL JAXON — the thing on the other side of the finale.        *
+   *                                                                      *
+   *  Priced above every ultra on the shelf and below the Titan, which is *
+   *  exactly where he sits in the fiction: the last Jaxon the campaign   *
+   *  hands over, not the biggest object in the game. His three jobs are  *
+   *  the three things Vorath did to you — pull, crush, and a ray that    *
+   *  does not care what is in the way — and that is the reward: you did  *
+   *  not merely beat him, you took the fight off him.                    *
+   * ------------------------------------------------------------------ */
+  celestial:{ name:'Celestial Jaxon', cost:1250000, range:900, cd:0.18, dmg:140000,
+             speed:2400, ammo:'voidray', celestial:true,
+             splash:72000, splashR:460, pierce:9,
+             baseXtra:{ pull:1, crush:1, antiHeal:1, wardBreak:1 },
+             blurb:'140k every 0.18s through nine, 72k across 460. Everything in range is dragged toward the middle of the splash before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him.',
+             tags:[['Celestial','t-rain'],['Splash','t-aoe'],['Pull','t-single']] },
+
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
      else, and no Mirror can steal a single shot off him. */
   astro:   { name:'Titan Astro Jaxon', cost:1500000, range:2600, cd:0.22, dmg:900000, ammo:'astro',
@@ -6997,7 +7123,10 @@ const CATS = [
   ['income',   'Income'],
   ['late',     'Late game'],
   ['ultra',    'Ultra'],
-  ['adv',      'Adventure']
+  ['adv',      'Adventure'],
+  /* hidden until the finale is beaten — buildCats drops any tab with
+     nothing in it, so this tab simply does not exist until it does */
+  ['celestial', 'Celestial']
 ];
 const ROLE = {
   basic:['starters','builders'],      slingshot:['starters','dps'],
@@ -7015,6 +7144,7 @@ const ROLE = {
   mars:['dps','splash','adv'],        jupiter:['dps','adv'],
   saturn:['dps','splash','adv','late'], uranus:['dps','splash','adv','late'],
   neptune:['dps','splash','adv','late','ultra'],
+  celestial:['dps','splash','late','celestial'],
   crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
   slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
   infmirror:['dps','splash','late','ultra'],
@@ -7032,14 +7162,19 @@ const ROLE = {
 /* The shelf runs cheapest first, whatever category is showing. ORDER is the
    curated roster; this is the same list put strictly in price order. */
 const SHELF = () => ORDER.filter(k => !TOWERS[k].secret)
+                         .filter(k => !TOWERS[k].celestial || celestialOpen() || SB())
                          .sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
 const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).includes(c));
+/* the Celestial tier is not "locked", it is ABSENT: nothing about it
+   shows anywhere until Vorath is down, because half the point of the
+   finale is that you did not know there was anything past it */
+const celestialOpen = () => { advInit(); return !!(S.adv && (S.adv.finale || S.adv.forceCelestial)); };
 
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
-               'mercury','venus',
-               'crusher','booster','slayer','wiper','infmirror','astro',
+               'mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune',
+               'crusher','booster','slayer','wiper','infmirror','astro','celestial',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -7055,7 +7190,11 @@ const VALUE = {
                 piggybank:100, recycler:100, tax:100, merchant:100,
                 factory:100, towtruck:100, mechanic:100, tipjar:100, caddy:100, admin:100,
                 crusher:96, booster:100, slayer:98, wiper:94, infmirror:92, astro:100,
-                mercury:100, venus:100 };
+                mercury:100, venus:100, earth:100, moon:100, mars:100, jupiter:100,
+                saturn:100, uranus:100, neptune:100,
+                /* the Celestial pays the same end-game premium the other
+                   three monsters do: it wins runs on its own otherwise */
+                celestial:88 };
 
 /* ------------------------------------------------------ Admin Jaxon ----
    He does not buy upgrades, he buys levels. Damage compounds hard for the
@@ -7216,6 +7355,9 @@ const BOSS_THEME = {
    borrowed palette from the classic ladder. */
 BOSS_THEME.mercury = { bg:'#1a0e06', glyph:'#ffb02e', head:'#fff0d8', ring:'#7a3200', ring2:'#ffb02e',
                        bar1:'#e05a10', bar2:'#ffd0a0', num:'#ffe8cc', label:'#ffb877' };
+BOSS_THEME.vorath  = { bg:'#08030c', glyph:'#ff4a3a', head:'#ffe0da', ring:'#2a0a24', ring2:'#bf5af2',
+                       bar1:'#8a1030', bar2:'#ff6a4a', num:'#ffe0da', label:'#ff8a7a',
+                       vary:true, split:true, glow:true };
 BOSS_THEME.venusB  = { bg:'#1a1202', glyph:'#ffd83d', head:'#fff6cc', ring:'#6a5008', ring2:'#e8d078',
                        bar1:'#c9a020', bar2:'#ffe98a', num:'#fff2c0', label:'#ffd83d', sparkle:true };
 BOSS_THEME.earthB  = { bg:'#04140a', glyph:'#7fd46a', head:'#e8ffe0', ring:'#1e5a30', ring2:'#39ff88',
@@ -7292,7 +7434,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
   runT:0, spent:0, money0:0, rushBest:{},
-  world:null, adv:null, shardFly:null, scorch:[],
+  world:null, adv:null, shardFly:null, shardOwed:null, vorath:null, scorch:[],
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -8310,16 +8452,21 @@ let shopCat = 'all';
 function buildCats() {
   $('cats').innerHTML = CATS.map(([c, label]) => {
     const k = SHELF().filter(x => inCat(x, c)).length;
-    return '<button role="tab" data-c="' + c + '"' + (c === shopCat ? ' class="on" aria-selected="true"' : '') +
+    if (!k && c !== 'all') return '';          /* an empty rail is noise */
+    return '<button role="tab" data-c="' + c + '"' +
+           (c === shopCat ? ' class="on" aria-selected="true"' : '') +
+           (c === 'celestial' ? ' data-new="1"' : '') +
            '>' + label + '<i>' + k + '</i></button>';
   }).join('');
   $('cats').querySelectorAll('button').forEach(b => b.onclick = () => {
     setShopCat(b.dataset.c);
     sfx('tab');
   });
+  coachShop();
 }
 function setShopCat(c) {
   shopCat = c;
+  if (c === 'celestial') coachDone('celestial');
   $('cats').querySelectorAll('button').forEach(b => {
     const on = b.dataset.c === c;
     b.classList.toggle('on', on);
@@ -8538,9 +8685,13 @@ function syncHUD() {
     : bigNum(Math.max(0, Math.round(S.health))) + (S.shield > 0 ? ' +' + S.shield : '');
   $('moneyVal').textContent = sb ? '∞' : bigCash(Math.floor(S.money));
   const wd0 = advWorld();
-  $('waveVal').textContent = BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses
+  /* The finale is the one fight where the wave counter asks the wrong
+     question — nobody is counting to 9999. Laps is the right one: it is
+     what actually costs you lives. */
+  $('waveVal').textContent = S.vorath ? String(S.vorath.laps || 0)
+                          : BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses
                           : wd0 ? Math.min(S.wave, wd0.goal) + ' / ' + wd0.goal : S.wave;
-  $('waveLbl').textContent = BR() ? 'Boss' : wd0 ? 'Wave' : 'Wave';
+  $('waveLbl').textContent = S.vorath ? 'Laps' : BR() ? 'Boss' : 'Wave';
   $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
                            : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
   $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
@@ -8548,13 +8699,16 @@ function syncHUD() {
   const sw = $('startWave'), tag = $('waveTag');
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
-  sw.textContent = BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
+  sw.textContent = S.vorath ? 'Send the next rank'
+                 : BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
                  : wd0 ? 'Start Wave ' + S.wave + ' of ' + wd0.goal
                  : isBossWave(S.wave) ? 'Start Boss Wave ' + S.wave : 'Start Wave ' + S.wave;
   const showTag = S.phase === 'wave' || (S.phase === 'build' && (S.autoSkip || BR()));
   tag.classList.toggle('on', showTag);
   tag.classList.toggle('rush', BR());
-  tag.textContent = BR()
+  tag.textContent = S.vorath
+    ? ['VORATH \u00b7 PRESENCE', 'VORATH \u00b7 COMMAND', 'VORATH \u00b7 STORM'][vorathPhase(S.vorath)]
+    : BR()
     ? (S.phase === 'wave' ? rushBoss(S.wave).name + ' \u00b7 ' + rushLeft() + ' left'
        : 'Next: ' + rushBoss(S.wave).name + ' \u00b7 ' + Math.max(0, Math.ceil(S.autoTimer)) + 's')
     : wd0 && S.phase === 'wave'
@@ -8584,6 +8738,7 @@ function reset() {
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
+  S.shardOwed=null; S.vorath=null;
   S.scorch=[];
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
@@ -8597,7 +8752,13 @@ function reset() {
   S.affordable={};
   clearBosses();
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
-  if (S.autoSkip && S.wave < md.autoFrom) S.autoSkip = false;   // Nightmare earns it
+  /* Every run starts hand-driven. Auto-skip is a thing you turn on when
+     you are happy with the board in front of you, and "I was happy with
+     the board I had an hour ago" is not the same statement — walking into
+     a match, or back into a saved one, and immediately having wave one
+     called on you is the wrong first second. It is one click to put it
+     back, and the HUD shows which way it is sitting. */
+  S.autoSkip = false;
   syncChips();
   S.sbPick = null;
   bookNudge(false);
@@ -9945,7 +10106,11 @@ function wireMenu() {
  *  already real, already laid out, and already the right size. Input is    *
  *  blocked until it clears, and the whole thing can be skipped.            *
  * ======================================================================= */
-const CINE = { cv:null, g:null, raf:0, t:0, dur:0, kind:null, done:null, handed:false, last:0 };
+const CINE = { cv:null, g:null, raf:0, t:0, dur:0, kind:null, done:null, handed:false, last:0,
+               data:null };
+/* Every sequence in the game, by name. A scene is (g, k) where k runs 0..1,
+   and anything it needs beyond that rides in CINE.data. */
+const CINE_SCENE = {};
 
 function cineStop() {
   cancelAnimationFrame(CINE.raf); CINE.raf = 0;
@@ -9958,10 +10123,11 @@ function cineStop() {
 
 /* Runs a sequence. 'hand' is the moment the real game is started behind
    the cover; 'done' is when the cover comes off. */
-function cinePlay(kind, dur, hand, onHand, onDone) {
+function cinePlay(kind, dur, hand, onHand, onDone, data) {
   /* a second request always wins: finish the first one instantly rather
      than letting two sequences fight over the same canvas */
   if (CINE.kind) { if (!CINE.handed && CINE.onHand) CINE.onHand(); cineStop(); }
+  CINE.data = data || null;
   if (REDUCED) {                       /* no motion: straight to the point */
     if (onHand) onHand();
     if (onDone) onDone();
@@ -9973,6 +10139,7 @@ function cinePlay(kind, dur, hand, onHand, onDone) {
   CINE.kind = kind; CINE.t = 0; CINE.dur = dur;
   CINE.handed = false; CINE.onHand = onHand; CINE.onDone = onDone;
   CINE.hand = hand;
+  CINE.data = data || null;
   CINE.cv.classList.add('on');
   document.body.classList.add('cine');
   setTimeout(() => { if (CINE.kind) $('cineSkip').classList.add('on'); }, 450);
@@ -9985,7 +10152,7 @@ function cinePlay(kind, dur, hand, onHand, onDone) {
       CINE.handed = true;
       if (CINE.onHand) { try { CINE.onHand(); } catch (e) {} }
     }
-    try { (CINE.kind === 'rocket' ? cineRocket : cineHeli)(CINE.g, k); } catch (e) {}
+    try { (CINE_SCENE[CINE.kind] || cineHeli)(CINE.g, k); } catch (e) {}
     if (k >= 1) {
       const d = CINE.onDone;
       cineStop();
@@ -10011,6 +10178,1175 @@ const ease = k => k < 0.5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3)/2;
 const clamp01 = v => Math.max(0, Math.min(1, v));
 /* a sub-range of the timeline, remapped to 0..1 */
 const seg = (k, a, b) => clamp01((k - a)/(b - a));
+
+/* ========================================================== THE JAR =====
+ *  Nine slots, stacked, filling from the floor up. The reason to draw this
+ *  as a jar rather than nine scattered pips is that a jar has a LEVEL: you
+ *  can read 4/9 from across a room without counting anything. Each band is
+ *  solid, in the colour of the world it came from, so the jar also ends up
+ *  being a record of the order you beat the system in.
+ *
+ *  'pop' is the band that has just landed: it flares and settles rather
+ *  than simply appearing, which is the entire reason the cutscene exists.
+ * ======================================================================= */
+function drawJar(g, cx, cy, sc, cols, t, pop, popK) {
+  const w = 150*sc, h = 210*sc, lip = 26*sc;
+  const x0 = cx - w/2, y0 = cy - h/2;
+  g.save();
+
+  /* the glass: a plain vessel, because everything interesting is inside */
+  const glass = g.createLinearGradient(x0, 0, x0 + w, 0);
+  glass.addColorStop(0,    'rgba(150,180,220,.16)');
+  glass.addColorStop(0.28, 'rgba(210,235,255,.07)');
+  glass.addColorStop(1,    'rgba(110,140,185,.18)');
+  g.fillStyle = glass;
+  g.beginPath(); g.roundRect(x0, y0, w, h, [14*sc, 14*sc, 20*sc, 20*sc]); g.fill();
+
+  /* the bands, bottom up, one per shard */
+  const pad = 8*sc, bh = (h - pad*2)/9;
+  g.save();
+  g.beginPath(); g.roundRect(x0 + pad, y0 + pad, w - pad*2, h - pad*2, 12*sc); g.clip();
+  for (let i = 0; i < 9; i++) {
+    const by = y0 + h - pad - (i + 1)*bh;
+    const col = cols[i];
+    if (!col) {
+      /* an empty slot is a hairline, not a hole: the jar has to read as a
+         jar even at 0/9 */
+      g.strokeStyle = 'rgba(190,212,245,.12)'; g.lineWidth = Math.max(1, sc);
+      g.beginPath();
+      g.moveTo(x0 + pad + 6*sc, by + bh/2); g.lineTo(x0 + w - pad - 6*sc, by + bh/2);
+      g.stroke();
+      continue;
+    }
+    const flare = (pop === i) ? (1 - popK) : 0;
+    g.save();
+    g.fillStyle = col; g.globalAlpha = 0.92;
+    g.beginPath(); g.roundRect(x0 + pad + 2*sc, by + 1.5*sc, w - pad*2 - 4*sc, bh - 3*sc, 5*sc); g.fill();
+    const sh = g.createLinearGradient(0, by, 0, by + bh);
+    sh.addColorStop(0, 'rgba(255,255,255,.34)');
+    sh.addColorStop(0.5, 'rgba(255,255,255,.04)');
+    sh.addColorStop(1, 'rgba(0,0,0,.22)');
+    g.globalAlpha = 1; g.fillStyle = sh;
+    g.beginPath(); g.roundRect(x0 + pad + 2*sc, by + 1.5*sc, w - pad*2 - 4*sc, bh - 3*sc, 5*sc); g.fill();
+    if (flare > 0.001) {
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = flare*0.9;
+      g.fillStyle = '#ffffff';
+      g.beginPath(); g.roundRect(x0 + pad - 4*sc, by - 3*sc, w - pad*2 + 8*sc, bh + 6*sc, 7*sc); g.fill();
+    }
+    g.restore();
+  }
+  /* the light the contents throw on the glass above them */
+  const n = cols.filter(Boolean).length;
+  if (n) {
+    const top = y0 + h - pad - n*bh;
+    const up = g.createLinearGradient(0, top, 0, top - 70*sc);
+    up.addColorStop(0, 'rgba(255,255,255,.14)');
+    up.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = up; g.fillRect(x0, top - 70*sc, w, 70*sc);
+  }
+  g.restore();
+
+  /* the lip and the rim light */
+  g.strokeStyle = 'rgba(214,232,255,.5)'; g.lineWidth = 2.2*sc;
+  g.beginPath(); g.roundRect(x0, y0, w, h, [14*sc, 14*sc, 20*sc, 20*sc]); g.stroke();
+  g.fillStyle = 'rgba(190,214,250,.22)';
+  g.beginPath(); g.roundRect(x0 - 7*sc, y0 - lip*0.55, w + 14*sc, lip*0.6, 7*sc); g.fill();
+  g.strokeStyle = 'rgba(224,240,255,.55)'; g.lineWidth = 2*sc;
+  g.beginPath(); g.roundRect(x0 - 7*sc, y0 - lip*0.55, w + 14*sc, lip*0.6, 7*sc); g.stroke();
+  /* one specular stripe, so it reads as glass and not as a box */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.fillStyle = 'rgba(255,255,255,.1)';
+  g.beginPath(); g.roundRect(x0 + 13*sc, y0 + 12*sc, 15*sc, h - 34*sc, 8*sc); g.fill();
+  g.restore();
+
+  g.restore();
+  /* the surface of what is in there, which is where the next one lands */
+  return { x:cx, y:y0 + h - pad - n*bh, w:w, h:h };
+}
+/* the colours currently in the jar, in the order the worlds were beaten
+   (falling back to campaign order, which is what a fresh save sees) */
+function jarCols(extra) {
+  const got = WORLDS.filter(v => hasShard(v.id)).map(v => v.shardCol);
+  if (extra && got.indexOf(extra) < 0) got.push(extra);
+  const out = new Array(9).fill(null);
+  for (let i = 0; i < Math.min(9, got.length); i++) out[i] = got[i];
+  return out;
+}
+
+/* ------------------------------------------------------------- SHARD ----
+ *  The reward for a world, given its own ten seconds.
+ *
+ *  0.02  the ground of the world you just left, dark, with a crack of light
+ *  0.18  the shard tears itself out and hangs there, turning
+ *  0.44  it crosses to the jar, trailing
+ *  0.68  it lands; one band fills solid and the jar rings
+ *  0.74  the card: the world, the shard, the Jaxon
+ *  1.00  out
+ */
+CINE_SCENE.shard = function (g, k) {
+  const d = CINE.data || {};
+  const col  = d.col || '#ffd83d';
+  const rise = seg(k, 0.02, 0.22);
+  const hang = seg(k, 0.18, 0.44);
+  const fly  = seg(k, 0.44, 0.70);
+  const land = seg(k, 0.68, 0.86);
+  const card = seg(k, 0.74, 0.92);
+  const out  = seg(k, 0.94, 1);
+
+  g.clearRect(0, 0, W, H);
+  const bg = g.createRadialGradient(W*0.3, H*0.72, 40, W*0.5, H*0.5, W*0.8);
+  bg.addColorStop(0, d.ground || '#140d08');
+  bg.addColorStop(1, '#03050a');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+
+  /* the jar waits on the right the whole time, so the shard has somewhere
+     visibly to go before it goes there */
+  const jx = W*0.74, jy = H*0.45;
+  const jsc = 1.1 + ease(land)*0.12 - out*0.1;
+  const cols = jarCols(land > 0.08 ? col : null);
+  const jar = drawJar(g, jx, jy, jsc, cols, k, land > 0.08 ? (d.slot || 0) : -1,
+                      Math.min(1, land*1.6));
+
+  g.save();
+  g.globalAlpha = 0.55 + Math.min(0.45, land*2);
+  g.textAlign = 'center'; g.textBaseline = 'top';
+  g.font = '800 30px ' + UI_FONT; g.fillStyle = '#eaf2ff';
+  g.fillText(((d.before || 0) + (land > 0.1 ? 1 : 0)) + ' / 9', jx, jy + 128*jsc);
+  g.font = '700 14px ' + UI_FONT; g.fillStyle = '#8fa3bd';
+  g.fillText('SHARDS RECOVERED', jx, jy + 164*jsc);
+  g.restore();
+
+  /* where the shard is this frame */
+  const sx0 = W*0.27, sy0 = H*0.58;
+  let sx = sx0, sy = sy0 - ease(rise)*120, srot = k*4.4, ssc = 1;
+  if (fly > 0) {
+    const e = ease(fly);
+    /* an arc, not a ruled line: it is being pulled in, not posted */
+    sx = sx0 + (jx - sx0)*e;
+    sy = (sy0 - 120) + (jar.y - (sy0 - 120))*e - Math.sin(e*Math.PI)*150;
+    ssc = 1 - e*0.55;
+    srot = k*4.4 + e*7;
+  }
+  if (land > 0.22) ssc = 0;                  /* it is in the jar now */
+
+  /* the crack it came out of */
+  if (fly < 1) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const cg = g.createRadialGradient(sx0, sy0 + 40, 4, sx0, sy0 + 40, 180);
+    cg.addColorStop(0, col); cg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = (1 - fly)*0.45;
+    g.fillStyle = cg;
+    g.beginPath(); g.ellipse(sx0, sy0 + 40, 180, 46, 0, 0, 7); g.fill();
+    g.restore();
+  }
+
+  /* the trail */
+  if (fly > 0 && fly < 1) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 1; i <= 10; i++) {
+      const e2 = ease(Math.max(0, fly - i*0.028));
+      const tx = sx0 + (jx - sx0)*e2;
+      const ty = (sy0 - 120) + (jar.y - (sy0 - 120))*e2 - Math.sin(e2*Math.PI)*150;
+      g.globalAlpha = (1 - i/11)*0.4*(1 - fly*0.3);
+      g.fillStyle = col;
+      g.beginPath(); g.arc(tx, ty, (13 - i)*0.9*Math.max(0.2, ssc), 0, 7); g.fill();
+    }
+    g.restore();
+  }
+
+  /* the shard itself */
+  if (ssc > 0.01) {
+    g.save();
+    g.translate(sx, sy); g.rotate(Math.sin(srot*0.6)*0.3); g.scale(ssc, ssc);
+    g.globalCompositeOperation = 'lighter';
+    const h2 = g.createRadialGradient(0, 0, 6, 0, 0, 130);
+    h2.addColorStop(0, col); h2.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = 0.5 + Math.sin(k*18)*0.1;
+    g.fillStyle = h2;
+    g.beginPath(); g.arc(0, 0, 130, 0, 7); g.fill();
+    g.globalCompositeOperation = 'source-over';
+    g.globalAlpha = 1;
+    /* the same four-sided shard the hub and the Orb panel draw */
+    const R = 54, Wd = 30;
+    g.fillStyle = col;
+    g.beginPath(); g.moveTo(0, -R); g.lineTo(Wd, 0); g.lineTo(0, R*1.05); g.lineTo(-Wd, 0);
+    g.closePath(); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.45)';
+    g.beginPath(); g.moveTo(0, -R); g.lineTo(Wd, 0); g.lineTo(0, 0); g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 2.4;
+    g.beginPath(); g.moveTo(0, -R); g.lineTo(Wd, 0); g.lineTo(0, R*1.05); g.lineTo(-Wd, 0);
+    g.closePath(); g.stroke();
+    if (hang > 0 && fly < 0.3) {
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = 0.3*Math.max(0, 1 - fly*3.3)*hang;
+      g.strokeStyle = col; g.lineWidth = 3;
+      for (let i = 0; i < 10; i++) {
+        const a = i*0.628 + k*1.3, L = 80 + Math.abs(Math.sin(k*5 + i))*60;
+        g.beginPath();
+        g.moveTo(Math.cos(a)*62, Math.sin(a)*62);
+        g.lineTo(Math.cos(a)*L, Math.sin(a)*L);
+        g.stroke();
+      }
+    }
+    g.restore();
+  }
+
+  /* the ring when it lands */
+  if (land > 0 && land < 1) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = (1 - land)*0.7;
+    g.strokeStyle = col; g.lineWidth = 6*(1 - land) + 1;
+    g.beginPath(); g.arc(jx, jar.y, 40 + land*280, 0, 7); g.stroke();
+    g.restore();
+  }
+
+  /* the card: what you actually won */
+  if (card > 0) {
+    const e = ease(Math.min(1, card*1.3));
+    g.save();
+    g.globalAlpha = e*(1 - out);
+    g.translate(W*0.27, H*0.42 + (1 - e)*26);
+    g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.font = '800 15px ' + UI_FONT; g.fillStyle = col;
+    g.fillText((d.world || '').toUpperCase() + ' · CLEARED', 0, -86);
+    g.font = '800 54px ' + UI_FONT; g.fillStyle = '#ffffff';
+    g.fillText(d.shard || 'Shard', 0, -34);
+    g.fillStyle = 'rgba(214,230,255,.7)'; g.font = '600 18px ' + UI_FONT;
+    g.fillText('recovered and placed in the Orb', 0, 0);
+    if (d.jaxon) {
+      /* the unlock gets its own plate, because it is the half that changes
+         how the rest of the game plays */
+      g.save();
+      g.translate(0, 56);
+      g.fillStyle = 'rgba(12,18,28,.8)';
+      g.strokeStyle = col; g.lineWidth = 1.6;
+      g.beginPath(); g.roundRect(-220, -30, 440, 60, 16); g.fill(); g.stroke();
+      g.fillStyle = '#8fa3bd'; g.font = '700 12px ' + UI_FONT;
+      g.fillText('NEW JAXON · UNLOCKED IN EVERY MODE', 0, -8);
+      g.fillStyle = '#ffffff'; g.font = '800 22px ' + UI_FONT;
+      g.fillText(d.jaxon, 0, 17);
+      g.restore();
+    }
+    g.restore();
+  }
+
+  if (out > 0) { g.fillStyle = 'rgba(4,6,11,' + out + ')'; g.fillRect(0, 0, W, H); }
+};
+
+/* ======================================================== VORATH ========
+ *  The last Jaxon.
+ *
+ *  The brief that matters: he must read as a JAXON first and a monster
+ *  second. Same round hooded head, same stubby proportions, same diaper.
+ *  If you squint he is one of the little ones on your shelf — and that is
+ *  the horror of him. Everything else is subtraction: the colour is gone,
+ *  the face is gone, and where a Jaxon's chest should be there is a hole
+ *  with an accretion disc turning in it.
+ *
+ *  Drawn in a local space 200 tall with the origin at his feet, so the
+ *  threat cutscene, the throne and the arena all call the same routine at
+ *  different scales and he is recognisably the same creature in each.
+ *
+ *  opts.rage   0..1  how lit the edges and the eyes are
+ *  opts.staff  bool  carrying the core (false on the throne, hands empty)
+ *  opts.face   0..1  how much he is turned toward you
+ * ======================================================================= */
+function drawVorath(g, x, y, sc, t, opts) {
+  const o = opts || {};
+  const rage = o.rage == null ? 0.5 : o.rage;
+  const breathe = Math.sin(t*0.8)*1.6;
+
+  /* The palette is three colours and a rule. The rule is that the only
+     warm light in the figure comes OUT of him — from the wound and from
+     the core — and everything cool is light falling ON him from the disc
+     behind. Nothing is lit from the front, because there is nothing in
+     front of him. */
+  const SKIN  = '#0b0813';         /* matte, not black: black goes flat */
+  const SKIN2 = '#141020';
+  const SKIN3 = '#05030b';
+  const RIM   = rage > 0.5 ? 'rgba(198,32,62,' : 'rgba(118,38,160,';
+  const rimA  = (0.34 + rage*0.34);
+
+  /* one-sided rim: paint the shape, clip to it, wipe a gradient across.
+     Called instead of stroking, everywhere. */
+  const rim = (path, w, h, from) => {
+    g.save(); path(); g.clip();
+    const rg = g.createLinearGradient(from === 'r' ? w*0.18 : -w*0.5, -h*0.5,
+                                      from === 'r' ? w*0.62 : w*0.02, h*0.35);
+    rg.addColorStop(0, RIM + '0)');
+    rg.addColorStop(0.74, RIM + '0)');
+    rg.addColorStop(0.9, RIM + (rimA*0.34).toFixed(3) + ')');
+    rg.addColorStop(1, RIM + rimA.toFixed(3) + ')');
+    g.fillStyle = rg; g.fillRect(-w, -h, w*3, h*3);
+    g.restore();
+    /* and a hairline so the silhouette survives against a dark ground */
+    g.save(); path();
+    g.strokeStyle = RIM + (rimA*0.3).toFixed(3) + ')'; g.lineWidth = 1.1; g.stroke();
+    g.restore();
+  };
+
+  g.save();
+  g.translate(x, y);
+  g.scale(sc, sc);
+  g.translate(0, breathe);
+
+  /* ---- what the light does to the sky behind him ----------------------
+     Lensing, drawn as a few faint arcs that are brighter where they pass
+     the disc. Subtle on purpose: the moment you can count the rings it
+     stops being space bending and starts being a logo. */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 5; i++) {
+    const rr = 96 + i*26;
+    g.globalAlpha = (0.05 - i*0.007)*(0.7 + Math.sin(t*0.4 + i)*0.3);
+    g.strokeStyle = '#9a7cff'; g.lineWidth = 2.4 - i*0.3;
+    g.beginPath();
+    g.ellipse(0, -108, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, 0.3, Math.PI - 0.3);
+    g.stroke();
+    g.beginPath();
+    g.ellipse(0, -108, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, Math.PI + 0.3, -0.3);
+    g.stroke();
+  }
+  g.restore();
+
+  /* ---- broken ring fragments, held behind the shoulders ---------------
+     Clustered in two arcs rather than scattered, so they read as the
+     remains of ONE thing he broke, not as debris that happens to be here. */
+  g.save();
+  for (let i = 0; i < 10; i++) {
+    const side = i < 5 ? -1 : 1;
+    const j = i % 5;
+    const a2 = side*(0.5 + j*0.26) - Math.PI/2 + Math.sin(t*0.3 + i)*0.03;
+    const rr = 78 + (j % 3)*13;
+    const fx = Math.cos(a2)*rr*1.18, fy = -116 + Math.sin(a2)*rr*0.6;
+    g.save();
+    g.translate(fx, fy);
+    g.rotate(a2 + Math.PI/2 + Math.sin(t*0.4 + i)*0.08);
+    g.globalAlpha = 0.3 + Math.sin(t*0.9 + i)*0.12;
+    const L = 14 + (j % 4)*6, Hh = 4.4;
+    g.fillStyle = '#241d33';
+    g.beginPath(); g.roundRect(-L/2, -Hh/2, L, Hh, Hh/2); g.fill();
+    /* lit only on the edge facing him, because he is the light source */
+    g.fillStyle = RIM + '0.55)';
+    g.beginPath(); g.roundRect(-L/2, Hh*0.1, L, Hh*0.4, Hh*0.2); g.fill();
+    g.restore();
+  }
+  g.restore();
+
+  /* ---- the ground he is standing on ---- */
+  g.save();
+  const sh = g.createRadialGradient(0, 2, 4, 0, 2, 76);
+  sh.addColorStop(0, 'rgba(0,0,0,.72)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sh;
+  g.beginPath(); g.ellipse(0, 2, 76, 16, 0, 0, 7); g.fill();
+  g.restore();
+
+  /* ---- legs ---- */
+  for (const sx of [-1, 1]) {
+    g.save();
+    g.translate(sx*22, -14);
+    const leg = () => { g.beginPath(); g.roundRect(-15, -36, 30, 38, 10); };
+    g.fillStyle = sx < 0 ? SKIN3 : SKIN2;
+    leg(); g.fill();
+    rim(leg, 30, 38, sx > 0 ? 'r' : 'l');
+    g.fillStyle = '#0a0712';
+    g.beginPath(); g.roundRect(-18, -5, 36, 11, 5); g.fill();
+    g.restore();
+  }
+
+  /* ---- the diaper. Still there. It is the whole reason he lands. ---- */
+  g.save();
+  g.translate(0, -46);
+  const dia = () => {
+    g.beginPath();
+    g.moveTo(-36, -18); g.lineTo(36, -18);
+    g.quadraticCurveTo(32, 20, 0, 25);
+    g.quadraticCurveTo(-32, 20, -36, -18);
+    g.closePath();
+  };
+  g.fillStyle = '#2a2238'; dia(); g.fill();
+  rim(dia, 72, 44, 'r');
+  g.fillStyle = '#2b2340';
+  g.beginPath(); g.roundRect(-10, -22, 20, 10, 4); g.fill();
+  g.restore();
+
+  /* ---- arms, behind the torso so the shoulder joint never shows ---- */
+  const armY = -128;
+  for (const sx of [-1, 1]) {
+    g.save();
+    g.translate(sx*44, armY);
+    g.rotate(sx*(0.16 + Math.sin(t*0.7 + sx)*0.04));
+    const arm = () => { g.beginPath(); g.roundRect(-14, -16, 28, 86, 14); };
+    g.fillStyle = sx < 0 ? SKIN3 : SKIN2;
+    arm(); g.fill();
+    rim(arm, 28, 86, sx > 0 ? 'r' : 'l');
+    g.fillStyle = '#0a0712';
+    g.beginPath(); g.arc(0, 70, 15, 0, 7); g.fill();
+    g.fillStyle = RIM + (rimA*0.4).toFixed(3) + ')';
+    g.beginPath(); g.arc(sx*4, 73, 13, 0, 7); g.fill();
+    g.restore();
+  }
+
+  /* ---- the torso ---- */
+  g.save();
+  g.translate(0, -104);
+  const tor = () => { g.beginPath(); g.roundRect(-46, -52, 92, 86, [24, 24, 14, 14]); };
+  const tg = g.createLinearGradient(-46, -52, 46, 34);
+  tg.addColorStop(0, SKIN3); tg.addColorStop(0.45, SKIN); tg.addColorStop(1, '#040209');
+  g.fillStyle = tg; tor(); g.fill();
+  rim(tor, 92, 86, 'r');
+
+  /* ---- the wound ------------------------------------------------------
+     Smaller than instinct says. A wound is a hole you look INTO, and a
+     hole reads by its shadow, not by its light: the top lip has to be
+     dark and hard or the whole thing becomes a porthole with a lamp in
+     it. Order: socket, disc, singularity, overhang, lip. */
+  const WR = 17;
+  g.save();
+  g.translate(0, -6);
+  /* the socket, cut deeper than the disc */
+  const so = g.createRadialGradient(0, -3, 2, 0, 0, WR*1.75);
+  so.addColorStop(0, '#000000'); so.addColorStop(0.62, '#040108'); so.addColorStop(1, '#0d0712');
+  g.fillStyle = so;
+  g.beginPath(); g.ellipse(0, 0, WR*1.62, WR*1.54, 0, 0, 7); g.fill();
+
+  g.save();
+  g.beginPath(); g.ellipse(0, 0, WR, WR*0.95, 0, 0, 7); g.clip();
+  g.fillStyle = '#000'; g.fillRect(-WR, -WR, WR*2, WR*2);
+  /* the disc: concentric elliptical orbits, each at its own rate, so it
+     shears the way a real accretion disc does instead of spinning like a
+     wheel */
+  g.globalCompositeOperation = 'lighter';
+  for (let ring = 0; ring < 4; ring++) {
+    const rr = 7 + ring*4.2;
+    const spd = 2.6/(1 + ring*0.5);
+    for (let i = 0; i < 12; i++) {
+      const a2 = (i/12)*6.2832 + t*spd + ring;
+      const toward = (Math.cos(a2) + 1)/2;
+      g.globalAlpha = (0.12 + toward*0.5)*(1 - ring*0.14);
+      g.fillStyle = toward > 0.76 ? '#fff6e0' : toward > 0.4 ? '#ffb13a' : '#a83210';
+      g.beginPath();
+      g.arc(Math.cos(a2)*rr*0.95, Math.sin(a2)*rr*0.52 - 1.5,
+            1.1 + toward*1.5, 0, 7);
+      g.fill();
+    }
+  }
+  /* the jet, straight up out of the hole, faint */
+  g.globalAlpha = 0.18 + Math.sin(t*2.3)*0.06;
+  const jt = g.createLinearGradient(0, 0, 0, -WR);
+  jt.addColorStop(0, 'rgba(255,220,160,.8)'); jt.addColorStop(1, 'rgba(255,180,90,0)');
+  g.fillStyle = jt;
+  g.beginPath(); g.moveTo(-2.4, 0); g.lineTo(2.4, 0); g.lineTo(5, -WR); g.lineTo(-5, -WR);
+  g.closePath(); g.fill();
+  /* the singularity */
+  g.globalCompositeOperation = 'source-over';
+  g.fillStyle = '#000000';
+  g.beginPath(); g.arc(0, 0, 5.4, 0, 7); g.fill();
+  /* the overhang: the chest wall in front of the light. This one shape is
+     what turns a glowing circle into a hole. */
+  const ov = g.createLinearGradient(0, -WR, 0, -WR*0.1);
+  ov.addColorStop(0, 'rgba(0,0,0,.95)');
+  ov.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = ov;
+  g.fillRect(-WR, -WR, WR*2, WR);
+  g.restore();
+
+  /* the lip, catching what comes out */
+  g.strokeStyle = 'rgba(255,150,60,.3)'; g.lineWidth = 1.2;
+  g.beginPath(); g.ellipse(0, 1, WR + 1, WR*0.96 + 1, 0, 0.5, Math.PI*0.86); g.stroke();
+  g.strokeStyle = 'rgba(20,6,14,.95)'; g.lineWidth = 2.6;
+  g.beginPath(); g.ellipse(0, 0, WR + 1, WR*0.96 + 1, 0, Math.PI*1.08, -0.08); g.stroke();
+  g.restore();
+
+  /* what the wound throws back up under his own chin */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  const up = g.createRadialGradient(0, -10, 2, 0, -40, 60);
+  up.addColorStop(0, 'rgba(255,146,48,.15)');
+  up.addColorStop(1, 'rgba(255,146,48,0)');
+  g.fillStyle = up;
+  g.beginPath(); g.arc(0, -28, 60, 0, 7); g.fill();
+  g.restore();
+  g.restore();
+
+  /* ---- the head ---- */
+  g.save();
+  g.translate(0, -182);
+  /* the neck, so the head is attached to something */
+  g.fillStyle = SKIN3;
+  g.beginPath(); g.roundRect(-16, 10, 32, 24, 8); g.fill();
+  /* the hood: the Jaxon outline everyone already knows */
+  const hood = () => {
+    g.beginPath();
+    g.moveTo(-41, 26);
+    g.quadraticCurveTo(-46, -46, 0, -48);
+    g.quadraticCurveTo(46, -46, 41, 26);
+    g.quadraticCurveTo(0, 38, -41, 26);
+    g.closePath();
+  };
+  const hg = g.createLinearGradient(-41, -48, 41, 38);
+  hg.addColorStop(0, '#0e0a18'); hg.addColorStop(1, '#05030b');
+  g.fillStyle = hg; hood(); g.fill();
+  rim(hood, 82, 86, 'r');
+
+  /* the opening. There is nothing in there, and the nothing has depth. */
+  const op = g.createRadialGradient(0, -2, 2, 0, 3, 28);
+  op.addColorStop(0, '#000000'); op.addColorStop(1, '#07040d');
+  g.fillStyle = op;
+  g.beginPath(); g.ellipse(0, 3, 26, 25, 0, 0, 7); g.fill();
+
+  /* ---- the eyes: two slits of red lightning ---------------------------
+     Not glowing ovals — a slit with a filament in it that re-strikes, so
+     they read as a fault rather than a lamp. */
+  for (const sx of [-1, 1]) {
+    g.save();
+    g.translate(sx*10.5, 0);
+    g.globalCompositeOperation = 'lighter';
+    const eg = g.createRadialGradient(0, 0, 0.5, 0, 0, 15);
+    eg.addColorStop(0, 'rgba(255,56,44,' + (0.42 + rage*0.42).toFixed(2) + ')');
+    eg.addColorStop(0.45, 'rgba(230,30,40,.18)');
+    eg.addColorStop(1, 'rgba(255,40,30,0)');
+    g.fillStyle = eg;
+    g.beginPath(); g.arc(0, 0, 15, 0, 7); g.fill();
+    /* the filament, redrawn every frame off a time-walked phase */
+    const strike = i => Math.sin(t*19 + i*2.7 + sx*1.9)*1.6 +
+                        Math.sin(t*41 + i*1.3)*0.7;
+    g.lineCap = 'round';
+    for (const [col, wd] of [['#e8202c', 3.2], ['#ff7a62', 1.6], ['#ffe4dc', 0.7]]) {
+      g.strokeStyle = col; g.lineWidth = wd;
+      g.beginPath();
+      for (let i = 0; i <= 6; i++) {
+        const px = -5.5 + (11/6)*i;
+        const jy = (i && i < 6) ? strike(i) : 0;
+        i ? g.lineTo(px, jy) : g.moveTo(px, jy);
+      }
+      g.stroke();
+    }
+    g.restore();
+  }
+  g.restore();
+
+  /* ---- the core, in his left fist ------------------------------------
+     On his left (the viewer's right is where the chest light already is),
+     held out from the body so the shaft never crosses the face. The hand
+     is at (-44 - 0, -128 + 70) once the arm rotation is taken out, so the
+     staff is anchored there exactly rather than near there. */
+  if (o.staff !== false) {
+    const hx = -46, hy = armY + 70;
+    g.save();
+    g.translate(hx, hy);
+    g.rotate(-0.1 + Math.sin(t*0.5)*0.015);
+    /* the shaft, rooted in the fist and running up past the shoulder */
+    g.lineCap = 'round';
+    g.strokeStyle = '#17121f'; g.lineWidth = 8;
+    g.beginPath(); g.moveTo(3, 6); g.lineTo(-6, -142); g.stroke();
+    g.strokeStyle = RIM + (rimA*0.5).toFixed(3) + ')'; g.lineWidth = 2.2;
+    g.beginPath(); g.moveTo(2, 4); g.lineTo(-7, -140); g.stroke();
+    /* the grip */
+    g.fillStyle = '#231b32';
+    g.beginPath(); g.roundRect(-5, -22, 11, 26, 4); g.fill();
+
+    /* the core: everything near it is on its way in */
+    g.save();
+    g.translate(-7, -150);
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 34; i++) {
+      /* each mote spirals in, and the ones nearest the middle move
+         fastest — the speed gradient is the only thing that reads as
+         gravity instead of as a swirl */
+      const ph = ((t*0.42 + i*0.1176) % 1);
+      const rr = 54*Math.pow(1 - ph, 1.6) + 4;
+      const a2 = i*1.31 - Math.pow(1 - ph, 0.6)*9;
+      g.globalAlpha = Math.min(1, ph*2.6)*0.8;
+      g.fillStyle = ph > 0.72 ? '#fff2d2' : ph > 0.4 ? '#ffac3a' : '#c0481a';
+      /* stretched along its own path, because it is moving fast */
+      g.save();
+      g.translate(Math.cos(a2)*rr, Math.sin(a2)*rr*0.86);
+      g.rotate(a2 + 1.2);
+      g.beginPath(); g.ellipse(0, 0, 1.2 + ph*2.4, 0.9 + ph*1.1, 0, 0, 7); g.fill();
+      g.restore();
+    }
+    /* the halo it sits in */
+    const cg = g.createRadialGradient(0, 0, 3, 0, 0, 34);
+    cg.addColorStop(0, 'rgba(255,170,70,.45)');
+    cg.addColorStop(1, 'rgba(255,120,40,0)');
+    g.globalAlpha = 0.8; g.fillStyle = cg;
+    g.beginPath(); g.arc(0, 0, 34, 0, 7); g.fill();
+    /* and the hole itself */
+    g.globalCompositeOperation = 'source-over';
+    g.fillStyle = '#000000';
+    g.beginPath(); g.arc(0, 0, 10, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,176,80,.7)'; g.lineWidth = 1.5;
+    g.beginPath(); g.arc(0, 0, 10.8, 0, 7); g.stroke();
+    g.restore();
+    g.restore();
+  }
+
+  g.restore();
+}
+
+/* ash, falling — used by every scene he is in, and by the arena.
+   Deterministic, so it never needs an array and never allocates. */
+function drawAsh(g, t, x0, y0, w, h, n, alpha) {
+  g.save();
+  g.globalAlpha = alpha == null ? 0.5 : alpha;
+  for (let i = 0; i < n; i++) {
+    const sd = i*7919;
+    const bx = x0 + ((sd % 1000)/1000)*w + Math.sin(t*0.4 + i)*14;
+    const sp = 24 + (sd % 37)*2.4;
+    const by = y0 + (((sd % 613)/613)*h + t*sp) % h;
+    g.globalAlpha = (alpha == null ? 0.5 : alpha)*(0.3 + ((sd % 17)/17)*0.7);
+    g.fillStyle = (i % 9 === 0) ? '#ff9a4a' : '#59524e';
+    g.beginPath(); g.arc(bx, by, 0.8 + (sd % 5)*0.4, 0, 7); g.fill();
+  }
+  g.restore();
+}
+
+/* ---- the ones he gets through on the way to you ----------------------
+   Drawn as lit silhouettes rather than as full portraits. The scene is
+   about how little time each of them takes, so each has to be readable in
+   half a second and then be gone. Same Jaxon outline underneath, because
+   the point of the sequence is that these are the biggest things you own
+   and they are the same shape as the thing killing them. */
+function drawDoomed(g, x, y, sc, t, pal, kind, dying) {
+  g.save();
+  g.translate(x, y); g.scale(sc, sc);
+  /* as it goes, it is pulled toward the middle and drained of colour */
+  const d = dying || 0;
+  if (d > 0) { g.globalAlpha = 1 - d*0.85; g.scale(1 - d*0.5, 1 - d*0.18); }
+  g.fillStyle = 'rgba(0,0,0,.5)';
+  g.beginPath(); g.ellipse(0, 4, 64, 13, 0, 0, 7); g.fill();
+
+  if (kind === 'blob') {
+    /* Godspeed Horizon: not a Jaxon at all, and the scene is better for
+       having one thing in it that is not */
+    const bg = g.createRadialGradient(-30, -120, 10, 0, -96, 108);
+    bg.addColorStop(0, pal.lite); bg.addColorStop(0.6, pal.mid); bg.addColorStop(1, pal.dark);
+    g.fillStyle = bg;
+    g.beginPath(); g.arc(0, -96, 100, 0, 7); g.fill();
+    g.strokeStyle = pal.edge; g.lineWidth = 7;
+    g.beginPath(); g.arc(0, -96, 100, 0, 7); g.stroke();
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    for (let i = 0; i < 10; i++) {
+      const a = i/10*6.2832 + t*0.5;
+      g.globalAlpha = 0.4;
+      g.strokeStyle = pal.edge; g.lineWidth = 5;
+      g.beginPath();
+      g.moveTo(Math.cos(a)*54, -96 + Math.sin(a)*54);
+      g.lineTo(Math.cos(a)*96, -96 + Math.sin(a)*96);
+      g.stroke();
+    }
+    g.restore();
+    g.fillStyle = '#0b0f16';
+    for (const sx of [-1, 1]) {
+      g.beginPath(); g.ellipse(sx*32, -112, 13, 19, 0, 0, 7); g.fill();
+    }
+  } else {
+    /* a Jaxon: hood, torso, arms, diaper */
+    for (const sx of [-1, 1]) {
+      g.fillStyle = pal.dark;
+      g.beginPath(); g.roundRect(sx*22 - 15, -50, 30, 38, 10); g.fill();
+    }
+    g.fillStyle = pal.lite;
+    g.beginPath();
+    g.moveTo(-36, -64); g.lineTo(36, -64);
+    g.quadraticCurveTo(32, -26, 0, -21);
+    g.quadraticCurveTo(-32, -26, -36, -64);
+    g.closePath(); g.fill();
+    for (const sx of [-1, 1]) {
+      g.fillStyle = pal.dark;
+      g.beginPath(); g.roundRect(sx*44 - 14, -144, 28, 86, 14); g.fill();
+    }
+    const tg = g.createLinearGradient(-46, -156, 46, -70);
+    tg.addColorStop(0, pal.lite); tg.addColorStop(1, pal.mid);
+    g.fillStyle = tg;
+    g.beginPath(); g.roundRect(-46, -156, 92, 86, [24, 24, 14, 14]); g.fill();
+    g.strokeStyle = pal.edge; g.lineWidth = 3; g.stroke();
+    /* the hood */
+    g.fillStyle = pal.mid;
+    g.beginPath();
+    g.moveTo(-41, -156);
+    g.quadraticCurveTo(-46, -228, 0, -230);
+    g.quadraticCurveTo(46, -228, 41, -156);
+    g.quadraticCurveTo(0, -144, -41, -156);
+    g.closePath(); g.fill();
+    g.strokeStyle = pal.edge; g.lineWidth = 3; g.stroke();
+    g.fillStyle = '#f4f8ff';
+    g.beginPath(); g.ellipse(0, -179, 26, 25, 0, 0, 7); g.fill();
+    g.fillStyle = '#131922';
+    for (const sx of [-1, 1]) {
+      g.beginPath(); g.ellipse(sx*9, -180, 4.6, 6.4, 0, 0, 7); g.fill();
+    }
+  }
+  g.restore();
+}
+/* the plate that tells you what you just watched die */
+function doomName(g, x, y, nm, sub2, alpha, col) {
+  g.save();
+  g.globalAlpha = alpha;
+  g.textAlign = 'center';
+  g.font = '700 13px ' + UI_FONT;
+  g.fillStyle = col || '#8fa3bd';
+  g.fillText((sub2 || '').toUpperCase(), x, y - 26);
+  g.font = '800 34px ' + UI_FONT;
+  g.fillStyle = '#eef4ff';
+  g.fillText(nm, x, y + 6);
+  g.restore();
+}
+
+/* ====================================================== THE THREAT =====
+ *  Plays once, the moment the hole becomes real.
+ *
+ *  It has one job and it is not "look at the new boss". It is: everything
+ *  you have spent the game earning does not work. So the sequence is three
+ *  deaths and a look, and the three deaths are deliberately not fights —
+ *  each one is over before the name plate has finished fading in, because
+ *  a fight implies a chance.
+ *
+ *  0.00 the hole, alone
+ *  0.14 Upgraded Titan Jaxon   — pulled in
+ *  0.36 Godspeed Horizon       — folded inward
+ *  0.58 Titan Astro Jaxon      — his own beam turned around
+ *  0.78 and then it looks at you
+ *  0.96 black
+ * ======================================================================= */
+CINE_SCENE.threat = function (g, k) {
+  const open = seg(k, 0, 0.14);
+  const a1 = seg(k, 0.14, 0.36), a2 = seg(k, 0.36, 0.58), a3 = seg(k, 0.58, 0.78);
+  const look = seg(k, 0.76, 0.96);
+  const out  = seg(k, 0.94, 1);
+
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#04030a'; g.fillRect(0, 0, W, H);
+
+  /* a shared backdrop so the cuts feel like one place, not three slides */
+  const t = CINE.t;
+  g.save();
+  const vg = g.createRadialGradient(W*0.5, H*0.5, 40, W*0.5, H*0.5, W*0.62);
+  vg.addColorStop(0, 'rgba(60,20,70,.3)'); vg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  g.restore();
+  drawAsh(g, t, 0, 0, W, H, 150, 0.35);
+
+  /* ---- the hole, before anything happens ---- */
+  if (open < 1) {
+    const e = ease(open);
+    g.save();
+    g.globalAlpha = 1 - e*0.3;
+    const R = 40 + e*120;
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const am = g.createRadialGradient(W/2, H/2, R*0.9, W/2, H/2, R*3.4);
+    am.addColorStop(0, 'rgba(255,128,24,.4)'); am.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = am;
+    g.beginPath(); g.arc(W/2, H/2, R*3.4, 0, 7); g.fill();
+    g.restore();
+    g.fillStyle = '#000';
+    g.beginPath(); g.arc(W/2, H/2, R, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,170,70,.6)'; g.lineWidth = 2.5;
+    g.beginPath(); g.arc(W/2, H/2, R*1.02, 0, 7); g.stroke();
+    g.globalAlpha = Math.min(1, open*3)*(1 - e);
+    g.textAlign = 'center';
+    g.font = '700 16px ' + UI_FONT; g.fillStyle = '#ffb877';
+    g.fillText('SOMETHING CAME THROUGH', W/2, H*0.82);
+    g.restore();
+  }
+
+  /* ---- act one: the Upgraded Titan ----
+     Pulled off his feet and into the core. He does not get to fire. */
+  if (a1 > 0 && a1 < 1) {
+    const dying = clamp01((a1 - 0.35)/0.6);
+    const pull = ease(dying);
+    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.4 });
+    drawDoomed(g, W*0.3 + pull*W*0.32, H*0.9 - pull*170, 1.0 - pull*0.35, t,
+               { lite:'#7fb6ff', mid:'#2f7cff', dark:'#1f5fe0', edge:'#8892a0' },
+               'jaxon', dying);
+    /* the line of force between them */
+    if (dying > 0) {
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (1 - dying)*0.6;
+      g.strokeStyle = '#ff9a2e'; g.lineWidth = 2;
+      for (let i = 0; i < 5; i++) {
+        g.beginPath();
+        g.moveTo(W*0.3 + pull*W*0.3, H*0.72 - pull*140 + i*12 - 24);
+        g.quadraticCurveTo(W*0.55, H*0.5 + i*20, W*0.68, H*0.52);
+        g.stroke();
+      }
+      g.restore();
+    }
+    doomName(g, W*0.3, H*0.2, 'Upgraded Titan Jaxon', 'your strongest',
+             Math.min(1, a1*5)*(1 - clamp01((a1 - 0.7)/0.3)), '#7fb6ff');
+  }
+
+  /* ---- act two: Godspeed Horizon ----
+     The wave-200 boss arrives at speed and is simply folded up. */
+  if (a2 > 0 && a2 < 1) {
+    const dying = clamp01((a2 - 0.4)/0.55);
+    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.6 });
+    const chx = W*0.26 + ease(Math.min(1, a2*2.2))*W*0.22;
+    drawDoomed(g, chx, H*0.92, 1.0, t,
+               { lite:'#d8c4ff', mid:'#7a4ad8', dark:'#3a1c7a', edge:'#c9a0ff' },
+               'blob', dying);
+    if (dying > 0) {
+      /* the fold: rings closing on it rather than an explosion */
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 4; i++) {
+        g.globalAlpha = (1 - dying)*0.5;
+        g.strokeStyle = '#c9a0ff'; g.lineWidth = 3;
+        g.beginPath();
+        g.arc(chx, H*0.9 - 96, 200*(1 - dying) + i*18, 0, 7);
+        g.stroke();
+      }
+      g.restore();
+    }
+    doomName(g, W*0.3, H*0.2, 'Godspeed Horizon', 'wave two hundred',
+             Math.min(1, a2*5)*(1 - clamp01((a2 - 0.7)/0.3)), '#c9a0ff');
+  }
+
+  /* ---- act three: Titan Astro Jaxon ----
+     The only one who lands a hit, and it is turned around on him. */
+  if (a3 > 0 && a3 < 1) {
+    const fire = clamp01(a3/0.45);
+    const dying = clamp01((a3 - 0.5)/0.45);
+    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.85 });
+    drawDoomed(g, W*0.27, H*0.92, 1.0, t,
+               { lite:'#ffe6a0', mid:'#ffae1a', dark:'#b06a00', edge:'#fff0c8' },
+               'jaxon', dying);
+    /* the beam, and then the beam coming back */
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const by = H*0.56;
+    const back = dying > 0;
+    const x0 = back ? W*0.74 : W*0.3, x1 = back ? W*0.3 : W*0.7;
+    const prog = back ? ease(dying) : ease(fire);
+    g.globalAlpha = 0.85;
+    const bgd = g.createLinearGradient(x0, 0, x1, 0);
+    bgd.addColorStop(0, back ? 'rgba(255,60,40,0)' : 'rgba(255,220,120,0)');
+    bgd.addColorStop(0.5, back ? 'rgba(255,90,50,.9)' : 'rgba(255,230,160,.9)');
+    bgd.addColorStop(1, back ? 'rgba(255,60,40,.9)' : 'rgba(255,220,120,.9)');
+    g.strokeStyle = bgd; g.lineWidth = 16 + Math.sin(t*22)*4;
+    g.beginPath(); g.moveTo(x0, by); g.lineTo(x0 + (x1 - x0)*prog, by); g.stroke();
+    g.lineWidth = 5; g.strokeStyle = '#ffffff';
+    g.beginPath(); g.moveTo(x0, by); g.lineTo(x0 + (x1 - x0)*prog, by); g.stroke();
+    g.restore();
+    doomName(g, W*0.3, H*0.2, 'Titan Astro Jaxon', 'the one that never missed',
+             Math.min(1, a3*5)*(1 - clamp01((a3 - 0.72)/0.28)), '#ffd87a');
+  }
+
+  /* ---- and then it looks at you ---- */
+  if (look > 0) {
+    const e = ease(look);
+    g.save();
+    /* everything else gone to black first, so the turn lands clean */
+    g.fillStyle = 'rgba(4,3,10,' + Math.min(1, look*3) + ')';
+    g.fillRect(0, 0, W, H);
+    /* pushing in on the hood until it is the frame */
+    const sc = 1.9 + e*3.4;
+    drawVorath(g, W/2, H*0.72 + e*520, sc, t, { rage:0.4 + e*0.6 });
+    /* the lightning arriving in the eyes */
+    if (e > 0.45) {
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (e - 0.45)/0.55*(0.4 + Math.abs(Math.sin(t*9))*0.6);
+      const fg = g.createRadialGradient(W/2, H*0.34, 20, W/2, H*0.34, 480);
+      fg.addColorStop(0, 'rgba(255,60,44,.8)'); fg.addColorStop(1, 'rgba(255,40,30,0)');
+      g.fillStyle = fg; g.fillRect(0, 0, W, H);
+      g.restore();
+    }
+    /* the name, last, and only for a moment */
+    if (e > 0.6) {
+      g.globalAlpha = Math.min(1, (e - 0.6)/0.25)*(1 - out);
+      g.textAlign = 'center';
+      g.font = '900 86px ' + UI_FONT;
+      g.fillStyle = '#ffffff';
+      g.fillText('VORATH', W/2, H*0.88);
+      g.font = '700 15px ' + UI_FONT;
+      g.fillStyle = '#ff8a7a';
+      g.fillText('IT IS WAITING AT THE BLACK HOLE', W/2, H*0.93);
+    }
+    g.restore();
+  }
+
+  if (out > 0) { g.fillStyle = 'rgba(0,0,0,' + out + ')'; g.fillRect(0, 0, W, H); }
+};
+
+/* ======================================================= THE THRONE =====
+ *  The last thing before the fight. No deaths in it, no spectacle: a wide
+ *  dead place, weather, and him sitting in it not bothering to stand up.
+ *  Short, because you came here to play.
+ * ======================================================================= */
+CINE_SCENE.throne = function (g, k) {
+  const t = CINE.t;
+  const inn  = seg(k, 0, 0.55);          /* the push in */
+  const rise = seg(k, 0.6, 0.86);        /* he looks up */
+  const out  = seg(k, 0.88, 1);
+
+  g.clearRect(0, 0, W, H);
+  /* sky: nothing in it but weather */
+  const sky = g.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, '#050409'); sky.addColorStop(0.55, '#0b070e'); sky.addColorStop(1, '#100a12');
+  g.fillStyle = sky; g.fillRect(0, 0, W, H);
+
+  /* thunder: a whole-frame lift on a slow irregular beat, never regular
+     enough to be a metronome */
+  const flash = Math.max(0, Math.sin(t*0.9)*Math.sin(t*2.3)*Math.sin(t*0.37));
+  if (flash > 0.55) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = (flash - 0.55)*1.5;
+    const fl = g.createLinearGradient(0, 0, 0, H*0.9);
+    fl.addColorStop(0, 'rgba(176,138,210,.55)');
+    fl.addColorStop(1, 'rgba(120,80,150,0)');
+    g.fillStyle = fl; g.fillRect(0, 0, W, H);
+    g.restore();
+  }
+
+  const push = ease(inn);
+  g.save();
+  g.translate(W/2, H*0.62);
+  g.scale(1 + push*0.5, 1 + push*0.5);
+  g.translate(-W/2, -H*0.62);
+
+  /* the waste: ridges receding, and nothing alive on any of them */
+  for (let L = 0; L < 4; L++) {
+    const yy = H*0.5 + L*74;
+    /* nearer ridges are darker: the haze is between you and the far ones,
+       which is the only depth cue a flat silhouette gets */
+    g.fillStyle = ['#15101a', '#110c15', '#0c0810', '#07050b'][L];
+    g.beginPath();
+    g.moveTo(-50, H + 10);
+    g.lineTo(-50, yy);
+    for (let x = -50; x <= W + 50; x += 40)
+      g.lineTo(x, yy + Math.sin(x*0.006 + L*2.1)*26 + Math.sin(x*0.017 + L)*11);
+    g.lineTo(W + 50, H + 10);
+    g.closePath(); g.fill();
+  }
+
+  /* The throne, and him in it. Drawn in depth order rather than as one
+     object, because "sitting" is entirely a question of what is painted
+     over what: the seat front goes on LAST, across his shins, and that
+     single overlap is the whole illusion. */
+  const TX = W/2, TY = H*0.82;
+
+  /* 1. the back: one broken slab of rock, lit only along its top edge */
+  g.save();
+  g.translate(TX, TY);
+  const bg2 = g.createLinearGradient(0, -330, 0, 20);
+  bg2.addColorStop(0, '#1a1320'); bg2.addColorStop(0.5, '#0d0912'); bg2.addColorStop(1, '#050309');
+  g.fillStyle = bg2;
+  g.beginPath();
+  g.moveTo(-128, 20); g.lineTo(-112, -120); g.lineTo(-92, -300);
+  g.lineTo(-34, -348); g.lineTo(30, -340); g.lineTo(86, -292);
+  g.lineTo(108, -116); g.lineTo(126, 20);
+  g.closePath(); g.fill();
+  /* the storm catching the top of it */
+  g.strokeStyle = 'rgba(190,140,220,.3)'; g.lineWidth = 2.4;
+  g.beginPath();
+  g.moveTo(-92, -300); g.lineTo(-34, -348); g.lineTo(30, -340); g.lineTo(86, -292);
+  g.stroke();
+  /* a fracture or two, so it is rock and not a cut-out */
+  g.strokeStyle = 'rgba(0,0,0,.5)'; g.lineWidth = 3;
+  g.beginPath(); g.moveTo(-40, -340); g.lineTo(-22, -210); g.lineTo(-44, -90); g.stroke();
+  g.beginPath(); g.moveTo(54, -300); g.lineTo(38, -170); g.stroke();
+  g.restore();
+
+  /* 2. him, sunk into it. Lower than he would stand, and smaller than he
+        will be in the arena, because he is not bothering to get up. */
+  g.save();
+  g.translate(TX, TY + 6);
+  g.rotate((1 - ease(rise))*0.05);
+  drawVorath(g, 0, 0, 1.45, t, { rage:0.2 + ease(rise)*0.75, staff:false });
+  g.restore();
+
+  /* 3. the arms of the throne, outside his elbows */
+  g.save();
+  g.translate(TX, TY);
+  g.fillStyle = '#0e0a13';
+  for (const sx of [-1, 1]) {
+    g.beginPath();
+    g.moveTo(sx*106, 20); g.lineTo(sx*100, -118);
+    g.lineTo(sx*150, -130); g.lineTo(sx*160, 20);
+    g.closePath(); g.fill();
+    g.strokeStyle = 'rgba(190,140,220,.18)'; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(sx*100, -118); g.lineTo(sx*150, -130); g.stroke();
+  }
+  /* 4. the seat, across his shins. This is the line that says "sitting". */
+  const sg2 = g.createLinearGradient(0, -34, 0, 46);
+  sg2.addColorStop(0, '#120c17'); sg2.addColorStop(1, '#040207');
+  g.fillStyle = sg2;
+  g.beginPath();
+  g.moveTo(-162, -34); g.lineTo(162, -34); g.lineTo(186, 52); g.lineTo(-186, 52);
+  g.closePath(); g.fill();
+  g.strokeStyle = 'rgba(190,140,220,.22)'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(-162, -34); g.lineTo(162, -34); g.stroke();
+  /* the warm spill from the wound landing on the stone in front of him */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  const spill = g.createRadialGradient(0, -30, 4, 0, -14, 120);
+  spill.addColorStop(0, 'rgba(255,146,54,.1)');
+  spill.addColorStop(0.5, 'rgba(255,130,46,.03)');
+  spill.addColorStop(1, 'rgba(255,140,50,0)');
+  g.fillStyle = spill;
+  g.beginPath(); g.ellipse(0, -22, 120, 34, 0, 0, 7); g.fill();
+  g.restore();
+  g.restore();
+
+  /* rain. Constant, hard, and in front of everything. */
+  g.save();
+  g.globalAlpha = 0.22;
+  g.strokeStyle = 'rgba(170,180,215,.42)'; g.lineWidth = 1.1;
+  for (let i = 0; i < 220; i++) {
+    const sd = i*7919;
+    const rx = ((sd % 1600) + t*90 + i*3) % (W + 120) - 60;
+    const ry = (((sd % 787)/787)*H + t*820 + i*17) % (H + 80) - 40;
+    g.beginPath(); g.moveTo(rx, ry); g.lineTo(rx - 5, ry + 22); g.stroke();
+  }
+  g.restore();
+  g.restore();
+
+  /* the red lightning, forking down the sky behind him */
+  if (flash > 0.5) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = (flash - 0.5)*1.6;
+    g.strokeStyle = '#ff4a3a'; g.lineWidth = 2.4; g.lineCap = 'round';
+    for (const base of [W*0.26, W*0.73]) {
+      g.beginPath();
+      let lx = base, ly = -10;
+      g.moveTo(lx, ly);
+      for (let i = 0; i < 9; i++) {
+        lx += Math.sin(i*2.7 + base)*34;
+        ly += H*0.06;
+        g.lineTo(lx, ly);
+      }
+      g.stroke();
+    }
+    g.restore();
+  }
+
+  /* the card */
+  if (k > 0.1) {
+    g.save();
+    g.globalAlpha = Math.min(1, (k - 0.1)*4)*(1 - out);
+    g.textAlign = 'center';
+    g.font = '700 14px ' + UI_FONT; g.fillStyle = '#b08aa8';
+    g.fillText('THE BLACK HOLE', W/2, 92);
+    g.font = '900 64px ' + UI_FONT; g.fillStyle = '#ffffff';
+    g.fillText('VORATH', W/2, 152);
+    g.restore();
+  }
+
+  if (out > 0) { g.fillStyle = 'rgba(0,0,0,' + out + ')'; g.fillRect(0, 0, W, H); }
+};
+
+/* ===================================================== THE SUPERNOVA ===
+ *  He collapses, the light goes the other way, and then there is nothing
+ *  for two full seconds.
+ *
+ *  The silence is the part that matters and it is the part everybody cuts.
+ *  A finale that goes bang and immediately throws a results screen at you
+ *  has told you it was a level. Two seconds of a black frame with one
+ *  fading ring in it tells you it was the end of something.
+ * ======================================================================= */
+CINE_SCENE.nova = function (g, k) {
+  const t = CINE.t;
+  const fall  = seg(k, 0, 0.22);      /* he goes down */
+  const pull  = seg(k, 0.2, 0.36);    /* everything is drawn inward */
+  const blow  = seg(k, 0.36, 0.5);    /* and then it is not */
+  const quiet = seg(k, 0.5, 0.86);    /* nothing */
+  const out   = seg(k, 0.92, 1);
+
+  g.clearRect(0, 0, W, H);
+  g.fillStyle = '#000000'; g.fillRect(0, 0, W, H);
+  const cx = W/2, cy = H*0.52;
+
+  /* him, kneeling, while there is still a him */
+  if (fall < 1) {
+    const e = ease(fall);
+    g.save();
+    g.globalAlpha = 1 - e*0.6;
+    g.translate(cx, cy + 190);
+    g.rotate(e*0.22);
+    g.scale(1, 1 - e*0.22);
+    drawVorath(g, 0, 0, 1.9, t, { rage:1 - e*0.8, staff:e < 0.5 });
+    g.restore();
+  }
+
+  /* the pull: everything in the frame falls into the middle. Drawn as
+     streaks going the wrong way, which is the only cheap way to say
+     "this is an implosion, the bang has not happened yet". */
+  if (pull > 0 && blow < 1) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const e = ease(pull);
+    for (let i = 0; i < 180; i++) {
+      const a = i*0.349 + t*0.3;
+      const r0 = 900*(1 - e) + 20;
+      const r1 = r0 - 60 - e*120;
+      g.globalAlpha = (0.1 + e*0.5)*(1 - blow);
+      g.strokeStyle = i % 7 === 0 ? '#ffd8a0' : '#b06aff';
+      g.lineWidth = 1 + e*2;
+      g.beginPath();
+      g.moveTo(cx + Math.cos(a)*r0, cy + Math.sin(a)*r0*0.9);
+      g.lineTo(cx + Math.cos(a)*Math.max(6, r1), cy + Math.sin(a)*Math.max(6, r1)*0.9);
+      g.stroke();
+    }
+    /* the point everything is going into */
+    g.globalAlpha = e;
+    const pg = g.createRadialGradient(cx, cy, 2, cx, cy, 60 + e*40);
+    pg.addColorStop(0, '#ffffff'); pg.addColorStop(1, 'rgba(255,200,120,0)');
+    g.fillStyle = pg;
+    g.beginPath(); g.arc(cx, cy, 100, 0, 7); g.fill();
+    g.restore();
+  }
+
+  /* and then it is not */
+  if (blow > 0 && blow < 1) {
+    const e = ease(blow);
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.max(0, 1 - e*0.8);
+    const bgd = g.createRadialGradient(cx, cy, 10, cx, cy, 60 + e*1700);
+    bgd.addColorStop(0, 'rgba(255,255,255,1)');
+    bgd.addColorStop(0.1, 'rgba(255,232,190,.95)');
+    bgd.addColorStop(0.3, 'rgba(255,150,60,.55)');
+    bgd.addColorStop(0.65, 'rgba(180,60,220,.2)');
+    bgd.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = bgd; g.fillRect(0, 0, W, H);
+    /* the shock front */
+    g.globalAlpha = (1 - e)*0.9;
+    g.strokeStyle = '#ffffff'; g.lineWidth = 30*(1 - e) + 2;
+    g.beginPath(); g.arc(cx, cy, 40 + e*1500, 0, 7); g.stroke();
+    g.restore();
+  }
+
+  /* ---- the silence ----
+     One ring, cooling, and nothing else. No text, no sound, no prompt. */
+  if (quiet > 0) {
+    const e = quiet;
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.max(0, 0.5 - e*0.5);
+    g.strokeStyle = '#8a6cff'; g.lineWidth = 2;
+    g.beginPath(); g.arc(cx, cy, 300 + e*520, 0, 7); g.stroke();
+    g.globalAlpha = Math.max(0, 0.22 - e*0.22);
+    const em = g.createRadialGradient(cx, cy, 10, cx, cy, 420);
+    em.addColorStop(0, 'rgba(120,60,180,.5)'); em.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = em;
+    g.beginPath(); g.arc(cx, cy, 420, 0, 7); g.fill();
+    g.restore();
+  }
+
+  if (out > 0) { g.fillStyle = 'rgba(0,0,0,' + out + ')'; g.fillRect(0, 0, W, H); }
+};
 
 /* ----------------------------------------------------------- ROCKET ----
  *  0.00 the sky brightens and the menu recedes
@@ -10703,6 +12039,7 @@ function rushEnd(won) {
     '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
     '<div><div class="k">Coins earned</div><div class="v">' + tagCash(Math.round(earned)) + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (pay ? '<div><div class="k">Jaxon coins</div><div class="v">+' + pay + '</div></div>' : '') +
     (top.length ? '<div class="wide"><div class="k">Did the damage</div><div class="v sm">' +
                   top.join(' &middot; ') + '</div></div>' : '') +
     (better ? '<div><div class="k">Result</div><div class="v" style="color:#ffd83d">NEW BEST TIME</div></div>' : '');
@@ -10946,6 +12283,10 @@ function advRiders(e, sp, owner) {
     S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.3, max:0.3, r:eRad(e)*1.5 });
   }
   if (sp.xtra.freezeHit) e.stun = Math.max(e.stun || 0, 0.45);
+  /* the Celestial's two: a short drag toward the point of impact, and
+     armour that counts for a third of what it says it does */
+  if (sp.xtra.pull) e.pull = Math.max(e.pull || 0, 0.5);
+  if (sp.xtra.crush && e.shellSoak) e.shellSoak = Math.min(e.shellSoak, e.shellSoak*0.34);
   if (sp.xtra.chainHit && !e._chained) {
     /* one step only, and the hop is marked so a chain cannot feed itself */
     const p = enemyPos(e);
@@ -11326,6 +12667,186 @@ function advShuffle(out, wave, last) {
   return out;
 }
 
+/* ====================================================================== *
+ *  VORATH — three phases, and the rules they play by                     *
+ *                                                                        *
+ *  The design rule for the whole fight is one sentence: NOTHING HERE MAY  *
+ *  TAKE THE GAME AWAY FROM YOU. He is allowed to be enormous, to call    *
+ *  the worst things you have ever beaten back out of the ground, and to  *
+ *  reach into your board and switch parts of it off. He is not allowed   *
+ *  to do any of that without telling you first, to do it to all of your  *
+ *  board at once, or to end a run in a single moment you could not see   *
+ *  coming. A finale you lose to is fine. A finale you cannot play is     *
+ *  not.                                                                  *
+ *                                                                        *
+ *  PRESENCE  100%-66%   He walks. Void minions, steadily. That is all.   *
+ *  COMMAND    66%-33%   He calls up the named bosses of the ladder, one  *
+ *                       at a time, each announced three seconds early,   *
+ *                       never more than two on the floor at once.        *
+ *  STORM        <33%    Short stun pulses on a telegraph, inside a       *
+ *                       radius you can see and build outside of.         *
+ * ====================================================================== */
+const VORATH = {
+  hp: 9000000,
+  r: 118,
+  /* a slow, heavy walk that quickens as he loses */
+  speed: [34, 42, 50],
+  leak: 8,                  /* per lap. He laps a lot. It adds up. */
+  /* PRESENCE */
+  addEvery: [7.5, 6, 4.5],
+  addCap:   [14, 18, 22],
+  /* COMMAND: the ladder, called back up */
+  callEvery: 13,
+  callTell: 3.0,            /* how long the warning stands before it lands */
+  callCap: 2,
+  /* STORM */
+  stunEvery: 12,
+  stunTell: 2.2,
+  stunDur: [1.0, 1.5],      /* scaled by how far into Storm he is */
+  stunR: 310                /* NOT the whole board. Build wide and you keep firing. */
+};
+
+/* the ones he calls back. Drawn from the ladder you have already beaten,
+   because the threat of the sequence was that they did not work. */
+const VORATH_CALL = [
+  { name:'Oxide Tyrant',    hp:140000, r:92,  speed:74, leak:10, theme:'marsB' },
+  { name:'The Great Red',   hp:260000, r:98,  speed:70, leak:11, theme:'jupB' },
+  { name:'Shepherd Prime',  hp:420000, r:102, speed:66, leak:12, theme:'satB' },
+  { name:'Hoarfrost King',  hp:700000, r:106, speed:62, leak:13, theme:'uraB' },
+  { name:'The Deep Herald', hp:1200000,r:112, speed:58, leak:14, theme:'nepB' }
+];
+
+function vorathPhase(b) {
+  const f = b.hp/b.max;
+  return f > 0.66 ? 0 : f > 0.33 ? 1 : 2;
+}
+
+/* how many of his things are on the floor right now */
+const voidAdds = () => S.enemies.filter(e => !e.dead).length;
+const voidCalled = () => S.bosses.filter(bb => bb !== S.vorath && bb.calledBy).length;
+
+function vorathPowers(dt, b) {
+  const ph = vorathPhase(b);
+  if (ph !== b.vphase) {
+    /* a phase change is loud, and then it is over. No invulnerability
+       window: being unable to hit the boss is the least fun thing a
+       finale can do. */
+    b.vphase = ph;
+    b.def.speed = VORATH.speed[ph];
+    b.callCd = VORATH.callEvery*0.6;
+    b.stunCd = VORATH.stunEvery*0.7;
+    const nm = ['PRESENCE', 'COMMAND', 'STORM'][ph];
+    const sub2 = ['It has noticed you', 'It is calling them back up',
+                  'It has stopped being careful'][ph];
+    if (ph > 0) {
+      banner(nm, sub2, ph === 2 ? '#ff3b30' : '#bf5af2');
+      shakeScreen(14, 0.8); flashScreen(0.2);
+      beep(60, 1.2, 'sawtooth', 0.07, 34);
+      playSample('game/boss_spawn');
+    }
+  }
+
+  const p = pointAt(b.d);
+
+  /* ---- the minions, every phase ---- */
+  b.addCd -= dt;
+  if (b.addCd <= 0) {
+    b.addCd = VORATH.addEvery[ph];
+    if (voidAdds() < VORATH.addCap[ph]) {
+      /* they come out of HIM, not out of the spawn: the floor is his */
+      const pool = ph === 0 ? ['mote','mote','eater']
+                 : ph === 1 ? ['mote','eater','warder']
+                 : ['mote','eater','warder','knot'];
+      const n = 2 + ph;
+      for (let i = 0; i < n; i++) {
+        if (voidAdds() >= VORATH.addCap[ph]) break;
+        const k = pool[(S.vTick = (S.vTick || 0) + 1) % pool.length];
+        const e = makeWorldMob(VOID_WORLD, k);
+        /* placed just behind him on the road, so they walk his lap too */
+        e.d = Math.max(0, b.d - 40 - i*26);
+        S.enemies.push(e);
+      }
+      S.fx.push({ k:'ward', x:p.x, y:p.y, life:0.45, max:0.45, r:b.def.r*1.2 });
+    }
+  }
+
+  /* ---- COMMAND: the ladder, announced ---- */
+  if (ph >= 1) {
+    if (b.callTell > 0) {
+      b.callTell -= dt;
+      if (b.callTell <= 0 && b.callNext) {
+        const d2 = b.callNext; b.callNext = null;
+        const nb = addBoss(Object.assign({}, d2), { calledBy:1, d:0 });
+        shakeScreen(10, 0.6);
+        banner(d2.name.toUpperCase(), 'called back up', '#bf5af2');
+        beep(90, 0.8, 'sawtooth', 0.06, 40);
+      }
+    } else {
+      b.callCd -= dt;
+      if (b.callCd <= 0) {
+        b.callCd = VORATH.callEvery;
+        if (voidCalled() < VORATH.callCap) {
+          const d2 = VORATH_CALL[(b.callN = (b.callN || 0) + 1) % VORATH_CALL.length];
+          b.callNext = d2;
+          b.callTell = VORATH.callTell;
+          /* three seconds of warning with the name on it, every time */
+          toast(d2.name + ' is coming back up \u2014 ' + VORATH.callTell.toFixed(0) + 's');
+          banner('CALLING', d2.name, '#bf5af2');
+          beep(140, 0.5, 'triangle', 0.04, 70);
+        }
+      }
+    }
+  }
+
+  /* ---- STORM: the pulse ---- */
+  if (ph >= 2) {
+    if (b.stunTell > 0) {
+      b.stunTell -= dt;
+      if (b.stunTell <= 0) {
+        /* how deep into Storm he is decides how long it holds, between
+           one second and one and a half. Never longer. */
+        const deep = clamp01((0.33 - b.hp/b.max)/0.33);
+        const dur = VORATH.stunDur[0] + (VORATH.stunDur[1] - VORATH.stunDur[0])*deep;
+        let hit = 0;
+        for (const t of S.towers) {
+          if (Math.hypot(t.x - p.x, t.y - p.y) <= VORATH.stunR) {
+            t.jam = Math.max(t.jam || 0, dur); hit++;
+          }
+        }
+        b.ring = 0.9;
+        S.fx.push({ k:'ward', x:p.x, y:p.y, life:0.5, max:0.5, r:VORATH.stunR });
+        shakeScreen(11, 0.5); flashScreen(0.14);
+        beep(54, 0.7, 'sawtooth', 0.08, 30);
+        toast(hit ? 'Collapse pulse \u2014 ' + hit + ' Jaxon' + (hit === 1 ? '' : 's') +
+                    ' out for ' + dur.toFixed(1) + 's'
+                  : 'Collapse pulse \u2014 nothing in reach');
+      }
+    } else {
+      b.stunCd -= dt;
+      if (b.stunCd <= 0) {
+        b.stunCd = VORATH.stunEvery;
+        b.stunTell = VORATH.stunTell;
+        b.stunAt = { x:p.x, y:p.y };
+        toast('Collapse pulse incoming');
+        beep(200, 0.3, 'triangle', 0.035, 120);
+      }
+    }
+  }
+}
+
+/* he laps rather than leaking out of existence */
+function vorathLap(b) {
+  b.d = 0;
+  b.laps = (b.laps || 0) + 1;
+  const cost = VORATH.leak;
+  if (S.shield > 0) S.shield--;
+  else if (!SB()) { S.health -= cost; salvageLeak(cost); }
+  banner('IT CAME ROUND AGAIN', '-' + cost + ' lives', '#ff3b30');
+  shakeScreen(12, 0.6);
+  beep(70, 0.6, 'square', 0.06, 36);
+  syncHUD();
+}
+
 /* ------------------------------------------------------- a scripted wave */
 function advStartWave(v) {
   S.phase = 'wave';
@@ -11366,6 +12887,78 @@ function advStartWave(v) {
    towers, the shop, the upgrades, the bosses — is the game you already
    have. */
 const ADV_TARGET = 9;                     // shards in a complete Orb
+
+/* ------------------------------------------------- the void minions ---
+   Vorath does not bring an army, he brings a pattern. Four jobs, each one
+   a thing the campaign already taught, so nothing here is a surprise and
+   everything here is a demand: you have to still be able to do all of it
+   at the same time. */
+const VOID_MOB = {
+  mote:   { name:'Void Mote',      hp:900,   spd:188, r:18, leak:2, coin:6,
+            fill:'#3a2c52', edge:'#120a20', text:'#e8dcff',
+            note:'Nothing special. There are simply a great many of them.' },
+  eater:  { name:'Light Eater',    hp:2600,  spd:142, r:25, leak:3, coin:11,
+            fill:'#241a38', edge:'#0a0414', text:'#d8c8ff',
+            veil:0.5, veilNear:200, veilFar:520,
+            note:'Drinks a shot that has travelled. The far wall will not do.' },
+  warder: { name:'Horizon Warder', hp:5200,  spd:118, r:29, leak:4, coin:17,
+            fill:'#2e2046', edge:'#0c0618', text:'#e0d0ff',
+            warden:1, wardPeriod:7, wardDur:1.6, shell:0.2,
+            note:'Closes for a second and a half at a time. Announced, and still awkward.' },
+  knot:   { name:'Gravity Knot',   hp:8800,  spd:96,  r:33, leak:5, coin:24,
+            fill:'#3c2654', edge:'#100620', text:'#f0e0ff',
+            chill:1.35, chillR:250, splitInto:'mote', splitN:3,
+            note:'Slows the Jaxons around it, and bursts into three when it goes.' }
+};
+const VOID_RAMP = 1.055;
+/* the adds arrive as pressure, not as a wave: a steady trickle that gets
+   heavier as he gets angrier, and never enough to be the thing that kills
+   you on its own */
+function voidPlan(wave) {
+  const out = [], add = (k, n) => { for (let i = 0; i < n; i++) out.push(k); };
+  add('mote', 6 + Math.round(wave*1.5));
+  if (wave >= 2) add('eater',  1 + Math.floor(wave/3));
+  if (wave >= 4) add('warder', 1 + Math.floor((wave - 4)/4));
+  if (wave >= 6) add('knot',   1 + Math.floor((wave - 6)/5));
+  return advShuffle(out, wave, 'knot');
+}
+
+/* ------------------------------------------------------- the arena -----
+   A dead caldera with a broken circuit cut into its floor. He walks the
+   whole ring, twice round, and then straight down the middle past his own
+   throne and out at your nursery — so every second of the fight he is
+   somewhere you can reach, and the last thing he does before he hurts you
+   is cross the open ground in front of you.
+
+   The road crosses itself twice on the way out. That is deliberate: it is
+   the only shape that gives a long lap, a centre, and an exit at the
+   right-hand wall where the nursery has always been.
+
+   It is NOT in WORLDS. It is reached through the hole and nowhere else,
+   it has no shard, no rails and no plate on the map, and putting it in
+   the array would mean nine places that have to remember to skip it. */
+const VOID_WORLD = {
+  id:'void', name:'The Black Hole', order:10, r:0, hidden:true,
+  tag:'Finale', diff:8, goal:9999,
+  blurb:'A dead caldera, and the thing that made it.',
+  shard:null, shardCol:'#ff8a2e',
+  jaxon:null, jaxonName:null,
+  play:true, needs:null,
+  /* The top of the ring sits BELOW the boss bars, not behind them. He is
+     the only thing in this fight and there is no version of it where the
+     interface is allowed to stand in front of him for a third of his lap. */
+  path:[[0,470],[150,470],[200,352],[332,246],[620,206],[980,206],[1268,246],
+        [1400,352],[1432,470],[1402,610],[1270,726],[980,778],[620,778],[332,726],
+        [200,610],[176,492],
+        [316,530],[376,626],[608,680],[992,680],[1204,626],[1262,492],
+        [1204,386],[992,336],[608,336],[390,386],[342,456],
+        [640,470],[1040,470],[1600,470]],
+  sky:'void', money:600000, lives:60, runTint:'rgba(120,40,200,.055)',
+  ramp:VOID_RAMP, plan:voidPlan, mob:VOID_MOB,
+  spd:1.0, budget:1.0,
+  /* he is not on the goal wave; he is there from the first second */
+  finale:null
+};
 
 const WORLDS = [
   {
@@ -11673,7 +13266,7 @@ for (const v of WORLDS) {
   }
   v.eliteAt = out;
 }
-const worldById = id => WORLDS.find(v => v.id === id) || null;
+const worldById = id => (id === 'void' ? VOID_WORLD : WORLDS.find(v => v.id === id)) || null;
 
 /* ======================================================================= *
  *  ADVENTURE JAXONS — THE COLLECTION AND THEIR PROGRESSION                *
@@ -11842,6 +13435,17 @@ function skillState(id, sid) {
  *  Sandbox earns nothing — its numbers are cosmetic by design, and a mode
  *  that hands out infinite money must not hand out coins.
  * ======================================================================== */
+/* what a planet is worth, by how far down the campaign it sits. Roughly
+   doubling every two worlds, which keeps the last three meaningful once
+   the skill trees are open and a node costs four figures. */
+const WORLD_PAY = {
+  mercury:60, venus:85, earth:120, moon:170, mars:240,
+  jupiter:340, saturn:480, uranus:680, neptune:950
+};
+/* and the finale, which is worth more than the nine put together: it is
+   the one thing in the game you can only do once */
+const VOID_PAYOUT = 5000;
+
 const FP_EVERY = 10;      /* a milestone every N free-play waves */
 const FP_RATE  = 10;      /* and what each one pays              */
 
@@ -12028,6 +13632,80 @@ function startWorld(id) {
   return true;
 }
 
+/* ---------------------------------------------------- the last fight ---
+   Not a world, but it runs on the world machinery, so getting in is the
+   same six lines plus one: he is standing there before the first wave,
+   because the fight IS him and the waves are weather. */
+function startVoid() {
+  if (!voidOpen()) { toast('The Orb is not whole.'); sfx('deny'); return false; }
+  closeHub(); closeOrb();
+  S.world = 'void';
+  S.mode = 'adventure';
+  S.best = 0;
+  $('ovMenu').classList.remove('on');
+  reset();
+  usePath(VOID_WORLD.path);
+  /* the money is the design: enough to field a board you are proud of
+     without having to own every ultra on the shelf. You should be able
+     to lose this with a good board and win it with a great one. */
+  S.money = VOID_WORLD.money;
+  S.health = VOID_WORLD.lives;
+  const b = addBoss({ name:'Vorath', hp:VORATH.hp, r:VORATH.r,
+                      speed:VORATH.speed[0], leak:VORATH.leak, theme:'vorath',
+                      power:'vorath' },
+                    { vphase:-1, addCd:3, callCd:VORATH.callEvery,
+                      stunCd:VORATH.stunEvery, callTell:0, stunTell:0, laps:0 });
+  S.vorath = b;
+  banner('VORATH', 'end it', '#ff3b30');
+  toast('It will not stop walking. Neither can you.');
+  playSample('game/boss_spawn');
+  beep(52, 1.6, 'sawtooth', 0.08, 28);
+  shakeScreen(18, 1.2);
+  syncHUD();
+  return true;
+}
+
+/* --------------------------------------------------------- the end ----
+   The only win in the game that does not show a results screen. A score
+   card after this would be a receipt stapled to an ending: how many waves
+   you held, how long it took, how many Jaxons you built. None of that is
+   what happened. What happened is that it is over.
+
+   So: the board goes quiet, the supernova plays, and the game hands you
+   one notification and the main menu, the way a phone tells you something
+   finished while you were looking at something else. */
+function voidWin(b) {
+  if (S.phase === 'over') return;
+  S.phase = 'over';
+  dropRun(slotKey());
+  advInit();
+  const first = !S.adv.finale;
+  S.adv.finale = 1;
+  S.adv.jaxons.celestial = 1;
+  if (first) coinsAdd(VOID_PAYOUT, 'Vorath');
+  saveNow();
+
+  /* clear the floor before the camera does: nothing should still be
+     walking around underneath a supernova */
+  for (const bb of S.bosses.slice()) if (bb !== b) dropBoss(bb);
+  S.enemies = []; S.shots = []; S.spawnQueue = 0; S.plan = [];
+  dropBoss(b); S.vorath = null;
+  setShop(false); hideTip();
+  shakeScreen(30, 1.8); flashScreen(0.4);
+
+  cinePlay('nova', 13, 0.99, () => {}, () => {
+    showModes();
+    buildShelf();
+    /* the notification lands a beat AFTER the menu, so it reads as the
+       system telling you about it rather than as the game's own fanfare */
+    setTimeout(() => {
+      notify('Jaxon Tower Defense',
+             'You unlocked ' + TOWERS.celestial.name + '!', '\u{1F7E3}');
+      coachStart();
+    }, 620);
+  });
+}
+
 /* the reward: the shard flies in, the Jaxon comes off the shelf */
 function advWin() {
   if (S.phase === 'over') return;
@@ -12036,15 +13714,28 @@ function advWin() {
   const v = advWorld();
   const secs = Math.round(S.runT || 0);
   const first = !advDone(v.id);
+  /* the jar as it was BEFORE this clear, so the cutscene can show the
+     band arriving rather than a band that was always there */
+  const before = shardCount();
   advInit();
   S.adv.cleared[v.id] = 1;
   S.adv.shards[v.id] = 1;
   if (v.jaxon) S.adv.jaxons[v.jaxon] = 1;
   const prev = S.adv.best[v.id];
   if (!prev || secs < prev) S.adv.best[v.id] = secs;
+  /* the cheque rides on the first clear, exactly like the shard */
+  const pay = first ? (WORLD_PAY[v.id] || 0) : 0;
+  if (pay) coinsAdd(pay, v.name);
   saveNow();
   buildShelf();
   S.shardFly = { t:0, col:v.shardCol, name:v.shard };
+  /* a first clear owes you the shard sequence on the way out. A repeat
+     clear does not — nothing new goes in the jar, and making someone sit
+     through the same ten seconds for the same band is how a reward turns
+     into a toll. */
+  S.shardOwed = first ? { world:v.name, shard:v.shard, col:v.shardCol,
+                          jaxon:v.jaxonName, ground:v.body2 || '#140d08',
+                          slot:before, before:before } : null;
   $('endTitle').textContent = v.name + ' cleared';
   $('endText').textContent =
     (first ? 'The ' + v.shard + ' is yours, and ' + v.jaxonName + ' has joined the shelf. '
@@ -12055,6 +13746,7 @@ function advWin() {
     '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
     '<div><div class="k">Shards</div><div class="v">' + shardCount() + ' / ' + ADV_TARGET + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (pay ? '<div><div class="k">Jaxon coins</div><div class="v">+' + pay + '</div></div>' : '') +
     (first ? '<div class="wide"><div class="k">Unlocked</div><div class="v sm">' +
              v.jaxonName + ' &middot; permanently on the shelf, in every mode</div></div>' : '');
   $('ovEnd').classList.add('on');
@@ -12189,9 +13881,84 @@ function skyGeneric(v, x0, y0, x1, y1) {
   return true;
 }
 
+/* ------------------------------------------------------- the caldera ---
+   Burnt rock in a bowl, with his hole overhead throwing the only light
+   on it. Everything is lit from the centre and above, which is why the
+   outer wall of the bowl is the brightest thing on the floor and the
+   middle of it is nearly black: you are standing inside the shadow of
+   the thing you came to kill. */
+function drawCaldera(x0, y0, x1, y1) {
+  const w = x1 - x0, h = y1 - y0, t = S.t;
+  /* the floor */
+  const fg = ctx.createRadialGradient(W*0.5, H*0.48, 60, W*0.5, H*0.52, W*0.78);
+  fg.addColorStop(0, '#0b0710'); fg.addColorStop(0.45, '#160f1c'); fg.addColorStop(1, '#241829');
+  ctx.fillStyle = fg; ctx.fillRect(x0, y0, w, h);
+
+  /* the bowl: concentric scorch rings, so the ground reads as a crater
+     and not as a dark rectangle */
+  ctx.save();
+  ctx.translate(W*0.5, H*0.52);
+  for (let i = 0; i < 7; i++) {
+    ctx.strokeStyle = 'rgba(120,70,140,' + (0.05 - i*0.005).toFixed(3) + ')';
+    ctx.lineWidth = 22 - i*2;
+    ctx.beginPath(); ctx.ellipse(0, 0, 150 + i*110, (150 + i*110)*0.62, 0, 0, 7); ctx.stroke();
+  }
+  ctx.restore();
+
+  if (S.perf >= 2) return true;
+
+  /* the throne, dead centre, with the road running over it */
+  ctx.save();
+  ctx.translate(W*0.5, H*0.52);
+  ctx.fillStyle = '#100a16';
+  ctx.beginPath(); ctx.ellipse(0, 10, 152, 74, 0, 0, 7); ctx.fill();
+  ctx.strokeStyle = 'rgba(190,120,220,.16)'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.ellipse(0, 10, 152, 74, 0, 0, 7); ctx.stroke();
+  ctx.fillStyle = '#1a1022';
+  ctx.beginPath();
+  ctx.moveTo(-56, -14); ctx.lineTo(-44, -96); ctx.lineTo(0, -116);
+  ctx.lineTo(44, -96); ctx.lineTo(56, -14);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(190,120,220,.2)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.restore();
+
+  /* his hole, overhead, throwing the light and bending what is behind it */
+  ctx.save();
+  const hx = W*0.5, hy = -40;
+  ctx.globalCompositeOperation = 'lighter';
+  const hg = ctx.createRadialGradient(hx, hy, 50, hx, hy, 620);
+  hg.addColorStop(0, 'rgba(255,128,24,.16)');
+  hg.addColorStop(0.4, 'rgba(150,40,110,.07)');
+  hg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.arc(hx, hy, 620, 0, 7); ctx.fill();
+  ctx.restore();
+  ctx.save();
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(hx, hy, 150, 0, 7); ctx.fill();
+  ctx.save();
+  ctx.translate(hx, hy); ctx.rotate(-0.2);
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 44; i++) {
+    const a = (i/44)*6.2832 + t*0.5;
+    const toward = (Math.cos(a) + 1)/2;
+    ctx.globalAlpha = 0.2 + toward*0.5;
+    ctx.fillStyle = toward > 0.74 ? '#fff0c8' : toward > 0.36 ? '#ff9a2e' : '#b83a12';
+    ctx.beginPath();
+    ctx.arc(Math.cos(a)*188, Math.sin(a)*52, 2.4 + toward*2.4, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+  ctx.restore();
+
+  /* ash, always */
+  drawAsh(ctx, t, x0, y0, w, h, S.perf ? 70 : 150, 0.4);
+  return true;
+}
+
 function worldGround(x0, y0, x1, y1) {
   const v = advWorld();
   if (!v) return false;
+  if (v.sky === 'void') return drawCaldera(x0, y0, x1, y1);
   const w = x1 - x0, h = y1 - y0;
   if (SKY[v.sky]) return skyGeneric(v, x0, y0, x1, y1);
   if (v.sky === 'mercury') {
@@ -12320,6 +14087,32 @@ const HUB = {
   hot:null, zoom:null, stars:null, seed:0
 };
 const HUB_SUN = { x:300, y:450, r:92 };
+
+/* ================================================== THE BLACK HOLE =====
+ *  Nine worlds sit on rails around a sun. This does not. It has no orbit,
+ *  no name plate until you have earned one, and it is parked in the only
+ *  part of the sky the campaign never used — which is the point: for the
+ *  whole game that corner was empty, and then one day it is not.
+ *
+ *  It is not a member of WORLDS. Everything about a world (unlock chain,
+ *  shard, Jaxon, goal wave) is wrong for it, and bolting a tenth entry
+ *  into that array would mean nine special cases. It is its own thing
+ *  that the hub's pointer code happens to be able to return.
+ * ======================================================================= */
+const VOID_NODE = {
+  id:'void', name:'The Black Hole', boss:'Vorath',
+  x:1368, y:176, r:44,
+  blurb:'It was always there. You simply could not see it until the Orb was whole.'
+};
+/* open when the jar is full — or when an admin has decided otherwise */
+function voidOpen() {
+  advInit();
+  return shardCount() >= ADV_TARGET || !!(S.adv && S.adv.forceVoid);
+}
+/* has the threat been shown yet? It plays once, the first time the hole
+   is real, and never again. */
+function voidSeen() { advInit(); return !!(S.adv && S.adv.threatSeen); }
+function voidBeaten() { advInit(); return !!(S.adv && S.adv.finale); }
 const HUB_PAR = [10, 26, 54];              // how far each sheet may drift
 
 function hubStars() {
@@ -12351,6 +14144,10 @@ function hubPos(v) {
   return { x:HUB_SUN.x + Math.cos(a)*v.ring, y:HUB_SUN.y + Math.sin(a)*v.ring*0.96 };
 }
 function hubAt(x, y) {
+  /* tested first: it sits in empty sky, so nothing can be under it, and
+     checking it first keeps it from being shadowed by a rail */
+  if (voidOpen() && Math.hypot(VOID_NODE.x - x, VOID_NODE.y - y) <= VOID_NODE.r + 22)
+    return VOID_NODE;
   for (let i = WORLDS.length - 1; i >= 0; i--) {
     const v = WORLDS[i], p = hubPos(v);
     if (Math.hypot(p.x - x, p.y - y) <= v.r + 16) return v;
@@ -12431,6 +14228,9 @@ function hubDraw(g) {
     g.stroke();
   }
   g.restore();
+
+  /* the hole, behind the bodies so a planet can pass in front of it */
+  if (voidOpen()) drawVoidNode(g, HUB.hot === VOID_NODE);
 
   /* the bodies */
   for (const v of WORLDS) {
@@ -12557,6 +14357,93 @@ function hubDraw(g) {
   }
 }
 
+/* The hole, as the map sees it: a disc of nothing with an orange ring of
+   everything it has already eaten, and a thin lens of bent starlight just
+   outside the edge. Drawn small — it is a destination on a map, not the
+   arena — but it must not read as "another planet, but black". */
+function drawVoidNode(g, hot) {
+  const x = VOID_NODE.x + HUB.mx*14, y = VOID_NODE.y + HUB.my*14;
+  const R = VOID_NODE.r, t = HUB.t;
+  g.save();
+
+  /* the glow it throws on the sky around it */
+  const am = g.createRadialGradient(x, y, R*0.8, x, y, R*(hot ? 5.2 : 3.6));
+  am.addColorStop(0, 'rgba(255,128,24,.30)');
+  am.addColorStop(0.4, 'rgba(180,40,80,.13)');
+  am.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = am;
+  g.beginPath(); g.arc(x, y, R*(hot ? 5.2 : 3.6), 0, 7); g.fill();
+
+  /* the lensing ring: starlight bent around the back and arriving late */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 3; i++) {
+    g.globalAlpha = 0.1 + i*0.04;
+    g.strokeStyle = '#cfd8ff'; g.lineWidth = 1.2;
+    g.beginPath(); g.arc(x, y, R*(1.42 + i*0.14) + Math.sin(t*0.6 + i)*1.4, 0, 7); g.stroke();
+  }
+  g.restore();
+
+  /* the accretion disc: tilted, brighter on the side coming toward you,
+     because that is the one thing everybody recognises about these */
+  g.save();
+  g.translate(x, y); g.rotate(-0.38);
+  for (let i = 0; i < 46; i++) {
+    const a = (i/46)*6.2832 + t*0.75;
+    const rr = R*1.26 + Math.sin(a*3 + t)*R*0.06;
+    const px = Math.cos(a)*rr, py = Math.sin(a)*rr*0.3;
+    /* the approaching limb is beamed: brighter and bluer */
+    const toward = (Math.cos(a) + 1)/2;
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = 0.25 + toward*0.6;
+    g.fillStyle = toward > 0.7 ? '#fff0c8' : toward > 0.35 ? '#ff9a2e' : '#c43a18';
+    g.beginPath(); g.arc(px, py, 2.4 + toward*2.2, 0, 7); g.fill();
+  }
+  /* and the sheet it all sits in */
+  g.globalCompositeOperation = 'lighter';
+  g.globalAlpha = 0.28;
+  const dg = g.createLinearGradient(-R*1.5, 0, R*1.5, 0);
+  dg.addColorStop(0, 'rgba(196,58,24,0)');
+  dg.addColorStop(0.5, 'rgba(255,154,46,.5)');
+  dg.addColorStop(1, 'rgba(196,58,24,0)');
+  g.strokeStyle = dg; g.lineWidth = R*0.26;
+  g.beginPath(); g.ellipse(0, 0, R*1.26, R*0.38, 0, 0, 7); g.stroke();
+  g.restore();
+
+  /* the hole. Nothing in it, and a hard edge, because a soft edge would
+     make it a smudge instead of a horizon. */
+  g.globalCompositeOperation = 'source-over';
+  g.fillStyle = '#000000';
+  g.beginPath(); g.arc(x, y, R, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(255,170,70,.55)'; g.lineWidth = 2;
+  g.beginPath(); g.arc(x, y, R*1.02, 0, 7); g.stroke();
+
+  /* the pointer ring, the same one every world gets */
+  if (hot) {
+    g.strokeStyle = '#ff8a2e'; g.lineWidth = 2.4;
+    g.setLineDash([7, 6]); g.lineDashOffset = -t*24;
+    g.beginPath(); g.arc(x, y, R + 16, 0, 7); g.stroke();
+    g.setLineDash([]);
+  }
+  /* the tick, if it is already done */
+  if (voidBeaten()) {
+    g.save();
+    g.strokeStyle = '#7dffb4'; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath();
+    g.moveTo(x - R*0.4, y + R*0.02); g.lineTo(x - R*0.08, y + R*0.32);
+    g.lineTo(x + R*0.44, y - R*0.34);
+    g.stroke();
+    g.restore();
+  }
+
+  g.globalAlpha = hot ? 1 : 0.62;
+  g.textAlign = 'center'; g.textBaseline = 'top';
+  g.font = (hot ? '800 15px ' : '700 12px ') + UI_FONT;
+  g.fillStyle = hot ? '#ffcf96' : '#9a8470';
+  g.fillText(VOID_NODE.name, x, y + R + 14);
+  g.restore();
+}
+
 function hubFrame(now) {
   if (!HUB.open) return;
   HUB.raf = requestAnimationFrame(hubFrame);
@@ -12590,6 +14477,7 @@ function hubFrame(now) {
 function hubPlate(v) {
   const el = $('hubPlate');
   if (!v) { el.classList.remove('on'); return; }
+  if (v === VOID_NODE) { voidPlate(el); return; }
   const open = worldOpen(v), why = worldWhy(v), done = advDone(v.id);
   const best = (S.adv && S.adv.best && S.adv.best[v.id]) || 0;
   el.innerHTML =
@@ -12623,15 +14511,49 @@ function hubPlate(v) {
   if (cont) cont.onclick = ev => { ev.stopPropagation(); resumeRun('adventure:' + v.id); };
 }
 function hubEnter(v) {
+  if (v === VOID_NODE) { voidEnter(); return; }
   if (!worldOpen(v)) { toast(worldWhy(v)); sfx('deny'); return; }
   if (HUB.zoom) return;
   HUB.zoom = { v, t:0, fired:false };
   hubPlate(null);
   beep(240, 0.7, 'triangle', 0.05, 900);
 }
+/* Walking into the finale.
+   The threat plays once in a player's life and then never again, so it is
+   gated on a saved flag rather than on anything about this session. The
+   throne plays every time, because it is eight seconds and it is the
+   doorway to the fight — but it is skippable like everything else, and
+   the arena is built behind it either way. */
+function voidEnter() {
+  if (!voidOpen()) {
+    toast('The Orb is not whole. ' + shardCount() + ' of ' + ADV_TARGET + ' shards.');
+    sfx('deny');
+    return;
+  }
+  if (HUB.zoom) return;
+  hubPlate(null);
+  if (!voidSeen()) {
+    advInit();
+    S.adv.threatSeen = 1;
+    saveNow();
+    /* nothing is handed over at the end of the threat: it drops you back
+       on the map with the hole live, and you choose to walk into it */
+    cinePlay('threat', 20, 0.99, () => {}, () => {
+      openHub();
+      banner('VORATH', 'The Black Hole is open', '#ff8a2e');
+    });
+    return;
+  }
+  cinePlay('throne', 8.5, 0.92, () => { closeHub(); startVoid(); }, () => {});
+}
+
 function syncHubChrome() {
   advInit();
-  $('hubShards').textContent = shardCount() + ' / ' + ADV_TARGET;
+  const n = shardCount();
+  $('hubShards').textContent = n + ' / ' + ADV_TARGET;
+  /* at 9/9 the chip stops being a progress bar and starts being an
+     announcement */
+  $('hubOrb').classList.toggle('full', n >= ADV_TARGET);
 }
 function openHub() {
   advInit();
@@ -12653,6 +14575,28 @@ function closeHub() {
 }
 function hubToMenu() { closeHub(); closeOrb(); showModes(); }
 
+/* the hole's plate. No difficulty pips, no wave count, no shard: it is not
+   a world and it must not pretend to be one. A name, a warning, a button. */
+function voidPlate(el) {
+  const done = voidBeaten();
+  el.innerHTML =
+    '<div class="hpTop vd" style="--pc:#ff8a2e">' +
+      '<span class="nm">' + VOID_NODE.name + '</span>' +
+      '<span class="tg">Finale</span>' +
+    '</div>' +
+    '<div class="hpB">' + VOID_NODE.blurb + '</div>' +
+    '<div class="hpRow"><span class="k">Opponent</span><b>' + VOID_NODE.boss + '</b></div>' +
+    '<div class="hpRow"><span class="k">Waves</span><b>No waves. One fight.</b></div>' +
+    (done ? '<div class="hpShard got" style="--pc:#7dffb4">' +
+              '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M12 1 L19 12 L12 23 L5 12 Z"/></svg>' +
+              '<span>' + VOID_NODE.boss + ' &middot; beaten</span></div>'
+          : '') +
+    '<button class="hpGo vd" id="hubVoid">Fight ' + VOID_NODE.boss + '</button>';
+  el.classList.add('on');
+  const go = $('hubVoid');
+  if (go) go.onclick = () => hubEnter(VOID_NODE);
+}
+
 /* --------------------------------------------------------- orb progress - */
 function openOrb() {
   advInit();
@@ -12663,13 +14607,9 @@ function openOrb() {
       '<span class="sub">' + n + ' of ' + ADV_TARGET + ' shards</span>' +
       '<button class="bkX" id="orbClose" aria-label="Close">&times;</button></div>' +
     '<div class="orbCube' + (n >= ADV_TARGET ? ' ready' : '') + '">' +
-      '<div class="ocArt">' +
-        '<svg viewBox="0 0 120 120" width="118" height="118" aria-hidden="true">' +
-          '<path class="c1" d="M60 14 L102 38 L102 82 L60 106 L18 82 L18 38 Z"/>' +
-          '<path class="c2" d="M60 14 L102 38 L60 62 L18 38 Z"/>' +
-          '<path class="c3" d="M60 62 L102 38 L102 82 L60 106 Z"/>' +
-        '</svg>' +
-      '</div>' +
+      /* the real jar, not a stand-in for it: the thing the shard flew
+         into is the thing you come here to look at */
+      '<div class="ocArt"><canvas id="orbJar" width="124" height="172"></canvas></div>' +
       '<div class="ocTxt">' +
         '<b>' + (n >= ADV_TARGET ? 'The cube is whole' : 'The cube is in pieces') + '</b>' +
         '<span>' + (n >= ADV_TARGET
@@ -12691,10 +14631,27 @@ function openOrb() {
       '</div>';
     }).join('') + '</div>';
   $('ovOrb').classList.add('on');
+  drawOrbJar();
   $('orbClose').onclick = closeOrb;
   beep(660, 0.1, 'triangle', 0.035, 1100);
 }
 function closeOrb() { $('ovOrb').classList.remove('on'); }
+/* a still of the jar for the panel — no loop, because a panel that spins
+   forever behind a menu is a battery bill, not a feature */
+function drawOrbJar() {
+  const cv = $('orbJar');
+  if (!cv) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  /* the element is the authority on size; the jar is drawn to fit it.
+     A 210-tall jar plus its lip wants ~232 of room at scale 1, so 0.68
+     puts the whole vessel inside 172 with a little air top and bottom. */
+  const BW = 124, BH = 172;
+  cv.width = BW*dpr; cv.height = BH*dpr;
+  const g = cv.getContext('2d');
+  g.setTransform(dpr, 0, 0, dpr, 0, 0);
+  g.clearRect(0, 0, BW, BH);
+  drawJar(g, BW/2, BH/2 + 4, 0.68, jarCols(null), 0, -1, 1);
+}
 
 /* ===================================================== the continue slot ==
    One saved run per mode, and per world inside Adventure, so a half-played
@@ -14744,6 +16701,13 @@ function update(dt) {
     if (e.drone) droneTick(e, dt);             // wanders, and ignores a slow now and then
     if (e.mender) menderTick(e, dt);           // tops up the pack in front of it
     if (e.noHeal > 0) e.noHeal -= dt;          // and cannot while this is running
+    if (e.pull > 0) {
+      /* a lane has one axis, so a gravitational pull is simply distance
+         taken back off it. Capped hard: being dragged to the spawn would
+         be funny once and then would break every wave timer in the game. */
+      e.pull -= dt;
+      e.d = Math.max(0, e.d - 95*dt);
+    }
     if (e.warden) wardenTick(e, dt);           // brief, announced immunity
     if (e.stun > 0) e.stun -= dt;
     if (e.bub > 0) e.bub -= dt;
@@ -14816,7 +16780,11 @@ function update(dt) {
     if (B.stun > 0) B.stun -= dt;
     if (B.stun <= 0) B.d += B.def.speed*dt;      // bosses keep their own pace
     B.hit = Math.max(0, B.hit - dt*6);
-    if (B.hp > 0) bossPowers(dt, B);
+    if (B.hp > 0 && B === S.vorath) vorathPowers(dt, B);
+    else if (B.hp > 0) bossPowers(dt, B);
+    /* he circles instead of leaving, so the lap has to be caught before
+       the ordinary leak code sees it */
+    if (B === S.vorath && B.hp > 0 && B.d >= PATH_LEN) { vorathLap(B); }
     if (S.titan && B.hp <= 0) {          // the colossus goes down: that is the win
       const tp = SG.titan;
       burst(tp.x, tp.y, '#ff5a3c', 150, 3); burst(tp.x, tp.y, '#ffd83d', 110, 2.4);
@@ -14824,6 +16792,7 @@ function update(dt) {
       titanEnd(true);
       return;
     }
+    if (B === S.vorath && B.hp <= 0) { voidWin(B); return; }
     if (B.hp <= 0) {
       const p = pointAt(B.d), fin = B.def.power === 'final';
       burst(p.x, p.y, '#ff2d2d', fin ? 140 : 54); burst(p.x, p.y, '#ffd83d', fin ? 90 : 26);
@@ -16355,6 +18324,7 @@ function endGame() {
       '<div><div class="k">Waves held</div><div class="v">' + survived + ' / ' + v.goal + '</div></div>' +
       '<div><div class="k">Best here</div><div class="v">' + best + '</div></div>' +
       '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (pay ? '<div><div class="k">Jaxon coins</div><div class="v">+' + pay + '</div></div>' : '') +
       '<div><div class="k">Shards</div><div class="v">' + shardCount() + ' / ' + ADV_TARGET + '</div></div>';
     $('endModes').textContent = 'Back to the solar map';
     $('ovEnd').classList.add('on');
@@ -16373,6 +18343,7 @@ function endGame() {
   $('scoreRow').innerHTML =
     '<div><div class="k">Waves survived</div><div class="v">' + survived + '</div></div>' +
     '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>' +
+    (pay ? '<div><div class="k">Jaxon coins</div><div class="v">+' + pay + '</div></div>' : '') +
     '<div><div class="k">Total pops</div><div class="v">' + bigNum(S.pops) + '</div></div>' +
     (isBest ? '<div><div class="k">Result</div><div class="v" style="color:#ffd83d">NEW BEST</div></div>' : '');
   $('ovEnd').classList.add('on');
@@ -17981,6 +19952,7 @@ function drawRain(g, B, th, r, t, cols) {
 
 function drawBoss(bs) {
   if (S.titan) return;                       // the Titan paints itself with the hill
+  if (bs === S.vorath) { drawVorathField(bs); return; }
   const B = bs.def, th = BOSS_THEME[B.theme];
   const p = pointAt(bs.d), r = B.r, pulse = 1 + Math.sin(S.t*3)*0.02;
   ctx.save();
@@ -18161,6 +20133,94 @@ function drawBoss(bs) {
 }
 
 let _flyingIn = false;
+/* He is the same figure the cutscenes drew, standing on the road at the
+   scale the field works at, plus the two things the FIGHT needs and the
+   cutscenes did not: a hit flash, and a telegraph you can plan around. */
+function drawVorathField(bs) {
+  const p = pointAt(bs.d);
+  const ph = vorathPhase(bs);
+  const sc = bs.def.r/118*1.35;
+
+  /* the pulse he is winding up, drawn on the FLOOR where it will land,
+     closing inward so the time left is readable without a number */
+  if (bs.stunTell > 0 && bs.stunAt) {
+    const k = 1 - bs.stunTell/VORATH.stunTell;
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = 0.1 + k*0.2;
+    ctx.fillStyle = '#bf5af2';
+    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR, 0, 7); ctx.fill();
+    ctx.globalAlpha = 0.5 + k*0.5;
+    ctx.strokeStyle = '#e07aff'; ctx.lineWidth = 4;
+    ctx.setLineDash([22, 16]); ctx.lineDashOffset = -S.t*40;
+    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR, 0, 7); ctx.stroke();
+    ctx.setLineDash([]);
+    /* the closing ring is the clock */
+    ctx.lineWidth = 6;
+    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR*(1 - k*0.92) + 8, 0, 7); ctx.stroke();
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 1;
+    ctx.font = '900 30px ' + UI_FONT;
+    ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 6;
+    ctx.strokeText('COLLAPSE', p.x, p.y - VORATH.stunR - 16);
+    ctx.fillStyle = '#f0d0ff';
+    ctx.fillText('COLLAPSE', p.x, p.y - VORATH.stunR - 16);
+    ctx.restore();
+  }
+
+  /* the one he is about to call, named, where it will arrive */
+  if (bs.callTell > 0 && bs.callNext) {
+    const q = pointAt(0);
+    ctx.save();
+    ctx.globalAlpha = 0.6 + Math.sin(S.t*9)*0.3;
+    ctx.strokeStyle = '#bf5af2'; ctx.lineWidth = 4;
+    ctx.setLineDash([16, 12]); ctx.lineDashOffset = -S.t*34;
+    ctx.beginPath(); ctx.arc(q.x, q.y, 70, 0, 7); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+    ctx.font = '800 20px ' + UI_FONT; ctx.textAlign = 'center';
+    ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 5;
+    ctx.strokeText(bs.callNext.name, q.x + 60, q.y - 86);
+    ctx.fillStyle = '#e8c0ff';
+    ctx.fillText(bs.callNext.name, q.x + 60, q.y - 86);
+    ctx.font = '700 14px ' + UI_FONT;
+    ctx.strokeText(bs.callTell.toFixed(1) + 's', q.x + 60, q.y - 64);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(bs.callTell.toFixed(1) + 's', q.x + 60, q.y - 64);
+    ctx.restore();
+  }
+
+  /* the ground he is standing on gives way a little */
+  ctx.save();
+  const un = ctx.createRadialGradient(p.x, p.y + 20, 8, p.x, p.y + 20, bs.def.r*1.6);
+  un.addColorStop(0, 'rgba(0,0,0,.6)'); un.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = un;
+  ctx.beginPath(); ctx.ellipse(p.x, p.y + 20, bs.def.r*1.6, bs.def.r*0.5, 0, 0, 7); ctx.fill();
+  ctx.restore();
+
+  drawVorath(ctx, p.x, p.y + bs.def.r*0.92, sc, S.t,
+             { rage:[0.25, 0.65, 1][ph] });
+
+  /* the hit flash, so damage registers on a figure this dark */
+  if (bs.hit > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = bs.hit*0.3;
+    const fl = ctx.createRadialGradient(p.x, p.y, 10, p.x, p.y, bs.def.r*1.3);
+    fl.addColorStop(0, 'rgba(255,220,200,.9)'); fl.addColorStop(1, 'rgba(255,120,90,0)');
+    ctx.fillStyle = fl;
+    ctx.beginPath(); ctx.arc(p.x, p.y, bs.def.r*1.3, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  /* the reach ring every boss gets, in his colour */
+  ctx.save();
+  ctx.setLineDash([26, 20]); ctx.lineDashOffset = -S.t*24;
+  ctx.strokeStyle = 'rgba(191,90,242,.26)'; ctx.lineWidth = 4;
+  ctx.beginPath(); ctx.arc(p.x, p.y, bs.def.r, 0, 7); ctx.stroke();
+  ctx.restore();
+}
+
 function drawTower(t, ghost) {
   /* The Titan arrives rather than appearing. While he is in the air his
      position is lent out to the ordinary drawing code below, so shadow,
@@ -19075,6 +21135,30 @@ function drawShot(s) {
       ctx.globalCompositeOperation = 'lighter';
       ctx.fillStyle = 'rgba(160,230,255,.35)';
       ctx.beginPath(); ctx.arc(0, 0, 26, 0, 7); ctx.fill();
+      break;
+
+    case 'voidray':
+      /* not a bolt: a short length of bent space with the light falling
+         into it. Drawn as a dark core inside a bright sheath, which is
+         the opposite of every other shot on the board and therefore
+         unmistakable at a glance. */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = 'rgba(255,154,46,.55)'; ctx.lineWidth = 17; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(22, 0); ctx.stroke();
+      ctx.strokeStyle = 'rgba(255,230,190,.8)'; ctx.lineWidth = 8;
+      ctx.beginPath(); ctx.moveTo(-22, 0); ctx.lineTo(20, 0); ctx.stroke();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.strokeStyle = '#06030c'; ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(18, 0); ctx.stroke();
+      /* and the motes it is dragging along behind it */
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(191,90,242,.7)';
+      for (let i = 1; i <= 4; i++) {
+        ctx.beginPath();
+        ctx.arc(-24 - i*7, Math.sin(S.t*26 + i*1.7)*4, 3 - i*0.4, 0, 7);
+        ctx.fill();
+      }
       break;
 
     case 'deepshot':
@@ -21453,7 +23537,22 @@ $('ldBack').onclick = () => { const wasAdv = _pendingStart && _pendingStart.worl
 $('endModes').onclick = () => {
   $('ovEnd').classList.remove('win');
   /* a world sends you back to the map it came off, not to the mode list */
-  if (AD()) { $('ovEnd').classList.remove('on'); openHub(); return; }
+  if (AD()) {
+    $('ovEnd').classList.remove('on');
+    const owed = S.shardOwed; S.shardOwed = null;
+    if (owed) {
+      /* cover first, THEN move: the hub is built behind the black so the
+         shard appears to have put itself away before you arrive */
+      cinePlay('shard', 9.5, 0.96, () => openHub(), () => {
+        banner(owed.shard.toUpperCase() + ' PLACED',
+               owed.world + ' cleared \u00b7 ' + owed.jaxon + ' unlocked', owed.col);
+        playSample('ui/confirm');
+      }, owed);
+      return;
+    }
+    openHub();
+    return;
+  }
   showModes();
 };
 /* The old Classic folder became the orb's six pieces. setWheel keeps its
@@ -21472,6 +23571,16 @@ $('ovMenu').addEventListener('pointerdown', ev => {
   if (ev.target.closest && ev.target.closest('#orbDock')) return;
   orbMerge();
 });
+/* the two coach marks retire themselves the first time they work */
+(function () {
+  const cla = $('pickCla');
+  if (cla) cla.addEventListener('click', () => coachDone('classic'), true);
+  const cats = $('cats');
+  if (cats) cats.addEventListener('click', ev => {
+    const b = ev.target.closest && ev.target.closest('[data-c="celestial"]');
+    if (b) coachDone('celestial');
+  }, true);
+})();
 $('hubBack').onclick = hubToMenu;
 $('hubOrb').onclick = openOrb;
 $('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') closeOrb(); });
@@ -23449,6 +25558,46 @@ function banner(title, sub, color) {
   el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
   clearTimeout(bannerT);
   bannerT = setTimeout(() => el.classList.remove('on'), 1900);
+}
+/* three seconds, then it takes itself away, like the real thing */
+let noteT = 0;
+function notify(title, body, icon) {
+  const el = $('note');
+  if (!el) return;
+  el.querySelector('.ic').textContent = icon || '🟣';
+  el.querySelector('.tt').textContent = title;
+  el.querySelector('.tb').textContent = body;
+  el.classList.remove('on'); void el.offsetWidth; el.classList.add('on');
+  clearTimeout(noteT);
+  noteT = setTimeout(() => el.classList.remove('on'), 3500);
+  playSample('ui/confirm');
+}
+/* ---------------------------------------------------------- coaching --
+   Fires once, after Vorath, and dies the moment it is obeyed. */
+function coachSeen(k) { advInit(); return !!(S.adv.coach && S.adv.coach[k]); }
+function coachDone(k) {
+  advInit();
+  if (!S.adv.coach) S.adv.coach = {};
+  if (S.adv.coach[k]) return;
+  S.adv.coach[k] = 1; saveNow();
+  document.querySelectorAll('.coachOn').forEach(el => el.classList.remove('coachOn'));
+}
+function coachMark(id) {
+  const el = $(id);
+  if (el) el.classList.add('coachOn');
+}
+/* after the finale: the Celestial is bought in Classic like any other
+   Jaxon, and most people have been living on the solar map for an hour */
+function coachStart() {
+  if (coachSeen('classic')) return;
+  coachMark('pickCla');
+}
+/* and when they do open a shop, the new rail is the only thing on it
+   they have not seen before */
+function coachShop() {
+  if (coachSeen('celestial') || !celestialOpen()) return;
+  const b = $('cats') && $('cats').querySelector('[data-c="celestial"]');
+  if (b) b.classList.add('coachOn');
 }
 function flashScreen(a) { S.flash = Math.max(S.flash, a); }
 
