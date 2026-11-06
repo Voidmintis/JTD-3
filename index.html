@@ -11348,291 +11348,530 @@ CINE_SCENE.nova = function (g, k) {
   if (out > 0) { g.fillStyle = 'rgba(0,0,0,' + out + ')'; g.fillRect(0, 0, W, H); }
 };
 
-/* ----------------------------------------------------------- ROCKET ----
- *  0.00 the sky brightens and the menu recedes
- *  0.18 the camera closes on the ship
- *  0.34 inside: the cockpit frame, the window, stars streaking past
- *  0.55 the window swells until it is the whole screen  (hand-off)
- *  0.80 the solar map is behind the glass
- *  1.00 the frame is gone
- */
-function cineRocket(g, k) {
-  g.clearRect(0, 0, W, H);
-  const approach = seg(k, 0, 0.34);
-  const inside   = seg(k, 0.30, 0.58);
-  const through  = seg(k, 0.46, 1);
+/* ====================================================== THE CANOPY =====
+ *  The first thing both entrances do, and the reason they feel like one
+ *  game: a sealed helicopter canopy drops over whatever is already on
+ *  screen, and then it opens.
+ *
+ *  The important word in that sentence is ALREADY. This is not a new
+ *  map. The canvas underneath is still the menu or still the board, and
+ *  the canopy is a glass lid laid over it — which is why the glass is
+ *  tinted and reflective rather than opaque, and why the panels part to
+ *  show what was always there instead of revealing somewhere new.
+ *
+ *  k   0..1 across the beat
+ *  Returns how transparent the glass has become, so the caller can know
+ *  when it has stopped being a helicopter and can start being whatever
+ *  comes next.
+ * ======================================================================= */
+function drawCanopy(g, k) {
+  const hold  = seg(k, 0, 0.26);     /* sealed, rotor idling */
+  const crack = seg(k, 0.26, 0.42);  /* the latch lets go */
+  const swing = seg(k, 0.3, 0.68);   /* and the panels go up, fast */
+  const push  = seg(k, 0.6, 1);      /* the camera commits forward */
+  const cx = W/2, cy = H*0.5;
 
-  /* deep space, always */
-  const sky = g.createLinearGradient(0, 0, W, H);
-  sky.addColorStop(0, '#0a0920'); sky.addColorStop(1, '#05040c');
-  g.fillStyle = sky; g.fillRect(0, 0, W, H);
-
-  /* streaking stars — the speed of the thing */
-  const warp = ease(inside)*1 + through*2.4;
+  /* the camera moving in: everything scales about the middle of the glass */
   g.save();
-  g.strokeStyle = 'rgba(214,230,255,.95)'; g.lineCap = 'round';
-  for (let i = 0; i < 220; i++) {
-    /* radius biased toward the middle so the porthole is never empty */
-    const a = (i*0.41) % 6.2832, rr = Math.pow(((i*53) % 1000)/1000, 1.7)*760 + 24;
-    const sx = W/2 + Math.cos(a)*rr, sy = H/2 + Math.sin(a)*rr*0.72;
-    const len = 8 + warp*(40 + (i % 11)*8);
-    g.globalAlpha = 0.3 + Math.min(0.68, warp*0.55);
-    g.lineWidth = 1.2 + warp*1.6;
-    g.beginPath();
-    g.moveTo(sx, sy);
-    g.lineTo(sx + Math.cos(a)*len, sy + Math.sin(a)*len*0.72);
-    g.stroke();
-  }
-  g.restore();
+  const zoom = 1 + ease(push)*3.4;
+  g.translate(cx, cy); g.scale(zoom, zoom); g.translate(-cx, -cy);
 
-  /* the destination, dead ahead and getting closer — a porthole with
-     nothing behind it is just a dark circle */
-  {
-    const grow = 0.3 + ease(inside)*0.8 + through*2.2;
-    const nx = W/2 + 40, ny = H*0.44 - 30;
-    const neb = g.createRadialGradient(nx, ny, 10, nx, ny, 300*grow);
-    neb.addColorStop(0, 'rgba(150,90,255,.5)');
-    neb.addColorStop(0.45, 'rgba(70,60,190,.22)');
-    neb.addColorStop(1, 'rgba(20,10,60,0)');
-    g.fillStyle = neb;
-    g.beginPath(); g.arc(nx, ny, 300*grow, 0, 7); g.fill();
-    msPlanet(g, nx, ny, 34*grow, worldById('neptune'), 1, CINE.t*0.4);
-    msPlanet(g, W/2 - 230, H*0.6, 16*grow, worldById('mars'), 0.9, CINE.t*0.3);
-  }
-
-  /* the ship, growing until we are inside it */
-  if (approach < 1) {
-    const sc = 0.5 + ease(approach)*5.5;
-    g.save();
-    g.globalAlpha = 1 - approach*0.9;
-    g.translate(W/2, H*0.56);
-    g.scale(sc, sc);
-    g.translate(-W/2, -H*0.56);
-    msRocket(g, W/2, H*0.5, 1, CINE.t*2);
-    g.restore();
-  }
-
-  /* the cockpit: a dark frame with a round window cut out of it, and the
-     window opens until it is the whole screen */
-  if (inside > 0) {
-    const open = ease(through);
-    const r = 248 + open*1460;
-    g.save();
-    g.globalAlpha = Math.min(1, inside*2) * (1 - clamp01((k - 0.9)/0.1));
-    /* The hull is the rectangle MINUS the window, cut by winding. The arc
-       has to be exactly one turn: swept past 2π anticlockwise it overlaps
-       itself, and the surplus arrives with a winding number the fill does
-       not cancel — which paints a wedge straight across the glass. */
-    g.beginPath();
-    g.rect(0, 0, W, H);
-    g.arc(W/2, H*0.47, r, 0, Math.PI*2, true);
-    g.fillStyle = '#10121a'; g.fill();
-    /* instrument light along the bottom of the hull */
-    const lamp = g.createLinearGradient(0, H - 190, 0, H);
-    lamp.addColorStop(0, 'rgba(90,140,255,0)');
-    lamp.addColorStop(1, 'rgba(70,120,255,.3)');
-    g.fillStyle = lamp; g.fillRect(0, H - 190, W, 190);
-    /* the window frame */
-    g.strokeStyle = '#2e3446'; g.lineWidth = 22;
-    g.beginPath(); g.arc(W/2, H*0.47, r, 0, 7); g.stroke();
-    g.strokeStyle = 'rgba(190,220,255,.4)'; g.lineWidth = 4;
-    g.beginPath(); g.arc(W/2, H*0.47, r - 13, 0, 7); g.stroke();
-    /* bolts around the rim, while the rim is still on screen */
-    if (r < 980) {
-      g.fillStyle = '#4a5265';
-      for (let i = 0; i < 16; i++) {
-        const a = i*0.3927;
-        g.beginPath(); g.arc(W/2 + Math.cos(a)*r, H*0.47 + Math.sin(a)*r, 5, 0, 7); g.fill();
-      }
-    }
-    /* a sheen across the glass */
-    g.save();
-    g.beginPath(); g.arc(W/2, H*0.47, Math.max(0, r - 15), 0, 7); g.clip();
-    const sh = g.createLinearGradient(W/2 - r, H*0.47 - r, W/2 + r*0.4, H*0.47 + r);
-    sh.addColorStop(0, 'rgba(255,255,255,.11)');
-    sh.addColorStop(0.42, 'rgba(255,255,255,0)');
-    g.fillStyle = sh; g.fillRect(W/2 - r, H*0.47 - r, r*2, r*2);
-    g.restore();
-    g.restore();
-  }
-
-  /* and out */
-  if (k > 0.88) {
-    g.globalAlpha = seg(k, 0.88, 1);
-    g.fillStyle = '#05040c';
-    g.globalCompositeOperation = 'destination-out';
-    g.fillRect(0, 0, W, H);
-    g.globalCompositeOperation = 'source-over';
-    g.globalAlpha = 1;
-  }
-}
-
-/* -------------------------------------------------------- HELICOPTER ---
- *  0.00 black, rotors spinning up
- *  0.14 the cabin: ribbed walls, a strut, the light from outside
- *  0.34 the floor hatch starts to open                       (hand-off)
- *  0.55 looking down through it at the board far below
- *  0.78 the opening swallows the frame as we drop toward it
- *  1.00 gone
- */
-function cineHeli(g, k) {
-  g.clearRect(0, 0, W, H);
-  const cabin = seg(k, 0.08, 0.3);
-  const open  = seg(k, 0.3, 0.62);
-  const dive  = seg(k, 0.6, 1);
-
-  g.fillStyle = '#07080c'; g.fillRect(0, 0, W, H);
-
-  /* the hatch, an iris in the floor. Its hole is where the board shows. */
-  const hw = 300 + ease(open)*520 + ease(dive)*1700;
-  const hh = 150 + ease(open)*280 + ease(dive)*1100;
-  const cx = W/2, cy = H*0.6;
-
-  /* the cabin interior, drawn as everything that is NOT the hole */
+  /* ---- the airframe around the glass ----
+     Matte charcoal with a green cast. It is a quiet, toy-scale utility
+     machine, not a gunship: the shapes are rounded, the panel lines are
+     few, and nothing on it is pointed at anything. */
+  const FRAME = '#1d2422', FRAME2 = '#141a19', FRAME3 = '#0b0f0e';
   g.save();
-  g.globalAlpha = Math.min(1, cabin*1.6);
+  g.fillStyle = FRAME3;
+  /* the hull, filling everything outside the dome */
   g.beginPath();
-  g.rect(0, 0, W, H);
-  g.ellipse(cx, cy, hw, hh, 0, 0, Math.PI*2, true);   /* exactly one turn */
-  g.clip();
-
-  const wall = g.createLinearGradient(0, 0, 0, H);
-  wall.addColorStop(0, '#191d26'); wall.addColorStop(0.5, '#10131a'); wall.addColorStop(1, '#0a0c11');
-  g.fillStyle = wall; g.fillRect(0, 0, W, H);
-  /* ribs down the fuselage */
-  g.strokeStyle = 'rgba(255,255,255,.055)'; g.lineWidth = 9;
-  for (let i = -1; i < 9; i++) {
-    const x = i*210 + 60;
-    g.beginPath(); g.moveTo(x, 0); g.lineTo(x + 60, H); g.stroke();
-  }
-  /* webbing seats either side */
-  g.strokeStyle = 'rgba(255,255,255,.07)'; g.lineWidth = 5;
-  for (const sx of [120, W - 120]) {
-    g.beginPath(); g.moveTo(sx - 70, 250); g.lineTo(sx + 70, 250); g.stroke();
-    for (let i = -2; i <= 2; i++) {
-      g.beginPath(); g.moveTo(sx + i*34, 250); g.lineTo(sx + i*34, 380); g.stroke();
-    }
-  }
-  /* a strut across the ceiling, and the lamp on it */
-  g.fillStyle = '#232936'; g.fillRect(0, 96, W, 30);
-  const lamp = g.createRadialGradient(cx, 140, 10, cx, 140, 430);
-  lamp.addColorStop(0, 'rgba(255,214,120,.26)');
-  lamp.addColorStop(1, 'rgba(255,200,90,0)');
-  g.fillStyle = lamp; g.beginPath(); g.arc(cx, 140, 430, 0, 7); g.fill();
-  /* the rotor's shadow sweeping the cabin — the one thing that says
-     "helicopter" rather than "dark room" */
-  const rot = CINE.t*11;
+  g.rect(-200, -200, W + 400, H + 400);
+  g.moveTo(cx, cy - 330);
+  g.ellipse(cx, cy - 10, 470, 330, 0, 0, 7, true);
+  g.fill('evenodd');
+  /* a lip of lighter metal around the opening */
+  g.strokeStyle = FRAME; g.lineWidth = 26;
+  g.beginPath(); g.ellipse(cx, cy - 10, 470, 330, 0, 0, 7); g.stroke();
+  g.strokeStyle = FRAME2; g.lineWidth = 8;
+  g.beginPath(); g.ellipse(cx, cy - 10, 488, 346, 0, 0, 7); g.stroke();
+  /* the green strip light along the inside of the lip: the one piece of
+     colour on the whole machine, and the thing that ties it to the UI */
   g.save();
-  g.globalAlpha = 0.12 + Math.sin(rot)*0.05;
-  g.fillStyle = '#000';
-  for (let i = 0; i < 3; i++) {
-    const a = rot + i*2.094;
-    g.save(); g.translate(cx, 150); g.rotate(a);
-    g.fillRect(-900, -16, 1800, 32);
-    g.restore();
-  }
+  g.globalCompositeOperation = 'lighter';
+  g.strokeStyle = 'rgba(80,220,150,.3)'; g.lineWidth = 3;
+  g.beginPath(); g.ellipse(cx, cy - 10, 456, 318, 0, 0, 7); g.stroke();
   g.restore();
-  /* daylight spilling up through the open hatch onto the walls */
-  if (open > 0) {
-    const up = g.createRadialGradient(cx, cy, hh*0.4, cx, cy, hh*3.2);
-    up.addColorStop(0, 'rgba(150,215,255,' + (0.26*open).toFixed(3) + ')');
-    up.addColorStop(1, 'rgba(150,215,255,0)');
-    g.fillStyle = up; g.fillRect(0, 0, W, H);
-  }
   g.restore();
 
-  /* what is through the hole: the ground, a long way down */
-  g.save();
-  g.beginPath(); g.ellipse(cx, cy, hw, hh, 0, 0, 7); g.clip();
-  const far = 1 - ease(dive)*0.55;         /* the ground rushing up */
-  const haze = g.createLinearGradient(0, cy - hh, 0, cy + hh);
-  haze.addColorStop(0, '#7db7e8'); haze.addColorStop(1, '#3f9a4e');
-  g.fillStyle = haze; g.fillRect(cx - hw, cy - hh, hw*2, hh*2);
-  g.save();
-  g.translate(cx, cy); g.scale(far, far); g.translate(-cx, -cy);
-  /* fields below */
-  g.fillStyle = '#39a049';
-  g.fillRect(cx - 1400, cy - 500, 2800, 1400);
-  g.fillStyle = '#2f8f3e';
-  for (let i = -5; i < 6; i++) g.fillRect(cx + i*230 - 60, cy - 500, 110, 1400);
-  /* the trail, seen from above */
-  g.strokeStyle = '#c98a3c'; g.lineWidth = 56; g.lineCap = 'round'; g.lineJoin = 'round';
-  g.beginPath();
-  g.moveTo(cx - 900, cy - 150);
-  g.bezierCurveTo(cx - 300, cy - 280, cx + 150, cy + 60, cx + 820, cy - 90);
-  g.stroke();
-  /* and things on it */
-  for (let i = 0; i < 5; i++) {
-    const t2 = (CINE.t*0.12 + i*0.2) % 1;
-    const bx = cx - 900 + t2*1720, by = cy - 150 + Math.sin(t2*3.1)*120;
-    msBlob(g, bx, by, 17, i % 2 ? '#d04a4a' : '#4a86d0', CINE.t);
-  }
-  g.restore();
-  /* thin cloud drifting between us and the ground — altitude, not scenery */
-  g.globalAlpha = 0.16;
-  msCloud(g, cx - 700 + ((CINE.t*110) % 2000), cy + hh*0.42, 2.2, 0.8);
-  msCloud(g, cx - 1500 + ((CINE.t*80) % 2400), cy - hh*0.5, 1.7, 0.7);
-  g.globalAlpha = 1;
-  g.restore();
-
-  /* the hatch doors and their rim */
-  if (dive < 0.85) {
+  /* ---- the two panels ----
+     They hinge up and out from a latch line down the middle. One beat,
+     not a slow reveal: the open is the punchline. */
+  const lift = ease(swing);
+  for (const sx of [-1, 1]) {
+    /* The opening is a hole in the airframe and holes do not move. The
+       dome clip is set in screen space FIRST and the panel rotates
+       inside it — put the rotation outside and the clip swings away with
+       the glass, which lets every rib and highlight escape across the
+       sky as the panel opens. */
     g.save();
-    g.globalAlpha = Math.min(1, cabin*1.6) * (1 - dive);
-    g.strokeStyle = '#2b313f'; g.lineWidth = 18;
-    g.beginPath(); g.ellipse(cx, cy, hw, hh, 0, 0, 7); g.stroke();
-    g.strokeStyle = 'rgba(255,230,160,.35)'; g.lineWidth = 4;
-    g.beginPath(); g.ellipse(cx, cy, hw - 10, hh - 10, 0, 0, 7); g.stroke();
-    /* warning hatching on the lip, while there is a lip to see */
-    if (hw < 900) {
+    g.beginPath();
+    g.ellipse(cx, cy - 10, 470, 330, 0, 0, 7);
+    g.clip();
+
+    g.save();
+    /* hinge at the outer edge of the dome, so they sweep outward */
+    g.translate(cx + sx*470, cy - 10);
+    g.rotate(sx*lift*1.25);
+    g.translate(-(cx + sx*470), -(cy - 10));
+    g.beginPath();
+    g.rect(sx < 0 ? cx - 500 : cx, cy - 350, 500, 700);
+    g.clip();
+
+    /* the glass itself: a tint that thins as the panel swings away */
+    const tint = Math.max(0, 1 - lift*1.9);
+    g.fillStyle = 'rgba(14,26,22,' + (0.46*tint).toFixed(3) + ')';
+    g.fillRect(cx - 520, cy - 360, 1040, 720);
+    /* the environment sitting in the surface */
+    const env = g.createLinearGradient(cx - 470, cy - 340, cx + 470, cy + 320);
+    env.addColorStop(0,   'rgba(150,200,190,' + (0.1*tint).toFixed(3) + ')');
+    env.addColorStop(0.5, 'rgba(0,0,0,0)');
+    env.addColorStop(1,   'rgba(120,180,255,' + (0.07*tint).toFixed(3) + ')');
+    g.fillStyle = env;
+    g.fillRect(cx - 520, cy - 360, 1040, 720);
+
+    /* the specular marks. These are the signature of the glass in this
+       game and the cockpit reuses them exactly, so the cut from one to
+       the other reads as the same material. */
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const slide = lift*420 + k*60;
+    for (const [ox, oy, w2, h2, a2] of
+         [[-150, -170, 230, 34, -0.52], [-60, -90, 150, 20, -0.52],
+          [170, 40, 300, 26, -0.52],    [120, 150, 160, 16, -0.52]]) {
       g.save();
-      g.beginPath(); g.ellipse(cx, cy, hw + 26, hh + 22, 0, 0, 7);
-      g.ellipse(cx, cy, hw + 8, hh + 6, 0, 0, 7, true);
-      g.clip();
-      for (let i = -30; i < 30; i++) {
-        g.fillStyle = i % 2 ? '#d8a000' : '#1a1a1a';
-        g.save(); g.translate(cx, cy); g.rotate(0.6);
-        g.fillRect(i*34, -hh - 60, 34, hh*2 + 120);
-        g.restore();
-      }
+      g.translate(cx + ox + slide*0.4, cy + oy - slide*0.2);
+      g.rotate(a2);
+      const sg = g.createLinearGradient(-w2/2, 0, w2/2, 0);
+      sg.addColorStop(0, 'rgba(255,255,255,0)');
+      sg.addColorStop(0.5, 'rgba(236,255,250,' + (0.22*tint + 0.05).toFixed(3) + ')');
+      sg.addColorStop(1, 'rgba(255,255,255,0)');
+      g.fillStyle = sg;
+      g.beginPath(); g.roundRect(-w2/2, -h2/2, w2, h2, h2/2); g.fill();
+      g.restore();
+    }
+    g.restore();
+
+    /* the frame ribs on the panel */
+    g.strokeStyle = 'rgba(40,52,48,' + (0.85*Math.max(0.25, tint)).toFixed(2) + ')';
+    g.lineWidth = 9;
+    for (let i = 1; i <= 2; i++) {
+      g.beginPath();
+      g.ellipse(cx, cy - 10, 470*(i/3), 330, 0, 0, 7);
+      g.stroke();
+    }
+    g.beginPath();
+    g.moveTo(cx + sx*4, cy - 340); g.lineTo(cx + sx*4, cy + 320);
+    g.lineWidth = 12; g.stroke();
+
+    /* the panel's own edge, catching the strip light. It has to be drawn
+       while the dome clip is still held — released, it flies off across
+       the sky as a green laser the moment the panel swings. */
+    g.strokeStyle = 'rgba(120,235,180,' + (0.25 + lift*0.3).toFixed(2) + ')';
+    g.lineWidth = 3;
+    g.beginPath();
+    g.moveTo(cx + sx*2, cy - 338); g.lineTo(cx + sx*2, cy + 318);
+    g.stroke();
+    g.restore();
+    g.restore();
+  }
+
+  /* ---- the latch, and the moment it lets go ---- */
+  if (crack < 1) {
+    g.save();
+    g.globalAlpha = 1 - crack;
+    g.strokeStyle = '#2e3a36'; g.lineWidth = 7;
+    g.beginPath(); g.moveTo(cx, cy - 338); g.lineTo(cx, cy + 318); g.stroke();
+    g.fillStyle = '#3a4a44';
+    for (const yy of [-220, -40, 160]) {
+      g.beginPath(); g.roundRect(cx - 13, cy + yy, 26, 44, 7); g.fill();
+    }
+    if (crack > 0) {
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (1 - crack)*0.9;
+      g.strokeStyle = '#8fffcf'; g.lineWidth = 2 + crack*5;
+      g.beginPath(); g.moveTo(cx, cy - 338); g.lineTo(cx, cy + 318); g.stroke();
       g.restore();
     }
     g.restore();
   }
 
-  /* the dark at each end */
-  if (k < 0.1) { g.globalAlpha = 1 - k/0.1; g.fillStyle = '#000'; g.fillRect(0, 0, W, H); g.globalAlpha = 1; }
-  if (k > 0.9) {
-    g.globalCompositeOperation = 'destination-out';
-    g.globalAlpha = seg(k, 0.9, 1);
-    g.fillRect(0, 0, W, H);
-    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  /* ---- the rotor, already spun down to a smear ----
+     Calm on purpose. A rotor whipping round would compete with the open
+     for attention, and the open is the beat. */
+  if (hold > 0 && lift < 0.9) {
+    g.save();
+    g.globalAlpha = (1 - lift)*0.16;
+    g.strokeStyle = '#aab6b2'; g.lineWidth = 3;
+    for (let i = 0; i < 3; i++) {
+      g.beginPath();
+      g.ellipse(cx, cy - 300, 760 - i*40, 26 - i*5, 0, 0, 7);
+      g.stroke();
+    }
+    g.restore();
+  }
+  g.restore();
+
+  /* ---- and the glass stops being there ---- */
+  const gone = ease(seg(k, 0.74, 1));
+  if (gone > 0) {
+    /* a short white lift as the camera goes through the plane of it */
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.sin(gone*Math.PI)*0.2;
+    g.fillStyle = '#dff6ee'; g.fillRect(0, 0, W, H);
+    g.restore();
+  }
+  return gone;
+}
+
+/* ======================================================== THE ROCKET ====
+ *  Earth to the solar hub, in one shot.
+ *
+ *  It opens on the helicopter, because that is where you already are —
+ *  the canopy comes down over the menu you were just touching. When the
+ *  glass goes you are already looking forward out of the capsule, and
+ *  what is ahead is the REAL hub: the same sun, the same nine bodies on
+ *  the same rails, drawn by the same routine the map screen uses, just
+ *  very far away and getting closer. It is a camera move, not a painting
+ *  of the place you are going to.
+ *
+ *  0.00  the canopy, sealed, over the menu
+ *  0.30  it opens and the camera goes through the glass
+ *  0.40  the cockpit: wide forward panes, a quiet console
+ *  0.52  stars thicken; something small is out there
+ *  0.62  the hub, growing, until it is the window
+ *  0.86  the floor opens
+ *  1.00  you are standing on it
+ * ======================================================================= */
+
+/* the cockpit shell. A 737's window layout rather than a spacecraft's:
+   wide forward panes and clear pillars, because the job of a cockpit in
+   a ten-second shot is to be a frame for what is out of it. */
+function drawCockpit(g, k, open) {
+  const cx = W/2, cy = H*0.46;
+  const SHELL = '#1a1d22', SHELL2 = '#101317', TRIM = '#272c33';
+
+  /* the hole the windows make, as one path, so everything outside it can
+     be filled in a single operation and nothing seams */
+  /* Adds the four window shapes to whatever path is already open — it
+     must NOT start one, or an even-odd fill loses the airframe it is
+     supposed to be cutting the windows out of.
+
+     The centre pillar is deliberately thin. What you are flying toward
+     is dead ahead, and a fat post down the middle of the shot would put
+     the destination behind the one part of the aeroplane you cannot see
+     through. */
+  const panes = () => {
+    /* two wide forward panes, split by a narrow post */
+    g.roundRect(cx - 450, cy - 170, 430, 320, 26);
+    g.roundRect(cx + 20,  cy - 170, 430, 320, 26);
+    /* and the eyebrow quarters outboard of them */
+    g.roundRect(cx - 660, cy - 120, 186, 222, 22);
+    g.roundRect(cx + 474, cy - 120, 186, 222, 22);
+  };
+
+  g.save();
+  /* the shell */
+  g.fillStyle = SHELL2;
+  g.beginPath();
+  g.rect(-100, -100, W + 200, H + 200);
+  panes();
+  g.fill('evenodd');
+
+  /* the frame around the glass, so it reads as structure and not as a
+     hole cut in a sheet */
+  g.strokeStyle = TRIM; g.lineWidth = 11;
+  g.beginPath(); panes(); g.stroke();
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.strokeStyle = 'rgba(90,220,160,.16)'; g.lineWidth = 2;
+  g.beginPath(); panes(); g.stroke();
+  g.restore();
+
+  /* ---- the glass. Same specular family as the canopy. ---- */
+  g.save();
+  g.beginPath(); panes(); g.clip();
+  g.globalCompositeOperation = 'lighter';
+  for (const [ox, oy, w2, h2] of
+       [[-300, -110, 300, 26], [-200, -40, 190, 16],
+        [ 180,  -90, 330, 28], [ 260,  30, 200, 18],
+        [-560,  -50, 150, 18], [ 540,  -40, 150, 18]]) {
+    g.save();
+    g.translate(cx + ox, cy + oy);
+    g.rotate(-0.5);
+    const sg = g.createLinearGradient(-w2/2, 0, w2/2, 0);
+    sg.addColorStop(0, 'rgba(255,255,255,0)');
+    sg.addColorStop(0.5, 'rgba(226,250,244,.1)');
+    sg.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = sg;
+    g.beginPath(); g.roundRect(-w2/2, -h2/2, w2, h2, h2/2); g.fill();
+    g.restore();
+  }
+  g.restore();
+
+  /* ---- the console. Six switches and a horizon, and that is all. ----
+     A flight-sim panel of labels nobody reads would be a worse version
+     of this shot, not a more detailed one. */
+  g.save();
+  g.translate(cx, cy + 196);
+  g.fillStyle = SHELL;
+  g.beginPath(); g.roundRect(-540, 0, 1080, H, [22, 22, 0, 0]); g.fill();
+  g.fillStyle = '#0c0f13';
+  g.beginPath(); g.roundRect(-500, 24, 1000, 158, 16); g.fill();
+  /* the horizon strip, holding the attitude of the ship */
+  g.save();
+  g.beginPath(); g.roundRect(-120, 40, 240, 62, 10); g.clip();
+  g.fillStyle = '#0a1a24'; g.fillRect(-120, 40, 240, 62);
+  const tilt = Math.sin(k*5)*9;
+  g.fillStyle = '#123a2c';
+  g.beginPath();
+  g.moveTo(-120, 76 + tilt); g.lineTo(120, 76 - tilt);
+  g.lineTo(120, 102); g.lineTo(-120, 102); g.closePath(); g.fill();
+  g.strokeStyle = '#4fe0a0'; g.lineWidth = 2;
+  g.beginPath(); g.moveTo(-120, 76 + tilt); g.lineTo(120, 76 - tilt); g.stroke();
+  g.restore();
+  g.strokeStyle = TRIM; g.lineWidth = 2;
+  g.beginPath(); g.roundRect(-120, 40, 240, 62, 10); g.stroke();
+  /* a few lit switches, breathing out of phase */
+  for (let i = 0; i < 8; i++) {
+    const sx = -420 + (i < 4 ? i*58 : 220 + (i - 4)*58);
+    const lit = 0.3 + Math.abs(Math.sin(k*7 + i*1.7))*0.6;
+    g.fillStyle = '#161a20';
+    g.beginPath(); g.roundRect(sx, 52, 40, 40, 9); g.fill();
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = lit;
+    g.fillStyle = i % 3 === 0 ? '#4fe0a0' : i % 3 === 1 ? '#5ad6ff' : '#ffc45a';
+    g.beginPath(); g.arc(sx + 20, 72, 7, 0, 7); g.fill();
+    g.restore();
+  }
+  /* two status strips in the UI's own language */
+  for (const [sx2, col] of [[-470, '#4fe0a0'], [380, '#5ad6ff']]) {
+    g.fillStyle = 'rgba(255,255,255,.05)';
+    g.beginPath(); g.roundRect(sx2, 122, 90, 10, 5); g.fill();
+    g.fillStyle = col;
+    g.globalAlpha = 0.8;
+    g.beginPath();
+    g.roundRect(sx2, 122, 90*(0.4 + Math.abs(Math.sin(k*3 + sx2))*0.6), 10, 5);
+    g.fill();
+    g.globalAlpha = 1;
+  }
+  g.restore();
+
+  /* ---- the floor, and the moment it is not there ---- */
+  if (open > 0) {
+    const e = ease(open);
+    g.save();
+    g.translate(cx, H - 10);
+    /* the seam lights up before it parts */
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = Math.min(1, open*4);
+    const sg2 = g.createLinearGradient(0, -90, 0, 20);
+    sg2.addColorStop(0, 'rgba(255,255,255,0)');
+    sg2.addColorStop(1, 'rgba(180,240,255,.75)');
+    g.fillStyle = sg2;
+    g.fillRect(-300 - e*700, -90, 600 + e*1400, 110);
+    g.restore();
+    g.restore();
+  }
+  g.restore();
+}
+
+function cineRocket(g, k) {
+  g.clearRect(0, 0, W, H);
+
+  const canopy = seg(k, 0, 0.30);
+  const ship   = seg(k, 0.26, 1);
+  const travel = seg(k, 0.4, 0.88);
+  const hatch  = seg(k, 0.84, 1);
+  const drop   = seg(k, 0.9, 1);
+
+  /* ---- what is out of the window ---- */
+  if (ship > 0) {
+    /* deep space, and it gets deeper */
+    const sky = g.createLinearGradient(0, 0, W, H);
+    sky.addColorStop(0, '#0a0920'); sky.addColorStop(1, '#04030a');
+    g.fillStyle = sky; g.fillRect(0, 0, W, H);
+
+    /* stars, thickening as the ship gets up to speed */
+    const warp = ease(travel);
+    g.save();
+    g.strokeStyle = 'rgba(214,230,255,.9)'; g.lineCap = 'round';
+    const n = 140 + Math.round(warp*160);
+    for (let i = 0; i < n; i++) {
+      const a2 = (i*0.41) % 6.2832;
+      const rr = Math.pow(((i*53) % 1000)/1000, 1.7)*780 + 30;
+      const sx = W/2 + Math.cos(a2)*rr, sy = H*0.46 + Math.sin(a2)*rr*0.72;
+      const len = 5 + warp*(44 + (i % 11)*9);
+      g.globalAlpha = 0.25 + warp*0.55;
+      g.lineWidth = 1 + warp*1.7;
+      g.beginPath();
+      g.moveTo(sx, sy);
+      g.lineTo(sx + Math.cos(a2)*len, sy + Math.sin(a2)*len*0.72);
+      g.stroke();
+    }
+    g.restore();
+
+    /* ---- THE HUB. The real one. ----
+       hubDraw paints its own sky over whatever it is given, so it is
+       scaled down about the vanishing point and the result is a small
+       bright rectangle of the actual solar map hanging in the window,
+       growing until it is the window. */
+    if (travel > 0.04) {
+      const e = ease(clamp01((travel - 0.04)/0.96));
+      const sc = 0.035 + Math.pow(e, 2.3)*2.1;
+      const cx = W/2, cy = H*0.44;
+      g.save();
+      /* a soft edge so the little rectangle does not read as a screen
+         bolted to the dashboard */
+      g.globalAlpha = Math.min(1, 0.25 + e*1.4);
+      g.translate(cx, cy);
+      g.scale(sc, sc);
+      g.translate(-W/2, -H/2);
+      HUB.t = CINE.t; HUB.mx = 0; HUB.my = 0;
+      HUB.hot = null; HUB.zoom = null;
+      HUB.scenery = true;
+      try { hubDraw(g); } catch (err) {} finally { HUB.scenery = false; }
+      g.restore();
+      /* the light it throws into the cabin */
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (0.08 + e*0.1)*(1 - e*0.6);
+      const hg = g.createRadialGradient(cx, cy, 10, cx, cy, 240 + e*700);
+      hg.addColorStop(0, 'rgba(255,206,120,.42)');
+      hg.addColorStop(1, 'rgba(255,160,60,0)');
+      g.fillStyle = hg; g.fillRect(0, 0, W, H);
+      g.restore();
+    }
+
+    /* the cockpit around all of it, pulling away as you leave the seat */
+    g.save();
+    const back = ease(drop);
+    g.globalAlpha = 1 - back;
+    g.translate(W/2, H*0.46);
+    g.scale(1 + ease(travel)*0.12 + back*0.5, 1 + ease(travel)*0.12 + back*0.5);
+    g.translate(-W/2, -H*0.46);
+    drawCockpit(g, CINE.t, hatch);
+    g.restore();
+
+    /* the fall */
+    if (drop > 0) {
+      const e = ease(drop);
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = e*0.5;
+      g.fillStyle = '#dff0ff';
+      g.fillRect(0, H - 240 - e*900, W, 240 + e*900);
+      g.restore();
+      g.fillStyle = 'rgba(2,4,10,' + Math.max(0, (e - 0.55)/0.45) + ')';
+      g.fillRect(0, 0, W, H);
+    }
+  }
+
+  /* ---- the helicopter, over the top of all of it, for the first beat ---- */
+  if (canopy < 1) {
+    g.save();
+    g.globalAlpha = 1 - ease(seg(k, 0.2, 0.3));
+    drawCanopy(g, canopy);
+    g.restore();
   }
 }
+
+/* ==================================================== THE HELICOPTER ====
+ *  Classic. The same canopy, and then nothing else: it opens, the camera
+ *  goes through the glass, and you are standing on the board. There is
+ *  no journey because there is no journey — the park is where you were.
+ * ======================================================================= */
+function cineHeli(g, k) {
+  g.clearRect(0, 0, W, H);
+  const canopy = seg(k, 0, 0.72);
+  const thru   = seg(k, 0.55, 0.84);
+
+  if (canopy < 1 || thru < 1) {
+    g.save();
+    g.globalAlpha = 1 - ease(thru);
+    drawCanopy(g, canopy);
+    g.restore();
+  }
+  /* the wind as the camera commits forward: streaks past the edges of
+     the frame, so the motion is felt without hiding the board */
+  if (thru > 0) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    const e = ease(thru);
+    g.globalAlpha = Math.sin(e*Math.PI)*0.3;
+    g.strokeStyle = 'rgba(210,240,255,.7)'; g.lineWidth = 2; g.lineCap = 'round';
+    for (let i = 0; i < 70; i++) {
+      const a2 = (i*0.9) % 6.2832;
+      const r0 = 240 + ((i*37) % 700);
+      const L = 70 + e*260;
+      g.beginPath();
+      g.moveTo(W/2 + Math.cos(a2)*r0, H/2 + Math.sin(a2)*r0*0.7);
+      g.lineTo(W/2 + Math.cos(a2)*(r0 + L), H/2 + Math.sin(a2)*(r0 + L)*0.7);
+      g.stroke();
+    }
+    g.restore();
+  }
+}
+CINE_SCENE.rocket = cineRocket;
+CINE_SCENE.heli = cineHeli;
+
 
 /* --------------------------------------------------- the two entrances -
    Both do the same three things in the same order: close the menu, start
    the real thing at the hand-off, and let the cover come off after. */
+/* ADVENTURE is the rocket. Nine seconds, because it is a journey and the
+   whole point of it is the distance: the canopy over the menu you were
+   just touching, the glass, the cockpit, and then the solar map coming
+   up out of nothing until it is the window.
+
+   The hand-off waits until the hatch. Opening the hub any earlier would
+   put the destination on screen BEHIND the ship that is flying to it. */
 function enterAdventure() {
   if (CINE.kind) return;
-  sfx('rocket');
-  setTimeout(() => sfx('warp'), 900);
+  const D = 9.0;
+  /* the canopy first, then the ship under you, then the arrival */
+  sfx('hatch');                                   // the latch letting go
+  setTimeout(() => sfx('wind'), 700);             // air over the open dome
+  setTimeout(() => sfx('rocket'), 2500);          // the cabin, steady
+  setTimeout(() => sfx('warp'), 4600);            // and up to speed
+  setTimeout(() => sfx('hatch'), D*1000*0.84);    // the floor
+  setTimeout(() => sfx('wind'), D*1000*0.9);      // the fall
   $('ovMenu').classList.remove('on');
   msStop();
-  cinePlay('rocket', 2.6, 0.55,
+  cinePlay('rocket', D, 0.88,
     () => { openHub(); },
     () => { orbReset(); });
 }
 
-/* Classic: the helicopter runs over whatever startFresh/resumeRun set up. */
+/* CLASSIC is the helicopter, and nothing after it. There is no journey
+   because there is no journey: the park is where you already were, and
+   the canopy is a glass lid over it.
+
+   The hand-off is almost immediate, so the board is built and sitting
+   there behind the tinted glass from the first frame. You are not being
+   taken anywhere — you are being let in. */
 function enterClassicRun(go) {
   if (CINE.kind) { go(); return; }
-  sfx('heli');
-  setTimeout(() => sfx('hatch'), 1000);
-  setTimeout(() => sfx('wind'), 1750);
+  sfx('heli');                                    // rotors, spun down
+  setTimeout(() => sfx('hatch'), 900);            // the mechanical release
+  setTimeout(() => sfx('wind'), 1500);            // and the air
+  setTimeout(() => sfx('select'), 2400);          // the glass tick
   $('ovMenu').classList.remove('on');
   msStop();
-  cinePlay('heli', 2.9, 0.34, go, () => { orbReset(); });
+  cinePlay('heli', 3.8, 0.08, go, () => { orbReset(); });
 }
 
 /* ======================================================================= *
@@ -14082,6 +14321,9 @@ const WORLD_TRAIL = {
    three, the far ones barely at all, and the whole thing is clamped so the
    sky drifts rather than swings. */
 const HUB = {
+  /* scenery: the map is being flown toward rather than read, so the
+     labels, ticks and glints stay off */
+  scenery:false,
   open:false, raf:0, t0:0, t:0,
   mx:0, my:0, tx:0, ty:0,                  // pointer, eased
   hot:null, zoom:null, stars:null, seed:0
@@ -14158,12 +14400,18 @@ function hubAt(x, y) {
 /* ------------------------------------------------------------ drawing -- */
 function hubDraw(g) {
   const zoom = HUB.zoom;
-  g.clearRect(0, 0, W, H);
-  g.fillStyle = '#04060b'; g.fillRect(0, 0, W, H);
+  /* Flown toward rather than read: the map composites onto the space
+     that is already out of the window. Painting its own black over a
+     scaled-down region would hang a grey rectangle in the middle of the
+     sky, which is exactly what it looked like. */
+  if (!HUB.scenery) {
+    g.clearRect(0, 0, W, H);
+    g.fillStyle = '#04060b'; g.fillRect(0, 0, W, H);
+  }
 
   /* the sky, in three sheets */
   const sheets = hubStars();
-  for (let L = 0; L < 3; L++) {
+  for (let L = 0; HUB.scenery ? false : L < 3; L++) {
     const dx = HUB.mx*HUB_PAR[L], dy = HUB.my*HUB_PAR[L];
     g.save();
     for (const s of sheets[L]) {
@@ -14290,7 +14538,7 @@ function hubDraw(g) {
       g.fillStyle = '#2b3644';
       g.beginPath(); g.arc(0, lr*0.3, lr*0.14, 0, 7); g.fill();
       g.restore();
-    } else if (!done) {
+    } else if (!done && !HUB.scenery) {
       /* available: it has a light on */
       g.save();
       g.globalCompositeOperation = 'lighter';
@@ -14307,7 +14555,7 @@ function hubDraw(g) {
       g.setLineDash([]);
     }
     /* cleared: a tick on the world, and the shard glinting beside it */
-    if (done) {
+    if (done && !HUB.scenery) {
       g.save();
       g.strokeStyle = '#7dffb4'; g.lineWidth = Math.max(2, v.r*0.14);
       g.lineCap = 'round'; g.lineJoin = 'round';
@@ -14334,6 +14582,7 @@ function hubDraw(g) {
       g.restore();
     }
     /* the name, small, under everything but the hovered one */
+    if (HUB.scenery) { g.restore(); continue; }
     g.globalAlpha = hot ? 1 : 0.5;
     g.textAlign = 'center'; g.textBaseline = 'top';
     g.font = (hot ? '800 ' : '700 ') + (hot ? 15 : 12) + 'px ' + UI_FONT;
