@@ -2166,6 +2166,76 @@
   .clArm .c{color:var(--gold);font-weight:650}
   .clArm em{display:block;font-style:normal;color:var(--dim);font-size:12px;margin-top:2px}
   @media (prefers-reduced-motion:reduce){ .node.arm{animation:none} }
+  /* ------------------------------------------------- a legacy session -
+     The old game owns the whole screen. Everything of ours that stays on
+     top of it is one corner button and the overlay it opens, because a
+     1024x768 Scratch stage has nowhere to put a second interface. */
+  #ovLegacy{
+    position:absolute;inset:0;z-index:70;display:none;background:#000;
+  }
+  #ovLegacy.on{display:block;animation:lgIn 420ms var(--e) both}
+  @keyframes lgIn{from{opacity:0}to{opacity:1}}
+  #legacyFrame{
+    position:absolute;inset:0;width:100%;height:100%;border:0;display:block;
+    background:#000;
+  }
+  #legacyQuit{
+    position:absolute;top:14px;right:14px;z-index:2;
+    display:flex;align-items:center;gap:8px;
+    height:38px;padding:0 14px;border-radius:var(--r-full);
+    background:rgba(16,16,22,.72);color:#e8eef8;
+    -webkit-backdrop-filter:saturate(180%) blur(20px);
+    backdrop-filter:saturate(180%) blur(20px);
+    border:1px solid rgba(255,255,255,.16);
+    font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+    opacity:.5;transition:opacity 160ms var(--e),transform 160ms var(--e);
+  }
+  #legacyQuit:hover{opacity:1;transform:scale(1.04)}
+  #ovLegacy.fresh #legacyQuit{opacity:1}
+  #legacyQuit svg{width:15px;height:15px;stroke:currentColor;stroke-width:2.4;fill:none;stroke-linecap:round}
+  #legacyQuit em{
+    font-style:normal;font-size:11px;opacity:.6;padding:1px 5px;
+    border:1px solid rgba(255,255,255,.22);border-radius:5px;
+  }
+  body.mobile #legacyQuit{height:var(--tap);font-size:16px;padding:0 18px;opacity:.8}
+  body.mobile #legacyQuit em{display:none}
+  #legacyHint{
+    position:absolute;top:62px;right:14px;z-index:2;max-width:320px;
+    padding:9px 14px;border-radius:var(--r-md);
+    background:rgba(16,16,22,.78);color:#cfe0f5;
+    -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,.14);
+    font-size:12.5px;line-height:1.45;pointer-events:none;display:none;
+  }
+  #legacyHint b{color:#fff;font-weight:650}
+  #legacyHint.on{display:block;animation:lgHint 5.2s var(--e) both}
+  @keyframes lgHint{
+    0%{opacity:0;transform:translateY(-6px)}
+    6%{opacity:1;transform:none}
+    88%{opacity:1;transform:none}
+    100%{opacity:0;transform:translateY(-6px)}
+  }
+  body.mobile #legacyHint{top:calc(var(--tap) + 20px);font-size:14px}
+  #legacyAsk{
+    position:absolute;inset:0;z-index:3;display:none;
+    align-items:center;justify-content:center;background:rgba(2,3,8,.66);
+    -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  }
+  #legacyAsk.on{display:flex;animation:lgIn 180ms var(--e) both}
+  .lqCard{
+    background:var(--mat-thick);border:1px solid var(--line);
+    border-radius:var(--r-lg);padding:var(--s6);max-width:420px;text-align:center;
+    box-shadow:var(--sh-4);
+  }
+  .lqCard b{display:block;font-size:19px;font-weight:650;color:var(--ink)}
+  .lqCard > span{display:block;font-size:13px;color:var(--dim);margin-top:var(--s2)}
+  .lqRow{display:flex;flex-direction:column;gap:var(--s2);margin-top:var(--s5)}
+  .lqRow button{
+    height:44px;border-radius:var(--r-md);border:0;cursor:pointer;font:inherit;
+    font-size:15px;font-weight:600;background:var(--accent);color:#fff;
+  }
+  .lqRow button.ghost{background:rgba(255,255,255,.08);color:var(--ink)}
+  .lqRow button:hover{filter:brightness(1.12)}
   #flash{
     position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:17;
     mix-blend-mode:screen;
@@ -3812,6 +3882,27 @@
 
     <div class="overlay" id="ovStats"><div id="statWrap"></div></div>
     <div class="overlay" id="ovBests"><div id="bestWrap"></div></div>
+
+    <!-- a legacy game, running in its own world. The iframe is the real
+         packaged build, not a port of one. -->
+    <div id="ovLegacy" class="ovr">
+      <iframe id="legacyFrame" title="Legacy game" allow="autoplay; fullscreen"></iframe>
+      <button id="legacyQuit" aria-label="Quit to Jaxon Tower Defense 3">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"/></svg>
+        <span>Quit</span><em>Esc</em>
+      </button>
+      <div id="legacyHint"><b>Esc</b> or the <b>Quit</b> button up there returns to Jaxon Tower Defense 3</div>
+      <div id="legacyAsk">
+        <div class="lqCard">
+          <b>Leave <span id="lqName">the past</span>?</b>
+          <span>Your place in the old game is not saved.</span>
+          <div class="lqRow">
+            <button id="lqGo">Quit to Jaxon Tower Defense 3</button>
+            <button id="lqStay" class="ghost">Keep playing</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- the cinematic layer: one canvas, above every screen, inert unless
          a transition is actually running -->
@@ -6659,7 +6750,10 @@ for (const k in VARIANTS) PORTRAIT[k] = svgURL(jaxonSVG(VARIANTS[k], 'p' + k));
 const IMG = {};
 function loadImages(done) {
   const src = { car:svgURL(CAR_SVG), blackcar:svgURL(BLACKCAR_SVG), goldcar:svgURL(GOLDCAR_SVG),
-               diamondcar:svgURL(DIAMONDCAR_SVG), shuriken:svgURL(SHURIKEN_SVG) };
+               diamondcar:svgURL(DIAMONDCAR_SVG), shuriken:svgURL(SHURIKEN_SVG),
+               /* the old games, as they looked. Real captures of the real
+                  builds that open when you fall through the tear. */
+               rift1:'rift1.jpg', rift2:'rift2.jpg' };
   for (const k in PORTRAIT) src[k] = PORTRAIT[k];
   let n = Object.keys(src).length;
   for (const k in src) {
@@ -9670,6 +9764,164 @@ function msBuild() {
   }));
 }
 
+/* ---------------------------------------------------------- the rifts -
+   Both live on the space side, scattered and off-centre, clear of the
+   planets, the Adventure plate and the orb. The screenshot is real: it
+   is the old game's own first screen, captured from the packaged build
+   that opens when you fall through. */
+const RIFTS = [
+  { id:'jtd1', n:1, title:'Jaxon Tower Defense 1', tag:'Legacy',
+    blurb:'Where it started. Sixteen Jaxons and a single green field.',
+    x:300, y:186, w:244, h:182, rot:-0.07, img:'rift1',
+    src:'Jaxon_Tower_Defense_1.html', hue:'#6cf0ff' },
+  { id:'jtd2', n:2, title:'Jaxon Tower Defense 2', tag:'Legacy',
+    blurb:'The sequel. Twelve turrets, three titans and a much worse day.',
+    x:620, y:452, w:196, h:148, rot:0.10, img:'rift2',
+    src:'Jaxon_Tower_Defense_2.html', hue:'#8ab4ff' }
+];
+let riftHot = null;
+
+/* The tear itself. Deterministic, so it is the same hole every time the
+   page opens — a rip that reshuffled between visits would read as an
+   animation rather than as damage. */
+function riftPath(g, r, t, wob) {
+  const n = 26, hw = r.w/2, hh = r.h/2;
+  g.beginPath();
+  for (let i = 0; i <= n; i++) {
+    const a = (i/n)*Math.PI*2;
+    /* three frequencies so the edge is torn rather than wavy, and a slow
+       crawl so it is never quite still */
+    const j = 1
+      + Math.sin(a*3 + r.n*2.1)*0.085
+      + Math.sin(a*7 - r.n*1.3)*0.045
+      + Math.sin(a*13 + t*0.5 + r.n)*0.022*wob;
+    const px = Math.cos(a)*hw*j, py = Math.sin(a)*hh*j;
+    i ? g.lineTo(px, py) : g.moveTo(px, py);
+  }
+  g.closePath();
+}
+
+function drawRift(g, r, t, hot, px, py) {
+  const im = IMG['rift' + r.n];
+  const dep = 9;
+  g.save();
+  g.translate(r.x + px*dep, r.y + py*dep);
+  g.rotate(r.rot + Math.sin(t*0.3 + r.n)*0.006);
+  const pulse = hot ? 1 + Math.sin(t*4)*0.018 : 1;
+  g.scale(pulse, pulse);
+
+  /* the glow it throws on the sky around it */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.globalAlpha = hot ? 0.5 : 0.26;
+  const gl = g.createRadialGradient(0, 0, r.w*0.2, 0, 0, r.w*0.95);
+  gl.addColorStop(0, r.hue); gl.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = gl;
+  g.beginPath(); g.ellipse(0, 0, r.w*0.95, r.h*1.05, 0, 0, 7); g.fill();
+  g.restore();
+
+  /* behind the tear there is nothing, and the nothing has an edge */
+  g.save();
+  riftPath(g, r, t, 1.25);
+  g.fillStyle = '#02030a'; g.fill();
+  g.restore();
+
+  /* the old game, showing through, warped near the edges ---------------
+     Drawn in horizontal slices with a sine offset: each slice slides a
+     little more the further it is from the middle, so the picture bulges
+     the way something seen through a hole in space ought to. */
+  if (im && im.width) {
+    g.save();
+    riftPath(g, r, t, 1);
+    g.clip();
+    const hw = r.w/2, hh = r.h/2;
+    const SL = 22, sh = r.h/SL;
+    for (let i = 0; i < SL; i++) {
+      const f = (i + 0.5)/SL;
+      const edge = Math.abs(f - 0.5)*2;              /* 0 middle, 1 edges */
+      const push = Math.sin(t*0.6 + f*5 + r.n)*1.6*edge + edge*edge*7;
+      const sq = 1 + edge*0.05;
+      g.drawImage(im,
+        0, im.height*f - im.height/SL/2, im.width, im.height/SL,
+        -hw - push*sq, -hh + i*sh, r.w + push*2*sq, sh + 1);
+    }
+    /* the light of the old game is colder than this one */
+    g.globalCompositeOperation = 'overlay';
+    g.fillStyle = 'rgba(40,80,160,.22)';
+    g.fillRect(-hw, -hh, r.w, r.h);
+    /* and it is a long way off, so the edges fall into shadow */
+    g.globalCompositeOperation = 'source-over';
+    const vg = g.createRadialGradient(0, 0, r.w*0.18, 0, 0, r.w*0.62);
+    vg.addColorStop(0, 'rgba(0,0,0,0)');
+    vg.addColorStop(1, 'rgba(2,3,10,' + (hot ? 0.45 : 0.62) + ')');
+    g.fillStyle = vg;
+    g.fillRect(-hw*1.4, -hh*1.4, r.w*1.4*2, r.h*1.4*2);
+    g.restore();
+  }
+
+  /* the torn edge: dark first, then a thin line of the energy that made
+     the hole, brighter where the pointer is */
+  g.save();
+  riftPath(g, r, t, 1);
+  g.strokeStyle = '#05060f'; g.lineWidth = 9; g.stroke();
+  g.strokeStyle = 'rgba(8,10,22,.9)'; g.lineWidth = 15; g.stroke();
+  g.globalCompositeOperation = 'lighter';
+  g.strokeStyle = r.hue;
+  g.globalAlpha = hot ? 0.95 : 0.5;
+  g.lineWidth = hot ? 2.6 : 1.6;
+  riftPath(g, r, t, 1); g.stroke();
+  g.restore();
+
+  /* filaments crawling off the tear, the way a short does */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.strokeStyle = r.hue;
+  for (let i = 0; i < 7; i++) {
+    const a = i*0.897 + t*0.22 + r.n;
+    const L = (hot ? 24 : 14) + Math.abs(Math.sin(t*2 + i*2.1))*18;
+    g.globalAlpha = (hot ? 0.45 : 0.22)*(0.4 + Math.abs(Math.sin(t*3 + i))*0.6);
+    g.lineWidth = 1.4;
+    const ex = Math.cos(a)*(r.w/2 + 2), ey = Math.sin(a)*(r.h/2 + 2);
+    g.beginPath();
+    g.moveTo(ex, ey);
+    g.lineTo(ex + Math.cos(a)*L + Math.sin(t*5 + i)*5,
+             ey + Math.sin(a)*L + Math.cos(t*4 + i)*5);
+    g.stroke();
+  }
+  g.restore();
+  g.restore();
+
+  /* the label, in screen space so it never comes out tilted */
+  if (hot) {
+    g.save();
+    const lx = r.x + px*dep, ly = r.y + py*dep + r.h/2 + 26;
+    g.textAlign = 'center';
+    g.font = '800 17px ' + UI_FONT;
+    g.lineJoin = 'round';
+    g.strokeStyle = 'rgba(0,0,0,.75)'; g.lineWidth = 6;
+    g.strokeText(r.title + ' \u2014 ' + r.tag, lx, ly);
+    g.fillStyle = '#eaf4ff';
+    g.fillText(r.title + ' \u2014 ' + r.tag, lx, ly);
+    g.font = '600 12.5px ' + UI_FONT;
+    g.strokeStyle = 'rgba(0,0,0,.7)'; g.lineWidth = 5;
+    g.strokeText(r.blurb, lx, ly + 19);
+    g.fillStyle = r.hue;
+    g.fillText(r.blurb, lx, ly + 19);
+    g.restore();
+  }
+}
+
+/* which tear the pointer is in. Generous on touch, where the hit target
+   has to be a thumb rather than a cursor. */
+function riftAt(x, y) {
+  const pad = MOBILE ? 22 : 8;
+  for (const r of RIFTS) {
+    const dx = (x - r.x)/(r.w/2 + pad), dy = (y - r.y)/(r.h/2 + pad);
+    if (dx*dx + dy*dy <= 1.08) return r;
+  }
+  return null;
+}
+
 /* The seam. A sine curve down the screen whose centre slides with focus,
    so choosing a side genuinely gives that side more of the page. */
 function msSeam(y) {
@@ -9733,6 +9985,12 @@ function msDraw() {
   msPlanet(g, 150 + px*6,  210 + py*5,  54, worldById('venus'),   spaceLit, t*0.3);
   msPlanet(g, 206 + px*11, 714 + py*8,  78, worldById('jupiter'), spaceLit, t*0.21);
   msPlanet(g, 596 + px*16, 158 + py*11, 30, worldById('mercury'), spaceLit, t*0.4);
+
+  /* the tears, among the planets rather than over them */
+  g.save();
+  g.globalAlpha = 0.55 + spaceLit*0.45;
+  for (const r of RIFTS) drawRift(g, r, t, riftHot === r, px, py);
+  g.restore();
   /* clear of the Adventure plate, which sits at the left-centre */
   msRocket(g, 492 + px*22, 618 + py*14, spaceLit, t);
   g.restore();
@@ -11406,6 +11664,289 @@ function drawCanopy(g, k) {
     g.restore();
   }
   return gone;
+}
+
+/* ========================================================= THE WARP ====
+ *  Down the tear and back out again.
+ *
+ *  The rule the whole thing is built around: a loading bar is not an
+ *  experience. Eight megabytes of packaged Scratch has to come off disk
+ *  either way, and the player is going to wait for it either way — so the
+ *  wait IS the journey. The iframe starts loading the instant the tear is
+ *  clicked, the tunnel plays over the top of it, and the tunnel does not
+ *  end until the game behind it is ready. If the load wins the race the
+ *  Skip button becomes live and the tunnel ends early; if the tunnel wins
+ *  it holds, still moving, until the load catches up.
+ *
+ *  Nobody ever looks at a black rectangle.
+ *
+ *  0.00  the tear fills the frame
+ *  0.18  through it: the tunnel, rushing
+ *  0.70  the far end brightens
+ *  1.00  out
+ * ======================================================================= */
+CINE_SCENE.warp = function (g, k) {
+  const d = CINE.data || {};
+  const back = !!d.back;            /* the way home runs the lens the other way */
+  const t = CINE.t;
+  const hue = d.hue || '#6cf0ff';
+
+  const dive = seg(k, 0, 0.2);
+  const run  = seg(k, 0.14, 0.78);
+  const out  = seg(k, 0.72, 1);
+
+  g.clearRect(0, 0, W, H);
+  const bg = g.createRadialGradient(W/2, H/2, 20, W/2, H/2, W*0.75);
+  bg.addColorStop(0, back ? '#071024' : '#04101e');
+  bg.addColorStop(0.5, '#050718');
+  bg.addColorStop(1, '#01020a');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+
+  const cx = W/2, cy = H*0.5;
+  /* speed ramps up, holds while the tunnel waits for the load, and only
+     lets go at the end — so a long wait reads as a long journey */
+  const spd = ease(dive)*1 + run*1.6;
+
+  /* ---- the walls of the tunnel ----
+     Rings receding to a point, each one rolled a little further than the
+     last so the whole thing reads as rifled rather than as a stack of
+     circles. */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    /* z runs 1 (far) to 0 (past the camera), looping, so the tunnel is
+       endless however long the load takes */
+    let z = ((i/N) + (back ? t*0.26 : -t*0.26)) % 1;
+    if (z < 0) z += 1;
+    const sc = 1/(0.05 + z*1.6);
+    const rr = 54*sc;
+    if (rr > W*1.5) continue;
+    const roll = z*2.4 + t*0.3;
+    g.globalAlpha = Math.min(0.5, (1 - z)*0.55)*(0.4 + spd*0.6);
+    g.strokeStyle = i % 4 === 0 ? '#ffffff' : hue;
+    g.lineWidth = Math.max(0.6, 2.6*sc*0.3);
+    g.save();
+    g.translate(cx, cy); g.rotate(roll);
+    g.beginPath();
+    /* not a circle: the same torn outline the rift had, so the tunnel is
+       plainly the inside of the hole you went through */
+    const seg2 = 20;
+    for (let j = 0; j <= seg2; j++) {
+      const a = (j/seg2)*Math.PI*2;
+      const jj = 1 + Math.sin(a*3 + i)*0.09 + Math.sin(a*7 - i*0.4)*0.04;
+      const px = Math.cos(a)*rr*jj, py = Math.sin(a)*rr*0.78*jj;
+      j ? g.lineTo(px, py) : g.moveTo(px, py);
+    }
+    g.closePath(); g.stroke();
+    g.restore();
+  }
+  g.restore();
+
+  /* ---- what is rushing past ---- */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  g.lineCap = 'round';
+  for (let i = 0; i < 150; i++) {
+    const a = (i*0.419) % 6.2832;
+    let z = ((i*53 % 1000)/1000 + (back ? t*0.6 : -t*0.6)) % 1;
+    if (z < 0) z += 1;
+    const sc = 1/(0.06 + z*1.7);
+    const rr = (30 + (i % 9)*7)*sc;
+    if (rr > W) continue;
+    const L = 10 + spd*52*sc*0.3;
+    g.globalAlpha = Math.min(0.85, (1 - z)*0.9)*(0.3 + spd*0.7);
+    g.strokeStyle = i % 11 === 0 ? '#ffe9b0' : i % 3 === 0 ? '#ffffff' : hue;
+    g.lineWidth = 1 + sc*0.25;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a)*rr, cy + Math.sin(a)*rr*0.78);
+    g.lineTo(cx + Math.cos(a)*(rr + L), cy + Math.sin(a)*(rr + L)*0.78);
+    g.stroke();
+  }
+  g.restore();
+
+  /* ---- the far end ---- */
+  g.save();
+  g.globalCompositeOperation = 'lighter';
+  const endK = out > 0 ? ease(out) : Math.min(0.22, run*0.22);
+  const er = 20 + endK*endK*1900;
+  const eg = g.createRadialGradient(cx, cy, 2, cx, cy, Math.max(4, er));
+  eg.addColorStop(0, '#ffffff');
+  eg.addColorStop(0.35, hue);
+  eg.addColorStop(1, 'rgba(0,0,0,0)');
+  g.globalAlpha = 0.5 + endK*0.5;
+  g.fillStyle = eg;
+  g.beginPath(); g.arc(cx, cy, Math.max(4, er), 0, 7); g.fill();
+  g.restore();
+
+  /* ---- the tear closing over the camera at the start ---- */
+  if (dive < 1 && d.from) {
+    const e = ease(dive);
+    g.save();
+    g.globalAlpha = 1 - e;
+    g.translate(cx, cy);
+    const sc = 1 + e*9;
+    g.scale(sc, sc);
+    g.strokeStyle = '#05060f'; g.lineWidth = 12/sc;
+    g.beginPath();
+    for (let j = 0; j <= 24; j++) {
+      const a = (j/24)*Math.PI*2;
+      const jj = 1 + Math.sin(a*3)*0.085 + Math.sin(a*7)*0.045;
+      const px = Math.cos(a)*(d.from.w/2)*jj, py = Math.sin(a)*(d.from.h/2)*jj;
+      j ? g.lineTo(px, py) : g.moveTo(px, py);
+    }
+    g.closePath(); g.stroke();
+    g.restore();
+  }
+
+  /* ---- the caption, so the wait is never unexplained ---- */
+  if (k > 0.08 && out < 0.5) {
+    g.save();
+    g.globalAlpha = Math.min(1, (k - 0.08)*6)*(1 - out*2);
+    g.textAlign = 'center';
+    g.font = '700 13px ' + UI_FONT;
+    g.fillStyle = 'rgba(190,214,245,.75)';
+    g.fillText(back ? 'RETURNING' : 'FALLING BACK', cx, H - 92);
+    g.font = '800 34px ' + UI_FONT;
+    g.fillStyle = '#eaf4ff';
+    g.fillText(d.title || 'Jaxon Tower Defense', cx, H - 56);
+    if (!back) {
+      g.font = '600 12.5px ' + UI_FONT;
+      g.fillStyle = LEGACY.ready ? '#7dffb4' : 'rgba(150,176,214,.8)';
+      g.fillText(LEGACY.ready ? 'ready' : 'opening the old build\u2026', cx, H - 34);
+    }
+    g.restore();
+  }
+
+  if (out > 0.86) {
+    const f = (out - 0.86)/0.14;
+    g.fillStyle = 'rgba(255,255,255,' + f*0.9 + ')';
+    g.fillRect(0, 0, W, H);
+  }
+};
+
+/* ============================================= a legacy session ======== *
+ *  The old game is the real packaged build in an iframe. Nothing of ours
+ *  runs on top of it but one button, because a Scratch stage has nowhere
+ *  to put a second interface.
+ * ======================================================================= */
+const LEGACY = { on:null, ready:false, job:0, minT:0 };
+
+function enterLegacy(r) {
+  if (LEGACY.on || CINE.kind) return;
+  LEGACY.on = r; LEGACY.ready = false;
+  const fr = $('legacyFrame');
+  const ov = $('ovLegacy');
+
+  /* start the load NOW, behind the warp. The eight megabytes have to come
+     off disk either way; the tunnel is what the player does while it
+     does. */
+  fr.onload = () => { LEGACY.ready = true; };
+  fr.src = r.src;
+  ov.classList.add('on');
+  ov.style.visibility = 'hidden';          /* loading, but not yet watched */
+
+  sfx('warp');
+  setTimeout(() => sfx('rocket'), 500);
+  msStop();
+
+  /* The tunnel runs for at least four seconds and then waits for the
+     load. A skip is offered the moment the game behind it is ready —
+     cinePlay puts the button up on its own, and the guard below makes
+     sure pressing it early cannot drop you into a half-built page. */
+  LEGACY.minT = performance.now() + 4000;
+  cineWarpHold(r, false, () => {
+    ov.style.visibility = '';
+    $('lqName').textContent = r.title;
+    document.body.classList.add('legacy');
+    /* focus the frame so the old game gets the keyboard */
+    try { fr.contentWindow.focus(); } catch (e) {}
+    legacyWatchKeys();
+    /* the way out, said once and then left alone */
+    const hint = $('legacyHint');
+    if (hint) {
+      hint.classList.remove('on'); void hint.offsetWidth;
+      hint.classList.add('on');
+      clearTimeout(LEGACY.job);
+      ov.classList.add('fresh');
+      LEGACY.job = setTimeout(() => {
+        hint.classList.remove('on');
+        ov.classList.remove('fresh');
+      }, 5200);
+    }
+  });
+}
+
+/* Runs the tunnel on a loop until the thing behind it is ready, then
+   plays it out. cinePlay is a fixed-length machine, so the hold is done
+   by restarting a short leg rather than by stretching one. */
+function cineWarpHold(r, back, done) {
+  const data = { title:r.title, hue:r.hue, back:back, from:{ w:r.w, h:r.h } };
+  const ok = () => (back ? true : (LEGACY.ready && performance.now() >= LEGACY.minT));
+  const leg = () => {
+    if (ok()) {
+      cinePlay('warp', 1.5, 0.99, () => {}, done, data);
+      return;
+    }
+    /* another length of tunnel. The scene is seamless across legs
+       because its motion comes from CINE.t, which keeps counting. */
+    cinePlay('warpHold', 1.2, 0.99, () => {}, leg, data);
+  };
+  leg();
+}
+CINE_SCENE.warpHold = function (g, k) {
+  /* the middle of the journey: the same tunnel, never arriving */
+  CINE_SCENE.warp(g, 0.3 + k*0.2);
+};
+
+function quitLegacy() {
+  const r = LEGACY.on;
+  if (!r) return;
+  $('legacyAsk').classList.remove('on');
+  legacyUnwatchKeys();
+  const fr = $('legacyFrame');
+  /* stop it dead: a Scratch VM left running in a hidden iframe keeps its
+     audio and its timers */
+  try { fr.contentWindow.location.replace('about:blank'); } catch (e) {}
+  fr.removeAttribute('src');
+  $('ovLegacy').classList.remove('on');
+  document.body.classList.remove('legacy');
+  LEGACY.on = null; LEGACY.ready = true;
+  sfx('warp');
+  cinePlay('warp', 1.6, 0.9, () => { showModes(); }, () => {},
+           { title:'Jaxon Tower Defense 3', hue:r.hue, back:true, from:{ w:r.w, h:r.h } });
+}
+
+function askQuitLegacy() {
+  if (!LEGACY.on) return;
+  $('legacyAsk').classList.add('on');
+  sfx('open');
+}
+
+/* Esc has to work from inside the frame as well as outside it. The frame
+   is same-origin when the build sits next to this file, so the listener
+   usually takes; when it does not, the corner button is always there. */
+let _legKey = null, _legInner = null;
+function legacyWatchKeys() {
+  _legKey = ev => {
+    if (!LEGACY.on) return;
+    if (ev.key !== 'Escape') return;
+    ev.preventDefault();
+    if ($('legacyAsk').classList.contains('on')) $('legacyAsk').classList.remove('on');
+    else askQuitLegacy();
+  };
+  window.addEventListener('keydown', _legKey, true);
+  try {
+    const doc = $('legacyFrame').contentDocument;
+    if (doc) { _legInner = _legKey; doc.addEventListener('keydown', _legInner, true); }
+  } catch (e) { /* cross-origin: the button carries it */ }
+}
+function legacyUnwatchKeys() {
+  if (_legKey) window.removeEventListener('keydown', _legKey, true);
+  if (_legInner) {
+    try { $('legacyFrame').contentDocument.removeEventListener('keydown', _legInner, true); } catch (e) {}
+  }
+  _legKey = null; _legInner = null;
 }
 
 /* ======================================================== THE ROCKET ====
@@ -24114,6 +24655,48 @@ $('ovMenu').addEventListener('pointerdown', ev => {
     if (b) coachDone('celestial');
   }, true);
 })();
+/* The front page had no pointer handling at all — the parallax was
+   wired and never fed. The rifts need hit testing anyway, so it gets
+   both at once. */
+(function () {
+  const cvs = $('menuCv');
+  if (!cvs) return;
+  const at = ev => {
+    const b = cvs.getBoundingClientRect();
+    return { x:(ev.clientX - b.left)/(b.width || W)*W,
+             y:(ev.clientY - b.top)/(b.height || H)*H };
+  };
+  const ov = $('ovMenu');
+  ov.addEventListener('pointermove', ev => {
+    if (!MS.raf) return;
+    const p = at(ev);
+    MS.mx = p.x/W; MS.my = p.y/H;
+    /* a rift is only reachable over bare sky: anything with its own
+       button on top of it wins the pointer */
+    const overUI = ev.target !== cvs && ev.target !== ov;
+    const r = overUI ? null : riftAt(p.x, p.y);
+    if (r !== riftHot) {
+      riftHot = r;
+      if (r) { sfxHover(); }
+      cvs.style.cursor = r ? 'pointer' : '';
+      ov.style.cursor = r ? 'pointer' : '';
+    }
+  });
+  ov.addEventListener('pointerleave', () => { riftHot = null; MS.mx = 0.5; MS.my = 0.5; });
+  ov.addEventListener('click', ev => {
+    if (!MS.raf || CINE.kind) return;
+    if (ev.target !== cvs && ev.target !== ov) return;
+    const p = at(ev);
+    const r = riftAt(p.x, p.y);
+    if (r) { ev.stopPropagation(); enterLegacy(r); }
+  }, true);
+})();
+$('legacyQuit').onclick = askQuitLegacy;
+$('lqGo').onclick = quitLegacy;
+$('lqStay').onclick = () => { $('legacyAsk').classList.remove('on'); sfx('close'); };
+$('legacyAsk').addEventListener('click', ev => {
+  if (ev.target.id === 'legacyAsk') $('legacyAsk').classList.remove('on');
+});
 $('hubBack').onclick = hubToMenu;
 $('hubOrb').onclick = openOrb;
 $('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') closeOrb(); });
