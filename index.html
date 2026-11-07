@@ -420,8 +420,43 @@
   /* ---------------------------------------------------- shop categories ---
      A single scrolling row of filters above the shelf. The shelf keeps its
      own scroll, so the filters never leave the top of the drawer. */
+  #eras{
+    position:absolute;top:0;left:0;right:0;height:38px;z-index:3;
+    display:flex;align-items:center;gap:var(--s2);padding:0 var(--s4);
+    border-bottom:1px solid var(--line-soft);
+  }
+  #eras .lbl{
+    font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--dim);margin-right:var(--s1);
+  }
+  #eras button{
+    flex:none;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;
+    display:flex;align-items:center;gap:var(--s2);
+    height:26px;padding:0 var(--s3);border-radius:var(--r-full);
+    background:transparent;border:1px solid var(--line);color:var(--dim);
+    transition:background var(--t-hover) var(--e),color var(--t-hover) var(--e),
+               border-color var(--t-hover) var(--e);
+  }
+  #eras button i{
+    font-style:normal;width:16px;height:16px;border-radius:5px;
+    display:grid;place-items:center;font-size:10.5px;font-weight:800;
+    background:rgba(255,255,255,.1);color:inherit;
+  }
+  #eras button:hover{color:var(--ink);border-color:rgba(255,255,255,.26)}
+  #eras button.on{
+    color:#fff;background:var(--ec,#0a84ff);border-color:transparent;
+  }
+  #eras button.on i{background:rgba(0,0,0,.25);color:#fff}
+  #eras .note{
+    margin-left:auto;font-size:11.5px;color:var(--warn,#ffd60a);opacity:.9;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%;
+  }
+  body.mobile #eras{height:var(--tap);padding:0 var(--s4)}
+  body.mobile #eras button{height:32px;font-size:14px}
+  body.mobile #eras .note{display:none}
+  /* the shelf and the filters drop to make room for the era rail */
   #cats{
-    position:absolute;top:0;left:0;right:0;height:var(--catH,48px);z-index:2;
+    position:absolute;top:38px;left:0;right:0;height:var(--catH,48px);z-index:2;
     display:flex;align-items:center;gap:var(--s2);padding:0 var(--s4);
     overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;
     scrollbar-width:none;-ms-overflow-style:none;
@@ -452,7 +487,10 @@
      the whole card dimming, not by draining the artwork of its colour —
      a Jaxon you cannot buy yet is still recognisably that Jaxon. */
   #shelf{
-    position:absolute;inset:var(--catH,48px) 0 0;
+    /* the era rail sits above the category filters, so the shelf starts
+       below both of them */
+    --eraH:38px;
+    position:absolute;inset:calc(var(--catH,48px) + var(--eraH)) 0 0;
     display:flex;align-items:flex-start;align-content:flex-start;
     justify-content:center;flex-wrap:wrap;gap:var(--s3) var(--s2);
     padding:var(--s4) var(--s3) var(--s3);
@@ -506,6 +544,14 @@
   .med .nm{
     font-size:11px;font-weight:590;line-height:1.2;text-align:center;
     min-height:26px;color:var(--ink);
+  }
+  .med .era{
+    position:absolute;top:6px;left:6px;z-index:2;
+    width:17px;height:17px;border-radius:5px;
+    display:grid;place-items:center;
+    font-size:10.5px;font-weight:800;color:#06121c;
+    background:var(--ec,#6cf0ff);
+    box-shadow:0 1px 4px rgba(0,0,0,.4);
   }
   .med .pr{
     font-size:11.5px;font-weight:600;color:var(--gold);
@@ -1692,6 +1738,13 @@
     display:flex;justify-content:space-between;gap:var(--s3);margin-top:var(--s2);
     padding-top:var(--s2);border-top:1px solid var(--line-soft);
     font-size:12px;color:var(--mute);
+  }
+  /* a run that borrowed from an older game is filed in its own colour,
+     so nobody has to wonder which board a number is on */
+  .bsChal.mix{--mc:#6cf0ff}
+  .bsChal.mix span::before{
+    content:'1·2';margin-right:7px;font-size:9.5px;font-weight:800;
+    padding:1px 5px;border-radius:4px;background:rgba(108,240,255,.18);color:#6cf0ff;
   }
   .bsChal b{color:#ffc44a;font-weight:590}
 
@@ -3328,6 +3381,7 @@
   body.mobile #shopTab .chev{width:22px;height:22px}
   body.mobile #shopTab .hint{display:none}
   body.mobile #shelf{
+    --eraH:var(--tap);
     max-width:none;padding:var(--s5) var(--s5) var(--s5);gap:var(--s4) var(--s3);
     align-content:flex-start;overflow-y:auto;overflow-x:hidden;
     -webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;
@@ -3703,6 +3757,7 @@
 
     <div id="drawer">
       <div class="sheen"></div>
+      <div id="eras" role="tablist" aria-label="Which game"></div>
       <div id="cats" role="tablist" aria-label="Shop categories"></div>
       <div id="shelf"></div>
     </div>
@@ -5373,6 +5428,92 @@ ULTRA_KIT.celestial = {
       <path d="M248 214 l 14 -9 l 14 9 l 14 -9"/>
     </g>`
 };
+/* ---------------------------------------------------- the old Jaxons -
+   JTD1's roster were Jaxons already, so they come across as Jaxons in
+   their own colours. JTD2's were not — cameramen, speakermen and tvmen
+   have appliances for heads — so those get a head piece drawn over the
+   body. A JTD2 turret with a plain Jaxon face would be the exact "random
+   reskin" this was not supposed to be. */
+ULTRA_KIT.l2head = {
+  back:() => '',
+  front:v => {
+    /* everything below is drawn around the face at its natural size and
+       then blown up about the middle of it, so one number controls how
+       much of the Jaxon the appliance covers */
+    const W1 = p => '<g transform="translate(230,168) scale(1.62) translate(-230,-168)">' + p + '</g>';
+    const h = v.l2head || 'tv';
+    const m = v.l2metal || '#3a4350', md = v.l2metalD || '#1a1f28';
+    const gl = v.l2glow || '#4fd3ff';
+    if (h === 'camera')
+      return W1(`<g stroke="${md}" stroke-width="9" stroke-linejoin="round">
+          <rect x="150" y="96" width="166" height="118" rx="14" fill="${m}"/>
+          <rect x="298" y="124" width="54" height="62" rx="8" fill="${md}"/>
+          <circle cx="228" cy="155" r="40" fill="#0d1218"/>
+          <circle cx="228" cy="155" r="24" fill="${gl}" opacity=".9"/>
+          <circle cx="218" cy="145" r="9" fill="#ffffff" opacity=".85" stroke="none"/>
+          <rect x="176" y="64" width="40" height="34" rx="6" fill="${md}"/>
+        </g>`);
+    if (h === 'speaker')
+      return W1(`<g stroke="${md}" stroke-width="9" stroke-linejoin="round">
+          <rect x="146" y="78" width="172" height="146" rx="16" fill="${m}"/>
+          <circle cx="232" cy="150" r="52" fill="#0d1218"/>
+          <circle cx="232" cy="150" r="30" fill="${gl}" opacity=".55"/>
+          <circle cx="232" cy="150" r="13" fill="${md}"/>
+          <rect x="166" y="92" width="28" height="28" rx="5" fill="${gl}" opacity=".7"/>
+        </g>`);
+    /* a television */
+    return W1(`<g stroke="${md}" stroke-width="9" stroke-linejoin="round">
+        <rect x="140" y="80" width="186" height="142" rx="14" fill="${m}"/>
+        <rect x="166" y="104" width="134" height="94" rx="8" fill="#08121a"/>
+        <rect x="166" y="104" width="134" height="94" rx="8" fill="${gl}" opacity=".55" stroke="none"/>
+        <path d="M172 196 L300 112" stroke="rgba(255,255,255,.35)" stroke-width="12" fill="none"/>
+        <rect x="196" y="48" width="12" height="36" rx="6" fill="${md}" transform="rotate(-22 202 66)"/>
+        <rect x="258" y="48" width="12" height="36" rx="6" fill="${md}" transform="rotate(22 264 66)"/>
+      </g>`);
+  }
+};
+
+/* ---- JTD1: they were Jaxons, so they stay Jaxons ---- */
+VARIANTS.l1_army  = { suitLite:'#9fb87a', suit:'#5d7040', suitDark:'#2e3a18',
+                      arm:'#3c4a22', armDark:'#1a2208', outline:'#141a08', outlineWidth:6 };
+VARIANTS.l1_star  = { suitLite:'#8fb6ff', suit:'#2a4fc8', suitDark:'#122a7a',
+                      arm:'#1b357a', armDark:'#0a1640', outline:'#071030', outlineWidth:6,
+                      pacG:'#ffe24a', pacGD:'#a87c00', pacO:'#6cf0ff', pacOD:'#135a6a' };
+VARIANTS.l1_shade = { suitLite:'#4a4f57', suit:'#1b1d22', suitDark:'#0a0b0e',
+                      arm:'#15171b', armDark:'#040506', outline:'#000000', outlineWidth:6 };
+VARIANTS.l1_red   = { suitLite:'#ff9a8a', suit:'#d8342a', suitDark:'#7a1008',
+                      arm:'#3a3a3a', armDark:'#141414', outline:'#3a0804', outlineWidth:6 };
+VARIANTS.l1_blue  = { suitLite:'#8fc6ff', suit:'#2a6fd8', suitDark:'#0f3278',
+                      arm:'#3a3a3a', armDark:'#141414', outline:'#06183a', outlineWidth:6 };
+VARIANTS.l1_sci   = { suitLite:'#f2f4f8', suit:'#c6ccd6', suitDark:'#7a828e',
+                      arm:'#9aa2ae', armDark:'#4a515a', outline:'#2a2f36', outlineWidth:6,
+                      pacG:'#7fe9ff', pacGD:'#176a7e', pacO:'#ffe24a', pacOD:'#a87c00' };
+VARIANTS.l1_gold  = { suitLite:'#9ff0e0', suit:'#36b9a4', suitDark:'#115a4e',
+                      arm:'#ffd84a', armDark:'#a87c00', outline:'#06302a', outlineWidth:6,
+                      pacG:'#ffd84a', pacGD:'#a87c00', pacO:'#ffe9a8', pacOD:'#7a5a00' };
+VARIANTS.l1_titan = { wide:true,
+                      suitLite:'#ffd98a', suit:'#c08a2a', suitDark:'#5e3c06',
+                      arm:'#4a4a52', armDark:'#1a1a20', outline:'#2a1a02', outlineWidth:7,
+                      pacG:'#ff7a2e', pacGD:'#8a3208', pacO:'#ffd84a', pacOD:'#a87c00' };
+
+/* ---- JTD2: appliances with legs ---- */
+const L2 = (head, metal, metalD, glow, suit, suitLite, suitDark) =>
+  ({ ultra:'l2head', wide:true, l2head:head, l2metal:metal, l2metalD:metalD, l2glow:glow,
+     suitLite, suit, suitDark, arm:metalD, armDark:'#0a0d12',
+     outline:'#0a0d12', outlineWidth:7, pacG:glow, pacGD:metalD, pacO:metal, pacOD:metalD });
+VARIANTS.l2_cam    = L2('camera','#4a545f','#20262e','#4fd3ff','#2e3540','#59636f','#161a20');
+VARIANTS.l2_spk    = L2('speaker','#5a4a3a','#261e16','#ffb44a','#3a2e22','#6a584a','#1c1510');
+VARIANTS.l2_tv     = L2('tv','#48505c','#1e242c','#7ff0b0','#2c323c','#555e6a','#141820');
+VARIANTS.l2_lcam   = L2('camera','#5e6a78','#262e38','#6ce0ff','#343c48','#68737f','#1a1f26');
+VARIANTS.l2_lspk   = L2('speaker','#6e5a44','#2c2218','#ffc45a','#443626','#7a6452','#201812');
+VARIANTS.l2_ltv    = L2('tv','#5a6472','#242c36','#9affc8','#363e4a','#6a7482','#181d24');
+VARIANTS.l2_tcam   = L2('camera','#78869a','#2e3844','#aef0ff','#3e4856','#8a94a2','#1e242c');
+VARIANTS.l2_tspk   = L2('speaker','#8a6c48','#34281a','#ffd87a','#50402c','#96785a','#241a12');
+VARIANTS.l2_ttv    = L2('tv','#6e7a8c','#2a3340','#c8ffe0','#424c5a','#7e8898','#1c222a');
+VARIANTS.l2_dspk   = L2('speaker','#2e2438','#120c18','#bf5af2','#1e1826','#3e3450','#0a0610');
+VARIANTS.l2_plung  = L2('tv','#6a4a3a','#2a1a12','#ff7a4a','#3a2a20','#7a5a46','#1c1008');
+VARIANTS.l2_ltv2   = L2('tv','#4a3a5e','#1c1428','#ff3b5c','#302442','#5a4a70','#140e1e');
+
 VARIANTS.celestial = { ultra:'celestial', wide:true,
                     suitLite:'#46306e', suit:'#1d1033', suitDark:'#0a0417',
                     arm:'#1a0f2a', armDark:'#05020c',
@@ -5844,6 +5985,28 @@ const UPGRADES = {
   uranus:  { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   neptune: { levels:true, A: { name:"—", tiers:[] }, B: { name:"—", tiers:[] } },
   /* The one Adventure Jaxon who is not finished when you get him. */
+  /* The old Jaxons arrive finished. Their games had no upgrade tiers and
+     inventing some would be the point at which they stopped being them. */
+  l1_army:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_star:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_shade:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_red:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_blue:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_sci:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_gold:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l1_titan:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_cam:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_spk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_tv:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_lcam:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_lspk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_ltv:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_plung:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_dspk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_ltv2:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_tcam:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_tspk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  l2_ttv:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   celestial:{ levels:true,
     A: { name:'Event Horizon', tiers:[
       { name:'Tighter Orbit',  cost:260000,
@@ -6872,11 +7035,15 @@ const CHALLENGES = [
 const hasChal = id => !!(S.chal && S.chal[id]);
 const chalList = () => CHALLENGES.filter(c => hasChal(c.id)).map(c => c.id);
 /* the key a best is filed under: the mode, plus whatever rules were on */
+/* has anything from an older game been on the board this run */
+const runMixed = () => !!S.mixed;
 const runKey = () => {
   const c = chalList();
   /* every world keeps its own best, so the key carries which one it is */
   const m = S.mode === 'adventure' && S.world ? 'adventure:' + S.world : S.mode;
-  return m + (c.length ? '|' + c.join('+') : '');
+  /* and a run that used the past keeps its own board, so a pure record
+     is never beaten by a run that had help from another game */
+  return m + (c.length ? '|' + c.join('+') : '') + (S.mixed ? '#legacy' : '');
 };
 const chalName = key => {
   const [m, c] = key.split('|');
@@ -7247,6 +7414,95 @@ const TOWERS = {
              splash:14000, splashR:340, pierce:4, baseXtra:{ slowHit:1, burnHit:1, antiHeal:1 }, adv:'neptune',
              blurb:'The last thing the campaign gives you. 26k every 0.22s through four, 14k across 340, slowing and burning, and nothing it hits heals again.',
              tags:[['Adventure','t-rain'],['Ultra','t-rain'],['Splash','t-aoe']] },
+  /* ================================================================== *
+   *  BACK TO THE PAST                                                   *
+   *                                                                     *
+   *  Eight from the first game and twelve from the second. Names,       *
+   *  prices and order are the originals — JTD2's came out of the        *
+   *  running build's own TurretTypes and TurretCosts lists, JTD1's out  *
+   *  of its shop. Every one has its own ammo and its own job; none of   *
+   *  them is a JTD3 tower wearing a hat.                                *
+   * ================================================================== */
+
+  /* ---------- JTD 1 ---------- */
+  l1_army:  { name:'Army Jaxon', era:1, cost:50, range:270, cd:0.9, dmg:11, speed:720, ammo:'l1car',
+             blurb:'The very first Jaxon anyone ever placed. One toy car at a time, at whatever is closest to the end.',
+             tags:[['JTD 1','t-rain'],['Single Target','t-single'],['Starter','']] },
+  l1_star:  { name:'Star Jaxon', era:1, cost:120, range:320, cd:1.25, dmg:18, speed:600, ammo:'l1star',
+             splash:9, splashR:140,
+             blurb:'Throws a spinning star that bursts on contact. Short reach, wide landing.',
+             tags:[['JTD 1','t-rain'],['Splash','t-aoe']] },
+  l1_shade: { name:'Shadow Jaxon', era:1, cost:180, range:250, cd:0.15, dmg:4, speed:1050, ammo:'l1shuri',
+             blurb:'The ninja from the first game. Shurikens, far too many of them, and not a lot of reach.',
+             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast']] },
+  l1_red:   { name:'Red Gunner', era:1, cost:400, range:360, cd:0.42, dmg:34, speed:1300, ammo:'l1slug', pierce:1,
+             blurb:'The first Jaxon with a real gun. Heavy slugs that punch through the one behind.',
+             tags:[['JTD 1','t-rain'],['Pierce','t-single']] },
+  l1_blue:  { name:'Blue Gunner', era:1, cost:650, range:420, cd:0.3, dmg:46, speed:1500, ammo:'l1slug', pierce:2,
+             blurb:'His brother, and an upgrade in every direction. Three bodies a shot.',
+             tags:[['JTD 1','t-rain'],['Pierce','t-single'],['Long Range','t-fast']] },
+  l1_sci:   { name:'Scientist Jaxon', era:1, cost:900, range:390, cd:1.0, dmg:120, speed:900, ammo:'l1beaker',
+             splash:70, splashR:190, baseXtra:{ slowHit:1 },
+             blurb:'Lobs something that should not be lobbed. It bursts, and what walks out of it is slow.',
+             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Slows','t-single']] },
+  l1_gold:  { name:'Gold Rush Jaxon', era:1, cost:1200, range:Infinity, cd:5.0, dmg:0, ammo:'bank',
+             income:62, interest:0,
+             blurb:'Does not fight. Shakes coins loose every five seconds while a wave is running, the way the first game paid you.',
+             tags:[['JTD 1','t-rain'],['Income','t-fast'],['No Damage','']] },
+  l1_titan: { name:'Titan Jaxon (JTD 1)', era:1, cost:25000, range:520, cd:0.5, dmg:2200, speed:1400,
+             ammo:'l1fire', splash:1400, splashR:300, baseXtra:{ burnHit:1 },
+             blurb:'The thing at the end of the first game, standing on your side for once. Fire, and a lot of it.',
+             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Burn','t-fast']] },
+
+  /* ---------- JTD 2 ---------- *
+     Order and price straight off the build's TurretTypes / TurretCosts. */
+  l2_cam:   { name:'Cameraman', era:2, cost:50, range:300, cd:0.55, dmg:9, speed:1500, ammo:'l2laser',
+             blurb:'A thin red laser, fast and cheap. The first thing you ever buy in the second game.',
+             tags:[['JTD 2','t-rain'],['Single Target','t-single'],['Starter','']] },
+  l2_spk:   { name:'Speakerman', era:2, cost:100, range:260, cd:1.6, dmg:16, ammo:'l2wave', speed:1500,
+             splash:16, splashR:230, pierce:99,
+             blurb:'A cone of sound. No projectile to dodge and no limit on how many it washes over.',
+             tags:[['JTD 2','t-rain'],['Soundwave','t-aoe'],['Infinite Pierce','t-aoe']] },
+  l2_tv:    { name:'TV Man', era:2, cost:150, range:340, cd:0.75, dmg:30, speed:1200, ammo:'l2beam',
+             blurb:'Fires whatever is on the screen. Steadier and harder than the cameraman, and it reaches further.',
+             tags:[['JTD 2','t-rain'],['Single Target','t-single']] },
+  l2_lcam:  { name:'Large Cameraman', era:2, cost:350, range:380, cd:0.34, dmg:42, speed:1700,
+             ammo:'l2laser', pierce:1,
+             blurb:'The cameraman, grown. A heavier laser twice as often, and it does not stop at the first one.',
+             tags:[['JTD 2','t-rain'],['Pierce','t-single'],['Rapid Fire','t-fast']] },
+  l2_lspk:  { name:'Large Speakerman', era:2, cost:700, range:310, cd:1.4, dmg:78, ammo:'l2wave', speed:1500,
+             splash:78, splashR:300, pierce:99, baseXtra:{ slowHit:1 },
+             blurb:'Loud enough to stagger the whole lane. Everything it washes over slows down.',
+             tags:[['JTD 2','t-rain'],['Soundwave','t-aoe'],['Slows','t-single']] },
+  l2_ltv:   { name:'Large TV Man', era:2, cost:1250, range:430, cd:0.6, dmg:210, speed:1500,
+             ammo:'l2beam', splash:90, splashR:180,
+             blurb:'A screen the size of a door, and it is pointed at you. The hit lands and then the air does.',
+             tags:[['JTD 2','t-rain'],['Splash','t-aoe']] },
+  l2_plung: { name:'Plunger Man', era:2, cost:500, range:230, cd:0.1, dmg:34, ammo:'l2spin', speed:1300,
+             splash:34, splashR:200, pierce:99,
+             blurb:'Spins on the spot and will not stop. Nothing gets past him and nothing of him reaches far.',
+             tags:[['JTD 2','t-rain'],['Spin','t-aoe'],['Short Range','']] },
+  l2_dspk:  { name:'Dark Speakerman', era:2, cost:1000, range:340, cd:1.1, dmg:260, ammo:'l2wave', speed:1600,
+             splash:260, splashR:280, pierce:99, baseXtra:{ slowHit:1, burnHit:1 },
+             blurb:'The one that turned. A black wave that slows and keeps burning afterwards.',
+             tags:[['JTD 2','t-rain'],['Soundwave','t-aoe'],['Burn','t-fast']] },
+  l2_ltv2:  { name:'Laser TV Man', era:2, cost:1750, range:520, cd:0.26, dmg:330, speed:2100,
+             ammo:'l2knife', pierce:3,
+             blurb:'A blade of light through three at a time, from most of the way across the board.',
+             tags:[['JTD 2','t-rain'],['Pierce','t-single'],['Long Range','t-fast']] },
+  l2_tcam:  { name:'Titan Cameraman', era:2, cost:6000, range:560, cd:0.3, dmg:1500, speed:2200,
+             ammo:'l2laser', pierce:4,
+             blurb:'The first of the three. A laser that does not acknowledge the queue.',
+             tags:[['JTD 2','t-rain'],['Titan','t-rain'],['Pierce','t-single']] },
+  l2_tspk:  { name:'Titan Speakerman', era:2, cost:9000, range:470, cd:1.0, dmg:3400, ammo:'l2wave', speed:1700,
+             splash:3400, splashR:420, pierce:99, baseXtra:{ slowHit:1 },
+             blurb:'The second. One note, the whole lane, everything in it slowed to a crawl.',
+             tags:[['JTD 2','t-rain'],['Titan','t-rain'],['Soundwave','t-aoe']] },
+  l2_ttv:   { name:'Titan TV Man', era:2, cost:12000, range:600, cd:0.55, dmg:5200, speed:1900,
+             ammo:'l2beam', splash:4200, splashR:480, pierce:2,
+             blurb:'The last one standing at the end of the second game. Hits everything, for more than anything else in it.',
+             tags:[['JTD 2','t-rain'],['Titan','t-rain'],['Splash','t-aoe']] },
+
   /* ------------------------------------------------------------------ *
    *  CELESTIAL JAXON — the thing on the other side of the finale.        *
    *                                                                      *
@@ -7296,6 +7552,15 @@ const TOWERS = {
    What each Jaxon is FOR, which is what the shop filters on. A Jaxon can
    wear more than one: the laser is both a damage dealer and a splash, and
    every late-game monster is still whatever it was to begin with. */
+const ERAS = {
+  3: { name:'JTD 3', badge:'3', col:'#0a84ff', sub:'This game' },
+  1: { name:'JTD 1', badge:'1', col:'#6cf0ff', sub:'The first one' },
+  2: { name:'JTD 2', badge:'2', col:'#8ab4ff', sub:'The sequel' }
+};
+/* which era a Jaxon belongs to. Absent means the present. */
+const eraOf = k => (TOWERS[k] && TOWERS[k].era) || 3;
+const isLegacy = k => eraOf(k) !== 3;
+
 const CATS = [
   ['all',      'All'],
   ['starters', 'Starters'],
@@ -7328,6 +7593,18 @@ const ROLE = {
   saturn:['dps','splash','adv','late'], uranus:['dps','splash','adv','late'],
   neptune:['dps','splash','adv','late','ultra'],
   celestial:['dps','splash','late','celestial'],
+  /* the old games. 'legacy' is their own rail; they keep their real jobs
+     as well, so a Speakerman still turns up under Splash. */
+  l1_army:['legacy','starters'],      l1_star:['legacy','splash'],
+  l1_shade:['legacy','dps'],          l1_red:['legacy','dps'],
+  l1_blue:['legacy','dps'],           l1_sci:['legacy','splash','support'],
+  l1_gold:['legacy','income'],        l1_titan:['legacy','dps','splash','late'],
+  l2_cam:['legacy','starters'],       l2_spk:['legacy','splash','support'],
+  l2_tv:['legacy','dps'],             l2_lcam:['legacy','dps'],
+  l2_lspk:['legacy','splash','support'], l2_ltv:['legacy','dps','splash'],
+  l2_plung:['legacy','splash'],       l2_dspk:['legacy','splash','support'],
+  l2_ltv2:['legacy','dps'],           l2_tcam:['legacy','dps','late'],
+  l2_tspk:['legacy','splash','late'], l2_ttv:['legacy','dps','splash','late'],
   crusher:['dps','late','ultra'],      booster:['support','late','ultra'],
   slayer:['dps','late','ultra'],       wiper:['splash','late','ultra'],
   infmirror:['dps','splash','late','ultra'],
@@ -7344,9 +7621,17 @@ const ROLE = {
 };
 /* The shelf runs cheapest first, whatever category is showing. ORDER is the
    curated roster; this is the same list put strictly in price order. */
+/* which game's shelf is on screen. Not a category — a Cameraman is not
+   a kind of JTD3 Jaxon, he is a Jaxon from somewhere else — so the era
+   swaps the whole roster rather than filtering one. */
+let shopEra = 3;
 const SHELF = () => ORDER.filter(k => !TOWERS[k].secret)
+                         .filter(k => eraOf(k) === shopEra)
                          .filter(k => !TOWERS[k].celestial || celestialOpen() || SB())
                          .sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
+/* everything on every shelf, for the code that does not care which era
+   is showing — hotkeys, saves, the collection, the stats sheet */
+const ALL_TOWERS = () => ORDER.filter(k => !TOWERS[k].secret);
 const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).includes(c));
 /* the Celestial tier is not "locked", it is ABSENT: nothing about it
    shows anywhere until Vorath is down, because half the point of the
@@ -7358,6 +7643,10 @@ const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
                'mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune',
                'crusher','booster','slayer','wiper','infmirror','astro','celestial',
+               /* the past, in the order the old shops listed it */
+               'l1_army','l1_star','l1_shade','l1_red','l1_blue','l1_sci','l1_gold','l1_titan',
+               'l2_cam','l2_spk','l2_tv','l2_lcam','l2_lspk','l2_ltv','l2_plung','l2_dspk',
+               'l2_ltv2','l2_tcam','l2_tspk','l2_ttv',
                'lunchbox','forge','yoyo','tablet','merchant',
                'titan','titantablet','stormcloud','eclipse','upgradedlaser','titanmax','director',
                'blackholelaser','mirror','truegod'];
@@ -7377,7 +7666,14 @@ const VALUE = {
                 saturn:100, uranus:100, neptune:100,
                 /* the Celestial pays the same end-game premium the other
                    three monsters do: it wins runs on its own otherwise */
-                celestial:88 };
+                celestial:88,
+                /* the old towers are priced against this game's line so
+                   they are playable rather than charitable */
+                l1_army:100, l1_star:100, l1_shade:100, l1_red:100, l1_blue:100,
+                l1_sci:100, l1_gold:100, l1_titan:100,
+                l2_cam:100, l2_spk:100, l2_tv:100, l2_lcam:100, l2_lspk:100,
+                l2_ltv:100, l2_plung:100, l2_dspk:100, l2_ltv2:100,
+                l2_tcam:100, l2_tspk:100, l2_ttv:100 };
 
 /* ------------------------------------------------------ Admin Jaxon ----
    He does not buy upgrades, he buys levels. Damage compounds hard for the
@@ -7447,6 +7743,11 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      /* the last Jaxon: taller than every ultra on the
                         shelf, and nowhere near the Titan */
                      celestial:1.55,
+                     /* the old titans were enormous in their own games */
+                     l1_titan:1.5, l2_tcam:1.4, l2_tspk:1.45, l2_ttv:1.5,
+                     l2_cam:1.05, l2_spk:1.05, l2_tv:1.05,
+                     l2_lcam:1.2, l2_lspk:1.2, l2_ltv:1.25,
+                     l2_dspk:1.2, l2_plung:1.1, l2_ltv2:1.25,
                      admin:1.2,
                      /* the face-only sheet MUST match the body it is laid over */
                      admin_face:1.2 };
@@ -7620,7 +7921,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
   runT:0, spent:0, money0:0, rushBest:{},
-  world:null, adv:null, shardFly:null, shardOwed:null, vorath:null, scorch:[],
+  world:null, adv:null, shardFly:null, shardOwed:null, vorath:null, mixed:false, scorch:[],
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -7680,6 +7981,7 @@ function loadSave() {
   if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
   if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
   if (typeof j.autoSkip === 'boolean') S.autoSkip = j.autoSkip;
+  S.legacyTold = j.legacyTold ? 1 : 0;
   if (typeof j.vol === 'number' && isFinite(j.vol)) S.vol = Math.max(0, Math.min(1, j.vol));
   if (typeof j.shake === 'boolean') S.shake = j.shake;
   if (typeof j.cbCues === 'boolean') S.cbCues = j.cbCues;
@@ -7774,10 +8076,34 @@ function saveNow() {
       ver:SAVE_VER,
       coins:Math.max(0, Math.floor(S.coins || 0)),
       volSfx:S.volSfx, volAmb:S.volAmb, combatLite:S.combatLite ? 1 : 0,
-      meta:S.meta, fpPaid:S.fpPaid, modeDone:S.modeDone
+      meta:S.meta, fpPaid:S.fpPaid, modeDone:S.modeDone,
+      legacyTold:S.legacyTold ? 1 : 0
     }));
   } catch (e) { /* storage disabled — settings just do not survive the tab */ }
 }
+/* The first time the past lands on the board. Said once per save, in
+   full, and then never again — the era badges carry it from then on. */
+function markMixed(k) {
+  if (S.mixed) return;
+  S.mixed = true;
+  /* the best this run was heading for belongs to the pure board; the
+     exhibition board starts from whatever is already on it */
+  S.best = bestHere();
+  S.bestAtStart = S.best;
+  buildEras(); syncHUD();
+  if (SB()) return;                     /* the sandbox pays nothing anyway */
+  const E = ERAS[eraOf(k)];
+  banner('EXHIBITION RUN', TOWERS[k].name + ' is from ' + E.name, E.col);
+  if (!S.legacyTold) {
+    S.legacyTold = 1; saveNow();
+    toast('A Jaxon from an older game is on the board. This run still ' +
+          'counts \u2014 on its own Mixed board \u2014 but it pays no Jaxon coins and ' +
+          'no shards.');
+  } else {
+    toast('Exhibition run \u00b7 no coins or shards');
+  }
+}
+
 /* the best run is worth writing the moment it changes, not at game over */
 function noteBest(w) {
   const key = runKey();
@@ -8324,6 +8650,34 @@ const SFX = {
   wind:     () => voice({ noise:'white', dur:1.6, vol:0.035, filter:'bandpass',
                           cut:700, cutTo:2100, q:0.8, bus:'amb' }),
 
+  /* --- Back to the Past --- */
+  /* a tear opening: a short electrical crack, then air going the wrong
+     way. The pitch falls because something is being pulled IN. */
+  rift:     () => {
+    voice({ noise:'white', dur:0.16, vol:0.05, filter:'highpass', cut:2600, cutTo:900 });
+    voice({ freq:1400, dur:0.5, type:'sine', vol:0.035, to:220 });
+    voice({ noise:'brown', dur:1.1, vol:0.04, filter:'lowpass', cut:200, cutTo:1400, bus:'amb' });
+  },
+  /* the tunnel: a long held tone under moving air, so it can run for as
+     long as the load takes without ever resolving */
+  warptube: () => {
+    voice({ freq:62, dur:3.4, type:'sawtooth', vol:0.04, to:96, bus:'amb' });
+    voice({ freq:186, dur:3.4, type:'sine', vol:0.022, to:242, bus:'amb' });
+    voice({ noise:'white', dur:3.4, vol:0.028, filter:'bandpass',
+            cut:420, cutTo:1500, q:1.4, bus:'amb' });
+  },
+  /* coming out the far end: the held tone resolves upward and stops */
+  emerge:   () => {
+    voice({ freq:220, dur:0.7, type:'sine', vol:0.05, to:1320 });
+    voice({ noise:'white', dur:0.5, vol:0.04, filter:'highpass', cut:800, cutTo:5200 });
+    voice({ freq:660, dur:0.3, type:'triangle', vol:0.03, to:990, delay:0.45 });
+  },
+  /* and the tear closing behind you */
+  riftshut: () => {
+    voice({ freq:900, dur:0.34, type:'sine', vol:0.04, to:140 });
+    voice({ noise:'brown', dur:0.4, vol:0.045, filter:'lowpass', cut:1600, cutTo:160 });
+  },
+
   /* --- progression --- */
   select:   () => { voice({ freq:620, dur:0.07, type:'triangle', vol:0.035, to:880 });
                     voice({ freq:2200, dur:0.07, type:'sine', vol:0.014 }); },
@@ -8641,6 +8995,32 @@ for (const k in TOWERS) TOWERS[k].key = k;
 
 /* which category the shelf is showing; the shop always opens on All */
 let shopCat = 'all';
+function buildEras() {
+  const el = $('eras');
+  if (!el) return;
+  el.innerHTML = '<span class="lbl">Era</span>' +
+    [3, 1, 2].map(e => {
+      const E = ERAS[e];
+      const n = ORDER.filter(k => eraOf(k) === e && !TOWERS[k].secret).length;
+      return '<button role="tab" data-e="' + e + '" style="--ec:' + E.col + '"' +
+             (e === shopEra ? ' class="on" aria-selected="true"' : '') +
+             ' title="' + E.sub + '"><i>' + E.badge + '</i>' + E.name +
+             '<span style="opacity:.55">' + n + '</span></button>';
+    }).join('') +
+    (runMixed() ? '<span class="note">Exhibition run \u00b7 no coins or shards</span>' : '');
+  el.querySelectorAll('button').forEach(b => b.onclick = () => {
+    setShopEra(+b.dataset.e);
+    sfx('tab');
+  });
+}
+function setShopEra(e) {
+  if (shopEra === e) return;
+  shopEra = e;
+  shopCat = 'all';
+  buildEras(); buildShelf(); buildCats(); syncShelf();
+  $('shelf').scrollTop = 0;
+}
+
 function buildCats() {
   $('cats').innerHTML = CATS.map(([c, label]) => {
     const k = SHELF().filter(x => inCat(x, c)).length;
@@ -8685,9 +9065,16 @@ function applyShopCat() {
 const visibleShop = [];
 
 function buildShelf() {
+  buildEras();
   $('shelf').innerHTML = SHELF().map((k, i) => {
     const t = TOWERS[k];
+    /* the era badge rides on the card, not just on the rail, so a Jaxon
+       that has made it onto your grass can still be placed at a glance */
+    const E = ERAS[eraOf(k)];
+    const badge = eraOf(k) === 3 ? ''
+      : `<span class="era" style="--ec:${E.col}" title="From ${E.name}">${E.badge}</span>`;
     return `<button class="med" data-key="${k}"${VARIANTS[k].wide ? ' data-wide' : ''} style="--i:${i}">
+        ${badge}
         <div class="ring"><span class="glow"></span><img src="${PORTRAIT[k]}" alt="${t.name}"></div>
         <span class="key">${i < 9 ? i+1 : ''}</span>
         <div class="nm">${t.name}</div>
@@ -8930,7 +9317,7 @@ function reset() {
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
-  S.shardOwed=null; S.vorath=null;
+  S.shardOwed=null; S.vorath=null; S.mixed=false;
   S.scorch=[];
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
@@ -9625,9 +10012,19 @@ function bestsRender() {
   const keys = Object.keys(S.bests).filter(k => S.bests[k] > 0);
   const byMode = {};
   for (const k of keys) {
-    const m = k.split('|')[0];
+    /* '#legacy' marks a run that used the past. It is part of the key,
+       not part of the mode, so strip it before filing the row. */
+    const m = k.split('|')[0].replace('#legacy', '');
     (byMode[m] = byMode[m] || []).push(k);
   }
+  const bsMixed = k => k.indexOf('#legacy') >= 0;
+  const bsRules = k => {
+    const c = k.replace('#legacy', '').split('|')[1];
+    const names = c ? c.split('+').map(id =>
+      (CHALLENGES.find(x => x.id === id) || {}).name || id) : [];
+    if (bsMixed(k)) names.push('Mixed');
+    return names.length ? names.join(' + ') : 'Standard';
+  };
   /* one line's worth of score, in whatever unit that mode is measured in */
   const bsScore = (mode, key) => {
     if (!S.bests[key]) return '\u2014';
@@ -9651,10 +10048,8 @@ function bestsRender() {
     const chal = rows.filter(k => k !== m);
     if (chal.length) {
       any = true;
-      h += chal.map(k => '<div class="bsChal"><span>' +
-        k.split('|')[1].split('+').map(id =>
-          (CHALLENGES.find(x => x.id === id) || {}).name || id).join(' + ') +
-        '</span><b>' + bsScore(m, k) + '</b></div>').join('');
+      h += chal.map(k => '<div class="bsChal' + (bsMixed(k) ? ' mix' : '') + '"><span>' +
+        bsRules(k) + '</span><b>' + bsScore(m, k) + '</b></div>').join('');
     }
     if (S.bests[m]) any = true;
     h += '</div>';
@@ -11830,7 +12225,7 @@ CINE_SCENE.warp = function (g, k) {
  *  runs on top of it but one button, because a Scratch stage has nowhere
  *  to put a second interface.
  * ======================================================================= */
-const LEGACY = { on:null, ready:false, job:0, minT:0 };
+const LEGACY = { on:null, ready:false, job:0, minT:0, tone:0 };
 
 function enterLegacy(r) {
   if (LEGACY.on || CINE.kind) return;
@@ -11846,8 +12241,13 @@ function enterLegacy(r) {
   ov.classList.add('on');
   ov.style.visibility = 'hidden';          /* loading, but not yet watched */
 
-  sfx('warp');
-  setTimeout(() => sfx('rocket'), 500);
+  sfx('rift');
+  setTimeout(() => sfx('warptube'), 420);
+  /* the tunnel tone is three and a half seconds long and the tunnel can
+     run much longer than that, so it is re-struck rather than looped —
+     a loop point in a held drone is audible and a restart is not */
+  clearInterval(LEGACY.tone);
+  LEGACY.tone = setInterval(() => { if (CINE.kind) sfx('warptube'); else clearInterval(LEGACY.tone); }, 3200);
   msStop();
 
   /* The tunnel runs for at least four seconds and then waits for the
@@ -11856,6 +12256,8 @@ function enterLegacy(r) {
      sure pressing it early cannot drop you into a half-built page. */
   LEGACY.minT = performance.now() + 4000;
   cineWarpHold(r, false, () => {
+    clearInterval(LEGACY.tone);
+    sfx('emerge');
     ov.style.visibility = '';
     $('lqName').textContent = r.title;
     document.body.classList.add('legacy');
@@ -11912,8 +12314,10 @@ function quitLegacy() {
   $('ovLegacy').classList.remove('on');
   document.body.classList.remove('legacy');
   LEGACY.on = null; LEGACY.ready = true;
-  sfx('warp');
-  cinePlay('warp', 1.6, 0.9, () => { showModes(); }, () => {},
+  clearInterval(LEGACY.tone);
+  sfx('riftshut');
+  setTimeout(() => sfx('warptube'), 260);
+  cinePlay('warp', 1.6, 0.9, () => { showModes(); }, () => { sfx('emerge'); },
            { title:'Jaxon Tower Defense 3', hue:r.hue, back:true, from:{ w:r.w, h:r.h } });
 }
 
@@ -14456,6 +14860,7 @@ function completionPaid(key) { return !!(S.modeDone && S.modeDone[key]); }
 function payCompletion() {
   const key = runKey(), amount = modeReward();
   if (!amount || SB()) return 0;
+  if (runMixed()) return 0;            /* exhibition: the run, not the purse */
   if (completionPaid(key)) return 0;             /* already banked, ever */
   if (!S.modeDone) S.modeDone = {};
   S.modeDone[key] = 1;
@@ -14473,7 +14878,7 @@ function fpPaidCount() {
    Called once per wave clear, so a run that somehow jumps several waves
    still pays each milestone exactly once and never pays a partial one. */
 function payFreePlay(clearedWave) {
-  if (!inFreePlay() || SB()) return 0;
+  if (!inFreePlay() || SB() || runMixed()) return 0;
   const goal = S.fpFrom || 0;
   const past = Math.max(0, clearedWave - goal);
   const earned = Math.floor(past / FP_EVERY);
@@ -14671,9 +15076,12 @@ function voidWin(b) {
   S.phase = 'over';
   dropRun(slotKey());
   advInit();
-  const first = !S.adv.finale;
-  S.adv.finale = 1;
-  S.adv.jaxons.celestial = 1;
+  const mixed = runMixed();
+  const first = !S.adv.finale && !mixed;
+  if (!mixed) {
+    S.adv.finale = 1;
+    S.adv.jaxons.celestial = 1;
+  }
   if (first) coinsAdd(VOID_PAYOUT, 'Vorath');
   saveNow();
 
@@ -14692,8 +15100,9 @@ function voidWin(b) {
        system telling you about it rather than as the game's own fanfare */
     setTimeout(() => {
       notify('Jaxon Tower Defense',
-             'You unlocked ' + TOWERS.celestial.name + '!', '\u{1F7E3}');
-      coachStart();
+             mixed ? 'Vorath is down \u2014 exhibition run, so nothing was unlocked.'
+                   : 'You unlocked ' + TOWERS.celestial.name + '!', '\u{1F7E3}');
+      if (!mixed) coachStart();
     }, 620);
   });
 }
@@ -14705,18 +15114,22 @@ function advWin() {
   dropRun(slotKey());
   const v = advWorld();
   const secs = Math.round(S.runT || 0);
-  const first = !advDone(v.id);
+  const first = !advDone(v.id) && !runMixed();
   /* the jar as it was BEFORE this clear, so the cutscene can show the
      band arriving rather than a band that was always there */
   const before = shardCount();
   advInit();
-  S.adv.cleared[v.id] = 1;
-  S.adv.shards[v.id] = 1;
-  if (v.jaxon) S.adv.jaxons[v.jaxon] = 1;
+  const mixed = runMixed();
+  if (!mixed) {
+    S.adv.cleared[v.id] = 1;
+    S.adv.shards[v.id] = 1;
+    if (v.jaxon) S.adv.jaxons[v.jaxon] = 1;
+  }
   const prev = S.adv.best[v.id];
   if (!prev || secs < prev) S.adv.best[v.id] = secs;
-  /* the cheque rides on the first clear, exactly like the shard */
-  const pay = first ? (WORLD_PAY[v.id] || 0) : 0;
+  /* the cheque rides on the first clear, exactly like the shard — and an
+     exhibition run gets neither */
+  const pay = (first && !runMixed()) ? (WORLD_PAY[v.id] || 0) : 0;
   if (pay) coinsAdd(pay, v.name);
   saveNow();
   buildShelf();
@@ -14725,14 +15138,18 @@ function advWin() {
      clear does not — nothing new goes in the jar, and making someone sit
      through the same ten seconds for the same band is how a reward turns
      into a toll. */
+  /* and no shard sequence, because nothing went in the jar */
   S.shardOwed = first ? { world:v.name, shard:v.shard, col:v.shardCol,
                           jaxon:v.jaxonName, ground:v.body2 || '#140d08',
                           slot:before, before:before } : null;
-  $('endTitle').textContent = v.name + ' cleared';
-  $('endText').textContent =
-    (first ? 'The ' + v.shard + ' is yours, and ' + v.jaxonName + ' has joined the shelf. '
-           : 'Cleared again, in ' + fmtTime(secs) + '. ') +
-    'That is ' + shardCount() + ' of ' + ADV_TARGET + ' shards toward the Orb.';
+  $('endTitle').textContent = v.name + (mixed ? ' held' : ' cleared');
+  $('endText').textContent = mixed
+    ? 'Held to wave ' + v.goal + ' in ' + fmtTime(secs) + ' \u2014 as an exhibition. ' +
+      'A Jaxon from an older game was on the board, so the ' + v.shard +
+      ' stays where it is and the world is still waiting to be cleared properly.'
+    : (first ? 'The ' + v.shard + ' is yours, and ' + v.jaxonName + ' has joined the shelf. '
+             : 'Cleared again, in ' + fmtTime(secs) + '. ') +
+      'That is ' + shardCount() + ' of ' + ADV_TARGET + ' shards toward the Orb.';
   $('scoreRow').innerHTML =
     '<div><div class="k">Waves held</div><div class="v">' + v.goal + '</div></div>' +
     '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
@@ -22179,6 +22596,135 @@ function drawShot(s) {
       ctx.beginPath(); ctx.arc(0, 0, 26, 0, 7); ctx.fill();
       break;
 
+    /* ================= JTD 1 ================= */
+    case 'l1car':
+      /* the original toy car, which is still the right picture */
+      ctx.scale(Math.cos(s.a) < 0 ? -1 : 1, 1);
+      ctx.drawImage(IMG.car, -19, -11, 38, 22);
+      break;
+
+    case 'l1star':
+      /* a five-point star, tumbling */
+      ctx.rotate(s.spin);
+      ctx.fillStyle = '#ffe24a'; ctx.strokeStyle = '#a87c00'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const a2 = i*0.6283 - Math.PI/2, rr = i % 2 ? 7 : 17;
+        i ? ctx.lineTo(Math.cos(a2)*rr, Math.sin(a2)*rr)
+          : ctx.moveTo(Math.cos(a2)*rr, Math.sin(a2)*rr);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      break;
+
+    case 'l1shuri':
+      ctx.rotate(s.spin*1.6);
+      ctx.drawImage(IMG.shuriken, -13, -13, 26, 26);
+      break;
+
+    case 'l1slug':
+      /* a heavy round, blunt end first, with a muzzle streak behind it */
+      ctx.rotate(s.a);
+      ctx.fillStyle = '#d8d2c4'; ctx.strokeStyle = '#6a6256'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.roundRect(-13, -5, 26, 10, [5, 2, 2, 5]); ctx.fill(); ctx.stroke();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(255,200,120,.5)';
+      ctx.beginPath(); ctx.ellipse(-20, 0, 14, 3.5, 0, 0, 7); ctx.fill();
+      break;
+
+    case 'l1beaker':
+      /* a flask, end over end, with the stopper still in */
+      ctx.rotate(s.spin);
+      ctx.fillStyle = 'rgba(190,235,255,.6)';
+      ctx.strokeStyle = '#2a6a84'; ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(-6, -13); ctx.lineTo(6, -13); ctx.lineTo(13, 13);
+      ctx.lineTo(-13, 13); ctx.closePath();
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#7fe9a0';
+      ctx.beginPath();
+      ctx.moveTo(-9, 2); ctx.lineTo(9, 2); ctx.lineTo(12, 12); ctx.lineTo(-12, 12);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#8a6a4a';
+      ctx.fillRect(-5, -17, 10, 6);
+      break;
+
+    case 'l1fire':
+      /* the Titan's fire: a blunt head of flame rather than a bullet */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 3; i++) {
+        const r2 = 20 - i*5;
+        ctx.globalAlpha = 0.45 + i*0.2;
+        ctx.fillStyle = i === 0 ? '#c43a10' : i === 1 ? '#ff9a2e' : '#fff3c8';
+        ctx.beginPath();
+        ctx.ellipse(-i*3, Math.sin(S.t*24 + i)*2, r2, r2*0.72, 0, 0, 7);
+        ctx.fill();
+      }
+      break;
+
+    /* ================= JTD 2 ================= */
+    case 'l2laser':
+      /* the thin red line the cameraman has always fired */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.strokeStyle = 'rgba(255,60,60,.55)'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(-22, 0); ctx.lineTo(16, 0); ctx.stroke();
+      ctx.strokeStyle = '#ffd8d8'; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(15, 0); ctx.stroke();
+      break;
+
+    case 'l2wave':
+      /* a bar of air, bowed forward, going through everything */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < 3; i++) {
+        ctx.globalAlpha = 0.5 - i*0.13;
+        ctx.strokeStyle = '#ffd08a';
+        ctx.lineWidth = 7 - i*1.8;
+        ctx.beginPath();
+        ctx.arc(-16 - i*11, 0, 22 + i*5, -0.95, 0.95);
+        ctx.stroke();
+      }
+      break;
+
+    case 'l2beam':
+      /* a block of screen light, with the scanline still in it */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(130,255,190,.35)';
+      ctx.beginPath(); ctx.roundRect(-20, -9, 40, 18, 5); ctx.fill();
+      ctx.fillStyle = 'rgba(230,255,240,.9)';
+      ctx.beginPath(); ctx.roundRect(-16, -4, 32, 8, 3); ctx.fill();
+      ctx.globalAlpha = 0.6 + Math.sin(S.t*30)*0.4;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(-16, -1.2, 32, 2.4);
+      break;
+
+    case 'l2spin':
+      /* the plunger, end over end, rubber first */
+      ctx.rotate(s.spin*2.2);
+      ctx.strokeStyle = '#c9a06a'; ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(0, 2); ctx.lineTo(0, 16); ctx.stroke();
+      ctx.fillStyle = '#b8402a'; ctx.strokeStyle = '#5e1a10'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(-12, 2); ctx.quadraticCurveTo(0, -16, 12, 2);
+      ctx.quadraticCurveTo(0, 8, -12, 2);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      break;
+
+    case 'l2knife':
+      /* the laser tv's blade: long, thin, and lit from inside */
+      ctx.rotate(s.a);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(255,60,90,.4)';
+      ctx.beginPath(); ctx.roundRect(-30, -6, 60, 12, 6); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = '#ffe8ee'; ctx.strokeStyle = '#8a1030'; ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(26, 0); ctx.lineTo(-18, -4.5); ctx.lineTo(-24, 0); ctx.lineTo(-18, 4.5);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      break;
+
     case 'voidray':
       /* not a bolt: a short length of bent space with the light falling
          into it. Drawn as a dark core inside a bright sheath, which is
@@ -24214,6 +24760,7 @@ function tryPlaceAt(x, y, silent) {
     cancelPlacing(); return false;
   }
   spend(cost);
+  if (isLegacy(S.placing)) markMixed(S.placing);
   const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,
@@ -24677,7 +25224,7 @@ $('ovMenu').addEventListener('pointerdown', ev => {
     const r = overUI ? null : riftAt(p.x, p.y);
     if (r !== riftHot) {
       riftHot = r;
-      if (r) { sfxHover(); }
+      if (r) { sfxHover(); voice({ freq:1800, dur:0.1, type:'sine', vol:0.016, to:2600 }); }
       cvs.style.cursor = r ? 'pointer' : '';
       ov.style.cursor = r ? 'pointer' : '';
     }
