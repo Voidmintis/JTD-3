@@ -451,8 +451,10 @@
     margin-left:auto;font-size:11.5px;color:var(--warn,#ffd60a);opacity:.9;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46%;
   }
-  body.mobile #eras{height:var(--tap);padding:0 var(--s4)}
-  body.mobile #eras button{height:32px;font-size:14px}
+  body.mobile #eras{height:calc(var(--tap) + 6px);padding:0 var(--s4)}
+  body.mobile #eras button{height:40px;font-size:15px;padding:0 var(--s4)}
+  body.mobile #eras button i{width:20px;height:20px;font-size:12px}
+  body.mobile #eras .lbl{display:none}
   body.mobile #eras .note{display:none}
   /* the shelf and the filters drop to make room for the era rail */
   #cats{
@@ -3381,7 +3383,7 @@
   body.mobile #shopTab .chev{width:22px;height:22px}
   body.mobile #shopTab .hint{display:none}
   body.mobile #shelf{
-    --eraH:var(--tap);
+    --eraH:calc(var(--tap) + 6px);
     max-width:none;padding:var(--s5) var(--s5) var(--s5);gap:var(--s4) var(--s3);
     align-content:flex-start;overflow-y:auto;overflow-x:hidden;
     -webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;
@@ -10893,7 +10895,8 @@ function cinePlay(kind, dur, hand, onHand, onDone, data) {
   CINE.data = data || null;
   CINE.cv.classList.add('on');
   document.body.classList.add('cine');
-  setTimeout(() => { if (CINE.kind) $('cineSkip').classList.add('on'); }, 450);
+  if (data && data.noSkip) $('cineSkip').classList.remove('on');
+  else setTimeout(() => { if (CINE.kind) $('cineSkip').classList.add('on'); }, 450);
   CINE.last = performance.now();
   const step = now => {
     const dt = Math.min(0.05, (now - CINE.last)/1000); CINE.last = now;
@@ -10919,6 +10922,11 @@ function cinePlay(kind, dur, hand, onHand, onDone, data) {
    gets started exactly once */
 function cineSkip() {
   if (!CINE.kind) return;
+  if (CINE.data && CINE.data.noSkip) return;   /* nothing to arrive at yet */
+  /* a hold leg hands straight to the next hold leg, so skipping one
+     would otherwise only restart the tunnel. This tells the chain to
+     stop waiting out its minimum and come in to land. */
+  if (CINE.kind === 'warpHold') LEGACY.skipped = true;
   if (!CINE.handed && CINE.onHand) { CINE.handed = true; try { CINE.onHand(); } catch (e) {} }
   const d = CINE.onDone;
   cineStop();
@@ -12225,11 +12233,11 @@ CINE_SCENE.warp = function (g, k) {
  *  runs on top of it but one button, because a Scratch stage has nowhere
  *  to put a second interface.
  * ======================================================================= */
-const LEGACY = { on:null, ready:false, job:0, minT:0, tone:0 };
+const LEGACY = { on:null, ready:false, job:0, minT:0, tone:0, skipped:false };
 
 function enterLegacy(r) {
   if (LEGACY.on || CINE.kind) return;
-  LEGACY.on = r; LEGACY.ready = false;
+  LEGACY.on = r; LEGACY.ready = false; LEGACY.skipped = false;
   const fr = $('legacyFrame');
   const ov = $('ovLegacy');
 
@@ -12284,15 +12292,21 @@ function enterLegacy(r) {
    by restarting a short leg rather than by stretching one. */
 function cineWarpHold(r, back, done) {
   const data = { title:r.title, hue:r.hue, back:back, from:{ w:r.w, h:r.h } };
-  const ok = () => (back ? true : (LEGACY.ready && performance.now() >= LEGACY.minT));
+  const ok = () => back || (LEGACY.ready &&
+                            (LEGACY.skipped || performance.now() >= LEGACY.minT));
   const leg = () => {
     if (ok()) {
-      cinePlay('warp', 1.5, 0.99, () => {}, done, data);
+      /* the last length: the load is in, so this one can be skipped */
+      cinePlay('warp', 1.5, 0.99, () => {}, done,
+               Object.assign({}, data, { noSkip:false }));
       return;
     }
-    /* another length of tunnel. The scene is seamless across legs
-       because its motion comes from CINE.t, which keeps counting. */
-    cinePlay('warpHold', 1.2, 0.99, () => {}, leg, data);
+    /* another length of tunnel, and no skip on it — there is nowhere to
+       skip TO until the old build is ready. The scene is seamless across
+       legs because its motion comes from CINE.t, which keeps counting. */
+    /* the offer tracks the load, not the clock */
+    cinePlay('warpHold', 1.2, 0.99, () => {}, leg,
+             Object.assign({}, data, { noSkip:!LEGACY.ready }));
   };
   leg();
 }
