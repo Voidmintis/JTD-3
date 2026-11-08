@@ -5486,10 +5486,56 @@ ULTRA_KIT.l2head = {
   }
 };
 
-/* ---- JTD1 ------------------------------------------------------------
-   Same characters this game inherited, wearing the first game's flatter
-   treatment: a heavier outline and no soft shading, the way a Scratch
-   sprite looks next to an SVG one. */
+/* Which file is which Jaxon, and what each one throws. The numbers are
+   how tall it should stand next to one of this game's Jaxons: the old
+   games drew everything at one size except what they called large or
+   titan, so that distinction is the only one carried across. */
+const LEGACY_ART = {
+  j1_basic:   { f:'jtd1/T1__T1.svg',  b:'jtd1/T1__T1Bullet.svg',  h:1.00 },
+  j1_bedtime: { f:'jtd1/T2__T1.svg',  b:null,                      h:1.00 },
+  j1_laser:   { f:'jtd1/T3__T1.svg',  b:'jtd1/T3__T1Bullet.svg',  h:1.00 },
+  j1_rainbow: { f:'jtd1/T4__T1.png',  b:'jtd1/T4__T1Bullet.svg',  h:1.05 },
+  j1_engineer:{ f:'jtd1/T5__T1.svg',  b:'jtd1/T5__T1Bullet.svg',  h:1.00 },
+  j1_goldeng: { f:'jtd1/T6__T1.svg',  b:null,                      h:1.00 },
+  j1_titan:   { f:'jtd1/T7__T1.png',  b:null,                      h:1.15 },
+  j1_titanmax:{ f:'jtd1/T8__T1.png',  b:'jtd1/T8__T1Bullet.svg',  h:1.45 },
+  j1_tablet:  { f:'jtd1/T9__T1.png',  b:'jtd1/T9__T1Bullet.svg',  h:1.30 },
+  j1_titantab:{ f:'jtd1/T10__T1.png', b:null,                      h:1.10 },
+  j1_truegod: { f:'jtd1/T11__T1.png', b:null,                      h:1.35 },
+  j1_kaesler: { f:'jtd1/T12__T1.png', b:'jtd1/T12__T1Bullet.svg', h:1.45 },
+  j1_bhlaser: { f:'jtd1/T13__T1.png', b:'jtd1/T13__T1Bullet.png', h:1.15 },
+  j1_uplaser: { f:'jtd1/T16__T1.png', b:'jtd1/T16__T1Bullet.png', h:1.20 },
+  j1_astro:   { f:'jtd1/T20__costume3.svg', b:'jtd1/T20__T1Bullet.png', h:1.45 },
+
+  j2_cam:     { f:'jtd2/Turret__cameraman.svg',   b:'jtd2/FX__Line.svg', h:1.00 },
+  j2_bat:     { f:'jtd2/Turret__speakerman.svg',  b:'jtd2/FX__Fire.svg', h:1.00 },
+  j2_ipad:    { f:'jtd2/Turret__tvman.svg',       b:'jtd2/FX__Line.svg', h:1.00 },
+  j2_large:   { f:'jtd2/Turret__largecamera.svg', b:'jtd2/FX__Line.svg', h:1.15 },
+  j2_lspk:    { f:'jtd2/Turret__largespeaker.svg',b:'jtd2/FX__Speaker_aoe.svg', h:1.15 },
+  j2_ltv:     { f:'jtd2/Turret__largetv.svg',     b:'jtd2/FX__Line.svg', h:1.20 },
+  j2_tcam:    { f:'jtd2/Turret__titancamera.svg', b:'jtd2/FX__camera_titan_AOE.svg', h:1.40 },
+  j2_tspk:    { f:'jtd2/Turret__titansp.svg',     b:'jtd2/FX__Speaker_aoe.svg', h:1.45 },
+  j2_ttv:     { f:'jtd2/Turret__titantv.svg',     b:'jtd2/FX__Tv_titan_AOE.svg', h:1.45 },
+  j2_dspk:    { f:'jtd2/Turret__darkspeaker.svg', b:'jtd2/FX__Speaker_aoe.svg', h:1.15 },
+  j2_toilet:  { f:'jtd2/Turret__plungerman.svg',  b:'jtd2/FX__Fire.svg', h:1.05 },
+  j2_ripad:   { f:'jtd2/Turret__LASER_TVMAN.svg', b:'jtd2/FX__LASER_TV_AOE.svg', h:1.20 }
+};
+/* the bullet each weapon actually fires, by ammo name */
+const LEGACY_BULLET = {};
+for (const k in LEGACY_ART) {
+  const bf = LEGACY_ART[k].b;
+  if (bf) LEGACY_BULLET['bul_' + k] = bf;
+}
+
+/* ---- the placeholders ------------------------------------------------
+   Nothing below is drawn any more. Every legacy Jaxon's picture is its
+   own game's costume, ripped out of the build and listed in LEGACY_ART,
+   and both PORTRAIT and SPRITE point at those files.
+
+   These entries survive because SPRITE is built from VARIANTS when the
+   script parses, before any image has loaded, and a dozen places read
+   VARIANTS[k].wide on the way up. legacySprites() overwrites the sizes
+   the moment the real files are in. Treat them as scaffolding. */
 const J1 = (base, over) => Object.assign({}, VARIANTS[base] || {},
   { ultra:null, wide:false, outlineWidth:9 }, over || {});
 
@@ -5519,11 +5565,12 @@ VARIANTS.j1_kaesler  = { suitLite:'#ffb0a0', suit:'#d8342a', suitDark:'#6a0e06',
                          outline:'#2a0604', outlineWidth:9,
                          pacG:'#ffe24a', pacGD:'#a87c00', pacO:'#ffffff', pacOD:'#8a8a8a' };
 
-/* ---- JTD2 ------------------------------------------------------------
-   These were never Jaxons with faces — a cameraman, a speakerman and a
-   tvman have appliances for heads — so the head piece is the character.
-   The three that are plainly Jaxons in the second game's own art (the
-   starter, the bat and the toilet) keep their faces. */
+/* ---- and the same for the second game --------------------------------
+   Worth recording what the rip corrected: these were drawn with
+   appliance heads, on the assumption that a cameraman, a speakerman and
+   a tvman look like their names. They do not. In JTD2 they are all
+   plain Jaxons holding cameras, speakers and televisions, and the only
+   way to know that was to go and look. */
 const L2 = (head, metal, metalD, glow, suit, suitLite, suitDark) =>
   ({ ultra:'l2head', wide:true, l2head:head, l2metal:metal, l2metalD:metalD, l2glow:glow,
      suitLite, suit, suitDark, arm:metalD, armDark:'#0a0d12',
@@ -6962,8 +7009,25 @@ for (const k in ASC_VARIANTS) VARIANTS[ASC_KEY(k)] = ASC_VARIANTS[k];
 
 const PORTRAIT = {};
 for (const k in VARIANTS) PORTRAIT[k] = svgURL(jaxonSVG(VARIANTS[k], 'p' + k));
+/* a Jaxon from an older game is not drawn from a palette — it is that
+   game's own costume, on disk. This is the picture everywhere: the shop
+   card, the tooltip, the collection and the one standing on the grass. */
+for (const k in LEGACY_ART) PORTRAIT[k] = 'legacy/' + LEGACY_ART[k].f;
 
 const IMG = {};
+/* A legacy Jaxon has no sheet and no kit — the picture IS the sprite —
+   so its SPRITE entry is worked out from the file's own proportions
+   rather than from a VARIANTS palette. Called once, after the images
+   are in and their natural sizes are known. */
+function legacySprites() {
+  for (const k in LEGACY_ART) {
+    const im = IMG[k];
+    if (!im || !im.naturalWidth) continue;
+    const h = T_H * (LEGACY_ART[k].h || 1);
+    const w = h * (im.naturalWidth/im.naturalHeight);
+    SPRITE[k] = { w, h, sw:w, sh:h, feet:1, head:1 };
+  }
+}
 function loadImages(done) {
   const src = { car:svgURL(CAR_SVG), blackcar:svgURL(BLACKCAR_SVG), goldcar:svgURL(GOLDCAR_SVG),
                diamondcar:svgURL(DIAMONDCAR_SVG), shuriken:svgURL(SHURIKEN_SVG),
@@ -6971,10 +7035,12 @@ function loadImages(done) {
                   builds that open when you fall through the tear. */
                rift1:'rift1.jpg', rift2:'rift2.jpg' };
   for (const k in PORTRAIT) src[k] = PORTRAIT[k];
+  /* the bullets are not portraits, so they are added on their own */
+  for (const k in LEGACY_BULLET) src[k] = 'legacy/' + LEGACY_BULLET[k];
   let n = Object.keys(src).length;
   for (const k in src) {
     const im = new Image();
-    im.onload = im.onerror = () => { if (--n === 0) done(); };
+    im.onload = im.onerror = () => { if (--n === 0) { legacySprites(); done(); } };
     im.src = src[k]; IMG[k] = im;
   }
 }
@@ -8697,12 +8763,32 @@ const AMMO_SOUND = {
    went off — either the weapon itself, or the kind already resolved from
    it, which is what the three-mode Jaxon does as he rotates through ice,
    flame and drill. Everything else is named after its own sound. */
+/* The old games' own recordings, ripped out of their sound banks. Only
+   the ones that exist: JTD1 shipped three, JTD2 keeps its weapon audio
+   on one shared sprite so it maps by weapon rather than by tower.
+   Anything not listed falls back to the era's synthesised voice. */
+const LEGACY_SFX = {
+  j1_bedtime:'legacy/j1_bedtime',
+  j1_rainbow:'legacy/j1_rainbow',
+  j1_engineer:'legacy/j1_engineer',
+  j2_cam:'legacy/j2_laser',      j2_bat:'legacy/j2_clang',
+  j2_ipad:'legacy/j2_laser',     j2_large:'legacy/j2_pistol',
+  j2_lspk:'legacy/j2_wave',      j2_ltv:'legacy/j2_laser_l',
+  j2_tcam:'legacy/j2_ak',        j2_tspk:'legacy/j2_wave',
+  j2_ttv:'legacy/j2_laser_l',    j2_dspk:'legacy/j2_wave',
+  j2_toilet:'legacy/j2_thud',    j2_ripad:'legacy/j2_laser_l'
+};
 function sfxShot(t, w) {
   if (!t || !t.type) return;
   const spec = TOWERS[t.type];
   if (!spec) return false;
   /* a tower from an older game sounds like that game */
-  if (spec.era === 1 || spec.era === 2) { sfx(spec.era === 1 ? 'fire1' : 'fire2'); return true; }
+  if (spec.era === 1 || spec.era === 2) {
+    const id = LEGACY_SFX[t.type];
+    if (id && playSample(id)) return true;
+    sfx(spec.era === 1 ? 'fire1' : 'fire2');
+    return true;
+  }
   const id = (typeof w === 'string' ? w : (w && w.k)) || AMMO_SOUND[spec.ammo] || spec.ammo;
   return playSample(id);
 }
@@ -16924,6 +17010,7 @@ function fire(t, tx, ty) {
     mx = t.x + Math.cos(a)*16; my = oy + Math.sin(a)*16;
     S.shots.push({ x:mx, y:my, vx:Math.cos(a)*spec.speed, vy:Math.sin(a)*spec.speed,
                    a, spin:Math.random()*6, ammo:spec.ammo, dmg:spec.dmg,
+                   src:spec.era && spec.era !== 3 ? t.type : null,
                    splash:spec.splash||0, splashR:spec.splashR||0, hue:Math.random()*360,
                    bounce:spec.bounce||0, bounceR:spec.bounceR||0,
                    pierce:spec.pierce||0,
@@ -22725,6 +22812,21 @@ function drawShot(s) {
     ctx.restore();
     return;
   }
+  /* the old games' own bullets, where the build had one */
+  if (s.src && IMG['bul_' + s.src] && IMG['bul_' + s.src].naturalWidth) {
+    const im = IMG['bul_' + s.src];
+    /* the source draws its bullet at the size it drew it; 34px on the
+       long edge sits right next to this game's projectiles */
+    const k = 34/Math.max(im.naturalWidth, im.naturalHeight);
+    const w = im.naturalWidth*k, h = im.naturalHeight*k;
+    ctx.save();
+    ctx.translate(s.x, s.y);
+    /* a round bullet tumbles, a pointed one leads with its point */
+    ctx.rotate(Math.abs(w - h) < w*0.25 ? s.spin : s.a);
+    ctx.drawImage(im, -w/2, -h/2, w, h);
+    ctx.restore();
+    return;
+  }
   ctx.save(); ctx.translate(s.x, s.y);
   switch (s.ammo) {
     case 'shuriken':
@@ -25112,7 +25214,10 @@ function tryPlaceAt(x, y, silent) {
     cancelPlacing(); return false;
   }
   spend(cost);
-  if (isLegacy(S.placing)) markMixed(S.placing);
+  if (isLegacy(S.placing)) {
+    markMixed(S.placing);
+    if (eraOf(S.placing) === 2) playSample('legacy/j2_place');
+  }
   const t = { type:S.placing, x, y, cd:spec.ammo === 'heal' ? spec.cd : 0, face:1, recoil:0, tri:0,
               cds:(spec.weapons || []).map(w => w.cd*0.35),
               beam:0, lit:false, flash:0, orbA:Math.random()*6.28, charge:null, bossAcc:0,

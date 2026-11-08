@@ -21,6 +21,114 @@ window.JTD_SOUND_MANIFEST = {
  "generated": "2026-10-21",
  "base": "sounds/",
  "sounds": {
+  "legacy/j2_click": {
+   "src": "legacy/jtd2/Turret__click.wav",
+   "bus": "sfx",
+   "vol": 0.4,
+   "cooldown": 80,
+   "max": 2,
+   "jitter": 0.08,
+   "dur": 0.57
+  },
+  "legacy/j2_place": {
+   "src": "legacy/jtd2/Turret__place.wav",
+   "bus": "sfx",
+   "vol": 0.45,
+   "cooldown": 120,
+   "max": 2,
+   "jitter": 0.08,
+   "dur": 0.54
+  },
+  "legacy/j2_thud": {
+   "src": "legacy/jtd2/Turret__X2Download3.wav",
+   "bus": "sfx",
+   "vol": 0.28,
+   "cooldown": 120,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 0.51
+  },
+  "legacy/j2_clang": {
+   "src": "legacy/jtd2/Turret__metallic-clang-100473.wav",
+   "bus": "sfx",
+   "vol": 0.28,
+   "cooldown": 200,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_wave": {
+   "src": "legacy/jtd2/Turret__SOUND_WAVE.wav",
+   "bus": "sfx",
+   "vol": 0.34,
+   "cooldown": 320,
+   "max": 2,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_ak": {
+   "src": "legacy/jtd2/Turret__AK-47_-_Sound_Effect.wav",
+   "bus": "sfx",
+   "vol": 0.26,
+   "cooldown": 90,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_pistol": {
+   "src": "legacy/jtd2/Turret__Pistol_Sound_Effects_9mm.wav",
+   "bus": "sfx",
+   "vol": 0.3,
+   "cooldown": 140,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_laser_l": {
+   "src": "legacy/jtd2/Turret__Laser_sound.wav",
+   "bus": "sfx",
+   "vol": 0.28,
+   "cooldown": 110,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 0.83
+  },
+  "legacy/j2_laser": {
+   "src": "legacy/jtd2/Turret__Laser_sound2.wav",
+   "bus": "sfx",
+   "vol": 0.26,
+   "cooldown": 70,
+   "max": 4,
+   "jitter": 0.08,
+   "dur": 0.52
+  },
+  "legacy/j1_engineer": {
+   "src": "legacy/jtd1/T5__recording1.wav",
+   "bus": "sfx",
+   "vol": 0.3,
+   "cooldown": 60,
+   "max": 4,
+   "jitter": 0.08,
+   "dur": 0.26
+  },
+  "legacy/j1_rainbow": {
+   "src": "legacy/jtd1/T4__shoot02wav-14562.wav",
+   "bus": "sfx",
+   "vol": 0.3,
+   "cooldown": 60,
+   "max": 4,
+   "jitter": 0.08,
+   "dur": 0.26
+  },
+  "legacy/j1_bedtime": {
+   "src": "legacy/jtd1/T2__recording1.wav",
+   "bus": "sfx",
+   "vol": 0.42,
+   "cooldown": 260,
+   "max": 2,
+   "jitter": 0.08,
+   "dur": 1
+  },
   "enemies/boss_arrive": {
    "src": "sounds/enemies/boss_arrive.mp3",
    "bus": "sfx",

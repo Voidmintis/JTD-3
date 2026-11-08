@@ -1,0 +1,3369 @@
+{
+ "costumes": [
+  {
+   "sprite": "Turret",
+   "costume": "cameraman",
+   "file": "Turret__cameraman.svg",
+   "w": 47,
+   "h": 66,
+   "rc": [
+    27.33984000000001,
+    33.023830000000004
+   ],
+   "size": [
+    46.639488220214844,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "speakerman",
+   "file": "Turret__speakerman.svg",
+   "w": 40,
+   "h": 51,
+   "rc": [
+    9.876622342702404,
+    25.284092369366448
+   ],
+   "size": [
+    39.81732177734375,
+    50.56816864013672
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "tvman",
+   "file": "Turret__tvman.svg",
+   "w": 35,
+   "h": 51,
+   "rc": [
+    9.876614999999987,
+    25.284089999999992
+   ],
+   "size": [
+    35.04328155517578,
+    50.56816864013672
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "largecamera",
+   "file": "Turret__largecamera.svg",
+   "w": 94,
+   "h": 60,
+   "rc": [
+    21.079048347251955,
+    30.020727480593507
+   ],
+   "size": [
+    93.9143295288086,
+    60.16460037231445
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "largetv",
+   "file": "Turret__largetv.svg",
+   "w": 81,
+   "h": 95,
+   "rc": [
+    20.926906149831467,
+    50.18730595668427
+   ],
+   "size": [
+    81.11730194091797,
+    94.80937194824219
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "titancamera",
+   "file": "Turret__titancamera.svg",
+   "w": 130,
+   "h": 151,
+   "rc": [
+    65.00489999999999,
+    75.29011008977818
+   ],
+   "size": [
+    130.00979614257812,
+    150.58021545410156
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "titansp",
+   "file": "Turret__titansp.svg",
+   "w": 137,
+   "h": 118,
+   "rc": [
+    48.514023196751054,
+    59.069776469890996
+   ],
+   "size": [
+    137.2786865234375,
+    118.3818588256836
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "titantv",
+   "file": "Turret__titantv.svg",
+   "w": 116,
+   "h": 215,
+   "rc": [
+    58.04511760615253,
+    107.37965043184913
+   ],
+   "size": [
+    116.0902328491211,
+    214.7593231201172
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "darkspeaker",
+   "file": "Turret__darkspeaker.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    27.33984000000001,
+    33.023830000000004
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "Turret",
+   "costume": "LASER TVMAN",
+   "file": "Turret__LASER_TVMAN.svg",
+   "w": 58,
+   "h": 88,
+   "rc": [
+    25.898966942540227,
+    63.13235454537755
+   ],
+   "size": [
+    58.046730041503906,
+    88.41642761230469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "camera ",
+   "file": "TurretIcon__camera_.svg",
+   "w": 52,
+   "h": 73,
+   "rc": [
+    25.5990556404098,
+    36.35089482560096
+   ],
+   "size": [
+    51.694671630859375,
+    72.69703674316406
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lcamera",
+   "file": "TurretIcon__lcamera.svg",
+   "w": 101,
+   "h": 64,
+   "rc": [
+    43.60336320758111,
+    32.49839945283384
+   ],
+   "size": [
+    100.67162322998047,
+    64.3862075805664
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "speaker",
+   "file": "TurretIcon__speaker.svg",
+   "w": 61,
+   "h": 78,
+   "rc": [
+    21.10702134261851,
+    34.13882952014157
+   ],
+   "size": [
+    61.36399841308594,
+    78.11051177978516
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "lsp",
+   "file": "TurretIcon__lsp.svg",
+   "w": 57,
+   "h": 79,
+   "rc": [
+    26.94161317060866,
+    35.36942742917813
+   ],
+   "size": [
+    56.65814971923828,
+    78.69257354736328
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tv",
+   "file": "TurretIcon__tv.svg",
+   "w": 52,
+   "h": 76,
+   "rc": [
+    28.23399181004956,
+    30.899290671309245
+   ],
+   "size": [
+    52.10483932495117,
+    75.5202407836914
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "ltv",
+   "file": "TurretIcon__ltv.svg",
+   "w": 70,
+   "h": 82,
+   "rc": [
+    22.373922041298897,
+    36.79280709657024
+   ],
+   "size": [
+    70.00972747802734,
+    81.9710693359375
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "tcamera",
+   "file": "TurretIcon__tcamera.svg",
+   "w": 82,
+   "h": 94,
+   "rc": [
+    50.43727412457898,
+    48.107045666086464
+   ],
+   "size": [
+    81.69908142089844,
+    94.15592956542969
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan speaker",
+   "file": "TurretIcon__titan_speaker.svg",
+   "w": 90,
+   "h": 77,
+   "rc": [
+    43.664850039425005,
+    37.49928415868487
+   ],
+   "size": [
+    89.81295776367188,
+    77.49162292480469
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "titan tv",
+   "file": "TurretIcon__titan_tv.svg",
+   "w": 72,
+   "h": 135,
+   "rc": [
+    34.551952309242495,
+    86.07190039511686
+   ],
+   "size": [
+    72.45630645751953,
+    134.8612518310547
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "dksp",
+   "file": "TurretIcon__dksp.svg",
+   "w": 55,
+   "h": 66,
+   "rc": [
+    38.701068409681,
+    30.751584318063806
+   ],
+   "size": [
+    54.70405960083008,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "plunger",
+   "file": "TurretIcon__plunger.svg",
+   "w": 64,
+   "h": 71,
+   "rc": [
+    32.96449062793505,
+    31.568689670912136
+   ],
+   "size": [
+    64.24333190917969,
+    70.92902374267578
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "Laser tv",
+   "file": "TurretIcon__Laser_tv.svg",
+   "w": 82,
+   "h": 125,
+   "rc": [
+    45.93430179545453,
+    80.05540625100654
+   ],
+   "size": [
+    82.44438171386719,
+    125.13626098632812
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money1",
+   "file": "TurretIcon__money1.svg",
+   "w": 39,
+   "h": 66,
+   "rc": [
+    16.992770000000007,
+    33.023830000000004
+   ],
+   "size": [
+    38.85506057739258,
+    65.68045806884766
+   ]
+  },
+  {
+   "sprite": "TurretIcon",
+   "costume": "money2",
+   "file": "TurretIcon__money2.svg",
+   "w": 51,
+   "h": 82,
+   "rc": [
+    6.406286937526431,
+    40.49460972463339
+   ],
+   "size": [
+    50.64799118041992,
+    81.9441909790039
+   ]
+  }
+ ],
+ "sounds": [
+  {
+   "sprite": "Turret",
+   "name": "click",
+   "file": "Turret__click.wav",
+   "secs": 0.57,
+   "kb": 25
+  },
+  {
+   "sprite": "Turret",
+   "name": "place",
+   "file": "Turret__place.wav",
+   "secs": 0.54,
+   "kb": 23
+  },
+  {
+   "sprite": "Turret",
+   "name": "Pistol Sound Effects 9mm",
+   "file": "Turret__Pistol_Sound_Effects_9mm.wav",
+   "secs": 2.11,
+   "kb": 43
+  },
+  {
+   "sprite": "Turret",
+   "name": "Laser sound",
+   "file": "Turret__Laser_sound.wav",
+   "secs": 0.83,
+   "kb": 36
+  },
+  {
+   "sprite": "Turret",
+   "name": "Laser sound2",
+   "file": "Turret__Laser_sound2.wav",
+   "secs": 0.52,
+   "kb": 23
+  },
+  {
+   "sprite": "Turret",
+   "name": "metallic-clang-100473",
+   "file": "Turret__metallic-clang-100473.wav",
+   "secs": 1.7,
+   "kb": 43
+  },
+  {
+   "sprite": "Turret",
+   "name": "AK-47 - Sound Effect",
+   "file": "Turret__AK-47_-_Sound_Effect.wav",
+   "secs": 3.11,
+   "kb": 43
+  },
+  {
+   "sprite": "Turret",
+   "name": "SOUND WAVE",
+   "file": "Turret__SOUND_WAVE.wav",
+   "secs": 3.42,
+   "kb": 43
+  },
+  {
+   "sprite": "Turret",
+   "name": "X2Download3",
+   "file": "Turret__X2Download3.wav",
+   "secs": 0.51,
+   "kb": 22
+  }
+ ]
+}
