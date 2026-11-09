@@ -5491,34 +5491,42 @@ ULTRA_KIT.l2head = {
    games drew everything at one size except what they called large or
    titan, so that distinction is the only one carried across. */
 const LEGACY_ART = {
-  j1_basic:   { f:'jtd1/T1__T1.svg',  b:'jtd1/T1__T1Bullet.svg',  h:1.00 },
-  j1_bedtime: { f:'jtd1/T2__T1.svg',  b:null,                      h:1.00 },
-  j1_laser:   { f:'jtd1/T3__T1.svg',  b:'jtd1/T3__T1Bullet.svg',  h:1.00 },
-  j1_rainbow: { f:'jtd1/T4__T1.png',  b:'jtd1/T4__T1Bullet.svg',  h:1.05 },
-  j1_engineer:{ f:'jtd1/T5__T1.svg',  b:'jtd1/T5__T1Bullet.svg',  h:1.00 },
-  j1_goldeng: { f:'jtd1/T6__T1.svg',  b:null,                      h:1.00 },
-  j1_titan:   { f:'jtd1/T7__T1.png',  b:null,                      h:1.15 },
-  j1_titanmax:{ f:'jtd1/T8__T1.png',  b:'jtd1/T8__T1Bullet.svg',  h:1.45 },
-  j1_tablet:  { f:'jtd1/T9__T1.png',  b:'jtd1/T9__T1Bullet.svg',  h:1.30 },
-  j1_titantab:{ f:'jtd1/T10__T1.png', b:null,                      h:1.10 },
-  j1_truegod: { f:'jtd1/T11__T1.png', b:null,                      h:1.35 },
-  j1_kaesler: { f:'jtd1/T12__T1.png', b:'jtd1/T12__T1Bullet.svg', h:1.45 },
-  j1_bhlaser: { f:'jtd1/T13__T1.png', b:'jtd1/T13__T1Bullet.png', h:1.15 },
-  j1_uplaser: { f:'jtd1/T16__T1.png', b:'jtd1/T16__T1Bullet.png', h:1.20 },
-  j1_astro:   { f:'jtd1/T20__costume3.svg', b:'jtd1/T20__T1Bullet.png', h:1.45 },
+  /* Scale is measured, not guessed: each one was bought and dropped in
+     JTD1 and the renderer asked for its bounds, so these are ratios
+     against Basic Jaxon on the same field. Two are capped at 6.8, which
+     is this game's own Titan Astro — in JTD1 they are 7.8x and fill the
+     whole 360-tall stage, which a 900-tall field cannot do and stay
+     playable. */
+  j1_basic:   { f:'jtd1/T1__T1.svg',   b:'jtd1/T1__T1Bullet.svg',  h:1.00 },
+  j1_bedtime: { f:'jtd1/T2__T1.svg',   b:null,                      h:0.98 },
+  j1_ninja:   { f:'jtd1/T3__T1.svg',   b:'jtd1/T3__T1Bullet.svg',  h:0.98 },
+  j1_laser:   { f:'jtd1/T4__T1.png',   b:'jtd1/T4__T1Bullet.svg',  h:0.96 },
+  j1_rainbow: { f:'jtd1/T5__T1.svg',   b:'jtd1/T5__T1Bullet.svg',  h:1.00 },
+  j1_engineer:{ f:'jtd1/T6__T1.svg',   b:null,                      h:1.00 },
+  j1_goldeng: { f:'jtd1/T7__T1.png',   b:null,                      h:1.00 },
+  j1_titan:   { f:'jtd1/T8__T1.png',   b:'jtd1/T8__T1Bullet.svg',  h:2.35 },
+  j1_titanmax:{ f:'jtd1/T9__T1.png',   b:'jtd1/T9__T1Bullet.svg',  h:5.65 },
+  j1_tablet:  { f:'jtd1/T10__T1.png',  b:null,                      h:1.48 },
+  j1_titantab:{ f:'jtd1/T11__T1.png',  b:null,                      h:6.80 },
+  j1_truegod: { f:'jtd1/T12__T1.png',  b:'jtd1/T12__T1Bullet.svg', h:6.80 },
+  /* his own sprite and his own bullet — he was showing True God's */
+  j1_kaesler: { f:'jtd1/MR_KAESLER__T1.svg', b:'jtd1/MR_KAESLER__T1Bullet.svg', h:1.15 },
+  j1_bhlaser: { f:'jtd1/T13__T1.png',  b:'jtd1/T13__T1Bullet.png', h:1.02 },
+  j1_uplaser: { f:'jtd1/T16__T1.png',  b:'jtd1/T16__T1Bullet.png', h:1.35 },
+  j1_astro:   { f:'jtd1/T20__costume3.svg', b:'jtd1/T20__T1Bullet.png', h:5.52 },
 
-  j2_cam:     { f:'jtd2/Turret__cameraman.svg',   b:'jtd2/FX__Line.svg', h:1.00 },
-  j2_bat:     { f:'jtd2/Turret__speakerman.svg',  b:'jtd2/FX__Fire.svg', h:1.00 },
-  j2_ipad:    { f:'jtd2/Turret__tvman.svg',       b:'jtd2/FX__Line.svg', h:1.00 },
-  j2_large:   { f:'jtd2/Turret__largecamera.svg', b:'jtd2/FX__Line.svg', h:1.15 },
-  j2_lspk:    { f:'jtd2/Turret__largespeaker.svg',b:'jtd2/FX__Speaker_aoe.svg', h:1.15 },
-  j2_ltv:     { f:'jtd2/Turret__largetv.svg',     b:'jtd2/FX__Line.svg', h:1.20 },
-  j2_tcam:    { f:'jtd2/Turret__titancamera.svg', b:'jtd2/FX__camera_titan_AOE.svg', h:1.40 },
-  j2_tspk:    { f:'jtd2/Turret__titansp.svg',     b:'jtd2/FX__Speaker_aoe.svg', h:1.45 },
-  j2_ttv:     { f:'jtd2/Turret__titantv.svg',     b:'jtd2/FX__Tv_titan_AOE.svg', h:1.45 },
-  j2_dspk:    { f:'jtd2/Turret__darkspeaker.svg', b:'jtd2/FX__Speaker_aoe.svg', h:1.15 },
-  j2_toilet:  { f:'jtd2/Turret__plungerman.svg',  b:'jtd2/FX__Fire.svg', h:1.05 },
-  j2_ripad:   { f:'jtd2/Turret__LASER_TVMAN.svg', b:'jtd2/FX__LASER_TV_AOE.svg', h:1.20 }
+  j2_cam:     { f:'jtd2/Turret__cameraman.svg',   b:'jtd2/FX__Line.svg', h:1.65, a:'jtd2/ANIM__cameraman_1.svg' },
+  j2_bat:     { f:'jtd2/Turret__speakerman.svg',  b:'jtd2/FX__Fire.svg', h:1.65, a:'jtd2/ANIM__speakerman_1.svg' },
+  j2_ipad:    { f:'jtd2/Turret__tvman.svg',       b:'jtd2/FX__Line.svg', h:1.65, a:'jtd2/ANIM__tvman_1.svg' },
+  j2_large:   { f:'jtd2/Turret__largecamera.svg', b:'jtd2/FX__Line.svg', h:1.9, a:'jtd2/ANIM__largecamera_1.svg' },
+  j2_lspk:    { f:'jtd2/Turret__largespeaker.svg',b:'jtd2/FX__Speaker_aoe.svg', h:1.9, a:'jtd2/ANIM__large_speaker_1__1.svg' },
+  j2_ltv:     { f:'jtd2/Turret__largetv.svg',     b:'jtd2/FX__Line.svg', h:1.98, a:'jtd2/ANIM__largetv_1.svg' },
+  j2_tcam:    { f:'jtd2/Turret__titancamera.svg', b:'jtd2/FX__camera_titan_AOE.svg', h:2.31, a:'jtd2/ANIM__titancamera_1.svg' },
+  j2_tspk:    { f:'jtd2/Turret__titansp.svg',     b:'jtd2/FX__Speaker_aoe.svg', h:2.39, a:'jtd2/ANIM__titansp_1.svg' },
+  j2_ttv:     { f:'jtd2/Turret__titantv.svg',     b:'jtd2/FX__Tv_titan_AOE.svg', h:2.39, a:'jtd2/ANIM__titantv_1.svg' },
+  j2_dspk:    { f:'jtd2/Turret__darkspeaker.svg', b:'jtd2/FX__Speaker_aoe.svg', h:1.9, a:'jtd2/ANIM__darkspeaker_1.svg' },
+  j2_toilet:  { f:'jtd2/Turret__plungerman.svg',  b:'jtd2/FX__Fire.svg', h:1.73, a:'jtd2/ANIM__Pngeran_1_1_1__1.svg' },
+  j2_ripad:   { f:'jtd2/Turret__LASER_TVMAN.svg', b:'jtd2/FX__LASER_TV_AOE.svg', h:1.98, a:'jtd2/ANIM__LASER_TVMAN_1.svg' }
 };
 /* the bullet each weapon actually fires, by ammo name */
 const LEGACY_BULLET = {};
@@ -5540,6 +5548,7 @@ const J1 = (base, over) => Object.assign({}, VARIANTS[base] || {},
   { ultra:null, wide:false, outlineWidth:9 }, over || {});
 
 VARIANTS.j1_basic    = J1('basic');
+VARIANTS.j1_ninja    = J1('ninja');
 VARIANTS.j1_bedtime  = J1('bedtime');
 VARIANTS.j1_laser    = J1('laser');
 VARIANTS.j1_rainbow  = J1('rainbow');
@@ -6070,6 +6079,7 @@ const UPGRADES = {
      inventing some would be the point at which they stopped being them. */
   j1_basic:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j1_bedtime:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  j1_ninja:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j1_laser:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j1_rainbow:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j1_engineer:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
@@ -7037,6 +7047,11 @@ function loadImages(done) {
   for (const k in PORTRAIT) src[k] = PORTRAIT[k];
   /* the bullets are not portraits, so they are added on their own */
   for (const k in LEGACY_BULLET) src[k] = 'legacy/' + LEGACY_BULLET[k];
+  /* and the one attack frame each JTD2 turret switches to while firing */
+  for (const k in LEGACY_ART) if (LEGACY_ART[k].a) src['anim_' + k] = 'legacy/' + LEGACY_ART[k].a;
+  /* the first game's black hole, Sprite 23 */
+  src.j1hole  = 'legacy/jtd1/Sprite23__dgo9ctw-20b67ea5-7de0-43f8-a0a7-9f253a70e3e1.png';
+  src.j1hole2 = 'legacy/jtd1/Sprite23__E5596622-9CCC-49F2-94FC-8A5E8F93FCDE.png';
   let n = Object.keys(src).length;
   for (const k in src) {
     const im = new Image();
@@ -7316,6 +7331,14 @@ function enemyAbility(e, ab) {
   }
 }
 
+/* JTD1 ran at 30 frames a second and expressed projectile speed as
+   "move N steps" per tick, so one step is N * 30 stage units a second.
+   On a 480-wide stage that is the same fraction of the board as
+   N * 100 pixels a second on this 1600-wide one. Declared up here
+   because the table below is built at parse time and uses it. */
+const J1_FPS = 30;
+const J1_STEP = J1_FPS * (1600/480);          /* 100 px/s per step */
+
 const TOWERS = {
   /* ------------------------------------------------------------------ *
    *  BALANCE LINE:  every Jaxon buys the same amount of work per dollar. *
@@ -7547,66 +7570,86 @@ const TOWERS = {
    *  these carry range:Infinity and mouseAim.                           *
    * ================================================================== */
 
-  /* ---------- JTD 1 — in shop order ---------- */
-  j1_basic:   { name:'Basic Jaxon', era:1, cost:40, cd:1.5, dmg:1, speed:720,
+  /* ---------- JTD 1 — in shop order, all sixteen ----------
+     Reload is the `wait` out of each sprite's own fire loop; damage is
+     the `change Boss Health by` the boss sprite reports for it. Costs
+     are as specified. Every one of them aims at the cursor and has no
+     range circle, because that is what a JTD1 tower is. */
+  j1_basic:   { name:'Basic Jaxon', era:1, cost:40, cd:1.5, dmg:1, speed:10*J1_STEP,
              ammo:'j1car', mouseAim:1, range:Infinity,
-             blurb:'The first Jaxon anyone ever placed. Throws a toy car wherever you are pointing, once every 1.5 seconds.',
+             blurb:'The first Jaxon anyone ever placed. One toy car every 1.5 seconds, wherever you are pointing.',
              tags:[['JTD 1','t-rain'],['Mouse Aim','t-single'],['Starter','']] },
-  j1_bedtime: { name:'Bedtime Jaxon', era:1, cost:65, cd:10, dmg:5, speed:0,
-             ammo:'j1scream', mouseAim:1, range:Infinity, splash:5, splashR:420, pierce:99,
-             blurb:'One soundwave every ten seconds, across the whole map, through everything on it. Slow, and worth the wait.',
+  j1_bedtime: { name:'Bedtime Jaxon', era:1, cost:65, cd:10, dmg:5, ammo:'scream',
+             range:Infinity,
+             blurb:'Screams once every ten seconds. Five damage to everything on screen, wherever it is.',
              tags:[['JTD 1','t-rain'],['Soundwave','t-aoe'],['Whole Map','']] },
-  j1_laser:   { name:'Laser Jaxon', era:1, cost:65, cd:0.5, dmg:1, speed:1600,
-             ammo:'j1laser', mouseAim:1, range:Infinity,
-             blurb:'A thin beam twice a second in whatever direction you are facing. Cheap, steady, and it never stops.',
+  j1_ninja:   { name:'Ninja Jaxon', era:1, cost:65, cd:0.5, dmg:1, speed:10*J1_STEP,
+             ammo:'j1shuri', mouseAim:1, range:Infinity,
+             blurb:'Shurikens toward the cursor, twice a second. Cheap, and it never stops.',
              tags:[['JTD 1','t-rain'],['Mouse Aim','t-single'],['Rapid Fire','t-fast']] },
-  j1_rainbow: { name:'Rainbow Laser Jaxon', era:1, cost:125, cd:0.45, dmg:2, speed:1700,
-             ammo:'j1rainbow', mouseAim:1, range:Infinity, pierce:2,
-             blurb:'Every colour at once, a little over twice a second, straight through three of them.',
-             tags:[['JTD 1','t-rain'],['Pierce','t-single'],['Mouse Aim','']] },
-  j1_engineer:{ name:'Engineer Jaxon', era:1, cost:250, cd:0.25, dmg:4, speed:1500,
-             ammo:'j1bolt', mouseAim:1, range:Infinity,
-             blurb:'Four shots a second out of something he built himself. The first Jaxon in the game that genuinely keeps up.',
-             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast'],['Mouse Aim','']] },
-  j1_goldeng: { name:'Golden Engineer Jaxon', era:1, cost:349, cd:4.5, dmg:6, speed:900,
-             ammo:'j1gold', mouseAim:1, range:Infinity, splash:6, splashR:240,
-             blurb:'Slower than his brother and far heavier. One gold round every 4.5 seconds, and it goes off.',
-             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Mouse Aim','']] },
-  j1_titan:   { name:'Titan Jaxon', era:1, cost:499, cd:3.25, dmg:8, speed:1000,
-             ammo:'j1titan', mouseAim:1, range:Infinity, splash:8, splashR:300,
-             blurb:'The first big one. One enormous hit every 3.25 seconds, and everything standing near it.',
-             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Mouse Aim','']] },
-  j1_titanmax:{ name:'Upgraded Titan Jaxon', era:1, cost:999, cd:0.125, dmg:7, speed:1800,
+  j1_laser:   { name:'Laser Jaxon', era:1, cost:125, cd:0.45, dmg:2, speed:14*J1_STEP,
+             ammo:'j1laser', mouseAim:1, range:Infinity,
+             blurb:'A laser ball toward the cursor, a little over twice a second.',
+             tags:[['JTD 1','t-rain'],['Mouse Aim','t-single']] },
+  j1_rainbow: { name:'Rainbow Laser Jaxon', era:1, cost:250, cd:0.25, dmg:4, speed:14*J1_STEP,
+             ammo:'j1rainbow', mouseAim:1, range:Infinity, rainbow:1,
+             blurb:'Rainbow laser balls, four damage every quarter second. He cycles colour the whole time he is standing there, the way he always did.',
+             tags:[['JTD 1','t-rain'],['Rainbow','t-rain'],['Rapid Fire','t-fast']] },
+  /* the scripts say 349 and 499; the spec says 350 and 500 */
+  j1_engineer:{ name:'Engineer Jaxon', era:1, cost:350, range:Infinity, cd:4.5, dmg:3,
+             ammo:'build', carHp:3, carKind:'car',
+             blurb:'Builds a car onto the track every 4.5 seconds. Three damage, and the car itself has three health.',
+             tags:[['JTD 1','t-rain'],['Builder','t-aoe'],['No Projectile','']] },
+  j1_goldeng: { name:'Golden Engineer Jaxon', era:1, cost:500, range:Infinity, cd:3.25, dmg:6,
+             ammo:'build', carHp:6, carKind:'goldcar',
+             blurb:'Golden cars, every 3.25 seconds. Six damage and six health apiece.',
+             tags:[['JTD 1','t-rain'],['Builder','t-aoe'],['No Projectile','']] },
+  /* the script says 999; the spec says 1,250 */
+  j1_titan:   { name:'Titan Jaxon', era:1, cost:1250, cd:0.125, dmg:7, speed:16*J1_STEP,
              ammo:'j1titan', mouseAim:1, range:Infinity, splash:4, splashR:220,
-             blurb:'The Titan, rebuilt for rate of fire. Eight times a second instead of once every three.',
-             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast'],['Splash','t-aoe']] },
-  j1_tablet:  { name:'Tablet Jaxon', era:1, cost:15000, cd:0.125, dmg:30, speed:2000,
-             ammo:'j1tablet', mouseAim:1, range:Infinity, pierce:3,
-             blurb:'Thirty a hit, eight hits a second, through three of them. The first game\u2019s answer to everything.',
-             tags:[['JTD 1','t-rain'],['Pierce','t-single'],['Rapid Fire','t-fast']] },
-  j1_titantab:{ name:'Titan Tablet Jaxon', era:1, cost:749, cd:0.01, dmg:5, speed:2200,
-             ammo:'j1tablet', mouseAim:1, range:Infinity,
-             blurb:'A hundred shots a second for five each. Nothing in the first game fires faster than this.',
-             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast'],['Mouse Aim','']] },
-  j1_truegod: { name:'True God Jaxon', era:1, cost:5000, cd:0.01, dmg:12, speed:2400,
-             ammo:'j1god', mouseAim:1, range:Infinity, pierce:4,
-             blurb:'The same hundred shots a second, for twelve each, through five at a time. It was never balanced and it is not now.',
-             tags:[['JTD 1','t-rain'],['Pierce','t-single'],['Rapid Fire','t-fast']] },
-  j1_kaesler: { name:'Mr. Kaesler Jaxon', era:1, cost:35000, cd:0.125, dmg:50, speed:2000,
-             ammo:'j1kaesler', mouseAim:1, range:Infinity, splash:30, splashR:260, pierce:2,
-             blurb:'Fifty a hit, eight times a second, and a blast behind it. The hardest hitter the first game ever shipped.',
-             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Pierce','t-single']] },
-  j1_bhlaser: { name:'Black Hole Laser Jaxon', era:1, cost:25000, cd:0.07, dmg:40, speed:2300,
-             ammo:'j1bhole', mouseAim:1, range:Infinity, splash:26, splashR:300, pierce:3,
-             blurb:'A collapsing beam fourteen times a second. Damage interpolated: this one never touches the boss sprite the others report through.',
+             blurb:'Three attacks at once, eight times a second. The first thing in the game that feels unfair.',
              tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Rapid Fire','t-fast']] },
-  j1_uplaser: { name:'Upgraded Laser Jaxon', era:1, cost:15000, cd:0.08, dmg:25, speed:2200,
-             ammo:'j1laser', mouseAim:1, range:Infinity, pierce:2,
-             blurb:'The Laser Jaxon with everything turned up: twelve shots a second, twenty-five a hit, through three.',
-             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast'],['Pierce','t-single']] },
-  j1_astro:   { name:'Astro Jaxon', era:1, cost:34500, cd:0.25, dmg:60, speed:1900,
+  /* the script says 15,000; the spec says 7,500 */
+  j1_titanmax:{ name:'Upgraded Titan Jaxon', era:1, cost:7500, cd:0.125, dmg:30, speed:18*J1_STEP,
+             ammo:'j1titanmax', mouseAim:1, range:Infinity, splash:18, splashR:280, pierce:2,
+             blurb:'The Titan rebuilt. Thirty a hit, eight hits a second, through three of them.',
+             tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Pierce','t-single']] },
+  /* the script says 749; the spec says 750 */
+  /* The screen is the weapon. He turns to face your cursor and whatever
+     touches the lit rectangle takes damage — five times a second, which
+     is JTD1's own contact rate. No projectile, nothing to dodge, and
+     everything depends on where you are pointing. */
+  j1_tablet:  { name:'Tablet Jaxon', era:1, cost:750, cd:0.2, dmg:5,
+             ammo:'j1screen', mouseAim:1, range:Infinity,
+             screenAt:72, screenW:86, screenH:58,
+             blurb:'No projectile at all. He turns to face you and the white screen of the tablet is the weapon \u2014 anything it touches takes damage.',
+             tags:[['JTD 1','t-rain'],['Contact','t-aoe'],['No Projectile','']] },
+  j1_titantab:{ name:'Titan Tablet Jaxon', era:1, cost:5000, cd:0.2, dmg:12,
+             ammo:'j1screen', mouseAim:1, range:Infinity,
+             screenAt:210, screenW:250, screenH:170,
+             blurb:'The same screen, far bigger. Still nothing to dodge and still entirely about where you point him.',
+             tags:[['JTD 1','t-rain'],['Contact','t-aoe'],['No Projectile','']] },
+  j1_truegod: { name:'True God Jaxon', era:1, cost:35000, cd:0.125, dmg:50, speed:20*J1_STEP,
+             ammo:'j1god', mouseAim:1, range:Infinity, splash:30, splashR:340, pierce:4,
+             blurb:'Fifty a hit, eight times a second, through five. There was never anything after this one.',
+             tags:[['JTD 1','t-rain'],['Pierce','t-single'],['Splash','t-aoe']] },
+  /* the script says 65; the spec says 120. His reload is `wait 0`, which
+     is every frame, so it sits on the engine's floor. */
+  j1_kaesler: { name:'Mr. Kaesler Jaxon', era:1, cost:120, cd:0.05, dmg:10, speed:10*J1_STEP,
+             ammo:'j1kaesler', mouseAim:1, range:Infinity,
+             blurb:'Fires as fast as the game will let him, for ten a time. His own bullet, out of his own sprite.',
+             tags:[['JTD 1','t-rain'],['Rapid Fire','t-fast'],['Mouse Aim','']] },
+  j1_bhlaser: { name:'Black Hole Laser Jaxon', era:1, cost:25000, cd:0.07, dmg:25, speed:18*J1_STEP,
+             ammo:'j1bhole', mouseAim:1, range:Infinity, j1hole:5, j1holeArt:'j1hole2',
+             blurb:'Twenty-five a hit, fourteen times a second, and a black hole opens every five seconds.',
+             tags:[['JTD 1','t-rain'],['Black Hole','t-aoe'],['Rapid Fire','t-fast']] },
+  j1_uplaser: { name:'Upgraded Laser Jaxon', era:1, cost:15000, cd:0.08, dmg:15, speed:16*J1_STEP,
+             ammo:'j1uplaser', mouseAim:1, range:Infinity, j1hole:10,
+             blurb:'Fifteen a hit, twelve times a second, and a black hole every ten.',
+             tags:[['JTD 1','t-rain'],['Black Hole','t-aoe'],['Rapid Fire','t-fast']] },
+  j1_astro:   { name:'Titan Astro Jaxon', era:1, cost:34500, cd:0.25, dmg:60, speed:16*J1_STEP,
              ammo:'j1astro', mouseAim:1, range:Infinity, splash:45, splashR:380, pierce:4,
-             blurb:'The last thing on the first game\u2019s shelf. Four heavy shots a second and a crater under each of them.',
+             blurb:'The last thing on the first game\u2019s shelf. Heavy shots four times a second and a crater under each.',
              tags:[['JTD 1','t-rain'],['Splash','t-aoe'],['Pierce','t-single']] },
 
   /* ---------- JTD 2 — in TurretTypes order ----------
@@ -7793,14 +7836,22 @@ const ROLE = {
   celestial:['dps','splash','late','celestial'],
   /* the old games. 'legacy' is their own rail; they keep their real jobs
      as well, so a Speakerman still turns up under Splash. */
-  j1_basic:['legacy','starters'],       j1_bedtime:['legacy','splash','starters'],
-  j1_laser:['legacy','dps','starters'], j1_rainbow:['legacy','dps'],
-  j1_engineer:['legacy','dps'],         j1_goldeng:['legacy','splash'],
-  j1_titan:['legacy','splash'],         j1_titanmax:['legacy','dps','splash'],
-  j1_tablet:['legacy','dps','late'],    j1_titantab:['legacy','dps'],
-  j1_truegod:['legacy','dps','late'],   j1_kaesler:['legacy','dps','splash','late'],
-  j1_bhlaser:['legacy','dps','splash','late'],
-  j1_uplaser:['legacy','dps','late'],   j1_astro:['legacy','dps','splash','late'],
+  j1_basic:['legacy','starters'],
+  j1_bedtime:['legacy','splash','starters'],
+  j1_ninja:['legacy','dps','starters'],
+  j1_laser:['legacy','dps','starters'],
+  j1_rainbow:['legacy','dps'],
+  j1_engineer:['legacy','builders'],
+  j1_goldeng:['legacy','builders'],
+  j1_titan:['legacy','dps','splash'],
+  j1_titanmax:['legacy','dps','splash','late'],
+  j1_tablet:['legacy','splash'],
+  j1_titantab:['legacy','splash','late'],
+  j1_truegod:['legacy','dps','splash','late'],
+  j1_kaesler:['legacy','dps'],
+  j1_bhlaser:['legacy','dps','late'],
+  j1_uplaser:['legacy','dps','late'],
+  j1_astro:['legacy','dps','splash','late'],
   j2_cam:['legacy','starters'],         j2_bat:['legacy','dps','starters'],
   j2_ipad:['legacy','dps'],             j2_large:['legacy','dps'],
   j2_lspk:['legacy','splash','support'],j2_ltv:['legacy','dps'],
@@ -7828,10 +7879,15 @@ const ROLE = {
    a kind of JTD3 Jaxon, he is a Jaxon from somewhere else — so the era
    swaps the whole roster rather than filtering one. */
 let shopEra = 3;
-const SHELF = () => ORDER.filter(k => !TOWERS[k].secret)
-                         .filter(k => eraOf(k) === shopEra)
-                         .filter(k => !TOWERS[k].celestial || celestialOpen() || SB())
-                         .sort((a, b) => TOWERS[a].cost - TOWERS[b].cost);
+const SHELF = () => {
+  const list = ORDER.filter(k => !TOWERS[k].secret)
+                    .filter(k => eraOf(k) === shopEra)
+                    .filter(k => !TOWERS[k].celestial || celestialOpen() || SB());
+  /* This game's shelf sorts by price. The old ones had a shop laid out
+     in a deliberate order and that order is part of what they were, so
+     a legacy shelf is left exactly as ORDER lists it. */
+  return shopEra === 3 ? list.sort((a, b) => TOWERS[a].cost - TOWERS[b].cost) : list;
+};
 /* everything on every shelf, for the code that does not care which era
    is showing — hotkeys, saves, the collection, the stats sheet */
 const ALL_TOWERS = () => ORDER.filter(k => !TOWERS[k].secret);
@@ -7847,9 +7903,10 @@ const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid',
                'mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune',
                'crusher','booster','slayer','wiper','infmirror','astro','celestial',
                /* the past, in each old shop's own order */
-               'j1_basic','j1_bedtime','j1_laser','j1_rainbow','j1_engineer','j1_goldeng',
-               'j1_titan','j1_titanmax','j1_tablet','j1_titantab','j1_truegod','j1_kaesler',
-               'j1_bhlaser','j1_uplaser','j1_astro',
+               /* the first game's shop, read across its three rows */
+               'j1_basic','j1_bedtime','j1_ninja','j1_laser','j1_rainbow',
+               'j1_engineer','j1_goldeng','j1_titan','j1_titanmax','j1_tablet',
+               'j1_titantab','j1_truegod','j1_kaesler','j1_bhlaser','j1_uplaser','j1_astro',
                'j2_cam','j2_bat','j2_ipad','j2_large','j2_lspk','j2_ltv','j2_tcam','j2_tspk',
                'j2_ttv','j2_dspk','j2_toilet','j2_ripad',
                'lunchbox','forge','yoyo','tablet','merchant',
@@ -7877,10 +7934,22 @@ const VALUE = {
                 /* the old games balanced themselves; these are what their
                    own numbers work out to on this game's line, not a
                    target anybody aimed at */
-                j1_basic:100, j1_bedtime:100, j1_laser:100, j1_rainbow:100,
-                j1_engineer:100, j1_goldeng:100, j1_titan:100, j1_titanmax:100,
-                j1_tablet:100, j1_titantab:100, j1_truegod:100, j1_kaesler:100,
-                j1_bhlaser:100, j1_uplaser:100, j1_astro:100,
+                j1_basic:100,
+                j1_bedtime:100,
+                j1_ninja:100,
+                j1_laser:100,
+                j1_rainbow:100,
+                j1_engineer:100,
+                j1_goldeng:100,
+                j1_titan:100,
+                j1_titanmax:100,
+                j1_tablet:100,
+                j1_titantab:100,
+                j1_truegod:100,
+                j1_kaesler:100,
+                j1_bhlaser:100,
+                j1_uplaser:100,
+                j1_astro:100,
                 j2_cam:100, j2_bat:100, j2_ipad:100, j2_large:100, j2_lspk:100,
                 j2_ltv:100, j2_tcam:100, j2_tspk:100, j2_ttv:100,
                 j2_dspk:100, j2_toilet:100, j2_ripad:100 };
@@ -7953,11 +8022,8 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      /* the last Jaxon: taller than every ultra on the
                         shelf, and nowhere near the Titan */
                      celestial:1.55,
-                     /* The old games drew everything at one size on a
-                        480x360 stage, except the ones they deliberately
-                        called large or titan. That distinction is the
-                        footprint worth carrying across. */
-                     j1_titanmax:1.5, j1_astro:1.5,
+                     /* Legacy footprints come from LEGACY_ART, which was
+                        measured in the source game; nothing here. */
                      j2_large:1.2, j2_lspk:1.2, j2_ltv:1.25, j2_ripad:1.2,
                      j2_dspk:1.2, j2_ipad:1.05,
                      j2_tcam:1.45, j2_tspk:1.5, j2_ttv:1.5,
@@ -8163,8 +8229,24 @@ const S = {
    ever wanted. Anything that deals damage walks S.bosses instead. */
 Object.defineProperty(S, 'boss', { get() { return S.bosses.length ? S.bosses[0] : null; } });
 /* pierce-once bookkeeping: a shockwave remembers which bosses it caught */
-const bSeen = (o, b) => !!(o.bHit && o.bHit.has(b));
-const bMark = (o, b) => { (o.bHit || (o.bHit = new Set())).add(b); };
+/* How often a shot that is still inside a boss may hurt it again. A
+   JTD3 shot never does — it is marked and done. A JTD1 shot does, five
+   times a second, which is what its pierce actually was. */
+const J1_RETICK = 0.2;
+const bSeen = (o, b) => {
+  if (!o.bHit) return false;
+  const at = o.bHit.get ? o.bHit.get(b) : (o.bHit.has(b) ? Infinity : undefined);
+  if (at === undefined) return false;
+  if (at === Infinity) return true;            /* marked once, forever */
+  return (S.t - at) < J1_RETICK;               /* still inside its cooldown */
+};
+const bMark = (o, b) => {
+  if (!o.bHit) o.bHit = new Map();
+  else if (!o.bHit.set) { const old = o.bHit; o.bHit = new Map(); for (const k of old) o.bHit.set(k, Infinity); }
+  /* an old piercing shot comes back round; everything else is done */
+  o.bHit.set(b, (o.src && TOWERS[o.src] && TOWERS[o.src].era === 1 && (o.pierce > 0 || o.pierce === undefined))
+                ? S.t : Infinity);
+};
 
 /* -------------------------------------------------------------- saving ---
    One small blob in localStorage: the best run and the handful of settings
@@ -8768,25 +8850,53 @@ const AMMO_SOUND = {
    on one shared sprite so it maps by weapon rather than by tower.
    Anything not listed falls back to the era's synthesised voice. */
 const LEGACY_SFX = {
+  /* ---- JTD1 ----
+     The first game shipped three recordings across sixteen towers. The
+     other thirteen fire in silence, so they fire in silence here. */
   j1_bedtime:'legacy/j1_bedtime',
+  j1_laser:'legacy/j1_laser',
   j1_rainbow:'legacy/j1_rainbow',
-  j1_engineer:'legacy/j1_engineer',
-  j2_cam:'legacy/j2_laser',      j2_bat:'legacy/j2_clang',
-  j2_ipad:'legacy/j2_laser',     j2_large:'legacy/j2_pistol',
-  j2_lspk:'legacy/j2_wave',      j2_ltv:'legacy/j2_laser_l',
-  j2_tcam:'legacy/j2_ak',        j2_tspk:'legacy/j2_wave',
-  j2_ttv:'legacy/j2_laser_l',    j2_dspk:'legacy/j2_wave',
-  j2_toilet:'legacy/j2_thud',    j2_ripad:'legacy/j2_laser_l'
+
+  /* ---- JTD2 ----
+     Four of these are named by the project's own code, in a play-sound
+     block sitting inside an "if TurretType2 = ..." test, so there is no
+     guessing in them:
+         cameraman   -> Pistol Sound Effects 9mm
+         speakerman  -> metallic-clang-100473
+         largecamera -> AK-47 - Sound Effect
+         lasertv     -> KNIFE LAASER
+     The rest sit behind a different flag, so the mapping below is by
+     what the recording is plainly of — a sound wave on the speakers, a
+     television laser on the televisions. Anything with nothing to point
+     at stays quiet. */
+  j2_cam:'legacy/j2_pistol',
+  j2_bat:'legacy/j2_clang',
+  j2_large:'legacy/j2_ak',
+  j2_ripad:'legacy/j2_knife',
+  j2_lspk:'legacy/j2_wave',
+  j2_tspk:'legacy/j2_wave',
+  j2_dspk:'legacy/j2_wave',
+  j2_ltv:'legacy/j2_largetv',
+  j2_ttv:'legacy/j2_tvlaser',
+  j2_ipad:'legacy/j2_laser',
+  j2_tcam:'legacy/j2_laser_l'
+  /* j2_toilet: the plunger has no sound of its own in JTD2 */
 };
 function sfxShot(t, w) {
   if (!t || !t.type) return;
   const spec = TOWERS[t.type];
   if (!spec) return false;
+  /* every shot is also the cue for the firing costume */
+  if (spec.era === 2) t.fireFlash = 0.14;
   /* a tower from an older game sounds like that game */
   if (spec.era === 1 || spec.era === 2) {
+    /* Only what the old build actually shipped. JTD1 has three recorded
+       sounds across sixteen towers and the other thirteen fire in
+       silence — so they fire in silence here. Inventing a beep for them
+       would be the one place in this port where something was added
+       rather than carried across. */
     const id = LEGACY_SFX[t.type];
-    if (id && playSample(id)) return true;
-    sfx(spec.era === 1 ? 'fire1' : 'fire2');
+    if (id) playSample(id);
     return true;
   }
   const id = (typeof w === 'string' ? w : (w && w.k)) || AMMO_SOUND[spec.ammo] || spec.ammo;
@@ -12858,6 +12968,33 @@ function cineRocket(g, k) {
     g.globalAlpha = 1 - ease(seg(k, 0.2, 0.28));
     drawCapsule(g, lift);
     g.restore();
+  }
+}
+
+/* The first game's black hole: Sprite 23, turning a degree a tick for
+   about two seconds and then gone. Upgraded Laser opens one every ten
+   seconds and Black Hole Laser every five, which is the only difference
+   between them besides the damage. */
+const J1_HOLE = { life:2.0, r:120, spin:1 };
+function j1Hole(t, sp) {
+  /* at the entrance the enemies come in by, which is where the first
+     game puts it and the reason it is worth the money */
+  const p = pointAt(0);
+  S.fx.push({ k:'j1hole', x:p.x, y:p.y, life:J1_HOLE.life, max:J1_HOLE.life,
+              r:J1_HOLE.r, dmg:sp.dmg, owner:t, hit:new Set(),
+              /* the same Sprite 23; the Black Hole Laser's is costume 2 */
+              img:sp.j1holeArt || 'j1hole' });
+}
+/* it damages what is inside it, once per enemy per hole, the way a
+   touching-check in Scratch does */
+function j1HoleTick(f, dt) {
+  if (!f.owner) return;
+  for (const e of S.enemies) {
+    if (e.dead || f.hit.has(e)) continue;
+    const q = enemyPos(e);
+    if (Math.hypot(q.x - f.x, q.y - f.y) > f.r) continue;
+    f.hit.add(e);
+    hurtEnemy(e, f.dmg, f.owner);
   }
 }
 
@@ -17792,16 +17929,20 @@ function sbRender() {
 /* --------------------------------------------------------- the roster -- */
 /* source values, with their own game's name for each */
 const LEGACY_BOSSES = [
-  { era:1, name:'The Boss',        hp:4500,    r:120, speed:58, leak:30, theme:'mercury' },
-  { era:1, name:'Hacker',          hp:9000,    r:124, speed:62, leak:32, theme:'uraB' },
-  { era:1, name:'Red Hacker',      hp:18000,   r:128, speed:64, leak:34, theme:'marsB' },
-  { era:1, name:'Blue Hacker',     hp:36000,   r:132, speed:66, leak:36, theme:'nepB' },
-  { era:1, name:'White Hacker',    hp:72000,   r:136, speed:68, leak:38, theme:'moonB' },
-  { era:1, name:'Gold Hacker',     hp:144000,  r:140, speed:70, leak:40, theme:'satB' },
-  { era:1, name:'Access Denied',   hp:288000,  r:146, speed:62, leak:46, theme:'vorath' },
-  { era:1, name:'Scratch',         hp:4608000, r:158, speed:54, leak:60, theme:'earthB' },
-  { era:1, name:'The Titan',       hp:5000000, r:168, speed:48, leak:70, theme:'jupB' },
-  { era:2, name:'Boss Enemy',      hp:3000,    r:118, speed:60, leak:28, theme:'venusB' }
+  /* The first game's eight, in order, with the health its own sprites
+     carry — the ladder doubles each time until the last, which jumps.
+     Sprite numbers are kept because they are how the project names
+     them and they should stay stable. */
+  { era:1, sprite:'Sprite11', name:'Boss 1 · wave 10', hp:500,    r:108, speed:62, leak:22, theme:'mercury' },
+  { era:1, sprite:'Sprite12', name:'Boss 2',                hp:1000,   r:112, speed:62, leak:24, theme:'uraB' },
+  { era:1, sprite:'Sprite13', name:'Boss 3',                hp:2000,   r:116, speed:63, leak:26, theme:'marsB' },
+  { era:1, sprite:'Sprite14', name:'Boss 4',                hp:4000,   r:120, speed:64, leak:28, theme:'nepB' },
+  { era:1, sprite:'Sprite15', name:'Boss 5',                hp:8000,   r:126, speed:65, leak:30, theme:'moonB' },
+  { era:1, sprite:'Sprite17', name:'Boss 6',                hp:16000,  r:132, speed:66, leak:34, theme:'satB' },
+  { era:1, sprite:'Sprite18', name:'Boss 7',                hp:32000,  r:140, speed:66, leak:38, theme:'earthB' },
+  { era:1, sprite:'Sprite21', name:'Boss 8',                hp:512000, r:156, speed:56, leak:52, theme:'vorath' },
+  /* and the second game's one */
+  { era:2, sprite:'Enemy',    name:'Boss Enemy',            hp:3000,   r:118, speed:60, leak:28, theme:'venusB' }
 ];
 const legacyBossDef = i => {
   const b = LEGACY_BOSSES[i], E = ERAS[b.era];
@@ -17831,7 +17972,7 @@ function sbInventory() {
     inv[b.era === 1 ? 'JTD 1 bosses' : 'JTD 2 bosses'].push({
       id:'lb' + i, kind:'legacyboss', idx:i, name:b.name,
       fill:(BOSS_THEME[b.theme] || {}).ring2 || '#ff5a4a',
-      stat:'HP ' + shortHp(d.hp), badge:String(b.era)
+      stat:'HP ' + shortHp(d.hp) + ' · src ' + shortHp(b.hp), badge:String(b.era)
     });
   });
   S.customs.forEach((c, i) => inv.Custom.push({
@@ -18640,6 +18781,12 @@ function update(dt) {
        being pulled back, for the whole run. Deliberately gentle per
        second — it is a tax on crossing him, not a stun, and a stun is
        what it would be at any number much higher than this. */
+    /* Upgraded Laser every ten seconds, Black Hole Laser every five.
+       Their own clock, running whether or not they have a target. */
+    if (spec.j1hole) {
+      t.j1h = (t.j1h === undefined ? spec.j1hole : t.j1h) - dt;
+      if (t.j1h <= 0 && !(t.jam > 0)) { t.j1h = spec.j1hole; j1Hole(t, spec); }
+    }
     if (spec.xtra.wellAura && !(t.jam > 0)) {
       const R = isFinite(spec.range) ? spec.range : 900;
       for (const e of S.enemies) {
@@ -18659,6 +18806,7 @@ function update(dt) {
               * (S.overdrive > 0 ? 0.5 : 1)
               * (S.combo.boost > 0 ? 1/(1 + COMBO.rate) : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
+    if (t.fireFlash > 0) t.fireFlash -= dt;
     t.copyFlash = Math.max(0, (t.copyFlash || 0) - dt*2);
 
     /* the Static Sovereign's pulse — this Jaxon cannot see a thing right now */
@@ -18908,6 +19056,47 @@ function update(dt) {
     }
 
     /* Director Jaxon — calls cut on the whole board */
+    /* The tablet screen: a rectangle out along his facing, turning with
+       the cursor. Anything inside it takes the hit. Tested in the quad's
+       own space so the box really does rotate rather than growing a
+       circle. */
+    if (spec.ammo === 'j1screen') {
+      t.lit = true;
+      const aim = aimAt(t) ? { x:S.mouse.x, y:S.mouse.y } : targetFor(t);
+      if (aim) t.face2 = Math.atan2(aim.y - t.y, aim.x - t.x);
+      const a = t.face2 || 0;
+      t.cd -= dt;
+      if (t.cd <= 0 && live && !(t.jam > 0)) {
+        t.cd = spec.cd * mul;
+        const cx = t.x + Math.cos(a)*spec.screenAt;
+        const cy = (t.y - 30) + Math.sin(a)*spec.screenAt;
+        const ca = Math.cos(-a), sa = Math.sin(-a);
+        let hit = 0;
+        for (const e of S.enemies) {
+          if (e.dead) continue;
+          const p = enemyPos(e), dx = p.x - cx, dy = p.y - cy;
+          /* into the quad's own frame, then a plain box test */
+          const lx = dx*ca - dy*sa, ly = dx*sa + dy*ca;
+          if (Math.abs(lx) > spec.screenW/2 + eRad(e)*0.6) continue;
+          if (Math.abs(ly) > spec.screenH/2 + eRad(e)*0.6) continue;
+          hurtEnemy(e, spec.dmg, t);
+          hit++;
+        }
+        for (const B of S.bosses) {
+          const p = pointAt(B.d), dx = p.x - cx, dy = p.y - cy;
+          const lx = dx*ca - dy*sa, ly = dx*sa + dy*ca;
+          if (Math.abs(lx) > spec.screenW/2 + B.def.r*0.5) continue;
+          if (Math.abs(ly) > spec.screenH/2 + B.def.r*0.5) continue;
+          hurtBoss(spec.dmg, t, B);
+          hit++;
+        }
+        S.fx.push({ k:'j1screen', x:cx, y:cy, a:a, w:spec.screenW, h:spec.screenH,
+                    life:0.16, max:0.16 });
+        if (hit) { t.shots++; sfxShot(t); }
+      }
+      continue;
+    }
+
     if (spec.ammo === 'cut') {
       t.lit = true;
       t.cd -= dt;
@@ -19813,7 +20002,11 @@ function update(dt) {
   }
   S.shots = S.shots.filter(s => !s.dead);
 
-  for (const f of S.fx) { f.life -= dt; if (f.k === 'p') { f.x += f.vx*dt; f.y += f.vy*dt; f.vx *= 0.93; f.vy *= 0.93; } }
+  for (const f of S.fx) {
+    f.life -= dt;
+    if (f.k === 'p') { f.x += f.vx*dt; f.y += f.vy*dt; f.vx *= 0.93; f.vy *= 0.93; }
+    else if (f.k === 'j1hole') j1HoleTick(f, dt);
+  }
   S.fx = S.fx.filter(f => f.life > 0);
   for (const f of S.floats) { f.life -= dt; f.y -= dt*28; }
   S.floats = S.floats.filter(f => f.life > 0);
@@ -21998,8 +22191,18 @@ function drawTower(t, ghost) {
   const rec = (t.recoil || 0)*3;
   const bob = ghost ? 0 : Math.sin(S.t*2.4 + t.x)*1.2;
   const art = artOf(t);
+  /* Rainbow Laser Jaxon cycles colour for as long as he is standing
+     there, the way "change color effect by 3" does in Scratch: 3 of
+     Scratch's 200 units per tick at 30fps, which is a full turn roughly
+     every 2.2 seconds. */
+  const rainbow = !ghost && TOWERS[t.type] && TOWERS[t.type].rainbow;
   const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
-  const grow = (1 + tiers*0.03) * (t.asc ? 1.1 : 1) * (t.dbl ? 1.34 : 1);   // every upgrade puffs him up a little
+  /* Every upgrade puffs him up a little, and the two ascensions are a
+     step change rather than a nudge: 2.5x the base for an Ascended and
+     3.25x for a Double. The multipliers below are written against the
+     base rather than against each other, so a Double is 3.25 and not
+     2.5 times 3.25. */
+  const grow = (1 + tiers*0.03) * (t.dbl ? 3.25 : t.asc ? 2.5 : 1);
   const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
   const shw = sheetW(art)*grow, shh = sheetH(art)*grow;   // the picture around him
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
@@ -22011,6 +22214,17 @@ function drawTower(t, ghost) {
   if (!ghost) {
     ctx.fillStyle = 'rgba(0,0,0,.33)';
     ctx.beginPath(); ctx.ellipse(t.x, t.y + T_H*0.44, foot, foot*0.36, 0, 0, 7); ctx.fill();
+  }
+  /* after the shadow, which is not part of him */
+  if (rainbow) ctx.filter = 'hue-rotate(' + Math.round((S.t*163) % 360) + 'deg)';
+  /* a Tablet Jaxon faces where you point, body and all — that is how he
+     aims a weapon that is part of his own sprite */
+  const spins = !ghost && TOWERS[t.type] && TOWERS[t.type].ammo === 'j1screen';
+  if (spins) {
+    ctx.save();
+    ctx.translate(t.x, t.y - 30);
+    ctx.rotate((t.face2 || 0) + Math.PI/2);
+    ctx.translate(-t.x, -(t.y - 30));
   }
   if (!ghost && S.selected === t) {
     ctx.strokeStyle = 'rgba(34,224,42,.85)'; ctx.lineWidth = 3.5;
@@ -22041,9 +22255,17 @@ function drawTower(t, ghost) {
     if (IMG.admin_face && IMG.admin_face.width)
       ctx.drawImage(IMG.admin_face, -shw/2, spriteTop(art)*grow, shw, shh);
   } else {
-    ctx.drawImage(IMG[art] || IMG[t.type], -shw/2, spriteTop(art)*grow, shw, shh);
+    /* JTD2's turrets switch costume while they fire, so a shot puts the
+       attack frame up for a tenth of a second. It is most of what makes
+       one feel like it is doing something. */
+    const anim = (!ghost && t.fireFlash > 0 && IMG['anim_' + t.type] &&
+                  IMG['anim_' + t.type].naturalWidth) ? IMG['anim_' + t.type] : null;
+    ctx.drawImage(anim || IMG[art] || IMG[t.type], -shw/2, spriteTop(art)*grow, shw, shh);
   }
   ctx.restore();
+  /* the Tablet Jaxon's turn ends with his own sprite: the halos, beams
+     and selection rings below are interface and stay upright */
+  if (spins) ctx.restore();
 
   if (TOWERS[t.type].ammo === 'admin' && !ghost) drawAdminBeam(t, art, grow);
   if (!ghost && t.surged) {                      // riding a Power Boost overcharge
@@ -22814,6 +23036,8 @@ function drawShot(s) {
   }
   /* the old games' own bullets, where the build had one */
   if (s.src && IMG['bul_' + s.src] && IMG['bul_' + s.src].naturalWidth) {
+    if (TOWERS[s.src] && TOWERS[s.src].rainbow)
+      ctx.filter = 'hue-rotate(' + Math.round((S.t*163) % 360) + 'deg)';
     const im = IMG['bul_' + s.src];
     /* the source draws its bullet at the size it drew it; 34px on the
        long edge sits right next to this game's projectiles */
@@ -24922,6 +25146,36 @@ function render() {
         ctx.beginPath();
         ctx.arc(f.x + Math.cos(a)*rr, f.y + Math.sin(a)*rr*0.36 - k*26, 5*(1-k) + 1.5, 0, 7);
         ctx.fill();
+      }
+      ctx.restore();
+    } else if (f.k === 'j1screen') {
+      /* the lit screen, where the damage is */
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, f.life/f.max)*0.5;
+      ctx.translate(f.x, f.y); ctx.rotate(f.a);
+      ctx.fillStyle = '#eaf6ff';
+      ctx.beginPath(); ctx.roundRect(-f.w/2, -f.h/2, f.w, f.h, 6); ctx.fill();
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.fillStyle = 'rgba(140,220,255,.5)';
+      ctx.beginPath(); ctx.roundRect(-f.w/2, -f.h/2, f.w, f.h, 6); ctx.fill();
+      ctx.restore();
+    } else if (f.k === 'j1hole') {
+      /* Sprite 23 out of the first game, one degree a tick, two seconds
+         and gone. The image is the real costume; the spin and the fade
+         are what its script does to it. */
+      const im = IMG[f.img || 'j1hole'];
+      const k = 1 - f.life/f.max;
+      ctx.save();
+      ctx.globalAlpha = Math.min(1, f.life*3)*0.95;
+      ctx.translate(f.x, f.y);
+      ctx.rotate(k*f.max*30*(Math.PI/180)*2);
+      const r2 = f.r*(0.55 + Math.min(1, k*4)*0.45);
+      if (im && im.naturalWidth) ctx.drawImage(im, -r2, -r2, r2*2, r2*2);
+      else {
+        ctx.fillStyle = '#05030b';
+        ctx.beginPath(); ctx.arc(0, 0, r2*0.55, 0, 7); ctx.fill();
+        ctx.strokeStyle = '#a55cff'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(0, 0, r2*0.7, 0, 7); ctx.stroke();
       }
       ctx.restore();
     } else if (f.k === 'ward') {

@@ -21,6 +21,33 @@ window.JTD_SOUND_MANIFEST = {
  "generated": "2026-10-21",
  "base": "sounds/",
  "sounds": {
+  "legacy/j2_largetv": {
+   "src": "legacy/jtd2/Turret__Large_tv_man.wav",
+   "bus": "sfx",
+   "vol": 0.26,
+   "cooldown": 110,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_tvlaser": {
+   "src": "legacy/jtd2/Turret__TV_LIGHT_LASER.wav",
+   "bus": "sfx",
+   "vol": 0.26,
+   "cooldown": 110,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
+  "legacy/j2_knife": {
+   "src": "legacy/jtd2/Turret__KNIFE_LAASER.wav",
+   "bus": "sfx",
+   "vol": 0.28,
+   "cooldown": 90,
+   "max": 3,
+   "jitter": 0.08,
+   "dur": 1
+  },
   "legacy/j2_click": {
    "src": "legacy/jtd2/Turret__click.wav",
    "bus": "sfx",
@@ -102,7 +129,7 @@ window.JTD_SOUND_MANIFEST = {
    "jitter": 0.08,
    "dur": 0.52
   },
-  "legacy/j1_engineer": {
+  "legacy/j1_rainbow": {
    "src": "legacy/jtd1/T5__recording1.wav",
    "bus": "sfx",
    "vol": 0.3,
@@ -111,7 +138,7 @@ window.JTD_SOUND_MANIFEST = {
    "jitter": 0.08,
    "dur": 0.26
   },
-  "legacy/j1_rainbow": {
+  "legacy/j1_laser": {
    "src": "legacy/jtd1/T4__shoot02wav-14562.wav",
    "bus": "sfx",
    "vol": 0.3,

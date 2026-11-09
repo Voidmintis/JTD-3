@@ -1,483 +1,153 @@
 {
  "costumes": [
   {
-   "sprite": "T2",
-   "costume": "T1",
-   "file": "T2__T1.svg",
-   "w": 47,
-   "h": 46,
+   "sprite": "Sprite11",
+   "costume": "500",
+   "file": "Sprite11__500.svg",
+   "w": 74,
+   "h": 74,
    "rc": [
-    23.5,
-    23
+    36.97143,
+    36.97143
    ],
    "size": [
-    47,
-    46
+    73.94286346435547,
+    73.94286346435547
    ]
   },
   {
-   "sprite": "T3",
-   "costume": "T1",
-   "file": "T3__T1.svg",
-   "w": 46,
-   "h": 46,
+   "sprite": "Sprite12",
+   "costume": "500",
+   "file": "Sprite12__500.svg",
+   "w": 100,
+   "h": 93,
    "rc": [
-    23.065820000000002,
-    22.841880000000003
+    49.75901639344258,
+    46.73252620588238
    ],
    "size": [
-    46.13164138793945,
-    45.68376159667969
+    99.61421966552734,
+    93.46504974365234
    ]
   },
   {
-   "sprite": "T3",
-   "costume": "T1Bullet",
-   "file": "T3__T1Bullet.svg",
-   "w": 19,
-   "h": 19,
+   "sprite": "Sprite13",
+   "costume": "500",
+   "file": "Sprite13__500.svg",
+   "w": 122,
+   "h": 120,
    "rc": [
-    9.500374999999991,
-    9.500374999999991
+    60.74999999999997,
+    60
    ],
    "size": [
-    19.000749588012695,
-    19.000749588012695
+    121.5,
+    120
    ]
   },
   {
-   "sprite": "T4",
-   "costume": "T1",
-   "file": "T4__T1.png",
-   "w": 152,
-   "h": 88,
+   "sprite": "Sprite14",
+   "costume": "500",
+   "file": "Sprite14__500.svg",
+   "w": 161,
+   "h": 151,
    "rc": [
-    40.5,
-    23.5
+    75.60625013651875,
+    75.60625013651875
    ],
    "size": [
-    81,
-    47
+    161.4080352783203,
+    151.21249389648438
    ]
   },
   {
-   "sprite": "T4",
-   "costume": "T1Bullet",
-   "file": "T4__T1Bullet.svg",
-   "w": 13,
-   "h": 13,
+   "sprite": "Sprite15",
+   "costume": "500",
+   "file": "Sprite15__500.svg",
+   "w": 240,
+   "h": 220,
    "rc": [
-    6.5,
-    6.5
+    105.01724137931046,
+    87.0837438423645
    ],
    "size": [
-    13,
-    13
+    240.46798706054688,
+    219.9402313232422
    ]
   },
   {
-   "sprite": "T5",
-   "costume": "T1",
-   "file": "T5__T1.svg",
-   "w": 80,
-   "h": 46,
+   "sprite": "Sprite17",
+   "costume": "500",
+   "file": "Sprite17__500.svg",
+   "w": 296,
+   "h": 280,
    "rc": [
-    40.12476000000001,
-    23.012730000000005
+    148.0000000000001,
+    139.99999999999994
    ],
    "size": [
-    80.24951934814453,
-    46.02545928955078
+    296,
+    280
    ]
   },
   {
-   "sprite": "T5",
-   "costume": "T1Bullet",
-   "file": "T5__T1Bullet.svg",
-   "w": 13,
-   "h": 13,
+   "sprite": "Sprite21",
+   "costume": "500",
+   "file": "Sprite21__500.svg",
+   "w": 492,
+   "h": 545,
    "rc": [
-    6.5,
-    6.5
+    245.9952,
+    340.0951836433411
    ],
    "size": [
-    13,
-    13
+    491.9903869628906,
+    544.773193359375
    ]
   },
   {
-   "sprite": "T1",
-   "costume": "T1",
-   "file": "T1__T1.svg",
-   "w": 30,
-   "h": 47,
+   "sprite": "Sprite18",
+   "costume": "500",
+   "file": "Sprite18__500.svg",
+   "w": 368,
+   "h": 310,
    "rc": [
-    15,
-    23.25
+    154.1331008020478,
+    150.14549914675763
    ],
    "size": [
-    30,
-    46.5
+    368,
+    309.8622131347656
    ]
   },
   {
-   "sprite": "T1",
-   "costume": "T1Bullet",
-   "file": "T1__T1Bullet.svg",
-   "w": 24,
-   "h": 14,
-   "rc": [
-    11.885999999999996,
-    7.032550000000015
-   ],
-   "size": [
-    23.77199935913086,
-    14.065099716186523
-   ]
-  },
-  {
-   "sprite": "T6",
-   "costume": "T1",
-   "file": "T6__T1.svg",
-   "w": 37,
-   "h": 47,
-   "rc": [
-    18.5,
-    23.315068493150676
-   ],
-   "size": [
-    37,
-    46.6301383972168
-   ]
-  },
-  {
-   "sprite": "T7",
-   "costume": "T1",
-   "file": "T7__T1.png",
-   "w": 70,
-   "h": 88,
-   "rc": [
-    37,
-    47
-   ],
-   "size": [
-    37,
-    47
-   ]
-  },
-  {
-   "sprite": "T8",
-   "costume": "T1",
-   "file": "T8__T1.png",
-   "w": 250,
-   "h": 216,
-   "rc": [
-    135,
-    153
-   ],
-   "size": [
-    133.5,
-    115.5
-   ]
-  },
-  {
-   "sprite": "T8",
-   "costume": "T1Bullet",
-   "file": "T8__T1Bullet.svg",
-   "w": 42,
-   "h": 25,
-   "rc": [
-    21.14285714285714,
-    12.333333333333343
-   ],
-   "size": [
-    42.285709381103516,
-    24.666669845581055
-   ]
-  },
-  {
-   "sprite": "T8",
-   "costume": "fire of pain",
-   "file": "T8__fire_of_pain.svg",
-   "w": 57,
-   "h": 41,
-   "rc": [
-    28.9631549999998,
-    22.40049000000002
-   ],
-   "size": [
-    57.29999923706055,
-    41.305301666259766
-   ]
-  },
-  {
-   "sprite": "T8",
-   "costume": "black hole dark",
-   "file": "T8__black_hole_dark.svg",
-   "w": 34,
-   "h": 32,
-   "rc": [
-    14.088139999999953,
-    14
-   ],
-   "size": [
-    33.67499923706055,
-    31.64950942993164
-   ]
-  },
-  {
-   "sprite": "T9",
-   "costume": "T1",
-   "file": "T9__T1.png",
-   "w": 547,
-   "h": 488,
-   "rc": [
-    299,
-    359
-   ],
-   "size": [
-    292.5,
-    260.5
-   ]
-  },
-  {
-   "sprite": "T9",
-   "costume": "T1Bullet",
-   "file": "T9__T1Bullet.svg",
-   "w": 54,
-   "h": 54,
-   "rc": [
-    27.190615032934517,
-    27.034571331167314
-   ],
-   "size": [
-    54.381229400634766,
-    54.06914138793945
-   ]
-  },
-  {
-   "sprite": "T9",
-   "costume": "fire of pain",
-   "file": "T9__fire_of_pain.svg",
-   "w": 52,
-   "h": 53,
-   "rc": [
-    25.75,
-    26.5
-   ],
-   "size": [
-    51.5,
-    53
-   ]
-  },
-  {
-   "sprite": "T9",
-   "costume": "black hole dark",
-   "file": "T9__black_hole_dark.svg",
-   "w": 31,
-   "h": 49,
-   "rc": [
-    15.5,
-    24.5
-   ],
-   "size": [
-    31,
-    49
-   ]
-  },
-  {
-   "sprite": "T10",
-   "costume": "T1",
-   "file": "T10__T1.png",
-   "w": 301,
-   "h": 129,
-   "rc": [
-    30,
-    56
-   ],
-   "size": [
-    161,
-    68.5
-   ]
-  },
-  {
-   "sprite": "T11",
-   "costume": "T1",
-   "file": "T11__T1.png",
-   "w": 743,
+   "sprite": "Sprite23",
+   "costume": "E5596622-9CCC-49F2-94FC-8A5E8F93FCDE",
+   "file": "Sprite23__E5596622-9CCC-49F2-94FC-8A5E8F93FCDE.png",
+   "w": 738,
    "h": 673,
    "rc": [
-    411,
+    394.5,
     360
    ],
    "size": [
-    397.5,
+    394.5,
     360
    ]
   },
   {
-   "sprite": "T12",
-   "costume": "T1",
-   "file": "T12__T1.png",
-   "w": 897,
+   "sprite": "Sprite23",
+   "costume": "dgo9ctw-20b67ea5-7de0-43f8-a0a7-9f253a70e3e1",
+   "file": "Sprite23__dgo9ctw-20b67ea5-7de0-43f8-a0a7-9f253a70e3e1.png",
+   "w": 673,
    "h": 673,
    "rc": [
-    480,
+    360,
     360
    ],
    "size": [
-    480,
+    360,
     360
-   ]
-  },
-  {
-   "sprite": "T12",
-   "costume": "T1Bullet",
-   "file": "T12__T1Bullet.svg",
-   "w": 36,
-   "h": 23,
-   "rc": [
-    17.75,
-    11.25
-   ],
-   "size": [
-    35.5,
-    22.5
-   ]
-  },
-  {
-   "sprite": "T12",
-   "costume": "fire of pain",
-   "file": "T12__fire_of_pain.svg",
-   "w": 16,
-   "h": 17,
-   "rc": [
-    7.864552479072785,
-    8.493716677398595
-   ],
-   "size": [
-    15.729100227355957,
-    16.987430572509766
-   ]
-  },
-  {
-   "sprite": "T12",
-   "costume": "black hole dark",
-   "file": "T12__black_hole_dark.png",
-   "w": 26,
-   "h": 26,
-   "rc": [
-    13,
-    13
-   ],
-   "size": [
-    13,
-    13
-   ]
-  },
-  {
-   "sprite": "T13",
-   "costume": "T1",
-   "file": "T13__T1.png",
-   "w": 137,
-   "h": 89,
-   "rc": [
-    31,
-    48
-   ],
-   "size": [
-    73,
-    47.5
-   ]
-  },
-  {
-   "sprite": "T13",
-   "costume": "T1Bullet",
-   "file": "T13__T1Bullet.png",
-   "w": 54,
-   "h": 49,
-   "rc": [
-    28,
-    25
-   ],
-   "size": [
-    28,
-    25.5
-   ]
-  },
-  {
-   "sprite": "T16",
-   "costume": "T1",
-   "file": "T16__T1.png",
-   "w": 174,
-   "h": 118,
-   "rc": [
-    59,
-    73
-   ],
-   "size": [
-    92.5,
-    62.5
-   ]
-  },
-  {
-   "sprite": "T16",
-   "costume": "T1Bullet",
-   "file": "T16__T1Bullet.png",
-   "w": 54,
-   "h": 49,
-   "rc": [
-    28,
-    25
-   ],
-   "size": [
-    28,
-    25.5
-   ]
-  },
-  {
-   "sprite": "T20",
-   "costume": "costume3",
-   "file": "T20__costume3.svg",
-   "w": 363,
-   "h": 283,
-   "rc": [
-    184.49332588726838,
-    194.39218671594986
-   ],
-   "size": [
-    362.987548828125,
-    282.7850036621094
-   ]
-  },
-  {
-   "sprite": "T20",
-   "costume": "T1Bullet",
-   "file": "T20__T1Bullet.png",
-   "w": 155,
-   "h": 109,
-   "rc": [
-    93,
-    56
-   ],
-   "size": [
-    82.5,
-    57.5
-   ]
-  },
-  {
-   "sprite": "T20",
-   "costume": "red_energy_ball_33_by_venjix5_ddtfwic-fullview",
-   "file": "T20__red_energy_ball_33_by_venjix5_ddtfwic-fullview.png",
-   "w": 463,
-   "h": 477,
-   "rc": [
-    158,
-    157
-   ],
-   "size": [
-    247.5,
-    255
    ]
   }
  ],
@@ -487,21 +157,28 @@
    "name": "recording1",
    "file": "T2__recording1.wav",
    "secs": 0.97,
-   "kb": 42
+   "kb": 83
   },
   {
    "sprite": "T4",
    "name": "shoot02wav-14562",
    "file": "T4__shoot02wav-14562.wav",
    "secs": 0.26,
-   "kb": 11
+   "kb": 22
   },
   {
    "sprite": "T5",
    "name": "recording1",
    "file": "T5__recording1.wav",
    "secs": 0.26,
-   "kb": 11
+   "kb": 22
+  },
+  {
+   "sprite": "T12",
+   "name": "pop",
+   "file": "T12__pop.wav",
+   "secs": 73.52,
+   "kb": 6333
   }
  ]
 }
