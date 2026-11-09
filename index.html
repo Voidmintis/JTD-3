@@ -7838,7 +7838,7 @@ const TOWERS = {
    *  not merely beat him, you took the fight off him.                    *
    * ------------------------------------------------------------------ */
   noxarch:{ name:'Noxarch Jaxon', cost:7000000, range:99000, cd:0.18, dmg:140000,
-             speed:11000, ammo:'voidray', noxarch:true, spacePad:true, noMirror:true,
+             speed:2800, ammo:'voidray', noxarch:true, spacePad:true, noMirror:true,
              splash:72000, splashR:520, pierce:9,
              baseXtra:{ pull:1, crush:1, antiHeal:1, wardBreak:1 },
              blurb:'Stands in orbit and shoots the park. 140k every 0.18s through nine, 72k across 520, from anywhere on the map. Everything in the splash is dragged toward the middle before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him. Every other Jaxon on the board hits harder and fires faster while he is up there, and every Jaxon you put in orbit with him feeds his core.',
@@ -8320,6 +8320,7 @@ const S = {
   bosses:[], spawnQueue:0, spawnTimer:0, spawnGap:0, plan:[],
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
+  orb:{ bought:false, on:false, launch:0, back:null, armed:0 },
   runT:0, spent:0, money0:0, rushBest:{},
   world:null, adv:null, shardFly:null, shardOwed:null, noxarch:null, mixed:false, scorch:[],
   omen:null, bossDone:0, waveTotal:0, chal:{},
@@ -9646,12 +9647,18 @@ function pick(key) {
   }
   /* and the Noxarch only fits in orbit, so the board goes to orbit */
   if (TOWERS[key].spacePad) {
-    if (!plotCleared('space')) {
-      toast('Open Low Orbit first \u2014 ' + bigCash(plotCost(plotById('space'))));
-      sfx('deny');
-    }
     if (theNox()) { toast('There is only ever one Noxarch'); sfx('deny'); return; }
-    gotoOrbit(true);
+    if (!upThere()) {
+      if (!plotCleared('sat')) {
+        toast('Clear the Satellite Plot, then buy the rocket \u2014 he stands in orbit');
+        sfx('deny'); return;
+      }
+      if (!S.orb.bought) {
+        toast('Buy the rocket on the Satellite Plot \u2014 ' + bigCash(Math.round(ROCKET_COST*M().cost)));
+        sfx('deny'); return;
+      }
+      launchOrbit();
+    }
   }
   if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); sfx('deny'); return; }
   S.dupe = null;
@@ -9795,6 +9802,7 @@ function reset() {
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
+  S.orb={ bought:false, on:false, launch:0, back:null, armed:0 };
   S.shardOwed=null; S.noxarch=null; S.mixed=false;
   S.scorch=[];
   S.omen=null; S.bossDone=0; S.waveTotal=0;
@@ -13722,7 +13730,14 @@ function groundShade(x0, y0, x1, y1) {
   ctx.fillStyle = g;
   ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
 }
-const onLawn = (x, y) => (x >= 0 && x <= W && y >= 0 && y <= H) || !!inClearedPlot(x, y, 0);
+/* Ground a Jaxon is allowed to be standing on. sweepStrays() refunds and
+   deletes anything that is not, which is a safety net for a tower left
+   somewhere a map change took away -- and which quietly deleted the whole
+   orbital station at every wave start until the station was added here,
+   because the station is neither the lawn nor a cleared plot. */
+const onLawn = (x, y) => (x >= 0 && x <= W && y >= 0 && y <= H)
+                      || !!inClearedPlot(x, y, 0)
+                      || inSpaceBox(x, y);
 function sweepStrays() {
   if (S.titan) return;
   const lost = S.towers.filter(t => !onLawn(t.x, t.y));
@@ -17163,13 +17178,6 @@ function fire(t, tx, ty) {
                    life:spec.ammo === 'yoyo' ? 6.0 : 2.6, owner:t });
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09, hue:spec.ammo==='rainbow'?0:null });
-  /* firing from orbit is not a muzzle flash, it is a column of light that
-     crosses two and a half thousand pixels of sky and detonates on the
-     trail. The shot itself still travels and still does the damage — this
-     is what the player actually watches while it does. */
-  if (TOWERS[t.type].spacePad)
-    S.fx.push({ k:'noxbeam', x:mx, y:my, tx, ty, life:0.4, max:0.4,
-                r:(spec.splashR || 400)*0.55 });
   (t.shots++, sfxShot(t));
   noteFired(t, spec.ammo, spec.dmg, spec);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
@@ -17819,7 +17827,6 @@ function cycleAim(t, by) {
 }
 
 function targetFor(t) {
-  if (!TOWERS[t.type].spacePad && inSpace(t.x, t.y)) return null;
   /* the Overclock Warden's pulse: he is still firing, just not at anything
      he chose — he throws it wherever he was last looking */
   if (t.scramble > 0) {
@@ -18849,6 +18856,15 @@ function update(dt) {
         bump('moneyBox','gain'); beep(880, 0.08, 'triangle', 0.028, 1180);
         syncHUD();
       }
+      continue;
+    }
+    /* in orbit nobody uses their own gun: everyone is a battery pointed
+       at a planet. One branch, ahead of all the others, so there is no
+       question about which Jaxon this applies to. */
+    if (isOrb(t)) {
+      t.lit = true;
+      t.cd -= dt;
+      if (t.cd <= 0) { if (!orbStrike(t, spec, mul)) t.cd = Math.min(t.cd, 0); }
       continue;
     }
     /* the Titan runs his own show entirely */
@@ -20985,8 +21001,10 @@ function showUpTip(t, path, tier, el) {
 }
 
 function towerAt(x, y) {
+  const here = upThere();
   for (let i = S.towers.length - 1; i >= 0; i--) {
     const t = S.towers[i];
+    if (isOrb(t) !== here) continue;
     const hw = Math.max(T_W*0.55, spriteW(t.type)*0.26);
     const hh = Math.max(T_H*0.55, -bodyTop(t.type) - spriteH(t.type)*0.06);
     if (Math.abs(t.x - x) < hw && y > t.y - hh && y < t.y + T_H*0.5) return t;
@@ -21103,14 +21121,9 @@ const PLOTS = [
   { id:'astro', name:'Astro Pad', cost:1000000, astro:true,
     x:1880, y:70, w:1240, h:940,
     blurb:'The only ground that will take a Titan Astro Jaxon.' },
-  /* A long way up, and big enough to hold him: he is five Titan Astros
-     tall, and a pad you cannot see the top of is not a pad. */
-  { id:'space', name:'Low Orbit', cost:900000, astro:false, space:true,
-    x:-1700, y:-6400, w:5000, h:5200,
-    blurb:'A rocket, a pad, and the only ground in this park that will hold a Noxarch.' },
-  { id:'sat', name:'Satellite Plot', cost:150000, astro:false,
+  { id:'sat', name:'Satellite Plot', cost:150000, astro:false, launch:true,
     x:-1420, y:250, w:620, h:520,
-    blurb:'A quiet island. Too far out for most guns to reach the trail.' }
+    blurb:'A quiet island, too far out for most guns to reach the trail \u2014 and flat enough to launch from.' }
 ];
 const plotById = id => PLOTS.find(p => p.id === id);
 const plotCleared = id => !!(S.plots && S.plots[id]);
@@ -21139,26 +21152,83 @@ const NOXB = { rate:0.55, dmg:0.60 };
 const NOX_FEED = { per:500000, cap:3.2 };
 const NOX_NUKE = { every:120, warn:10, dmg:6000000 };
 
+/* An ordinary Jaxon was not built to shoot a planet. He can do it from up
+   there -- that is the fantasy and the player asked for it -- but at a
+   discount, so parking your best guns in orbit is a real decision and not
+   a free upgrade. The Noxarch is native to orbit and pays no penalty. */
+const ORBF = { cut:0.45, slow:1.45, splashUp:1.25, gap:360 };
+
+/* who an orbital gun shoots: anything on the board, nearest the middle of
+   the pack, because a weapon with no range has no reason to prefer the
+   enemy closest to it -- it should prefer the enemy that matters. */
+function orbTarget() {
+  let bossPick = null;
+  for (const B of S.bosses) { bossPick = { boss:B, p:pointAt(B.d) }; break; }
+  let best = null, bd = -1;
+  for (const e of S.enemies) {
+    if (e.dead || e.cap) continue;
+    if (e.d > bd) { bd = e.d; best = e; }          // furthest along the trail
+  }
+  if (best) return { e:best, p:enemyPos(best) };
+  if (bossPick) return { boss:bossPick.boss, p:bossPick.p };
+  return null;
+}
+
+/* the strike. Hitscan: the damage is applied in the same frame the shot
+   is fired, and what the player sees is the beam and the crater. */
+function orbStrike(t, spec, mul) {
+  const tgt = orbTarget();
+  if (!tgt) return false;
+  const native = !!TOWERS[t.type].spacePad;
+  const k = native ? 1 : ORBF.cut;
+  t.cd = spec.cd * mul * (native ? 1 : ORBF.slow);
+
+  const dmg = Math.max(1, Math.round(spec.dmg * k));
+  const px = tgt.p.x, py = tgt.p.y;
+
+  if (tgt.e) hurtEnemy(tgt.e, dmg, t);
+  else if (tgt.boss) hurtBoss(dmg, t, tgt.boss);
+
+  /* pierce on a ray is not "passes through": it is how many more bodies
+     the column catches, so it is the nearest N to the impact */
+  const extra = Math.max(0, spec.pierce || 0);
+  if (extra) {
+    const near = [];
+    for (const e of S.enemies) {
+      if (e.dead || e === tgt.e) continue;
+      const q = enemyPos(e);
+      const d = Math.hypot(q.x - px, q.y - py);
+      if (d <= 150) near.push({ e, d });
+    }
+    near.sort((a2, b2) => a2.d - b2.d);
+    for (let i = 0; i < Math.min(extra, near.length); i++) hurtEnemy(near[i].e, dmg, t);
+  }
+
+  if (spec.splash) {
+    splashBurst(px, py, { splash:Math.max(1, Math.round(spec.splash*k)),
+                          splashR:Math.round((spec.splashR || 300)*ORBF.splashUp),
+                          owner:t });
+  }
+
+  /* and the column, which is drawn from the tower on the station AND from
+     the top of the sky on the park, because you can be watching from
+     either and it has to make sense from both */
+  const oy = t.y - spriteH(artOf(t))*0.30;
+  S.fx.push({ k:'orbstrike', x:px, y:py, ox:t.x, oy,
+              r:Math.round((spec.splashR || 320)*ORBF.splashUp*0.55),
+              big:native, life:0.42, max:0.42 });
+  (t.shots++, sfxShot(t));
+  noteFired(t, spec.ammo, dmg, spec);
+  t.recoil = 1; t.face = 1;
+  shakeScreen(native ? 7 : 3, 0.18);
+  beep(native ? 90 : 150, 0.22, 'sawtooth', 0.035, native ? 1500 : 900);
+  return true;
+}
+
 /* the camera trip up and back. The deck lands near the bottom of frame
    with his head about half way up it, which is the staging the brief
    asked for and is also just the readable way to frame something this
    tall: you want the ground he is standing on in shot. */
-function gotoOrbit(fit) {
-  const p = plotById('space');
-  if (!p) return false;
-  const paid = plotCleared('space');
-  if (fit) S.cam.z = S.cam.min;
-  S.cam.x = p.x + p.w*0.5;
-  /* paid: the deck along the bottom of the frame and him filling it.
-     unpaid: the sign in the middle of the frame, because the sign is the
-     only part of a plot you can press. */
-  S.cam.y = paid ? (p.y + p.h - 150) - H/2/S.cam.z + 340
-                 : p.y + p.h/2;
-  camClamp(); syncCamChip(); syncChips();
-  if (!paid) toast('Low Orbit — ' + bigCash(plotCost(p)) + '. Press the sign.');
-  return true;
-}
-
 /* how much a Jaxon is worth as fuel: what he cost, how big he is, and
    what has been spent on him since. Deliberately not "one point each". */
 function feedOf(t) {
@@ -21177,7 +21247,7 @@ function noxOrbit(dt) {
   /* ---- the feed ---- */
   let feed = 0;
   for (const t of S.towers) {
-    if (t === nx || !inSpace(t.x, t.y)) continue;
+    if (t === nx || !isOrb(t)) continue;
     const f = feedOf(t);
     if (f <= 0) continue;
     t.noxFeed = f; feed += f;
@@ -21243,143 +21313,305 @@ function plotSignAt(x, y) {
   return null;
 }
 
-/* ------------------------------------------------------- orbit, drawn --
-   Space is cheap to draw and easy to get wrong. Two rules kept it honest:
-   the stars are a fixed seeded field so they do not crawl when the camera
-   moves, and the edge of the plot is feathered a long way out, so the
-   grass does not end at a hard line with the void beginning. From the
-   lawn you see the sky darken; by the time you are up there it is black.
-
-   Earth sits off the lower-left corner and is mostly outside the plot, so
-   you see a limb rather than a marble. That is what sells the altitude —
-   a whole small planet on screen reads as a poster, a piece of one that
-   runs off the frame reads as being above it. */
+/* --------------------------------------------------- the station, drawn --
+   Space is cheap to draw and easy to get wrong. The rules that kept this
+   honest: the stars are a fixed seeded field so they do not crawl when
+   the camera moves; Earth is mostly off the bottom of the frame, because
+   a whole marble reads as a poster and a piece of one reads as altitude;
+   and the deck is a real structure with a truss under it, because a row
+   of Jaxons standing on a line reads as a bug. */
 const ORBIT = { stars:null };
-function orbitStars(p) {
+function orbitStars() {
   if (ORBIT.stars) return ORBIT.stars;
   let seed = 90210, out = [];
   const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
-  for (let i = 0; i < 520; i++)
-    out.push({ x:p.x - 300 + rnd()*(p.w + 600), y:p.y - 300 + rnd()*(p.h + 600),
-               r:0.8 + rnd()*2.4, a:0.25 + rnd()*0.75, ph:rnd()*7 });
+  for (let i = 0; i < 900; i++)
+    out.push({ x:SPACE.x + rnd()*SPACE.w, y:SPACE.y + rnd()*SPACE.h,
+               r:1.4 + rnd()*4.6, a:0.25 + rnd()*0.75, ph:rnd()*7 });
   return (ORBIT.stars = out);
 }
-function drawOrbit(p, k) {
-  const g = ctx, FE = 460;                 // how far the dark bleeds past the fence
+
+/* one deck: a lit walking surface, a truss under it, and mooring lights */
+function drawDeck(g, pd) {
+  const y = pd.top;
   g.save();
-  g.beginPath(); g.rect(p.x - FE, p.y - FE, p.w*k + FE*2, p.h + FE*2); g.clip();
+  /* the truss, drawn first so the deck caps it */
+  g.strokeStyle = '#2b303c'; g.lineWidth = 14;
+  g.beginPath();
+  for (let x = pd.x + 40; x < pd.x + pd.w - 40; x += 120) {
+    g.moveTo(x, y + 18); g.lineTo(x + 60, y + pd.h);
+    g.moveTo(x + 60, y + 18); g.lineTo(x, y + pd.h);
+  }
+  g.stroke();
+  g.fillStyle = '#20242e';
+  g.fillRect(pd.x, y + pd.h - 26, pd.w, 26);
+  /* the deck itself */
+  g.fillStyle = '#2d323f'; g.fillRect(pd.x, y - 18, pd.w, 36);
+  g.fillStyle = '#3a4150'; g.fillRect(pd.x, y - 18, pd.w, 9);
+  g.strokeStyle = 'rgba(150,205,255,.34)'; g.lineWidth = 4;
+  g.beginPath(); g.moveTo(pd.x, y - 18); g.lineTo(pd.x + pd.w, y - 18); g.stroke();
+  /* hazard stripes and mooring lights along the edge */
+  g.fillStyle = 'rgba(255,216,61,.42)';
+  for (let x = pd.x + 70; x < pd.x + pd.w - 60; x += 240) g.fillRect(x, y + 1, 120, 11);
+  g.save(); g.globalCompositeOperation = 'lighter';
+  for (let x = pd.x + 160; x < pd.x + pd.w - 100; x += 520) {
+    const k = 0.45 + Math.sin(S.t*2 + x*0.004)*0.35;
+    g.globalAlpha = k;
+    const lg = g.createRadialGradient(x, y - 22, 1, x, y - 22, 70);
+    lg.addColorStop(0, 'rgba(160,220,255,.95)'); lg.addColorStop(1, 'rgba(160,220,255,0)');
+    g.fillStyle = lg;
+    g.beginPath(); g.arc(x, y - 22, 70, 0, 7); g.fill();
+  }
+  g.restore();
+  g.restore();
+}
 
-  /* the void, fading in from the edges so there is no seam with the park */
-  const vg = g.createRadialGradient(p.x + p.w*0.5, p.y + p.h*0.5, Math.min(p.w, p.h)*0.2,
-                                    p.x + p.w*0.5, p.y + p.h*0.5, Math.max(p.w, p.h)*0.78);
-  vg.addColorStop(0, '#02030a'); vg.addColorStop(0.72, '#05060f');
-  vg.addColorStop(1, 'rgba(6,8,18,0)');
-  g.fillStyle = vg;
-  g.fillRect(p.x - FE, p.y - FE, p.w*k + FE*2, p.h + FE*2);
+/* the whole station: the field renderer while you are up there */
+function drawSpaceField() {
+  const g = ctx;
+  g.save();
+  /* the void. Painted well past the station so a zoomed-in camera at the
+     edge never shows whatever is behind it. */
+  const OV = 2600;
+  g.fillStyle = '#03040b';
+  g.fillRect(SPACE.x - OV, SPACE.y - OV, SPACE.w + OV*2, SPACE.h + OV*2);
 
-  /* a cold wash of milky way across one corner, to stop it reading flat */
+  /* a cold wash of milky way, so it is not a flat black rectangle */
   g.save();
   g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.5;
-  const ng = g.createLinearGradient(p.x, p.y, p.x + p.w, p.y + p.h);
-  ng.addColorStop(0, 'rgba(70,40,140,.28)'); ng.addColorStop(0.45, 'rgba(30,60,150,.14)');
+  const ng = g.createLinearGradient(SPACE.x, SPACE.y, SPACE.x + SPACE.w, SPACE.y + SPACE.h);
+  ng.addColorStop(0, 'rgba(70,40,140,.26)');
+  ng.addColorStop(0.45, 'rgba(30,60,150,.13)');
   ng.addColorStop(1, 'rgba(120,40,110,.20)');
-  g.fillStyle = ng; g.fillRect(p.x, p.y, p.w, p.h);
+  g.fillStyle = ng;
+  g.fillRect(SPACE.x - OV, SPACE.y - OV, SPACE.w + OV*2, SPACE.h + OV*2);
   g.restore();
 
-  /* the stars, twinkling on their own clock */
+  /* stars */
   g.save();
-  for (const st of orbitStars(p)) {
-    if (st.x > p.x + p.w*k) continue;
+  g.fillStyle = '#ffffff';
+  for (const st of orbitStars()) {
     g.globalAlpha = st.a*(0.6 + Math.sin(S.t*1.4 + st.ph)*0.4);
-    g.fillStyle = '#ffffff';
     g.beginPath(); g.arc(st.x, st.y, st.r, 0, 7); g.fill();
   }
   g.restore();
 
-  /* Earth, off the bottom-left, mostly out of frame */
-  const ex = p.x + 520, ey = p.y + p.h + 1180, er = 2050;
+  /* Earth, along the bottom and mostly out of frame */
+  const E = SPACE.earth;
   g.save();
-  const eg = g.createRadialGradient(ex - er*0.34, ey - er*0.42, er*0.08, ex, ey, er);
-  eg.addColorStop(0, '#6fd0ff'); eg.addColorStop(0.42, '#1f7fd0');
-  eg.addColorStop(0.78, '#0d3f76'); eg.addColorStop(1, '#04131f');
+  const eg = g.createRadialGradient(E.x - E.r*0.3, E.y - E.r*0.46, E.r*0.06, E.x, E.y, E.r);
+  eg.addColorStop(0, '#79d6ff'); eg.addColorStop(0.40, '#2088d6');
+  eg.addColorStop(0.76, '#0d3f76'); eg.addColorStop(1, '#04131f');
   g.fillStyle = eg;
-  g.beginPath(); g.arc(ex, ey, er, 0, 7); g.fill();
-  /* land, as a few soft masses rather than a map nobody will look at */
+  g.beginPath(); g.arc(E.x, E.y, E.r, 0, 7); g.fill();
   g.save();
-  g.beginPath(); g.arc(ex, ey, er, 0, 7); g.clip();
-  g.globalAlpha = 0.72; g.fillStyle = '#2f7a46';
-  const land = [[-0.42,-0.50,0.30,0.17],[-0.05,-0.62,0.21,0.11],[0.30,-0.34,0.26,0.20],
-                [-0.58,-0.16,0.18,0.13],[0.10,-0.14,0.33,0.15]];
+  g.beginPath(); g.arc(E.x, E.y, E.r, 0, 7); g.clip();
+  /* land as a few soft masses, not a map nobody will look at */
+  g.globalAlpha = 0.70; g.fillStyle = '#2f7a46';
+  const land = [[-0.46,-0.44,0.30,0.15],[-0.08,-0.58,0.22,0.10],[0.32,-0.30,0.26,0.18],
+                [-0.62,-0.12,0.17,0.12],[0.12,-0.10,0.33,0.14],[0.56,-0.46,0.16,0.09]];
   for (const L of land) {
     g.beginPath();
-    g.ellipse(ex + er*L[0], ey + er*L[1], er*L[2], er*L[3], L[0]*0.8, 0, 7);
+    g.ellipse(E.x + E.r*L[0], E.y + E.r*L[1], E.r*L[2], E.r*L[3], L[0]*0.8, 0, 7);
     g.fill();
   }
-  /* cloud, and the night edge */
-  g.globalAlpha = 0.20; g.fillStyle = '#ffffff';
-  for (let i = 0; i < 7; i++) {
+  /* cloud bands */
+  g.globalAlpha = 0.18; g.fillStyle = '#ffffff';
+  for (let i = 0; i < 9; i++) {
     g.beginPath();
-    g.ellipse(ex + er*(-0.6 + i*0.2), ey - er*(0.30 + (i % 3)*0.12),
-              er*0.26, er*0.07, 0.3, 0, 7);
+    g.ellipse(E.x + E.r*(-0.7 + i*0.18), E.y - E.r*(0.26 + (i % 3)*0.11),
+              E.r*0.24, E.r*0.055, 0.22, 0, 7);
     g.fill();
   }
+  /* the terminator, so one side of the planet is night */
   g.globalAlpha = 1;
-  const sh = g.createLinearGradient(ex + er*0.1, ey, ex + er, ey);
-  sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.8)');
-  g.fillStyle = sh; g.beginPath(); g.arc(ex, ey, er, 0, 7); g.fill();
+  const sh = g.createLinearGradient(E.x + E.r*0.15, 0, E.x + E.r, 0);
+  sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.82)');
+  g.fillStyle = sh;
+  g.beginPath(); g.arc(E.x, E.y, E.r, 0, 7); g.fill();
   g.restore();
   /* atmosphere on the limb */
   g.save();
-  g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.5;
-  g.strokeStyle = '#8fd8ff'; g.lineWidth = 26;
-  g.beginPath(); g.arc(ex, ey, er + 10, 0, 7); g.stroke();
+  g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.55;
+  g.strokeStyle = '#8fd8ff'; g.lineWidth = 34;
+  g.beginPath(); g.arc(E.x, E.y, E.r + 14, 0, 7); g.stroke();
   g.restore();
   g.restore();
 
-  /* the pad itself: a steel deck across the bottom of the plot with the
-     rocket that put it there still standing on one end. It is what makes
-     orbit a PLACE you build on rather than a dark rectangle. */
-  const dy = p.y + p.h - 150, dx0 = p.x + 180, dw = Math.min(p.w*k - 360, p.w - 360);
-  if (dw > 0) {
-    g.save();
-    g.fillStyle = '#20242e';
-    g.fillRect(dx0, dy, dw, 110);
-    g.fillStyle = '#2d323f'; g.fillRect(dx0, dy, dw, 16);
-    g.strokeStyle = 'rgba(140,200,255,.30)'; g.lineWidth = 4;
-    g.beginPath(); g.moveTo(dx0, dy); g.lineTo(dx0 + dw, dy); g.stroke();
-    g.fillStyle = 'rgba(255,216,61,.5)';
-    for (let x = dx0 + 60; x < dx0 + dw - 40; x += 220) g.fillRect(x, dy + 36, 90, 10);
-    /* gantry and rocket at the left end */
-    const rx = dx0 + 190;
-    g.strokeStyle = '#3a404f'; g.lineWidth = 12;
-    g.beginPath(); g.moveTo(rx + 150, dy); g.lineTo(rx + 150, dy - 560); g.stroke();
-    for (let i = 1; i <= 4; i++) {
-      g.beginPath(); g.moveTo(rx + 150, dy - i*120); g.lineTo(rx + 66, dy - i*120); g.stroke();
-    }
-    g.fillStyle = '#e8ecf4';
+  /* the station: gantries behind, main deck in front */
+  drawDeck(g, SPACE.gantryL);
+  drawDeck(g, SPACE.gantryR);
+  /* spars tying the gantries down to the deck, so they are not floating */
+  g.save();
+  g.strokeStyle = '#262b36'; g.lineWidth = 16;
+  for (const gy of [SPACE.gantryL, SPACE.gantryR]) {
     g.beginPath();
-    g.moveTo(rx, dy - 640); g.lineTo(rx + 52, dy - 500);
-    g.lineTo(rx + 52, dy); g.lineTo(rx - 52, dy); g.lineTo(rx - 52, dy - 500);
-    g.closePath(); g.fill();
-    g.fillStyle = '#d0392f'; g.fillRect(rx - 52, dy - 470, 104, 34);
-    g.fillStyle = '#9aa6bb'; g.fillRect(rx - 52, dy - 120, 104, 18);
+    g.moveTo(gy.x + gy.w*0.25, gy.top + gy.h);
+    g.lineTo(gy.x + gy.w*0.25 + 240, SPACE.deck.top - 18);
+    g.moveTo(gy.x + gy.w*0.75, gy.top + gy.h);
+    g.lineTo(gy.x + gy.w*0.75 - 240, SPACE.deck.top - 18);
+    g.stroke();
+  }
+  g.restore();
+  drawDeck(g, SPACE.deck);
+
+  /* the rocket that brought you, parked at the far end of the deck */
+  drawParkedRocket(g, SPACE.deck.x + 300, SPACE.deck.top);
+
+  /* and the edge of the station, so the buildable ground is legible */
+  g.save();
+  g.setLineDash([30, 22]); g.lineWidth = 5/Math.max(0.3, S.cam.z);
+  g.strokeStyle = 'rgba(140,200,255,.18)';
+  g.strokeRect(SPACE.x + 40, SPACE.y + 40, SPACE.w - 80, SPACE.h - 80);
+  g.restore();
+
+  /* where you are, said plainly, because a dark frame with a deck in it
+     is otherwise indistinguishable from a cutscene */
+  g.save();
+  g.globalAlpha = 0.5;
+  g.font = '800 ' + Math.round(150) + 'px ' + UI_FONT;
+  g.textAlign = 'center'; g.textBaseline = 'top';
+  g.fillStyle = 'rgba(176,140,255,.65)';
+  g.fillText('LOW ORBIT', SPACE.cx, SPACE.y + 140);
+  g.font = '700 84px ' + UI_FONT;
+  g.fillStyle = 'rgba(220,235,255,.42)';
+  g.fillText('the match is still running below', SPACE.cx, SPACE.y + 310);
+  g.restore();
+  g.restore();
+}
+
+/* the rocket, drawn twice: on the island as the thing you buy and press,
+   and parked on the station as the thing that brought you */
+function drawRocketArt(g, x, y, h, lit) {
+  const w = h*0.17;
+  g.save();
+  g.translate(x, y);
+  /* gantry */
+  g.strokeStyle = '#3a404f'; g.lineWidth = h*0.028;
+  g.beginPath(); g.moveTo(w*1.9, 0); g.lineTo(w*1.9, -h*0.88); g.stroke();
+  for (let i = 1; i <= 4; i++) {
+    g.beginPath(); g.moveTo(w*1.9, -h*0.2*i); g.lineTo(w*0.8, -h*0.2*i); g.stroke();
+  }
+  /* body */
+  g.fillStyle = '#e8ecf4';
+  g.beginPath();
+  g.moveTo(0, -h); g.lineTo(w, -h*0.78); g.lineTo(w, 0);
+  g.lineTo(-w, 0); g.lineTo(-w, -h*0.78); g.closePath(); g.fill();
+  g.strokeStyle = '#9aa6bb'; g.lineWidth = h*0.012; g.stroke();
+  /* a band, a window, fins */
+  g.fillStyle = '#d0392f'; g.fillRect(-w, -h*0.72, w*2, h*0.07);
+  g.fillStyle = '#7dd0ff';
+  g.beginPath(); g.arc(0, -h*0.52, w*0.38, 0, 7); g.fill();
+  g.fillStyle = '#c8cfdc';
+  g.beginPath();
+  g.moveTo(-w, -h*0.14); g.lineTo(-w*1.9, 0); g.lineTo(-w, 0); g.closePath(); g.fill();
+  g.beginPath();
+  g.moveTo(w, -h*0.14); g.lineTo(w*1.9, 0); g.lineTo(w, 0); g.closePath(); g.fill();
+  /* lit means fuelled and ready: a little exhaust glow under it */
+  if (lit) {
+    g.save();
+    g.globalCompositeOperation = 'lighter';
+    g.globalAlpha = 0.45 + Math.sin(S.t*6)*0.2;
+    const fg = g.createRadialGradient(0, h*0.04, 2, 0, h*0.04, w*1.7);
+    fg.addColorStop(0, 'rgba(255,220,150,.95)'); fg.addColorStop(1, 'rgba(255,140,40,0)');
+    g.fillStyle = fg;
+    g.beginPath(); g.arc(0, h*0.04, w*1.7, 0, 7); g.fill();
     g.restore();
   }
   g.restore();
 }
+function drawParkedRocket(g, x, y) { drawRocketArt(g, x, y, 820, false); }
 
-/* is this point inside bought orbit? Every orbit rule in the game asks
-   exactly this question and nothing else. */
-function inSpace(x, y) {
-  const p = plotById('space');
-  if (!p || !plotCleared('space')) return false;
-  return x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h;
+/* ------------------------------------------------------- the launch pad
+   On the cleared island: a pad with a rocket on it. Unbought it is a
+   price tag you press twice; bought it is the way up. It is drawn on the
+   plot rather than put in the shop because the shop is for Jaxons, and
+   because a rocket you can see on the ground is the only thing that would
+   make a player guess there is somewhere to go. */
+const PAD_R = 190;
+function padCentre() {
+  const p = plotById('sat');
+  return { x:p.x + p.w*0.5, y:p.y + p.h*0.56 };
 }
-function orbitCentre() {
-  const p = plotById('space');
-  return { x:p.x + p.w/2, y:p.y + p.h*0.62 };
+function rocketAt(x, y) {
+  if (S.titan || upThere() || !plotCleared('sat')) return false;
+  const c = padCentre();
+  return Math.abs(x - c.x) < PAD_R && y > c.y - PAD_R*2.6 && y < c.y + PAD_R*0.5;
 }
-function inOrbitView() { return S.cam.y < -700; }
+function drawLaunchPad() {
+  if (S.titan || !plotCleared('sat')) return;
+  const c = padCentre(), g = ctx;
+  g.save();
+  /* the pad */
+  g.fillStyle = '#2a2f3a';
+  g.beginPath(); g.ellipse(c.x, c.y, PAD_R, PAD_R*0.4, 0, 0, 7); g.fill();
+  g.strokeStyle = S.orb.bought ? 'rgba(125,255,180,.6)' : 'rgba(255,216,61,.7)';
+  g.lineWidth = 5; g.setLineDash(S.orb.bought ? [] : [18, 13]);
+  g.beginPath(); g.ellipse(c.x, c.y, PAD_R, PAD_R*0.4, 0, 0, 7); g.stroke();
+  g.setLineDash([]);
+  drawRocketArt(g, c.x, c.y - 10, 300, S.orb.bought);
+  /* the label: a price, or an instruction */
+  g.font = '800 30px ' + UI_FONT;
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  const armed = S.orb.armed > S.t;
+  if (!S.orb.bought) {
+    g.fillStyle = armed ? '#ffd83d' : 'rgba(255,216,61,.9)';
+    g.fillText('ROCKET \u00b7 ' + bigCash(Math.round(ROCKET_COST*M().cost)), c.x, c.y + PAD_R*0.4 + 34);
+    g.font = '700 22px ' + UI_FONT;
+    g.fillStyle = 'rgba(255,255,255,.6)';
+    g.fillText(armed ? 'press again to buy' : 'press the rocket', c.x, c.y + PAD_R*0.4 + 64);
+  } else {
+    g.fillStyle = '#7dffb4';
+    g.fillText('LAUNCH', c.x, c.y + PAD_R*0.4 + 34);
+    g.font = '700 22px ' + UI_FONT;
+    g.fillStyle = 'rgba(255,255,255,.6)';
+    g.fillText('to Low Orbit', c.x, c.y + PAD_R*0.4 + 64);
+  }
+  g.restore();
+}
+
+function buyRocket() {
+  if (S.orb.bought) return false;
+  const cost = Math.round(ROCKET_COST*M().cost);
+  if (!afford(cost)) { toast('Not enough coins \u2014 the rocket is ' + bigCash(cost)); sfx('deny'); return false; }
+  spend(cost);
+  S.orb.bought = true;
+  banner('ROCKET READY', 'Low Orbit is open', '#7dffb4');
+  toast('Press the rocket to launch. The match keeps running while you are up there.');
+  beep(160, 1.1, 'sawtooth', 0.055, 820);
+  syncChips(); syncHUD();
+  return true;
+}
+
+/* the trip. It is instant in simulation terms -- nothing pauses, no wave
+   stops -- and the half second of white is only so the cut does not feel
+   like a glitch. */
+function launchOrbit() {
+  if (!S.orb.bought) { toast('Buy the rocket on the Satellite Plot first'); sfx('deny'); return false; }
+  if (upThere()) return false;
+  S.orb.back = { x:S.cam.x, y:S.cam.y, z:S.cam.z };
+  S.orb.on = true;
+  S.cam.min = 0.1;
+  S.cam.z = SPACE.fit; S.cam.x = SPACE.cx; S.cam.y = SPACE.y + SPACE.h/2;
+  camClamp(); syncCamChip(); syncChips();
+  deselect(); cancelPlacing();
+  flashScreen(0.5); shakeScreen(18, 0.6);
+  banner('LOW ORBIT', 'the match is still running below', '#b08cff');
+  beep(90, 1.6, 'sawtooth', 0.07, 700);
+  return true;
+}
+function returnToEarth() {
+  if (!upThere()) return false;
+  S.orb.on = false;
+  S.cam.min = CAM_MIN;
+  const bk = S.orb.back;
+  if (bk) { S.cam.x = bk.x; S.cam.y = bk.y; S.cam.z = bk.z; } else camReset();
+  camClamp(); syncCamChip(); syncChips();
+  deselect(); cancelPlacing();
+  flashScreen(0.35);
+  beep(420, 0.5, 'triangle', 0.04, 180);
+  return true;
+}
 
 function plotCost(p) { return Math.round(p.cost * M().cost); }
 function buyPlot(p) {
@@ -21436,13 +21668,13 @@ const clearK = id => {
 
 /* ---------------------------------------------------------- drawing --- */
 function drawPlots() {
-  if (S.titan) return;
+  if (S.titan || upThere()) return;
+  drawLaunchPad();
   for (const p of PLOTS) {
     const k = clearK(p.id);
     const done = plotCleared(p.id);
     ctx.save();
-    if (k > 0 && p.space) drawOrbit(p, k);
-    else if (k > 0) {
+    if (k > 0) {
       /* the cleared ground: the same grass as the lawn, mown flat */
       ctx.save();
       ctx.beginPath(); ctx.rect(p.x, p.y, p.w*k, p.h); ctx.clip();
@@ -21530,6 +21762,53 @@ function drawPlots() {
    trees and a few far hills, generated once and drawn only where the
    camera is actually looking. */
 const PARK_R = 2600;                         // how far the park reaches out
+
+/* ------------------------------------------------------- LOW ORBIT ----
+   A long deck, two gantries over it, and Earth underneath. Sized off him:
+   he stands 3783 tall, so the frame is 5200 and he fills three quarters
+   of it with his feet on the main deck and his crown clear of the top.
+   16:9 so a fitted camera frames the whole station and nothing else. */
+const SPACE = { x:0, y:6000, w:9200, h:5200, fit:0.172 };
+SPACE.deck    = { x:400,  y:10400, top:10560, w:8400, h:220, main:true };
+SPACE.gantryL = { x:900,  y:8560,  top:8700,  w:2200, h:140 };
+SPACE.gantryR = { x:6100, y:8560,  top:8700,  w:2200, h:140 };
+SPACE.pads = [SPACE.deck, SPACE.gantryL, SPACE.gantryR];
+SPACE.cx = SPACE.x + SPACE.w/2;
+/* Earth's limb sits just under the deck, so the deck is silhouetted
+   against space with the planet beneath it rather than behind it */
+SPACE.earth = { x:4300, y:14560, r:3900 };
+const ROCKET_COST = 900000;
+
+const inSpaceBox = (x, y) =>
+  x >= SPACE.x && x <= SPACE.x + SPACE.w && y >= SPACE.y && y <= SPACE.y + SPACE.h;
+const upThere = () => !!(S.orb && S.orb.on);
+/* "is this Jaxon on the station" is asked constantly and is a flag, not a
+   rectangle test, because a Jaxon never moves between the two */
+const isOrb = t => !!t.orb;
+
+/* which deck a point belongs to, and where its feet would land. The bands
+   are generous and the answer snaps, because three thin platforms in five
+   thousand pixels of sky would otherwise be a pixel-hunt. */
+function orbPadAt(x, y) {
+  let best = null, bd = 1e9;
+  for (const pd of SPACE.pads) {
+    if (x < pd.x - 60 || x > pd.x + pd.w + 60) continue;
+    const d = Math.abs(y - pd.top);
+    if (d < bd) { bd = d; best = pd; }
+  }
+  return best;
+}
+function orbSnap(x, y) {
+  const pd = orbPadAt(x, y);
+  return pd ? { x, y:pd.top, pad:pd } : null;
+}
+/* the one place that answers "where will he actually land", so the ghost
+   under the cursor and the Jaxon that appears are never in two places */
+function placePos(x, y) {
+  if (!upThere()) return { x, y };
+  const sn = orbSnap(x, y);
+  return sn ? { x:sn.x, y:sn.y } : { x, y };
+}
 const PARK = { trees:[], hills:[], made:false };
 function makePark() {
   if (PARK.made) return;
@@ -21732,6 +22011,7 @@ function gateOf() {
 }
 function drawField() {
   if (S.titan) { drawSiegeField(); drawTitanFx(); drawNoxarchFx(); drawTitan(); return; }
+  if (upThere()) { drawSpaceField(); return; }
   const v = viewBox();
   if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) { makePark(); drawPark(v); drawPlots(); }
   if (S.omen) drawOmen();                        // out past the lawn, walking in
@@ -24216,12 +24496,6 @@ const camHome = () => {
   return Math.abs(c.z - 1) < 0.005 && Math.abs(c.x - wd.w/2) < 1 && Math.abs(c.y - wd.h/2) < 1;
 };
 function syncCamChip() {
-  const ob0 = $('orbitBtn');
-  if (ob0 && ob0.style.display !== 'none') {
-    const up0 = inOrbitView();
-    ob0.textContent = up0 ? 'Back down' : 'Orbit';
-    ob0.classList.toggle('on', up0);
-  }
   const el = $('camChip');
   if (el) el.classList.toggle('on', !S.titan && !camHome());
 }
@@ -24257,11 +24531,19 @@ function camBounds() {
   const c = S.cam, wd = camWorld();
   const pad = S.titan ? 0 : CAM_PAD;
   const hw = W/2/c.z, hh = H/2/c.z;
+  /* on the station the only world is the station: there is no panning
+     back down to the park, you fly back down */
+  if (upThere()) {
+    const mid = { x:SPACE.cx, y:SPACE.y + SPACE.h/2 };
+    return { lo:{ x:Math.min(SPACE.x + hw, mid.x),               y:Math.min(SPACE.y + hh, mid.y) },
+             hi:{ x:Math.max(SPACE.x + SPACE.w - hw, mid.x),     y:Math.max(SPACE.y + SPACE.h - hh, mid.y) } };
+  }
   let x0 = -pad, y0 = -pad, x1 = wd.w + pad, y1 = wd.h + pad;
   if (!S.titan) for (const p of PLOTS) {
     x0 = Math.min(x0, p.x - 260);          y0 = Math.min(y0, p.y - 260);
     x1 = Math.max(x1, p.x + p.w + 260);    y1 = Math.max(y1, p.y + p.h + 260);
   }
+  /* the station is not in here on purpose: it is unreachable by panning */
   const lo = { x:Math.min(x0 + hw, wd.w/2), y:Math.min(y0 + hh, wd.h/2) };
   const hi = { x:Math.max(x1 - hw, wd.w/2), y:Math.max(y1 - hh, wd.h/2) };
   return { lo, hi };
@@ -24946,10 +25228,12 @@ function render() {
   drawField();
 
   if (S.placing) {
-    const m = S.mouse, spec = TOWERS[S.placing], ok = validSpot(m.x, m.y);
+    const mp = placePos(S.mouse.x, S.mouse.y);
+    const m = { x:mp.x, y:mp.y, in:S.mouse.in }, spec = TOWERS[S.placing], ok = validSpot(m.x, m.y);
     /* a duplicate shows the range it will actually have, upgrades and all */
-    drawRange(m.x, m.y - spriteH(S.placing)*0.18, S.dupe ? S.dupe.range : spec.range, ok);
-    if (spec.range === Infinity) {
+    if (!upThere())
+      drawRange(m.x, m.y - spriteH(S.placing)*0.18, S.dupe ? S.dupe.range : spec.range, ok);
+    if (spec.range === Infinity && !upThere()) {
       ctx.save(); ctx.strokeStyle = ok ? 'rgba(255,255,255,.3)' : 'rgba(255,120,120,.6)';
       ctx.lineWidth = 2; ctx.setLineDash([14,11]); ctx.lineDashOffset = -S.t*26;
       ctx.strokeRect(4, 4, W-8, H-8); ctx.restore();
@@ -25003,7 +25287,7 @@ function render() {
   /* the hover ring is browsing too — it stays down while aiming */
   const aiming = S.mouse.down && S.mouse.in && !S.placing;
   const ring = S.selected || (aiming ? null : S.hovered);
-  if (ring) drawRange(ring.x, ring.y - spriteH(ring.type)*0.18, SP(ring).range, true);
+  if (ring && !isOrb(ring)) drawRange(ring.x, ring.y - spriteH(ring.type)*0.18, SP(ring).range, true);
 
   if (S.mouse.down && S.mouse.in && !S.placing && S.towers.length) {
     ctx.save(); ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1.5;
@@ -25304,7 +25588,9 @@ function render() {
     ctx.restore();
   }
 
-  for (const t of S.towers.slice().sort((a,b) => a.y - b.y)) drawTower(t, false);
+  { const here = upThere();
+    for (const t of S.towers.slice().sort((a,b) => a.y - b.y))
+      if (isOrb(t) === here) drawTower(t, false); }
 
   /* orbiting tablets + charge glow, drawn on top of their owner */
   for (const t of S.towers) {
@@ -25694,44 +25980,72 @@ function render() {
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(f.x, f.y, f.r*(0.3 + k*0.8), 0, 7); ctx.fill();
       ctx.restore();
-    } else if (f.k === 'noxbeam') {
-      /* an orbital strike landing: a column of light from somewhere far
-         above down to a point on the trail, and a detonation where it
-         lands. Drawn in two passes, a soft wide one and a hard thin one,
-         because a single stroke at any width reads as a drawn line. */
-      const k = 1 - f.life/f.max;                 // 0 at the flash, 1 as it fades
-      const a0 = Math.pow(1 - k, 1.6);
+    } else if (f.k === 'orbstrike') {
+      /* An orbital strike, drawn from whichever end you are standing at.
+         The column is WIDE where it comes from and narrow where it lands,
+         which is backwards from how a laser is normally drawn and is
+         exactly what makes it read as arriving from very far away: the
+         near end is in focus, the far end is not. */
+      const k = 1 - f.life/f.max, a0 = Math.pow(1 - k, 1.5);
+      const up = upThere();
+      const lean = f.big ? 46 : 22;
+      let x0, y0, x1, y1;
+      if (up) {
+        /* leaving the station, down past Earth's limb and out of frame */
+        x0 = f.ox; y0 = f.oy;
+        x1 = f.ox + lean*3; y1 = SPACE.y + SPACE.h + 900;
+      } else {
+        /* arriving on the park, out of the top of whatever you can see */
+        const v = viewBox();
+        x0 = f.x - lean; y0 = v.y0 - 200;
+        x1 = f.x;        y1 = f.y;
+      }
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      const dx = f.tx - f.x, dy = f.ty - f.y;
+      const dx = x1 - x0, dy = y1 - y0;
       const len = Math.max(1, Math.hypot(dx, dy));
-      const nx = -dy/len, ny = dx/len;            // across the beam
-      const wide = 62 + k*120, thin = 7 + (1 - k)*13;
-      for (const [wTop, wBot, col, al] of [[wide, wide*0.16, 'rgba(176,140,255,', 0.5],
-                                           [thin, thin*0.3,  'rgba(255,240,255,', 0.95]]) {
-        ctx.globalAlpha = a0*al;
-        const lg = ctx.createLinearGradient(f.x, f.y, f.tx, f.ty);
-        lg.addColorStop(0, col + '0)'); lg.addColorStop(0.18, col + '.9)');
-        lg.addColorStop(1, col + '1)');
+      const nx = -dy/len, ny = dx/len;
+      const scale = f.big ? 1 : 0.55;
+      const wide = (70 + k*130)*scale, thin = (8 + (1 - k)*14)*scale;
+      for (const band of [[wide, wide*0.15, 'rgba(176,140,255,', 0.5],
+                          [thin, thin*0.28, 'rgba(255,240,255,', 0.95]]) {
+        ctx.globalAlpha = a0*band[3];
+        const lg = ctx.createLinearGradient(x0, y0, x1, y1);
+        lg.addColorStop(0, band[2] + '0)');
+        lg.addColorStop(0.16, band[2] + '.9)');
+        lg.addColorStop(1, band[2] + '1)');
         ctx.fillStyle = lg;
         ctx.beginPath();
-        ctx.moveTo(f.x + nx*wTop, f.y + ny*wTop);
-        ctx.lineTo(f.tx + nx*wBot, f.ty + ny*wBot);
-        ctx.lineTo(f.tx - nx*wBot, f.ty - ny*wBot);
-        ctx.lineTo(f.x - nx*wTop, f.y - ny*wTop);
+        ctx.moveTo(x0 + nx*band[0], y0 + ny*band[0]);
+        ctx.lineTo(x1 + nx*band[1], y1 + ny*band[1]);
+        ctx.lineTo(x1 - nx*band[1], y1 - ny*band[1]);
+        ctx.lineTo(x0 - nx*band[0], y0 - ny*band[0]);
         ctx.closePath(); ctx.fill();
       }
-      /* where it hits: a white core, a shock ring and scorched ground */
-      const r = (f.r || 240)*(0.25 + k*1.5);
-      ctx.globalAlpha = a0*0.9;
-      const hg = ctx.createRadialGradient(f.tx, f.ty, 2, f.tx, f.ty, r);
-      hg.addColorStop(0, 'rgba(255,255,255,.95)');
-      hg.addColorStop(0.3, 'rgba(206,160,255,.6)');
-      hg.addColorStop(1, 'rgba(120,60,220,0)');
-      ctx.fillStyle = hg;
-      ctx.beginPath(); ctx.arc(f.tx, f.ty, r, 0, 7); ctx.fill();
-      ctx.globalAlpha = a0*0.75;
-      ctx.strokeStyle = '#e8d4ff'; ctx.lineWidth = 3 + (1 - k)*5;
-      ctx.beginPath(); ctx.ellipse(f.tx, f.ty, r*1.25, r*0.42, 0, 0, 7); ctx.stroke();
+      if (up) {
+        /* the flare at the barrel, which is the only part of the strike
+           you get to watch from up here */
+        ctx.globalAlpha = a0*0.9;
+        const fr = (f.big ? 240 : 110);
+        const mg = ctx.createRadialGradient(x0, y0, 2, x0, y0, fr);
+        mg.addColorStop(0, 'rgba(255,255,255,.95)');
+        mg.addColorStop(0.35, 'rgba(206,160,255,.6)');
+        mg.addColorStop(1, 'rgba(120,60,220,0)');
+        ctx.fillStyle = mg;
+        ctx.beginPath(); ctx.arc(x0, y0, fr, 0, 7); ctx.fill();
+      } else {
+        /* where it lands: a white core, a shock ring and a scorch */
+        const r = (f.r || 240)*(0.25 + k*1.5);
+        ctx.globalAlpha = a0*0.9;
+        const hg = ctx.createRadialGradient(f.x, f.y, 2, f.x, f.y, r);
+        hg.addColorStop(0, 'rgba(255,255,255,.95)');
+        hg.addColorStop(0.3, 'rgba(206,160,255,.6)');
+        hg.addColorStop(1, 'rgba(120,60,220,0)');
+        ctx.fillStyle = hg;
+        ctx.beginPath(); ctx.arc(f.x, f.y, r, 0, 7); ctx.fill();
+        ctx.globalAlpha = a0*0.75;
+        ctx.strokeStyle = '#e8d4ff'; ctx.lineWidth = 3 + (1 - k)*6;
+        ctx.beginPath(); ctx.ellipse(f.x, f.y, r*1.3, r*0.44, 0, 0, 7); ctx.stroke();
+      }
       ctx.restore();
     } else if (f.k === 'noxfeed') {
       /* a Jaxon in orbit paying into the core: one mote on its way in, so
@@ -25965,20 +26279,28 @@ function validSpot(x, y) {
     for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < T_W*0.58) return false;
     return true;
   }
+  /* up on the station the only ground is the decks, and the answer snaps
+     onto one, so you aim at a deck rather than at a pixel */
+  if (upThere()) {
+    const sn = orbSnap(x, y);
+    if (!sn) return false;
+    const pd = sn.pad, big = S.placing && TOWERS[S.placing].spacePad;
+    if (big && !pd.main) return false;            // he only fits on the main deck
+    const r = big ? noxFoot() : ORBF.gap*0.5;
+    if (x < pd.x + r || x > pd.x + pd.w - r) return false;
+    for (const t of S.towers) {
+      if (!isOrb(t)) continue;
+      const rr = (TOWERS[t.type].spacePad || big) ? noxFoot()*0.78 : ORBF.gap;
+      if (Math.hypot(t.x - x, t.y - sn.y) < rr) return false;
+    }
+    return true;
+  }
   /* a cleared plot is ground of its own: no trail runs through it, so the
      only rule out there is not standing on top of another Jaxon */
   const plot = inClearedPlot(x, y);
   if (plot) {
     if (S.placing && TOWERS[S.placing].bigPad && !plot.astro) return false;
-    if (S.placing && TOWERS[S.placing].spacePad && !plot.space) return false;
-    if (S.placing && TOWERS[S.placing].spacePad) {
-      /* he wants the deck under his feet and the whole of it clear */
-      const r = noxFoot();
-      if (x < plot.x + r || x > plot.x + plot.w - r) return false;
-      if (y < plot.y + plot.h*0.46 || y > plot.y + plot.h - 150) return false;
-      for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < r*0.8) return false;
-      return true;
-    }
+    if (S.placing && TOWERS[S.placing].spacePad) return false;   // orbit only
     if (S.placing && TOWERS[S.placing].bigPad) {
       /* the Titan wants the middle of the pad and the whole of it */
       const r = astroFoot();
@@ -26038,6 +26360,7 @@ function sellTower(t) {
 let dragCd = 0;
 function tryPlaceAt(x, y, silent) {
   if (!S.placing) return false;
+  { const q = placePos(x, y); x = q.x; y = q.y; }
   const spec = TOWERS[S.placing], dup = S.dupe;
   const cost = dup ? dup.cost : costOf(S.placing);
   if (!afford(cost)) { if (!silent) toast('Not enough coins'); cancelPlacing(); return false; }
@@ -26085,6 +26408,7 @@ function tryPlaceAt(x, y, silent) {
     t.cds = (sp.weapons || []).map(w => w.cd);
     t.fireSlow = 0; t.jam = 0;
   }
+  if (upThere()) t.orb = 1;
   S.towers.push(t);
   burst(x, y + 30, dup ? '#8bf59a' : '#ffffff', dup ? 14 : 8); beep(560, 0.08, 'triangle', 0.04);
   if (dup) {
@@ -26168,6 +26492,18 @@ cv.addEventListener('pointerdown', ev => {
   if (!S.placing && !towerAt(p.x, p.y)) {
     /* the sign on an uncleared plot. A million dollars is worth asking
        twice about, so the first press arms it and the second buys. */
+    /* the rocket on the island: press to buy, press to fly */
+    if (rocketAt(p.x, p.y)) {
+      if (S.orb.bought) launchOrbit();
+      else if (S.orb.armed > S.t) { S.orb.armed = 0; buyRocket(); }
+      else {
+        S.orb.armed = S.t + 4;
+        toast((MOBILE ? 'Tap' : 'Click') + ' the rocket again to pay ' +
+              bigCash(Math.round(ROCKET_COST*M().cost)));
+        sfx('tap');
+      }
+      return;
+    }
     const sign = plotSignAt(p.x, p.y);
     if (sign) {
       if (S.plotArm && S.plotArm.id === sign.id) { S.plotArm = null; buyPlot(sign); }
@@ -26580,9 +26916,15 @@ $('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') close
 $('pauseBtn').onclick = () => setPause(!S.paused);
 $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); };
 $('orbitBtn').onclick = () => {
-  if (plotCleared('space') && inOrbitView()) {
-    camReset(); syncChips(); beep(430, 0.07, 'triangle', 0.03);
-  } else if (gotoOrbit(true)) beep(760, 0.12, 'triangle', 0.035, 1240);
+  if (upThere()) returnToEarth();
+  else if (S.orb.bought) launchOrbit();
+  else {
+    /* not bought yet: take them to the pad, which is the thing to press */
+    if (!plotCleared('sat')) { toast('Clear the Satellite Plot first'); sfx('deny'); return; }
+    const c = padCentre();
+    S.cam.x = c.x; S.cam.y = c.y; S.cam.z = 0.6; camClamp(); syncCamChip();
+    toast('The rocket is on the pad \u2014 ' + bigCash(Math.round(ROCKET_COST*M().cost)));
+  }
 };
 $('bookBtn').onclick = () => openBook('menu');
 $('pmBook').onclick = () => openBook('pause');
@@ -26653,15 +26995,19 @@ function syncChips() {
   $('perfBtn').classList.toggle('on', S.perfLock !== 2);
   const ob = $('orbitBtn');
   if (ob) {
+    /* the chip is the whole route in one control: buy the rocket, launch,
+       come back. It appears as soon as you own a Noxarch, because the one
+       thing a player cannot be expected to guess is that there is a place
+       to go at all. */
     const own = !!(S.adv && S.adv.jaxons && S.adv.jaxons.noxarch);
-    const bought = typeof plotCleared === 'function' && plotCleared('space');
-    const show = (own || bought) && !S.titan && S.mode && S.mode !== 'menu';
+    const show = (own || (S.orb && S.orb.bought)) && !S.titan && S.mode && S.mode !== 'menu';
     ob.style.display = show ? '' : 'none';
     if (show) {
-      const up = inOrbitView();
-      ob.textContent = !bought ? 'Low Orbit · ' + bigCash(plotCost(plotById('space')))
-                     : up ? 'Back down' : 'Orbit';
-      ob.classList.toggle('on', bought && up);
+      const up = upThere();
+      ob.textContent = up ? 'Back to Earth'
+                     : S.orb.bought ? 'Launch · Low Orbit'
+                     : 'Rocket · ' + bigCash(Math.round(ROCKET_COST*M().cost));
+      ob.classList.toggle('on', up);
     }
   }
 }
@@ -28411,7 +28757,7 @@ const GUIDE = [
   } },
 
 { ch:'Orbit', title:'Low Orbit, and the Noxarch',
-  text:'Beat the Noxarch once and you can buy him. He costs <b>$7,000,000</b> and he is <b>five Titan Astros tall</b> — he does not fit on the lawn, on the Astro Pad, or anywhere else on the ground. He stands in <b>Low Orbit</b>.<br><br>Orbit is a plot like any other, except it is a long way up: <b>$900k</b>, and the <b>Orbit</b> chip in the match takes you to the sign and back. Buying it does not pause anything — the wave keeps walking while you are up there.<br><br>From orbit he shoots the park. The ray crosses the sky and detonates on the trail, and his reach is the whole map, so there is no such thing as standing out of his way.<br><br>Two things happen around him. <b>Every Jaxon on the board</b> hits harder and fires faster while he is up there, wherever they are standing. And <b>any Jaxon you put in orbit with him</b> is wired into his core and raises his damage — you can watch the energy going in. Cheap starters are worth nothing as fuel; your most expensive, biggest, most upgraded Jaxons are worth a great deal. They cannot shoot the ground from up there, so that trade is real: a board position for his damage.<br><br>Finish his <b>Void Ray</b> path and he gains the <b>nuke</b>. Every two minutes: ten seconds of warning, then the board goes white and everything on it takes a number with six zeroes in it.',
+  text:'Getting there takes three purchases. Clear the <b>Satellite Plot</b> out west of the lawn, buy the <b>rocket</b> that appears on it (<b>$900k</b> — press it twice), then press it again to launch. Low Orbit is a <b>separate map</b>: the park is not on screen and you cannot pan back to it, you fly back down. Nothing pauses — the wave keeps walking the whole time you are up there, which is what the <b>Back to Earth</b> chip is for.<br><br>The station is a long deck with two gantries over it and Earth underneath. <b>Everything standing on it fires orbital lasers</b> straight down into the match, at any enemy anywhere on the board — range stops meaning anything up here. Ordinary Jaxons were not built to shoot a planet, so they do it at <b>45% damage on a slower cycle</b>; that is the price of unlimited reach, and deck space is limited, so the station roster is a choice.<br><br>The <b>Noxarch Jaxon</b> is native to orbit and pays no penalty. He costs <b>$7,000,000</b>, he is <b>five Titan Astros tall</b>, and he will not fit on the lawn, the Astro Pad or anywhere else on the ground — only the main deck, and he takes most of it.<br><br>Two things happen around him. <b>Every Jaxon you own</b> hits harder and fires faster while he is up there, on either map. And <b>any Jaxon on the station</b> is wired into his core and raises his damage — you can watch the energy going in. Cheap starters are worth almost nothing as fuel; your most expensive, biggest, most upgraded Jaxons are worth a great deal.<br><br>Finish his <b>Void Ray</b> path and he gains the <b>nuke</b>. Every two minutes: ten seconds of warning, then the board goes white and everything on it takes a number with six zeroes in it.',
   art:(g, w, h, t) => {
     const p = frac(t/4.2);
     /* space */
@@ -28466,7 +28812,7 @@ const GUIDE = [
       g.restore();
     }
     gbText(g, 'LOW ORBIT', w*0.5, h*0.08, 10, '#b08cff', 'center');
-    gbText(g, '$900k', w*0.5, h*0.08 + 13, 9, '#f2f6fb', 'center');
+    gbText(g, 'satellite plot \u2192 rocket \u2192 launch', w*0.5, h*0.08 + 13, 9, '#f2f6fb', 'center');
   } },
 
 { ch:'Sandbox', title:'The workshop',
