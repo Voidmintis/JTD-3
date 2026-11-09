@@ -3751,6 +3751,7 @@
       <button class="chip" id="statsBtn">Stats</button>
       <button class="chip" id="pauseBtn">Pause</button>
       <button class="chip cam" id="camChip">Reset view <span class="hint">R</span></button>
+      <button class="chip" id="orbitBtn" style="display:none">Orbit</button>
     </div>
 
     <button id="startWave">Start Wave 1</button>
@@ -4642,7 +4643,9 @@ const boxWas = v => (v.wide ? BOX_WAS.wide : BOX_WAS.def);
    and the detail shows on him. */
 function sheetPx(v) {
   const b = boxOf(v), was = boxWas(v);
-  const k = v.hires ? 1 : Math.min(1, Math.sqrt((was.w*was.h)/(b.w*b.h)));
+  const k = v.sheetK ? v.sheetK
+          : v.hires ? 1
+          : Math.min(1, Math.sqrt((was.w*was.h)/(b.w*b.h)));
   return { w:Math.round(b.w*k), h:Math.round(b.h*k) };
 }
 
@@ -5717,7 +5720,7 @@ VARIANTS.j2_ttv    = L2('tv','#5a3a9a','#200e44','#c8a0ff','#3e2470','#6e4ab0','
 VARIANTS.j2_dspk   = L2('speaker','#2e2438','#120c18','#bf5af2','#1e1826','#3e3450','#0a0610');
 VARIANTS.j2_ripad  = L2('tv','#2a3a9a','#101a4a','#6c9aff','#1e2a6a','#44589a','#0a1030');
 
-VARIANTS.noxarch = { ultra:'noxarch', wide:true,
+VARIANTS.noxarch = { ultra:'noxarch', wide:true, hires:true, sheetK:2,
                     suitLite:'#46306e', suit:'#1d1033', suitDark:'#0a0417',
                     arm:'#1a0f2a', armDark:'#05020c',
                     outline:'#07030e', outlineWidth:8,
@@ -6243,8 +6246,8 @@ const UPGRADES = {
       { name:'Hard Radiation', cost:1700000,
         text:'What it passes through burns, and will not be healed.',
         mod:{ dmg:1.8, add:{ burnRate:0.06, healBlock:4 }, xtra:['burnHit'] } },
-      { name:'Annihilation',   cost:5200000,
-        text:'Four more bodies, and the ray never really stops.',
+      { name:'Nuke Protocol',  cost:5200000,
+        text:'Four more bodies, the ray never really stops, and every two minutes he drops one on the whole park \u2014 ten seconds of warning, then the board goes white.',
         mod:{ dmg:2.3, cd:0.7, add:{ pierce:4 }, mul:{ splashR:1.25 } } }
     ] },
     C: { name:'Accretion', tiers:[
@@ -7834,11 +7837,11 @@ const TOWERS = {
    *  does not care what is in the way — and that is the reward: you did  *
    *  not merely beat him, you took the fight off him.                    *
    * ------------------------------------------------------------------ */
-  noxarch:{ name:'Noxarch Jaxon', cost:1250000, range:900, cd:0.18, dmg:140000,
-             speed:2400, ammo:'voidray', noxarch:true,
-             splash:72000, splashR:460, pierce:9,
+  noxarch:{ name:'Noxarch Jaxon', cost:7000000, range:99000, cd:0.18, dmg:140000,
+             speed:11000, ammo:'voidray', noxarch:true, spacePad:true, noMirror:true,
+             splash:72000, splashR:520, pierce:9,
              baseXtra:{ pull:1, crush:1, antiHeal:1, wardBreak:1 },
-             blurb:'140k every 0.18s through nine, 72k across 460. Everything in range is dragged toward the middle of the splash before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him.',
+             blurb:'Stands in orbit and shoots the park. 140k every 0.18s through nine, 72k across 520, from anywhere on the map. Everything in the splash is dragged toward the middle before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him. Every other Jaxon on the board hits harder and fires faster while he is up there, and every Jaxon you put in orbit with him feeds his core.',
              tags:[['Noxarch','t-rain'],['Splash','t-aoe'],['Pull','t-single']] },
 
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
@@ -8138,7 +8141,8 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      astro:6.8, mercury:1.16, venus:1.2,
                      /* the last Jaxon: taller than every ultra on the
                         shelf, and nowhere near the Titan */
-                     noxarch:1.55,
+                     /* five Titan Astros, who stands at 6.8 */
+                     noxarch:34,
                      /* Legacy footprints come from LEGACY_ART, which was
                         measured in the source game; nothing here. */
                      j2_large:1.2, j2_lspk:1.2, j2_ltv:1.25, j2_ripad:1.2,
@@ -9639,6 +9643,15 @@ function pick(key) {
     if (theAstro()) { toast('There is only ever one Titan'); sfx('deny'); return; }
     S.cam.z = S.cam.min; camClamp();
     syncCamChip();
+  }
+  /* and the Noxarch only fits in orbit, so the board goes to orbit */
+  if (TOWERS[key].spacePad) {
+    if (!plotCleared('space')) {
+      toast('Open Low Orbit first \u2014 ' + bigCash(plotCost(plotById('space'))));
+      sfx('deny');
+    }
+    if (theNox()) { toast('There is only ever one Noxarch'); sfx('deny'); return; }
+    gotoOrbit(true);
   }
   if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); sfx('deny'); return; }
   S.dupe = null;
@@ -16977,6 +16990,7 @@ function amplify(dmg, owner, e) {
   if (e && e.slay > 0) dmg *= e.slayMul || 1;   // painted by an Elite Slayer
   if (owner && owner.admField) dmg *= 1 + ADM.field.dmg;
   if (owner && S.wellT > 0) dmg *= 1 + ASTRO.ringBuff;   // the Titan's gravity well
+  if (owner && owner.noxB > 1) dmg *= owner.noxB;        // fed from orbit, or given from it
   if (owner) {
     if (owner.dmgBuff > 0) dmg *= 1 + owner.dmgBuffAmt;
     if (owner.crit > 0 && Math.random() < owner.crit) {
@@ -17149,6 +17163,13 @@ function fire(t, tx, ty) {
                    life:spec.ammo === 'yoyo' ? 6.0 : 2.6, owner:t });
   }
   S.fx.push({ k:'flash', x:mx, y:my, life:0.09, max:0.09, hue:spec.ammo==='rainbow'?0:null });
+  /* firing from orbit is not a muzzle flash, it is a column of light that
+     crosses two and a half thousand pixels of sky and detonates on the
+     trail. The shot itself still travels and still does the damage — this
+     is what the player actually watches while it does. */
+  if (TOWERS[t.type].spacePad)
+    S.fx.push({ k:'noxbeam', x:mx, y:my, tx, ty, life:0.4, max:0.4,
+                r:(spec.splashR || 400)*0.55 });
   (t.shots++, sfxShot(t));
   noteFired(t, spec.ammo, spec.dmg, spec);
   if (S.shots.length > 700) S.shots.splice(0, S.shots.length - 700);
@@ -17798,6 +17819,7 @@ function cycleAim(t, by) {
 }
 
 function targetFor(t) {
+  if (!TOWERS[t.type].spacePad && inSpace(t.x, t.y)) return null;
   /* the Overclock Warden's pulse: he is still firing, just not at anything
      he chose — he throws it wherever he was last looking */
   if (t.scramble > 0) {
@@ -18709,6 +18731,7 @@ function update(dt) {
 
   /* Forge hammers in fire rate; the Director hands out crit. Both are worked
      out once a frame here rather than per shot. */
+  noxOrbit(dt);
   for (const t of S.towers) if (t.dmgBuff > 0) t.dmgBuff -= dt;
   /* an Admin Jaxon at level 100 turns everyone around him up to eleven */
   for (const t of S.towers) t.admField = 0;
@@ -18793,6 +18816,7 @@ function update(dt) {
               * chillAt(t.x, t.y)
               * (t.admField ? 1/(1 + ADM.field.rate) : 1)
               * (S.overdrive > 0 ? 0.5 : 1)
+              * (t.noxLit ? 1/(1 + NOXB.rate) : 1)
               * (S.combo.boost > 0 ? 1/(1 + COMBO.rate) : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     if (t.fireFlash > 0) t.fireFlash -= dt;
@@ -20545,6 +20569,7 @@ function showShopTip(key, el) {
      ${gateBlocks(key) ? '<div class="r" style="padding-bottom:7px;color:#ffd83d">Locked until <b>' +
         gateBlocks(key) + '</b>. Sandbox never waits.</div>' : ''}
      ${TOWERS[key].bigPad ? '<div class="r" style="padding-bottom:7px;color:#ffb04a">Needs the cleared <b>Astro Pad</b> out to the right of the lawn. Nothing else will hold him.</div>' : ''}
+     ${TOWERS[key].spacePad ? '<div class="r" style="padding-bottom:7px;color:#b08cff">Stands in <b>Low Orbit</b>, high above the park, and shoots down into the match. He will not fit on the ground.</div>' : ''}
      ${ASCEND[key] ? '<div class="r" style="padding-bottom:7px;color:#c9b0ee">Can ascend: three maxed ' +
         spec.name + 's, one per path, fuse into ' + ASCEND[key].name + '.</div>' : ''}
      ${statRows(spec, null)}`;
@@ -21078,6 +21103,11 @@ const PLOTS = [
   { id:'astro', name:'Astro Pad', cost:1000000, astro:true,
     x:1880, y:70, w:1240, h:940,
     blurb:'The only ground that will take a Titan Astro Jaxon.' },
+  /* A long way up, and big enough to hold him: he is five Titan Astros
+     tall, and a pad you cannot see the top of is not a pad. */
+  { id:'space', name:'Low Orbit', cost:900000, astro:false, space:true,
+    x:-1700, y:-6400, w:5000, h:5200,
+    blurb:'A rocket, a pad, and the only ground in this park that will hold a Noxarch.' },
   { id:'sat', name:'Satellite Plot', cost:150000, astro:false,
     x:-1420, y:250, w:620, h:520,
     blurb:'A quiet island. Too far out for most guns to reach the trail.' }
@@ -21101,6 +21131,105 @@ function inClearedPlot(x, y, pad) {
 
 /* half the ground a Titan Astro Jaxon actually stands on */
 function astroFoot() { return SPRITE.astro ? SPRITE.astro.w*0.36 : 240; }
+function noxFoot() { return SPRITE.noxarch ? SPRITE.noxarch.w*0.26 : 760; }
+function theNox() { for (const t of S.towers) if (TOWERS[t.type].spacePad) return t; return null; }
+
+/* what he does for everyone else, and what it takes to feed him */
+const NOXB = { rate:0.55, dmg:0.60 };
+const NOX_FEED = { per:500000, cap:3.2 };
+const NOX_NUKE = { every:120, warn:10, dmg:6000000 };
+
+/* the camera trip up and back. The deck lands near the bottom of frame
+   with his head about half way up it, which is the staging the brief
+   asked for and is also just the readable way to frame something this
+   tall: you want the ground he is standing on in shot. */
+function gotoOrbit(fit) {
+  const p = plotById('space');
+  if (!p) return false;
+  const paid = plotCleared('space');
+  if (fit) S.cam.z = S.cam.min;
+  S.cam.x = p.x + p.w*0.5;
+  /* paid: the deck along the bottom of the frame and him filling it.
+     unpaid: the sign in the middle of the frame, because the sign is the
+     only part of a plot you can press. */
+  S.cam.y = paid ? (p.y + p.h - 150) - H/2/S.cam.z + 340
+                 : p.y + p.h/2;
+  camClamp(); syncCamChip(); syncChips();
+  if (!paid) toast('Low Orbit — ' + bigCash(plotCost(p)) + '. Press the sign.');
+  return true;
+}
+
+/* how much a Jaxon is worth as fuel: what he cost, how big he is, and
+   what has been spent on him since. Deliberately not "one point each". */
+function feedOf(t) {
+  if (TOWERS[t.type].spacePad) return 0;
+  const base = (TOWERS[t.type].cost || 0) * (t.dbl ? 3 : t.asc ? 2 : 1);
+  const size = Math.min(8, BODY_SCALE[t.type] || 1);
+  const tiers = (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
+  return base * (0.55 + size*0.45) * (1 + tiers*0.18) * (1 + (t.lvl || 0)*0.01);
+}
+
+function noxOrbit(dt) {
+  for (const t of S.towers) { t.noxB = 1; t.noxLit = 0; t.noxFeed = 0; }
+  const nx = theNox();
+  if (!nx || S.titan) { S.noxFeed = 0; S.noxMul = 1; S.noxNuke = null; return; }
+
+  /* ---- the feed ---- */
+  let feed = 0;
+  for (const t of S.towers) {
+    if (t === nx || !inSpace(t.x, t.y)) continue;
+    const f = feedOf(t);
+    if (f <= 0) continue;
+    t.noxFeed = f; feed += f;
+  }
+  S.noxFeed = feed;
+  const core = 1 + Math.min(NOX_FEED.cap, feed/NOX_FEED.per) * (1 + (nx.upC || 0)*0.22);
+  S.noxMul = core;
+  nx.noxB = core;
+
+  /* ---- the gift ---- */
+  const give = 1 + NOXB.dmg*(1 + (nx.upC || 0)*0.25);
+  for (const t of S.towers) { if (t === nx) continue; t.noxB = give; t.noxLit = 1; }
+
+  /* ---- the streams, so the feed is a thing you can SEE ---- */
+  const core_y = nx.y - spriteH(artOf(nx))*0.52;
+  nx.feedT = (nx.feedT || 0) - dt;
+  if (nx.feedT <= 0) {
+    nx.feedT = 0.26;
+    for (const t of S.towers) {
+      if (!(t.noxFeed > 0)) continue;
+      const big = t.noxFeed/NOX_FEED.per;
+      S.fx.push({ k:'noxfeed', x:t.x, y:t.y - spriteH(artOf(t))*0.5, tx:nx.x, ty:core_y,
+                  r:3 + Math.min(9, big*14), life:0.85, max:0.85 });
+    }
+  }
+
+  /* ---- the nuke, once the Void Ray path is finished ---- */
+  if ((nx.upB || 0) >= 4) {
+    const every = NOX_NUKE.every*(1 - Math.min(0.3, (nx.upC || 0)*0.06));
+    if (nx.nukeT === undefined) nx.nukeT = every;
+    if (S.phase === 'wave' || S.enemies.length || S.bosses.length) nx.nukeT -= dt;
+    S.noxNuke = { t:Math.max(0, nx.nukeT), every };
+    if (nx.nukeT <= NOX_NUKE.warn && !nx.nukeWarned) {
+      nx.nukeWarned = 1;
+      banner('Warning \u2014 Noxarch nuke incoming', 'ten seconds', '#ff3b30');
+      beep(130, 1.1, 'sawtooth', 0.05, 90);
+    }
+    if (nx.nukeT <= 0) { nx.nukeT = every; nx.nukeWarned = 0; noxNuke(nx); }
+  } else { S.noxNuke = null; nx.nukeT = undefined; nx.nukeWarned = 0; }
+}
+
+function noxNuke(nx) {
+  flashScreen(1);
+  shakeScreen(26, 1.1);
+  const dmg = NOX_NUKE.dmg*(S.noxMul || 1)*(1 + (nx.upA || 0)*0.25);
+  for (const e of S.enemies) { if (!e.dead) hurtEnemy(e, dmg, nx); }
+  for (const B of S.bosses) hurtBoss(dmg, nx, B);
+  S.fx.push({ k:'noxnuke', x:W/2, y:H/2, life:1.6, max:1.6 });
+  S.floats.push({ x:W/2, y:H*0.42, txt:'NOXARCH NUKE', color:'#ffffff', life:2, big:true });
+  beep(60, 1.4, 'sawtooth', 0.09, 30);
+  (nx.shots++, sfxShot(nx));
+}
 
 /* the sign is the only part of a plot you can press */
 const SIGN_W = 250, SIGN_H = 74;
@@ -21113,6 +21242,144 @@ function plotSignAt(x, y) {
   }
   return null;
 }
+
+/* ------------------------------------------------------- orbit, drawn --
+   Space is cheap to draw and easy to get wrong. Two rules kept it honest:
+   the stars are a fixed seeded field so they do not crawl when the camera
+   moves, and the edge of the plot is feathered a long way out, so the
+   grass does not end at a hard line with the void beginning. From the
+   lawn you see the sky darken; by the time you are up there it is black.
+
+   Earth sits off the lower-left corner and is mostly outside the plot, so
+   you see a limb rather than a marble. That is what sells the altitude —
+   a whole small planet on screen reads as a poster, a piece of one that
+   runs off the frame reads as being above it. */
+const ORBIT = { stars:null };
+function orbitStars(p) {
+  if (ORBIT.stars) return ORBIT.stars;
+  let seed = 90210, out = [];
+  const rnd = () => { seed = (seed*1664525 + 1013904223) >>> 0; return seed/4294967296; };
+  for (let i = 0; i < 520; i++)
+    out.push({ x:p.x - 300 + rnd()*(p.w + 600), y:p.y - 300 + rnd()*(p.h + 600),
+               r:0.8 + rnd()*2.4, a:0.25 + rnd()*0.75, ph:rnd()*7 });
+  return (ORBIT.stars = out);
+}
+function drawOrbit(p, k) {
+  const g = ctx, FE = 460;                 // how far the dark bleeds past the fence
+  g.save();
+  g.beginPath(); g.rect(p.x - FE, p.y - FE, p.w*k + FE*2, p.h + FE*2); g.clip();
+
+  /* the void, fading in from the edges so there is no seam with the park */
+  const vg = g.createRadialGradient(p.x + p.w*0.5, p.y + p.h*0.5, Math.min(p.w, p.h)*0.2,
+                                    p.x + p.w*0.5, p.y + p.h*0.5, Math.max(p.w, p.h)*0.78);
+  vg.addColorStop(0, '#02030a'); vg.addColorStop(0.72, '#05060f');
+  vg.addColorStop(1, 'rgba(6,8,18,0)');
+  g.fillStyle = vg;
+  g.fillRect(p.x - FE, p.y - FE, p.w*k + FE*2, p.h + FE*2);
+
+  /* a cold wash of milky way across one corner, to stop it reading flat */
+  g.save();
+  g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.5;
+  const ng = g.createLinearGradient(p.x, p.y, p.x + p.w, p.y + p.h);
+  ng.addColorStop(0, 'rgba(70,40,140,.28)'); ng.addColorStop(0.45, 'rgba(30,60,150,.14)');
+  ng.addColorStop(1, 'rgba(120,40,110,.20)');
+  g.fillStyle = ng; g.fillRect(p.x, p.y, p.w, p.h);
+  g.restore();
+
+  /* the stars, twinkling on their own clock */
+  g.save();
+  for (const st of orbitStars(p)) {
+    if (st.x > p.x + p.w*k) continue;
+    g.globalAlpha = st.a*(0.6 + Math.sin(S.t*1.4 + st.ph)*0.4);
+    g.fillStyle = '#ffffff';
+    g.beginPath(); g.arc(st.x, st.y, st.r, 0, 7); g.fill();
+  }
+  g.restore();
+
+  /* Earth, off the bottom-left, mostly out of frame */
+  const ex = p.x + 520, ey = p.y + p.h + 1180, er = 2050;
+  g.save();
+  const eg = g.createRadialGradient(ex - er*0.34, ey - er*0.42, er*0.08, ex, ey, er);
+  eg.addColorStop(0, '#6fd0ff'); eg.addColorStop(0.42, '#1f7fd0');
+  eg.addColorStop(0.78, '#0d3f76'); eg.addColorStop(1, '#04131f');
+  g.fillStyle = eg;
+  g.beginPath(); g.arc(ex, ey, er, 0, 7); g.fill();
+  /* land, as a few soft masses rather than a map nobody will look at */
+  g.save();
+  g.beginPath(); g.arc(ex, ey, er, 0, 7); g.clip();
+  g.globalAlpha = 0.72; g.fillStyle = '#2f7a46';
+  const land = [[-0.42,-0.50,0.30,0.17],[-0.05,-0.62,0.21,0.11],[0.30,-0.34,0.26,0.20],
+                [-0.58,-0.16,0.18,0.13],[0.10,-0.14,0.33,0.15]];
+  for (const L of land) {
+    g.beginPath();
+    g.ellipse(ex + er*L[0], ey + er*L[1], er*L[2], er*L[3], L[0]*0.8, 0, 7);
+    g.fill();
+  }
+  /* cloud, and the night edge */
+  g.globalAlpha = 0.20; g.fillStyle = '#ffffff';
+  for (let i = 0; i < 7; i++) {
+    g.beginPath();
+    g.ellipse(ex + er*(-0.6 + i*0.2), ey - er*(0.30 + (i % 3)*0.12),
+              er*0.26, er*0.07, 0.3, 0, 7);
+    g.fill();
+  }
+  g.globalAlpha = 1;
+  const sh = g.createLinearGradient(ex + er*0.1, ey, ex + er, ey);
+  sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.8)');
+  g.fillStyle = sh; g.beginPath(); g.arc(ex, ey, er, 0, 7); g.fill();
+  g.restore();
+  /* atmosphere on the limb */
+  g.save();
+  g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.5;
+  g.strokeStyle = '#8fd8ff'; g.lineWidth = 26;
+  g.beginPath(); g.arc(ex, ey, er + 10, 0, 7); g.stroke();
+  g.restore();
+  g.restore();
+
+  /* the pad itself: a steel deck across the bottom of the plot with the
+     rocket that put it there still standing on one end. It is what makes
+     orbit a PLACE you build on rather than a dark rectangle. */
+  const dy = p.y + p.h - 150, dx0 = p.x + 180, dw = Math.min(p.w*k - 360, p.w - 360);
+  if (dw > 0) {
+    g.save();
+    g.fillStyle = '#20242e';
+    g.fillRect(dx0, dy, dw, 110);
+    g.fillStyle = '#2d323f'; g.fillRect(dx0, dy, dw, 16);
+    g.strokeStyle = 'rgba(140,200,255,.30)'; g.lineWidth = 4;
+    g.beginPath(); g.moveTo(dx0, dy); g.lineTo(dx0 + dw, dy); g.stroke();
+    g.fillStyle = 'rgba(255,216,61,.5)';
+    for (let x = dx0 + 60; x < dx0 + dw - 40; x += 220) g.fillRect(x, dy + 36, 90, 10);
+    /* gantry and rocket at the left end */
+    const rx = dx0 + 190;
+    g.strokeStyle = '#3a404f'; g.lineWidth = 12;
+    g.beginPath(); g.moveTo(rx + 150, dy); g.lineTo(rx + 150, dy - 560); g.stroke();
+    for (let i = 1; i <= 4; i++) {
+      g.beginPath(); g.moveTo(rx + 150, dy - i*120); g.lineTo(rx + 66, dy - i*120); g.stroke();
+    }
+    g.fillStyle = '#e8ecf4';
+    g.beginPath();
+    g.moveTo(rx, dy - 640); g.lineTo(rx + 52, dy - 500);
+    g.lineTo(rx + 52, dy); g.lineTo(rx - 52, dy); g.lineTo(rx - 52, dy - 500);
+    g.closePath(); g.fill();
+    g.fillStyle = '#d0392f'; g.fillRect(rx - 52, dy - 470, 104, 34);
+    g.fillStyle = '#9aa6bb'; g.fillRect(rx - 52, dy - 120, 104, 18);
+    g.restore();
+  }
+  g.restore();
+}
+
+/* is this point inside bought orbit? Every orbit rule in the game asks
+   exactly this question and nothing else. */
+function inSpace(x, y) {
+  const p = plotById('space');
+  if (!p || !plotCleared('space')) return false;
+  return x >= p.x && x <= p.x + p.w && y >= p.y && y <= p.y + p.h;
+}
+function orbitCentre() {
+  const p = plotById('space');
+  return { x:p.x + p.w/2, y:p.y + p.h*0.62 };
+}
+function inOrbitView() { return S.cam.y < -700; }
 
 function plotCost(p) { return Math.round(p.cost * M().cost); }
 function buyPlot(p) {
@@ -21174,7 +21441,8 @@ function drawPlots() {
     const k = clearK(p.id);
     const done = plotCleared(p.id);
     ctx.save();
-    if (k > 0) {
+    if (k > 0 && p.space) drawOrbit(p, k);
+    else if (k > 0) {
       /* the cleared ground: the same grass as the lawn, mown flat */
       ctx.save();
       ctx.beginPath(); ctx.rect(p.x, p.y, p.w*k, p.h); ctx.clip();
@@ -23948,6 +24216,12 @@ const camHome = () => {
   return Math.abs(c.z - 1) < 0.005 && Math.abs(c.x - wd.w/2) < 1 && Math.abs(c.y - wd.h/2) < 1;
 };
 function syncCamChip() {
+  const ob0 = $('orbitBtn');
+  if (ob0 && ob0.style.display !== 'none') {
+    const up0 = inOrbitView();
+    ob0.textContent = up0 ? 'Back down' : 'Orbit';
+    ob0.classList.toggle('on', up0);
+  }
   const el = $('camChip');
   if (el) el.classList.toggle('on', !S.titan && !camHome());
 }
@@ -23983,8 +24257,13 @@ function camBounds() {
   const c = S.cam, wd = camWorld();
   const pad = S.titan ? 0 : CAM_PAD;
   const hw = W/2/c.z, hh = H/2/c.z;
-  const lo = { x:Math.min(hw - pad, wd.w/2), y:Math.min(hh - pad, wd.h/2) };
-  const hi = { x:Math.max(wd.w - hw + pad, wd.w/2), y:Math.max(wd.h - hh + pad, wd.h/2) };
+  let x0 = -pad, y0 = -pad, x1 = wd.w + pad, y1 = wd.h + pad;
+  if (!S.titan) for (const p of PLOTS) {
+    x0 = Math.min(x0, p.x - 260);          y0 = Math.min(y0, p.y - 260);
+    x1 = Math.max(x1, p.x + p.w + 260);    y1 = Math.max(y1, p.y + p.h + 260);
+  }
+  const lo = { x:Math.min(x0 + hw, wd.w/2), y:Math.min(y0 + hh, wd.h/2) };
+  const hi = { x:Math.max(x1 - hw, wd.w/2), y:Math.max(y1 - hh, wd.h/2) };
   return { lo, hi };
 }
 function camClamp() {
@@ -25415,6 +25694,81 @@ function render() {
       ctx.fillStyle = g;
       ctx.beginPath(); ctx.arc(f.x, f.y, f.r*(0.3 + k*0.8), 0, 7); ctx.fill();
       ctx.restore();
+    } else if (f.k === 'noxbeam') {
+      /* an orbital strike landing: a column of light from somewhere far
+         above down to a point on the trail, and a detonation where it
+         lands. Drawn in two passes, a soft wide one and a hard thin one,
+         because a single stroke at any width reads as a drawn line. */
+      const k = 1 - f.life/f.max;                 // 0 at the flash, 1 as it fades
+      const a0 = Math.pow(1 - k, 1.6);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const dx = f.tx - f.x, dy = f.ty - f.y;
+      const len = Math.max(1, Math.hypot(dx, dy));
+      const nx = -dy/len, ny = dx/len;            // across the beam
+      const wide = 62 + k*120, thin = 7 + (1 - k)*13;
+      for (const [wTop, wBot, col, al] of [[wide, wide*0.16, 'rgba(176,140,255,', 0.5],
+                                           [thin, thin*0.3,  'rgba(255,240,255,', 0.95]]) {
+        ctx.globalAlpha = a0*al;
+        const lg = ctx.createLinearGradient(f.x, f.y, f.tx, f.ty);
+        lg.addColorStop(0, col + '0)'); lg.addColorStop(0.18, col + '.9)');
+        lg.addColorStop(1, col + '1)');
+        ctx.fillStyle = lg;
+        ctx.beginPath();
+        ctx.moveTo(f.x + nx*wTop, f.y + ny*wTop);
+        ctx.lineTo(f.tx + nx*wBot, f.ty + ny*wBot);
+        ctx.lineTo(f.tx - nx*wBot, f.ty - ny*wBot);
+        ctx.lineTo(f.x - nx*wTop, f.y - ny*wTop);
+        ctx.closePath(); ctx.fill();
+      }
+      /* where it hits: a white core, a shock ring and scorched ground */
+      const r = (f.r || 240)*(0.25 + k*1.5);
+      ctx.globalAlpha = a0*0.9;
+      const hg = ctx.createRadialGradient(f.tx, f.ty, 2, f.tx, f.ty, r);
+      hg.addColorStop(0, 'rgba(255,255,255,.95)');
+      hg.addColorStop(0.3, 'rgba(206,160,255,.6)');
+      hg.addColorStop(1, 'rgba(120,60,220,0)');
+      ctx.fillStyle = hg;
+      ctx.beginPath(); ctx.arc(f.tx, f.ty, r, 0, 7); ctx.fill();
+      ctx.globalAlpha = a0*0.75;
+      ctx.strokeStyle = '#e8d4ff'; ctx.lineWidth = 3 + (1 - k)*5;
+      ctx.beginPath(); ctx.ellipse(f.tx, f.ty, r*1.25, r*0.42, 0, 0, 7); ctx.stroke();
+      ctx.restore();
+    } else if (f.k === 'noxfeed') {
+      /* a Jaxon in orbit paying into the core: one mote on its way in, so
+         the player can count the streams and see which towers matter */
+      const k = 1 - f.life/f.max, e = k*k*(3 - 2*k);      // ease, it accelerates in
+      const x = f.x + (f.tx - f.x)*e, y = f.y + (f.ty - f.y)*e;
+      const r = (f.r || 5)*(1 - k*0.45);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = 0.25 + (1 - Math.abs(0.5 - k)*2)*0.6;
+      /* the tail it leaves, pointing back at whoever is paying */
+      ctx.strokeStyle = 'rgba(176,140,255,.5)'; ctx.lineWidth = r*0.9;
+      ctx.beginPath();
+      ctx.moveTo(f.x + (f.tx - f.x)*Math.max(0, e - 0.12), f.y + (f.ty - f.y)*Math.max(0, e - 0.12));
+      ctx.lineTo(x, y); ctx.stroke();
+      const mg = ctx.createRadialGradient(x, y, 0, x, y, r*3);
+      mg.addColorStop(0, 'rgba(255,245,255,.95)');
+      mg.addColorStop(0.35, 'rgba(176,140,255,.7)');
+      mg.addColorStop(1, 'rgba(120,60,220,0)');
+      ctx.fillStyle = mg;
+      ctx.beginPath(); ctx.arc(x, y, r*3, 0, 7); ctx.fill();
+      ctx.restore();
+    } else if (f.k === 'noxnuke') {
+      /* the nuke, after the white has gone: a ring crossing the whole
+         board and the park going briefly violet behind it */
+      const k = 1 - f.life/f.max;
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = (1 - k)*0.5;
+      ctx.fillStyle = 'rgba(190,150,255,.35)';
+      ctx.fillRect(-PARK_R, -PARK_R, W + PARK_R*2, H + PARK_R*2);
+      ctx.globalAlpha = (1 - k)*0.95;
+      for (let i = 0; i < 3; i++) {
+        const rr = (W*0.18 + k*W*1.5)*(1 - i*0.12);
+        ctx.strokeStyle = i ? 'rgba(190,150,255,.7)' : '#ffffff';
+        ctx.lineWidth = (26 - i*7)*(1 - k*0.7);
+        ctx.beginPath(); ctx.arc(f.x, f.y, rr, 0, 7); ctx.stroke();
+      }
+      ctx.restore();
     } else if (f.k === 'chain') {
       /* Jupiter's bolt stepping to the next body: a jag between two points */
       const k = 1 - f.life/f.max;
@@ -25616,6 +25970,15 @@ function validSpot(x, y) {
   const plot = inClearedPlot(x, y);
   if (plot) {
     if (S.placing && TOWERS[S.placing].bigPad && !plot.astro) return false;
+    if (S.placing && TOWERS[S.placing].spacePad && !plot.space) return false;
+    if (S.placing && TOWERS[S.placing].spacePad) {
+      /* he wants the deck under his feet and the whole of it clear */
+      const r = noxFoot();
+      if (x < plot.x + r || x > plot.x + plot.w - r) return false;
+      if (y < plot.y + plot.h*0.46 || y > plot.y + plot.h - 150) return false;
+      for (const t of S.towers) if (Math.hypot(t.x - x, t.y - y) < r*0.8) return false;
+      return true;
+    }
     if (S.placing && TOWERS[S.placing].bigPad) {
       /* the Titan wants the middle of the pad and the whole of it */
       const r = astroFoot();
@@ -25625,12 +25988,14 @@ function validSpot(x, y) {
       return true;
     }
     for (const t of S.towers) {
-      const rr = TOWERS[t.type].bigPad ? astroFoot()*0.75 : T_W*0.58;
+      const rr = TOWERS[t.type].bigPad ? astroFoot()*0.75
+               : TOWERS[t.type].spacePad ? noxFoot()*0.8 : T_W*0.58;
       if (Math.hypot(t.x - x, t.y - y) < rr) return false;
     }
     return true;
   }
   if (S.placing && TOWERS[S.placing].bigPad) return false;   // he only fits on his pad
+  if (S.placing && TOWERS[S.placing].spacePad) return false; // and he does not fit on the ground at all
   if (x < 30 || x > W - 30 || y < 34 || y > H - 30) return false;
   if (distToPath(x, y) < PATH_W/2 + 11) return false;   // original: can't touch the brown trail
   if (S.placing && VARIANTS[S.placing].wide && distToPath(x, y) < PATH_W/2 + 16) return false;
@@ -25679,6 +26044,10 @@ function tryPlaceAt(x, y, silent) {
   if (!validSpot(x, y)) { if (!silent) { toast('Jaxon can’t stand there'); sfx('deny'); } return false; }
   if (spec.bigPad && theAstro()) {
     if (!silent) { toast('There is only ever one Titan'); sfx('deny'); }
+    cancelPlacing(); return false;
+  }
+  if (spec.spacePad && theNox()) {
+    if (!silent) { toast('There is only ever one Noxarch'); sfx('deny'); }
     cancelPlacing(); return false;
   }
   if (dup && dup.asc && ascCount(S.placing) >= ASC_MAX) {
@@ -26210,6 +26579,11 @@ $('ovOrb').addEventListener('click', ev => { if (ev.target.id === 'ovOrb') close
 })();
 $('pauseBtn').onclick = () => setPause(!S.paused);
 $('camChip').onclick = () => { camReset(); beep(520, 0.06, 'triangle', 0.028); };
+$('orbitBtn').onclick = () => {
+  if (plotCleared('space') && inOrbitView()) {
+    camReset(); syncChips(); beep(430, 0.07, 'triangle', 0.03);
+  } else if (gotoOrbit(true)) beep(760, 0.12, 'triangle', 0.035, 1240);
+};
 $('bookBtn').onclick = () => openBook('menu');
 $('pmBook').onclick = () => openBook('pause');
 $('bkClose').onclick = closeBook;
@@ -26277,6 +26651,19 @@ function syncChips() {
   $('sndBtn').classList.toggle('on', S.sound);
   $('perfBtn').textContent = 'Graphics ' + (S.perfLock === null ? 'Auto' : S.perfLock === 0 ? 'High' : 'Fast');
   $('perfBtn').classList.toggle('on', S.perfLock !== 2);
+  const ob = $('orbitBtn');
+  if (ob) {
+    const own = !!(S.adv && S.adv.jaxons && S.adv.jaxons.noxarch);
+    const bought = typeof plotCleared === 'function' && plotCleared('space');
+    const show = (own || bought) && !S.titan && S.mode && S.mode !== 'menu';
+    ob.style.display = show ? '' : 'none';
+    if (show) {
+      const up = inOrbitView();
+      ob.textContent = !bought ? 'Low Orbit · ' + bigCash(plotCost(plotById('space')))
+                     : up ? 'Back down' : 'Orbit';
+      ob.classList.toggle('on', bought && up);
+    }
+  }
 }
 
 /* ================================================== active abilities ====
@@ -27895,7 +28282,7 @@ const GUIDE = [
     gbText(g, 'wave 200', x1, y + 16, 8, '#7e8c9c', 'center', 700);
 
     /* the boss currently on the rung */
-    const TH = ['classic','green','red','blue','white','gold','denied','static','reaper','final'];
+    const TH = ['green','red','blue','white','gold','denied','static','reaper','final'];
     const th = TH[done % TH.length];
     const br = Math.min(h*0.22, w*0.12);
     pvBoss(g, 'bookrush', th, w*0.5, h*0.34, br, t, 1 - frac(p*20));
@@ -27962,7 +28349,7 @@ const GUIDE = [
   } },
 
 { ch:'Titan', title:'The Titan Astro Jaxon',
-  text:'$1.5m, wave 300, and he only ever stands on the Astro Pad — there is one of him and there is no second one.<br><br>He arrives rather than appears: orange hologram wings, a shine, a shadow closing under him, and then the claws come online.<br><br>He has <b>no upgrade paths</b>. He takes <b>levels</b>, and he earns them off the damage he dealt that round. Strip the rest of your board and he banks more, which is a real way to play him.<br><br>Three claw beams at once, a heavier lance off a random claw, a charged plasma ball, and a gravity ring that hauls the trail into orbit and hands it back at five percent while every Jaxon on the board hits 20% harder.<br><br><b>No Mirror can copy him.</b>',
+  text:'$1.5m, no wave gate any more, and he only ever stands on the Astro Pad — there is one of him and there is no second one.<br><br>He arrives rather than appears: orange hologram wings, a shine, a shadow closing under him, and then the claws come online.<br><br>He has <b>no upgrade paths</b>. He takes <b>levels</b>, and he earns them off the damage he dealt that round. Strip the rest of your board and he banks more, which is a real way to play him.<br><br>Three claw beams at once, a heavier lance off a random claw, a charged plasma ball, and a gravity ring that hauls the trail into orbit and hands it back at five percent while every Jaxon on the board hits 20% harder.<br><br><b>No Mirror can copy him.</b>',
   art:(g, w, h, t) => {
     const p = frac(t/5.5);
     gbLawn(g, w, h);
@@ -28021,6 +28408,65 @@ const GUIDE = [
       g.restore();
       gbText(g, 'earned from damage dealt', w*0.64, h*0.275, 7.5, '#7e8c9c', 'left', 700);
     }
+  } },
+
+{ ch:'Orbit', title:'Low Orbit, and the Noxarch',
+  text:'Beat the Noxarch once and you can buy him. He costs <b>$7,000,000</b> and he is <b>five Titan Astros tall</b> — he does not fit on the lawn, on the Astro Pad, or anywhere else on the ground. He stands in <b>Low Orbit</b>.<br><br>Orbit is a plot like any other, except it is a long way up: <b>$900k</b>, and the <b>Orbit</b> chip in the match takes you to the sign and back. Buying it does not pause anything — the wave keeps walking while you are up there.<br><br>From orbit he shoots the park. The ray crosses the sky and detonates on the trail, and his reach is the whole map, so there is no such thing as standing out of his way.<br><br>Two things happen around him. <b>Every Jaxon on the board</b> hits harder and fires faster while he is up there, wherever they are standing. And <b>any Jaxon you put in orbit with him</b> is wired into his core and raises his damage — you can watch the energy going in. Cheap starters are worth nothing as fuel; your most expensive, biggest, most upgraded Jaxons are worth a great deal. They cannot shoot the ground from up there, so that trade is real: a board position for his damage.<br><br>Finish his <b>Void Ray</b> path and he gains the <b>nuke</b>. Every two minutes: ten seconds of warning, then the board goes white and everything on it takes a number with six zeroes in it.',
+  art:(g, w, h, t) => {
+    const p = frac(t/4.2);
+    /* space */
+    g.fillStyle = '#04050d'; g.fillRect(0, 0, w, h);
+    g.fillStyle = '#ffffff';
+    for (let k = 0; k < 60; k++) {
+      const sx = ((k*97) % 100)/100*w, sy = ((k*61) % 100)/100*h;
+      g.globalAlpha = 0.25 + ((k*37) % 70)/100*0.6;
+      g.beginPath(); g.arc(sx, sy, 0.6 + (k % 3)*0.5, 0, 7); g.fill();
+    }
+    g.globalAlpha = 1;
+    /* Earth's limb, bottom left and mostly out of frame */
+    const er = h*1.5, ex = -w*0.12, ey = h + er*0.78;
+    const eg = g.createRadialGradient(ex - er*0.2, ey - er*0.5, er*0.05, ex, ey, er);
+    eg.addColorStop(0, '#6fd0ff'); eg.addColorStop(0.5, '#1f7fd0'); eg.addColorStop(1, '#07243c');
+    g.fillStyle = eg;
+    g.beginPath(); g.arc(ex, ey, er, 0, 7); g.fill();
+    /* the deck */
+    const dy = h*0.86;
+    g.fillStyle = '#20242e'; g.fillRect(w*0.18, dy, w*0.74, h*0.09);
+    g.fillStyle = 'rgba(255,216,61,.5)';
+    for (let x = w*0.24; x < w*0.86; x += w*0.14) g.fillRect(x, dy + h*0.03, w*0.05, h*0.012);
+    /* him: far too tall for the frame, which is the point */
+    const cx = w*0.56, feet = dy, hgt = h*0.95;
+    g.save();
+    g.globalCompositeOperation = 'lighter'; g.globalAlpha = 0.4;
+    const rg = g.createRadialGradient(cx, feet - hgt*0.55, 2, cx, feet - hgt*0.55, hgt*0.4);
+    rg.addColorStop(0, 'rgba(176,140,255,.8)'); rg.addColorStop(1, 'rgba(176,140,255,0)');
+    g.fillStyle = rg;
+    g.beginPath(); g.arc(cx, feet - hgt*0.55, hgt*0.4, 0, 7); g.fill();
+    g.restore();
+    if (IMG.noxarch && IMG.noxarch.width && SPRITE.noxarch) {
+      const S2 = SPRITE.noxarch;
+      const sh = hgt*(S2.sh/S2.h), sw = sh*(S2.sw/S2.sh);
+      g.save();
+      g.beginPath(); g.rect(0, 0, w, dy + h*0.09); g.clip();
+      g.drawImage(IMG.noxarch, cx - sw/2, feet - sh*S2.feet, sw, sh);
+      g.restore();
+    }
+    /* and the ray, going down out of the frame onto a park you cannot see */
+    if (p > 0.45) {
+      const k = (p - 0.45)/0.55;
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = (1 - k)*0.95;
+      const bx = cx - w*0.1;
+      g.fillStyle = '#efe4ff';
+      g.beginPath();
+      g.moveTo(bx - w*0.035, feet - hgt*0.3); g.lineTo(bx - w*0.008, h);
+      g.lineTo(bx + w*0.008, h); g.lineTo(bx + w*0.035, feet - hgt*0.3);
+      g.closePath(); g.fill();
+      g.restore();
+    }
+    gbText(g, 'LOW ORBIT', w*0.5, h*0.08, 10, '#b08cff', 'center');
+    gbText(g, '$900k', w*0.5, h*0.08 + 13, 9, '#f2f6fb', 'center');
   } },
 
 { ch:'Sandbox', title:'The workshop',
