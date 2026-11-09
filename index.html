@@ -5407,40 +5407,153 @@ ULTRA_KIT.neptune = {
     </g>`
 };
 
-ULTRA_KIT.celestial = {
+ULTRA_KIT.noxarch = {
   back:() => `<defs>
-      <radialGradient id="celDisc" cx="0.5" cy="0.5" r="0.5">
-        <stop offset="0" stop-color="#ffb13a"/>
-        <stop offset=".55" stop-color="rgba(184,58,18,.5)"/>
-        <stop offset="1" stop-color="rgba(20,4,30,0)"/>
-      </radialGradient>
-      <radialGradient id="celVoid" cx="0.5" cy="0.5" r="0.5">
-        <stop offset=".62" stop-color="#05030b"/>
-        <stop offset=".78" stop-color="#2a1040"/>
+      <radialGradient id="noxVoid" cx="0.5" cy="0.5" r="0.5">
+        <stop offset=".58" stop-color="#05030b"/>
+        <stop offset=".80" stop-color="#2a1040"/>
         <stop offset="1" stop-color="rgba(42,16,64,0)"/>
       </radialGradient>
+      <linearGradient id="noxSteel" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#4a4560"/>
+        <stop offset="1" stop-color="#211d30"/>
+      </linearGradient>
+      <radialGradient id="noxCell" cx="0.4" cy="0.3" r="0.8">
+        <stop offset="0" stop-color="#d8c0ff"/>
+        <stop offset="1" stop-color="#6a3ad0"/>
+      </radialGradient>
     </defs>
-    <g opacity=".9"><circle cx="230" cy="248" r="238" fill="url(#celVoid)"/></g>
-    <g opacity=".8"><ellipse cx="230" cy="250" rx="236" ry="66" fill="url(#celDisc)"/></g>
-    <g stroke="#1a0a28" stroke-width="9" stroke-linecap="round" opacity=".92">
-      <rect x="40"  y="186" width="62" height="13" rx="6" fill="#3a2654" transform="rotate(-24 71 192)"/>
-      <rect x="360" y="186" width="62" height="13" rx="6" fill="#3a2654" transform="rotate(24 391 192)"/>
-      <rect x="74"  y="300" width="46" height="12" rx="6" fill="#2e1e46" transform="rotate(14 97 306)"/>
-      <rect x="342" y="300" width="46" height="12" rx="6" fill="#2e1e46" transform="rotate(-14 365 306)"/>
-    </g>`,
-  front:() => `<g>
-      <ellipse cx="232" cy="442" rx="56" ry="52" fill="#05030b"/>
-      <ellipse cx="232" cy="442" rx="42" ry="17" fill="none" stroke="#ffac3a" stroke-width="7" opacity=".9"/>
-      <ellipse cx="232" cy="442" rx="25" ry="10" fill="none" stroke="#fff2d2" stroke-width="5" opacity=".85"/>
-      <circle  cx="232" cy="442" r="13" fill="#000000"/>
-      <path d="M194 420 a 54 50 0 0 1 76 0" fill="none" stroke="rgba(0,0,0,.85)" stroke-width="13"/>
-      <ellipse cx="232" cy="442" rx="56" ry="52" fill="none" stroke="#ff8a2e" stroke-width="4" opacity=".55"/>
+
+    <!-- the dark he stands in -->
+    <g opacity=".85"><circle cx="230" cy="250" r="250" fill="url(#noxVoid)"/></g>
+
+    <!-- four generators on mounts, behind the shoulders. Each is a lit
+         cell on an arm, and each is plainly feeding the chest. -->
+    <g stroke="#1b1828" stroke-width="8" stroke-linejoin="round">
+      <g>
+        <path d="M150 300 L -74 150" stroke="#211d30" stroke-width="16" fill="none"/>
+        <rect x="-168" y="78" width="86" height="142" rx="28" fill="url(#noxSteel)"/>
+        <rect x="-150" y="100" width="50" height="98" rx="20" fill="url(#noxCell)" opacity=".9" stroke="none"/>
+        <rect x="-172" y="122" width="94" height="13" fill="#1b1828" stroke="none"/>
+        <rect x="-172" y="166" width="94" height="13" fill="#1b1828" stroke="none"/>
+      </g>
+      <g>
+        <path d="M310 300 L 534 150" stroke="#211d30" stroke-width="16" fill="none"/>
+        <rect x="542" y="78" width="86" height="142" rx="28" fill="url(#noxSteel)"/>
+        <rect x="560" y="100" width="50" height="98" rx="20" fill="url(#noxCell)" opacity=".9" stroke="none"/>
+        <rect x="538" y="122" width="94" height="13" fill="#1b1828" stroke="none"/>
+        <rect x="538" y="166" width="94" height="13" fill="#1b1828" stroke="none"/>
+      </g>
+      <g>
+        <path d="M160 400 L -40 370" stroke="#211d30" stroke-width="13" fill="none"/>
+        <rect x="-122" y="312" width="74" height="122" rx="24" fill="url(#noxSteel)"/>
+        <rect x="-106" y="332" width="42" height="82" rx="17" fill="url(#noxCell)" opacity=".8" stroke="none"/>
+      </g>
+      <g>
+        <path d="M300 400 L 500 370" stroke="#211d30" stroke-width="13" fill="none"/>
+        <rect x="508" y="312" width="74" height="122" rx="24" fill="url(#noxSteel)"/>
+        <rect x="524" y="332" width="42" height="82" rx="17" fill="url(#noxCell)" opacity=".8" stroke="none"/>
+      </g>
     </g>
-    <g fill="none" stroke="#ff6a4a" stroke-width="6" stroke-linecap="round" opacity=".95">
-      <path d="M186 214 l 14 -9 l 14 9 l 14 -9"/>
-      <path d="M248 214 l 14 -9 l 14 9 l 14 -9"/>
+
+    <!-- the energy they send in, as a line of motes toward the core -->
+    <g fill="#c0a0ff" opacity=".8">
+      <circle cx="-40" cy="196" r="10"/><circle cx="46"  cy="256" r="9"/><circle cx="132" cy="320" r="8"/>
+      <circle cx="504" cy="196" r="10"/><circle cx="418" cy="256" r="9"/><circle cx="332" cy="320" r="8"/>
+      <circle cx="-10" cy="382" r="9"/><circle cx="76"  cy="392" r="8"/>
+      <circle cx="474" cy="382" r="9"/><circle cx="388" cy="392" r="8"/>
+    </g>
+
+    <!-- broken orbital fragments, still in the air behind him -->
+    <g stroke="#1a0a28" stroke-width="8" stroke-linecap="round" opacity=".9">
+      <rect x="-230" y="-18" width="104" height="19" rx="9" fill="#3a2654" transform="rotate(-24 -178 -8)"/>
+      <rect x="590"  y="-18" width="104" height="19" rx="9" fill="#3a2654" transform="rotate(24 642 -8)"/>
+      <rect x="-200" y="500" width="78" height="17" rx="8" fill="#2e1e46" transform="rotate(14 -161 508)"/>
+      <rect x="586"  y="500" width="78" height="17" rx="8" fill="#2e1e46" transform="rotate(-14 625 508)"/>
+    </g>`,
+
+  front:() => `<defs>
+      <linearGradient id="noxPlate" x1="0" y1="0" x2="0.3" y2="1">
+        <stop offset="0" stop-color="#342e4c"/>
+        <stop offset="1" stop-color="#1a1628"/>
+      </linearGradient>
+    </defs>
+
+    <!-- chest armour: two plates either side of the core, riveted -->
+    <g stroke="#120f1c" stroke-width="8" stroke-linejoin="round">
+      <path d="M146 374 L 196 364 L 192 506 L 150 498 Z" fill="url(#noxPlate)"/>
+      <path d="M314 374 L 264 364 L 268 506 L 310 498 Z" fill="url(#noxPlate)"/>
+    </g>
+    <g fill="#5a5472">
+      <circle cx="170" cy="392" r="6"/><circle cx="170" cy="424" r="6"/>
+      <circle cx="170" cy="456" r="6"/><circle cx="170" cy="488" r="6"/>
+      <circle cx="290" cy="392" r="6"/><circle cx="290" cy="424" r="6"/>
+      <circle cx="290" cy="456" r="6"/><circle cx="290" cy="488" r="6"/>
+    </g>
+
+    <!-- two gears turning in the gap between the plates -->
+    <g stroke="#120f1c" stroke-width="5" stroke-linejoin="round">
+      <path d="M204 510 l 9 -4 l 5 9 l 10 -1 l 1 10 l 9 5 l -4 9 l 4 9 l -9 5 l -1 10 l -10 -1 l -5 9 l -9 -4 l -9 4 l -5 -9 l -10 1 l -1 -10 l -9 -5 l 4 -9 l -4 -9 l 9 -5 l 1 -10 l 10 1 l 5 -9 Z"
+            fill="#342e4c" transform="translate(-12,-6)"/>
+      <circle cx="192" cy="546" r="9" fill="#0b0813" stroke="none"/>
+      <path d="M278 468 l 7 -3 l 4 7 l 8 -1 l 1 8 l 7 4 l -3 7 l 3 7 l -7 4 l -1 8 l -8 -1 l -4 7 l -7 -3 l -7 3 l -4 -7 l -8 1 l -1 -8 l -7 -4 l 3 -7 l -3 -7 l 7 -4 l 1 -8 l 8 1 l 4 -7 Z"
+            fill="#342e4c"/>
+      <circle cx="282" cy="496" r="7" fill="#0b0813" stroke="none"/>
+    </g>
+
+    <!-- the core: a black hole sunk into his chest -->
+    <g>
+      <ellipse cx="232" cy="408" rx="84" ry="78" fill="#05030b"/>
+      <ellipse cx="232" cy="408" rx="64" ry="26" fill="none" stroke="#ffac3a" stroke-width="9" opacity=".9"/>
+      <ellipse cx="232" cy="408" rx="38" ry="15" fill="none" stroke="#fff2d2" stroke-width="6" opacity=".85"/>
+      <circle  cx="232" cy="408" r="19" fill="#000000"/>
+      <path d="M174 374 a 82 76 0 0 1 116 0" fill="none" stroke="rgba(0,0,0,.85)" stroke-width="18"/>
+      <ellipse cx="232" cy="408" rx="84" ry="78" fill="none" stroke="#ff8a2e" stroke-width="5" opacity=".6"/>
+    </g>
+
+    <!-- shoulder pauldrons -->
+    <g stroke="#120f1c" stroke-width="8" stroke-linejoin="round">
+      <path d="M118 342 q 34 -36 76 -20 l -6 50 q -36 -14 -66 6 Z" fill="url(#noxPlate)"/>
+      <path d="M342 342 q -34 -36 -76 -20 l 6 50 q 36 -14 66 6 Z" fill="url(#noxPlate)"/>
+    </g>
+
+    <!-- laser batteries, one in each fist: three barrels and a charge bar -->
+    <g stroke="#120f1c" stroke-width="7" stroke-linejoin="round">
+      <g>
+        <rect x="44"  y="520" width="102" height="72" rx="18" fill="url(#noxSteel)"/>
+        <rect x="60"  y="532" width="70" height="17" rx="8" fill="#ff8a4a" stroke="none" opacity=".9"/>
+        <rect x="54"  y="590" width="19" height="46" rx="9" fill="#12101c"/>
+        <rect x="86"  y="590" width="19" height="46" rx="9" fill="#12101c"/>
+        <rect x="118" y="590" width="19" height="46" rx="9" fill="#12101c"/>
+      </g>
+      <g>
+        <rect x="318" y="520" width="102" height="72" rx="18" fill="url(#noxSteel)"/>
+        <rect x="334" y="532" width="70" height="17" rx="8" fill="#ff8a4a" stroke="none" opacity=".9"/>
+        <rect x="328" y="590" width="19" height="46" rx="9" fill="#12101c"/>
+        <rect x="360" y="590" width="19" height="46" rx="9" fill="#12101c"/>
+        <rect x="392" y="590" width="19" height="46" rx="9" fill="#12101c"/>
+      </g>
+    </g>
+    <g fill="#ff4a5a">
+      <circle cx="63"  cy="640" r="9"/><circle cx="95"  cy="640" r="9"/><circle cx="127" cy="640" r="9"/>
+      <circle cx="337" cy="640" r="9"/><circle cx="369" cy="640" r="9"/><circle cx="401" cy="640" r="9"/>
+    </g>
+
+    <!-- the crown: a short battery across the top of the hood -->
+    <g stroke="#120f1c" stroke-width="7" stroke-linejoin="round">
+      <rect x="156" y="84" width="152" height="40" rx="14" fill="url(#noxSteel)"/>
+    </g>
+    <g fill="#ff4a5a">
+      <circle cx="190" cy="104" r="9"/><circle cx="232" cy="104" r="9"/><circle cx="274" cy="104" r="9"/>
+    </g>
+
+    <!-- and the eyes: slits of red lightning over the face band -->
+    <g fill="none" stroke="#ff6a4a" stroke-width="7" stroke-linecap="round" opacity=".95">
+      <path d="M184 214 l 15 -10 l 15 10 l 15 -10"/>
+      <path d="M248 214 l 15 -10 l 15 10 l 15 -10"/>
     </g>`
 };
+
 /* ---------------------------------------------------- the old Jaxons -
    JTD1's roster were Jaxons already, so they come across as Jaxons in
    their own colours. JTD2's were not — cameramen, speakermen and tvmen
@@ -5604,7 +5717,7 @@ VARIANTS.j2_ttv    = L2('tv','#5a3a9a','#200e44','#c8a0ff','#3e2470','#6e4ab0','
 VARIANTS.j2_dspk   = L2('speaker','#2e2438','#120c18','#bf5af2','#1e1826','#3e3450','#0a0610');
 VARIANTS.j2_ripad  = L2('tv','#2a3a9a','#101a4a','#6c9aff','#1e2a6a','#44589a','#0a1030');
 
-VARIANTS.celestial = { ultra:'celestial', wide:true,
+VARIANTS.noxarch = { ultra:'noxarch', wide:true,
                     suitLite:'#46306e', suit:'#1d1033', suitDark:'#0a0417',
                     arm:'#1a0f2a', armDark:'#05020c',
                     outline:'#07030e', outlineWidth:8,
@@ -6105,7 +6218,7 @@ const UPGRADES = {
   j2_dspk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j2_toilet:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j2_ripad:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
-  celestial:{ levels:true,
+  noxarch:{ levels:true,
     A: { name:'Event Horizon', tiers:[
       { name:'Tighter Orbit',  cost:260000,
         text:'The pull holds them a full second and drags half again as hard.',
@@ -6696,7 +6809,7 @@ function SP(t) {
     scaleBy(sp, DMG_KEYS, k);
     if (isFinite(sp.range)) sp.range = Math.round(sp.range * E.rangeScale);
   }
-  /* the Celestial grows for as long as the run does */
+  /* the Noxarch grows for as long as the run does */
   if (sp.ammo === 'voidray') {
     const lv = celLevel(t);
     sp.lvl = lv;
@@ -6857,14 +6970,14 @@ const DOUBLE = {
             mods:{ dmg:3.5, cd:0.55, range:1.3, extra:{ mul:{ blastDmg:3.4, blastCd:0.6, blastR:1.5 } } },
             blurb:'It does not clear the trail so much as decline to have one.' }
 };
-ASCEND.celestial = {
-  name:'Ascended Celestial Jaxon', cost:4800000,
+ASCEND.noxarch = {
+  name:'Ascended Noxarch Jaxon', cost:4800000,
   mods:{ dmg:3.2, cd:0.6, range:1.3,
          extra:{ mul:{ splash:2.6, splashR:1.3 }, add:{ pierce:6, pullT:0.6 } } },
   blurb:'The hole in his chest stops being a wound and starts being a door. Everything in front of him is already falling in.'
 };
-DOUBLE.celestial = {
-  name:'Double Ascended Celestial Jaxon', cost:12000000,
+DOUBLE.noxarch = {
+  name:'Double Ascended Noxarch Jaxon', cost:12000000,
   mods:{ dmg:3.6, cd:0.55, range:1.35,
          extra:{ mul:{ splash:3.2, splashR:1.4 }, add:{ pierce:10 },
                  set:{ crushPow:0.08 }, xtra:['pullAll','wellAura'] } },
@@ -7712,26 +7825,30 @@ const TOWERS = {
              tags:[['JTD 2','t-rain'],['Pierce','t-single'],['Rapid Fire','t-fast']] },
 
   /* ------------------------------------------------------------------ *
-   *  CELESTIAL JAXON — the thing on the other side of the finale.        *
+   *  NOXARCH JAXON — the thing on the other side of the finale.        *
    *                                                                      *
    *  Priced above every ultra on the shelf and below the Titan, which is *
    *  exactly where he sits in the fiction: the last Jaxon the campaign   *
    *  hands over, not the biggest object in the game. His three jobs are  *
-   *  the three things Vorath did to you — pull, crush, and a ray that    *
+   *  the three things Noxarch did to you — pull, crush, and a ray that    *
    *  does not care what is in the way — and that is the reward: you did  *
    *  not merely beat him, you took the fight off him.                    *
    * ------------------------------------------------------------------ */
-  celestial:{ name:'Celestial Jaxon', cost:1250000, range:900, cd:0.18, dmg:140000,
-             speed:2400, ammo:'voidray', celestial:true,
+  noxarch:{ name:'Noxarch Jaxon', cost:1250000, range:900, cd:0.18, dmg:140000,
+             speed:2400, ammo:'voidray', noxarch:true,
              splash:72000, splashR:460, pierce:9,
              baseXtra:{ pull:1, crush:1, antiHeal:1, wardBreak:1 },
              blurb:'140k every 0.18s through nine, 72k across 460. Everything in range is dragged toward the middle of the splash before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him.',
-             tags:[['Celestial','t-rain'],['Splash','t-aoe'],['Pull','t-single']] },
+             tags:[['Noxarch','t-rain'],['Splash','t-aoe'],['Pull','t-single']] },
 
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
      else, and no Mirror can steal a single shot off him. */
   astro:   { name:'Titan Astro Jaxon', cost:1500000, range:2600, cd:0.22, dmg:900000, ammo:'astro',
-             bigPad:true, noMirror:true, gate:300,
+             /* He used to wait for wave 300. He costs a million and a half
+                and needs his own cleared pad, which is gate enough — a
+                second one only told people who could afford him to go
+                away and come back. */
+             bigPad:true, noMirror:true,
              beams:3, beamR:120,
              lanceCd:2.4, lanceMul:6, lanceR:260,
              plasmaCd:8, plasmaMul:55, plasmaR:420,
@@ -7815,7 +7932,7 @@ const CATS = [
   ['adv',      'Adventure'],
   /* hidden until the finale is beaten — buildCats drops any tab with
      nothing in it, so this tab simply does not exist until it does */
-  ['celestial', 'Celestial']
+  ['noxarch', 'Noxarch']
 ];
 const ROLE = {
   basic:['starters','builders'],      slingshot:['starters','dps'],
@@ -7833,7 +7950,7 @@ const ROLE = {
   mars:['dps','splash','adv'],        jupiter:['dps','adv'],
   saturn:['dps','splash','adv','late'], uranus:['dps','splash','adv','late'],
   neptune:['dps','splash','adv','late','ultra'],
-  celestial:['dps','splash','late','celestial'],
+  noxarch:['dps','splash','late','noxarch'],
   /* the old games. 'legacy' is their own rail; they keep their real jobs
      as well, so a Speakerman still turns up under Splash. */
   j1_basic:['legacy','starters'],
@@ -7882,7 +7999,7 @@ let shopEra = 3;
 const SHELF = () => {
   const list = ORDER.filter(k => !TOWERS[k].secret)
                     .filter(k => eraOf(k) === shopEra)
-                    .filter(k => !TOWERS[k].celestial || celestialOpen() || SB());
+                    .filter(k => !TOWERS[k].noxarch || noxarchOpen() || SB());
   /* This game's shelf sorts by price. The old ones had a shop laid out
      in a deliberate order and that order is part of what they were, so
      a legacy shelf is left exactly as ORDER lists it. */
@@ -7892,16 +8009,16 @@ const SHELF = () => {
    is showing — hotkeys, saves, the collection, the stats sheet */
 const ALL_TOWERS = () => ORDER.filter(k => !TOWERS[k].secret);
 const inCat = (k, c) => !TOWERS[k].secret && (c === 'all' || (ROLE[k] || []).includes(c));
-/* the Celestial tier is not "locked", it is ABSENT: nothing about it
-   shows anywhere until Vorath is down, because half the point of the
+/* the Noxarch tier is not "locked", it is ABSENT: nothing about it
+   shows anywhere until Noxarch is down, because half the point of the
    finale is that you did not know there was anything past it */
-const celestialOpen = () => { advInit(); return !!(S.adv && (S.adv.finale || S.adv.forceCelestial)); };
+const noxarchOpen = () => { advInit(); return !!(S.adv && (S.adv.finale || S.adv.forceNoxarch)); };
 
 const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid','whistle','laser',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
                'mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune',
-               'crusher','booster','slayer','wiper','infmirror','astro','celestial',
+               'crusher','booster','slayer','wiper','infmirror','astro','noxarch',
                /* the past, in each old shop's own order */
                /* the first game's shop, read across its three rows */
                'j1_basic','j1_bedtime','j1_ninja','j1_laser','j1_rainbow',
@@ -7926,9 +8043,9 @@ const VALUE = {
                 crusher:96, booster:100, slayer:98, wiper:94, infmirror:92, astro:100,
                 mercury:100, venus:100, earth:100, moon:100, mars:100, jupiter:100,
                 saturn:100, uranus:100, neptune:100,
-                /* the Celestial pays the same end-game premium the other
+                /* the Noxarch pays the same end-game premium the other
                    three monsters do: it wins runs on its own otherwise */
-                celestial:88,
+                noxarch:88,
                 /* the old towers are priced against this game's line so
                    they are playable rather than charitable */
                 /* the old games balanced themselves; these are what their
@@ -8021,7 +8138,7 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      astro:6.8, mercury:1.16, venus:1.2,
                      /* the last Jaxon: taller than every ultra on the
                         shelf, and nowhere near the Titan */
-                     celestial:1.55,
+                     noxarch:1.55,
                      /* Legacy footprints come from LEGACY_ART, which was
                         measured in the source game; nothing here. */
                      j2_large:1.2, j2_lspk:1.2, j2_ltv:1.25, j2_ripad:1.2,
@@ -8121,7 +8238,7 @@ const BOSS_THEME = {
    borrowed palette from the classic ladder. */
 BOSS_THEME.mercury = { bg:'#1a0e06', glyph:'#ffb02e', head:'#fff0d8', ring:'#7a3200', ring2:'#ffb02e',
                        bar1:'#e05a10', bar2:'#ffd0a0', num:'#ffe8cc', label:'#ffb877' };
-BOSS_THEME.vorath  = { bg:'#08030c', glyph:'#ff4a3a', head:'#ffe0da', ring:'#2a0a24', ring2:'#bf5af2',
+BOSS_THEME.noxarch  = { bg:'#08030c', glyph:'#ff4a3a', head:'#ffe0da', ring:'#2a0a24', ring2:'#bf5af2',
                        bar1:'#8a1030', bar2:'#ff6a4a', num:'#ffe0da', label:'#ff8a7a',
                        vary:true, split:true, glow:true };
 BOSS_THEME.venusB  = { bg:'#1a1202', glyph:'#ffd83d', head:'#fff6cc', ring:'#6a5008', ring2:'#e8d078',
@@ -8200,7 +8317,7 @@ const S = {
   camV:{x:0,y:0}, look:null, lookEnd:-1e9, fuse:null, dmgMul:1, abilCd:{}, overdrive:0, linking:null,
   plots:{}, clearFx:null, plotArm:null, wellT:0,
   runT:0, spent:0, money0:0, rushBest:{},
-  world:null, adv:null, shardFly:null, shardOwed:null, vorath:null, mixed:false, scorch:[],
+  world:null, adv:null, shardFly:null, shardOwed:null, noxarch:null, mixed:false, scorch:[],
   omen:null, bossDone:0, waveTotal:0, chal:{},
   combo:{ n:0, t:0, boost:0, flash:0 },
   rollers:[], orbs:[],
@@ -8273,7 +8390,7 @@ function loadSave() {
   advInit();
   S.best = bestOf(S.mode);
   if (typeof j.sound === 'boolean') S.sound = j.sound;
-  if (j.speed === 1 || j.speed === 2 || j.speed === 3) S.speed = j.speed;
+  if ([0.5, 1, 2, 3, 5, 7].includes(j.speed)) S.speed = j.speed;
   if (j.perfLock === 0 || j.perfLock === 2) S.perfLock = j.perfLock;
   if (typeof j.autoSkip === 'boolean') S.autoSkip = j.autoSkip;
   S.legacyTold = j.legacyTold ? 1 : 0;
@@ -9379,7 +9496,7 @@ function buildCats() {
     if (!k && c !== 'all') return '';          /* an empty rail is noise */
     return '<button role="tab" data-c="' + c + '"' +
            (c === shopCat ? ' class="on" aria-selected="true"' : '') +
-           (c === 'celestial' ? ' data-new="1"' : '') +
+           (c === 'noxarch' ? ' data-new="1"' : '') +
            '>' + label + '<i>' + k + '</i></button>';
   }).join('');
   $('cats').querySelectorAll('button').forEach(b => b.onclick = () => {
@@ -9390,7 +9507,7 @@ function buildCats() {
 }
 function setShopCat(c) {
   shopCat = c;
-  if (c === 'celestial') coachDone('celestial');
+  if (c === 'noxarch') coachDone('noxarch');
   $('cats').querySelectorAll('button').forEach(b => {
     const on = b.dataset.c === c;
     b.classList.toggle('on', on);
@@ -9619,10 +9736,9 @@ function syncHUD() {
   /* The finale is the one fight where the wave counter asks the wrong
      question — nobody is counting to 9999. Laps is the right one: it is
      what actually costs you lives. */
-  $('waveVal').textContent = S.vorath ? String(S.vorath.laps || 0)
-                          : BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses
+  $('waveVal').textContent = BR() ? Math.min(S.wave, RUSH.bosses) + ' / ' + RUSH.bosses
                           : wd0 ? Math.min(S.wave, wd0.goal) + ' / ' + wd0.goal : S.wave;
-  $('waveLbl').textContent = S.vorath ? 'Laps' : BR() ? 'Boss' : 'Wave';
+  $('waveLbl').textContent = BR() ? 'Boss' : 'Wave';
   $('bestVal').textContent = S.titan ? shortHp(Math.round(S.titan.dmg))
                            : sb ? (MODES[S.sbDiff] || MODES.normal).name : S.best;
   $('hpLbl').textContent = S.titan ? 'Tower' : 'Lives';
@@ -9630,16 +9746,13 @@ function syncHUD() {
   const sw = $('startWave'), tag = $('waveTag');
   const canStart = S.phase === 'build' && !S.autoSkip;
   sw.classList.toggle('hidden', !canStart);
-  sw.textContent = S.vorath ? 'Send the next rank'
-                 : BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
+  sw.textContent = BR() ? 'Start Boss ' + S.wave + ' \u00b7 ' + rushBoss(S.wave).name
                  : wd0 ? 'Start Wave ' + S.wave + ' of ' + wd0.goal
                  : isBossWave(S.wave) ? 'Start Boss Wave ' + S.wave : 'Start Wave ' + S.wave;
   const showTag = S.phase === 'wave' || (S.phase === 'build' && (S.autoSkip || BR()));
   tag.classList.toggle('on', showTag);
   tag.classList.toggle('rush', BR());
-  tag.textContent = S.vorath
-    ? ['VORATH \u00b7 PRESENCE', 'VORATH \u00b7 COMMAND', 'VORATH \u00b7 STORM'][vorathPhase(S.vorath)]
-    : BR()
+  tag.textContent = BR()
     ? (S.phase === 'wave' ? rushBoss(S.wave).name + ' \u00b7 ' + rushLeft() + ' left'
        : 'Next: ' + rushBoss(S.wave).name + ' \u00b7 ' + Math.max(0, Math.ceil(S.autoTimer)) + 's')
     : wd0 && S.phase === 'wave'
@@ -9669,7 +9782,7 @@ function reset() {
   S.shield=0; S.cut=null; S.fuse=null; S.dying=0; S.lastLeak=null; S.dmgMul=1;
   S.abilCd={}; S.overdrive=0; abilKey=''; S.linking=null;
   S.plots={}; S.clearFx=null; S.plotArm=null; S.wellT=0; closeSbAsc(); S.shardFly=null;
-  S.shardOwed=null; S.vorath=null; S.mixed=false;
+  S.shardOwed=null; S.noxarch=null; S.mixed=false;
   S.scorch=[];
   S.omen=null; S.bossDone=0; S.waveTotal=0;
   S.combo = { n:0, t:0, boost:0, flash:0 };
@@ -11547,7 +11660,7 @@ CINE_SCENE.shard = function (g, k) {
   if (out > 0) { g.fillStyle = 'rgba(4,6,11,' + out + ')'; g.fillRect(0, 0, W, H); }
 };
 
-/* ======================================================== VORATH ========
+/* ======================================================== NOXARCH ========
  *  The last Jaxon.
  *
  *  The brief that matters: he must read as a JAXON first and a monster
@@ -11565,12 +11678,50 @@ CINE_SCENE.shard = function (g, k) {
  *  opts.staff  bool  carrying the core (false on the throne, hands empty)
  *  opts.face   0..1  how much he is turned toward you
  * ======================================================================= */
-function drawVorath(g, x, y, sc, t, opts) {
+/* ======================================================================
+ *  NOXARCH
+ *
+ *  A Jaxon under a siege rig. The brief that matters is still the first
+ *  one: he has to read as a Jaxon before he reads as a weapon. Same
+ *  round hooded head, same stubby proportions, same diaper — and then
+ *  everything bolted to that is machinery, because this is the one that
+ *  built itself a body to fight in rather than the one that merely went
+ *  wrong.
+ *
+ *  Drawn in a local space 200 tall with the origin at his feet, so the
+ *  cutscenes, the arena and the shop all call the same routine and get
+ *  the same creature at different sizes.
+ *
+ *  opts.rage   0..1  how lit the rig is and how fast the gears turn
+ *  opts.weak   0..1  the window after a big attack, when the plates
+ *                    open and the core is exposed
+ * ====================================================================== */
+/* ======================================================================
+ *  NOXARCH
+ *
+ *  He is the ordinary Jaxon body — same hood, same face band, same
+ *  diaper, same pacifier — scaled up and wearing a siege rig, and he is
+ *  built the way every other decorated Jaxon in this game is built: a
+ *  VARIANTS palette plus an ULTRA_KIT that draws behind and in front of
+ *  jaxonBody(). That is the whole reason to do it that way rather than
+ *  in canvas. The shop card, the tooltip, the arena and the cutscenes
+ *  all end up holding the same picture, and the Jaxon underneath cannot
+ *  drift away from the rest of the shelf, because it is not a separate
+ *  drawing of a Jaxon — it IS one.
+ *
+ *  What stays in code is only what has to move: the generators bobbing
+ *  on their mounts, the light the rig throws, and the window after a big
+ *  attack where the core burns through. An SVG cannot do those.
+ *
+ *  (x, y) is at his feet and he stands about 200 tall at scale 1, which
+ *  is the contract every call site was already written against.
+ * ====================================================================== */
+function drawNoxarch(g, x, y, sc, t, opts) {
   const o = opts || {};
   const rage = o.rage == null ? 0.5 : o.rage;
+  const weak = Math.max(0, Math.min(1, o.weak || 0));
   const breathe = Math.sin(t*0.8)*1.6;
-  const RIM = rage > 0.5 ? 'rgba(198,32,62,' : 'rgba(118,38,160,';
-  const rimA = (0.34 + rage*0.34);
+  const RIM = rage > 0.5 ? 'rgba(206,40,70,' : 'rgba(124,44,170,';
 
   g.save();
   g.translate(x, y + breathe*sc);
@@ -11581,81 +11732,93 @@ function drawVorath(g, x, y, sc, t, opts) {
   g.save();
   g.globalCompositeOperation = 'lighter';
   for (let i = 0; i < 5; i++) {
-    const rr = (96 + i*26)*sc;
+    const rr = (100 + i*28)*sc;
     g.globalAlpha = (0.05 - i*0.007)*(0.7 + Math.sin(t*0.4 + i)*0.3);
     g.strokeStyle = '#9a7cff'; g.lineWidth = (2.4 - i*0.3)*sc;
     g.beginPath();
-    g.ellipse(0, -108*sc, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, 0.3, Math.PI - 0.3);
+    g.ellipse(0, -110*sc, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, 0.3, Math.PI - 0.3);
     g.stroke();
     g.beginPath();
-    g.ellipse(0, -108*sc, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, Math.PI + 0.3, -0.3);
+    g.ellipse(0, -110*sc, rr, rr*1.14, Math.sin(t*0.2 + i)*0.1, Math.PI + 0.3, -0.3);
     g.stroke();
   }
   g.restore();
 
-  /* ---- broken ring fragments, held behind the shoulders ----
-     Two arcs rather than a scatter, so they read as the remains of ONE
-     thing he broke and not as debris that happens to be here. */
+  /* ---- the ground under him ---- */
   g.save();
-  for (let i = 0; i < 10; i++) {
-    const side = i < 5 ? -1 : 1;
-    const j = i % 5;
-    const a2 = side*(0.5 + j*0.26) - Math.PI/2 + Math.sin(t*0.3 + i)*0.03;
-    const rr = (78 + (j % 3)*13)*sc;
-    const fx = Math.cos(a2)*rr*1.18, fy = -116*sc + Math.sin(a2)*rr*0.6;
-    g.save();
-    g.translate(fx, fy);
-    g.rotate(a2 + Math.PI/2 + Math.sin(t*0.4 + i)*0.08);
-    g.globalAlpha = 0.3 + Math.sin(t*0.9 + i)*0.12;
-    const L = (14 + (j % 4)*6)*sc, Hh = 4.4*sc;
-    g.fillStyle = '#241d33';
-    g.beginPath(); g.roundRect(-L/2, -Hh/2, L, Hh, Hh/2); g.fill();
-    g.fillStyle = RIM + '0.55)';
-    g.beginPath(); g.roundRect(-L/2, Hh*0.1, L, Hh*0.4, Hh*0.2); g.fill();
-    g.restore();
-  }
+  const sh = g.createRadialGradient(0, 2*sc, 4*sc, 0, 2*sc, 92*sc);
+  sh.addColorStop(0, 'rgba(0,0,0,.75)'); sh.addColorStop(1, 'rgba(0,0,0,0)');
+  g.fillStyle = sh;
+  g.beginPath(); g.ellipse(0, 2*sc, 92*sc, 18*sc, 0, 0, 7); g.fill();
   g.restore();
 
-  /* ---- the ground he is standing on ---- */
-  g.save();
-  const sh2 = g.createRadialGradient(0, 2*sc, 4*sc, 0, 2*sc, 76*sc);
-  sh2.addColorStop(0, 'rgba(0,0,0,.72)'); sh2.addColorStop(1, 'rgba(0,0,0,0)');
-  g.fillStyle = sh2;
-  g.beginPath(); g.ellipse(0, 2*sc, 76*sc, 16*sc, 0, 0, 7); g.fill();
-  g.restore();
+  /* ---- him: the real sprite, laid out from his feet ---- */
+  const im = (typeof IMG !== 'undefined') && IMG.noxarch;
+  const SP2 = (typeof SPRITE !== 'undefined') && SPRITE.noxarch;
+  if (im && im.width && SP2) {
+    const bodyH = 200*sc;
+    const shH = bodyH*(SP2.sh/SP2.h);
+    const shW = shH*(SP2.sw/SP2.sh);
+    const top = -shH*SP2.feet;
 
-  /* ---- him ----
-     The same sprite the shop sells and the same one that stands on your
-     grass, at the size the scene asked for. Laid out from his FEET so
-     every existing call site keeps its ground line. */
-  const im = (typeof IMG !== 'undefined') && IMG.celestial;
-  const S2 = (typeof SPRITE !== 'undefined') && SPRITE.celestial;
-  if (im && im.width && S2) {
-    const bodyH = 200*sc;                       /* what the hand-drawn figure measured */
-    const shH = bodyH*(S2.sh/S2.h);
-    const shW = shH*(S2.sw/S2.sh);
-    const top = -shH*S2.feet;
-    /* the light coming off him, which is what makes him read at boss
-       scale against a dead caldera */
+    /* the light the rig throws, which is what makes him read at arena
+       scale against dead ground */
     g.save();
     g.globalCompositeOperation = 'lighter';
-    g.globalAlpha = 0.18 + rage*0.3;
+    g.globalAlpha = 0.16 + rage*0.28 + weak*0.2;
     const gl = g.createRadialGradient(0, top + shH*0.52, 10*sc, 0, top + shH*0.52, shW*0.8);
-    gl.addColorStop(0, RIM + '0.85)');
-    gl.addColorStop(1, RIM + '0)');
+    gl.addColorStop(0, weak > 0.05 ? 'rgba(255,170,60,.85)' : RIM + '0.85)');
+    gl.addColorStop(1, 'rgba(0,0,0,0)');
     g.fillStyle = gl;
     g.beginPath(); g.arc(0, top + shH*0.52, shW*0.8, 0, 7); g.fill();
     g.restore();
 
+    /* the generators bob on their mounts. Four short vertical nudges on
+       the parts of the sheet the cells sit in, so the rig looks powered
+       rather than painted on. */
+    const cellY = [0, 2.1, 4.2, 1.1].map(ph => Math.sin(t*1.3 + ph)*2.4*sc);
+    g.save();
+    for (let i = 0; i < 4; i++) {
+      const left = i % 2 === 0;
+      const band = i < 2 ? [0.14, 0.40] : [0.40, 0.66];
+      const sx = left ? -shW/2 : 0;
+      g.save();
+      g.beginPath();
+      g.rect(sx, top + shH*band[0], shW/2, shH*(band[1] - band[0]));
+      g.clip();
+      g.drawImage(im, -shW/2, top + cellY[i], shW, shH);
+      g.restore();
+    }
+    g.restore();
+    /* and the body itself, over the top, with the mounts left where the
+       bobbing put them */
+    g.save();
+    g.beginPath();
+    g.rect(-shW*0.27, top, shW*0.54, shH);
+    g.clip();
     g.drawImage(im, -shW/2, top, shW, shH);
+    g.restore();
 
-    /* and how angry he is, as a wash over his own silhouette rather than
-       as a second set of pixels */
+    /* how angry he is, as a wash over his own silhouette */
     if (rage > 0.55) {
       g.save();
       g.globalCompositeOperation = 'lighter';
-      g.globalAlpha = (rage - 0.55)/0.45*0.26;
+      g.globalAlpha = (rage - 0.55)/0.45*0.22;
       g.drawImage(im, -shW/2, top, shW, shH);
+      g.restore();
+    }
+    /* and the window: the core burns through the plates */
+    if (weak > 0.02) {
+      g.save();
+      g.globalCompositeOperation = 'lighter';
+      g.globalAlpha = weak*0.5;
+      const cx = 0, cy = top + shH*0.52;
+      const cg = g.createRadialGradient(cx, cy, 4*sc, cx, cy, shW*0.42);
+      cg.addColorStop(0, 'rgba(255,214,140,.95)');
+      cg.addColorStop(0.4, 'rgba(255,150,50,.55)');
+      cg.addColorStop(1, 'rgba(255,120,30,0)');
+      g.fillStyle = cg;
+      g.beginPath(); g.arc(cx, cy, shW*0.42, 0, 7); g.fill();
       g.restore();
     }
   }
@@ -11835,7 +11998,7 @@ CINE_SCENE.threat = function (g, k) {
   if (a1 > 0 && a1 < 1) {
     const dying = clamp01((a1 - 0.35)/0.6);
     const pull = ease(dying);
-    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.4 });
+    drawNoxarch(g, W*0.76, H*0.92, 2.15, t, { rage:0.4 });
     drawDoomed(g, W*0.3 + pull*W*0.32, H*0.9 - pull*170, 1.0 - pull*0.35, t,
                { lite:'#7fb6ff', mid:'#2f7cff', dark:'#1f5fe0', edge:'#8892a0' },
                'jaxon', dying);
@@ -11861,7 +12024,7 @@ CINE_SCENE.threat = function (g, k) {
      The wave-200 boss arrives at speed and is simply folded up. */
   if (a2 > 0 && a2 < 1) {
     const dying = clamp01((a2 - 0.4)/0.55);
-    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.6 });
+    drawNoxarch(g, W*0.76, H*0.92, 2.15, t, { rage:0.6 });
     const chx = W*0.26 + ease(Math.min(1, a2*2.2))*W*0.22;
     drawDoomed(g, chx, H*0.92, 1.0, t,
                { lite:'#d8c4ff', mid:'#7a4ad8', dark:'#3a1c7a', edge:'#c9a0ff' },
@@ -11888,7 +12051,7 @@ CINE_SCENE.threat = function (g, k) {
   if (a3 > 0 && a3 < 1) {
     const fire = clamp01(a3/0.45);
     const dying = clamp01((a3 - 0.5)/0.45);
-    drawVorath(g, W*0.76, H*0.92, 2.15, t, { rage:0.85 });
+    drawNoxarch(g, W*0.76, H*0.92, 2.15, t, { rage:0.85 });
     drawDoomed(g, W*0.27, H*0.92, 1.0, t,
                { lite:'#ffe6a0', mid:'#ffae1a', dark:'#b06a00', edge:'#fff0c8' },
                'jaxon', dying);
@@ -11922,7 +12085,7 @@ CINE_SCENE.threat = function (g, k) {
     g.fillRect(0, 0, W, H);
     /* pushing in on the hood until it is the frame */
     const sc = 1.9 + e*3.4;
-    drawVorath(g, W/2, H*0.72 + e*520, sc, t, { rage:0.4 + e*0.6 });
+    drawNoxarch(g, W/2, H*0.72 + e*520, sc, t, { rage:0.4 + e*0.6 });
     /* the lightning arriving in the eyes */
     if (e > 0.45) {
       g.save();
@@ -11939,7 +12102,7 @@ CINE_SCENE.threat = function (g, k) {
       g.textAlign = 'center';
       g.font = '900 86px ' + UI_FONT;
       g.fillStyle = '#ffffff';
-      g.fillText('VORATH', W/2, H*0.88);
+      g.fillText('NOXARCH', W/2, H*0.88);
       g.font = '700 15px ' + UI_FONT;
       g.fillStyle = '#ff8a7a';
       g.fillText('IT IS WAITING AT THE BLACK HOLE', W/2, H*0.93);
@@ -12035,7 +12198,7 @@ CINE_SCENE.throne = function (g, k) {
   g.save();
   g.translate(TX, TY + 6);
   g.rotate((1 - ease(rise))*0.05);
-  drawVorath(g, 0, 0, 1.45, t, { rage:0.2 + ease(rise)*0.75, staff:false });
+  drawNoxarch(g, 0, 0, 1.45, t, { rage:0.2 + ease(rise)*0.75, staff:false });
   g.restore();
 
   /* 3. the arms of the throne, outside his elbows */
@@ -12112,7 +12275,7 @@ CINE_SCENE.throne = function (g, k) {
     g.font = '700 14px ' + UI_FONT; g.fillStyle = '#b08aa8';
     g.fillText('THE BLACK HOLE', W/2, 92);
     g.font = '900 64px ' + UI_FONT; g.fillStyle = '#ffffff';
-    g.fillText('VORATH', W/2, 152);
+    g.fillText('NOXARCH', W/2, 152);
     g.restore();
   }
 
@@ -12148,7 +12311,7 @@ CINE_SCENE.nova = function (g, k) {
     g.translate(cx, cy + 190);
     g.rotate(e*0.22);
     g.scale(1, 1 - e*0.22);
-    drawVorath(g, 0, 0, 1.9, t, { rage:1 - e*0.8, staff:e < 0.5 });
+    drawNoxarch(g, 0, 0, 1.9, t, { rage:1 - e*0.8, staff:e < 0.5 });
     g.restore();
   }
 
@@ -13910,7 +14073,7 @@ function advRiders(e, sp, owner) {
     S.fx.push({ k:'shatter', x:p.x, y:p.y, life:0.3, max:0.3, r:eRad(e)*1.5 });
   }
   if (sp.xtra.freezeHit) e.stun = Math.max(e.stun || 0, sp.freezeT || RIDER.freezeT);
-  /* the Celestial's two: a short drag toward the point of impact, and
+  /* the Noxarch's two: a short drag toward the point of impact, and
      armour that counts for a third of what it says it does */
   if (sp.xtra.pull) {
     e.pull = Math.max(e.pull || 0, sp.pullT || RIDER.pullT);
@@ -14324,7 +14487,7 @@ function advShuffle(out, wave, last) {
 }
 
 /* ====================================================================== *
- *  VORATH — three phases, and the rules they play by                     *
+ *  NOXARCH — three phases, and the rules they play by                     *
  *                                                                        *
  *  The design rule for the whole fight is one sentence: NOTHING HERE MAY  *
  *  TAKE THE GAME AWAY FROM YOU. He is allowed to be enormous, to call    *
@@ -14342,167 +14505,6 @@ function advShuffle(out, wave, last) {
  *  STORM        <33%    Short stun pulses on a telegraph, inside a       *
  *                       radius you can see and build outside of.         *
  * ====================================================================== */
-const VORATH = {
-  hp: 9000000,
-  r: 118,
-  /* a slow, heavy walk that quickens as he loses */
-  speed: [34, 42, 50],
-  leak: 8,                  /* per lap. He laps a lot. It adds up. */
-  /* PRESENCE */
-  addEvery: [7.5, 6, 4.5],
-  addCap:   [14, 18, 22],
-  /* COMMAND: the ladder, called back up */
-  callEvery: 13,
-  callTell: 3.0,            /* how long the warning stands before it lands */
-  callCap: 2,
-  /* STORM */
-  stunEvery: 12,
-  stunTell: 2.2,
-  stunDur: [1.0, 1.5],      /* scaled by how far into Storm he is */
-  stunR: 310                /* NOT the whole board. Build wide and you keep firing. */
-};
-
-/* the ones he calls back. Drawn from the ladder you have already beaten,
-   because the threat of the sequence was that they did not work. */
-const VORATH_CALL = [
-  { name:'Oxide Tyrant',    hp:140000, r:92,  speed:74, leak:10, theme:'marsB' },
-  { name:'The Great Red',   hp:260000, r:98,  speed:70, leak:11, theme:'jupB' },
-  { name:'Shepherd Prime',  hp:420000, r:102, speed:66, leak:12, theme:'satB' },
-  { name:'Hoarfrost King',  hp:700000, r:106, speed:62, leak:13, theme:'uraB' },
-  { name:'The Deep Herald', hp:1200000,r:112, speed:58, leak:14, theme:'nepB' }
-];
-
-function vorathPhase(b) {
-  const f = b.hp/b.max;
-  return f > 0.66 ? 0 : f > 0.33 ? 1 : 2;
-}
-
-/* how many of his things are on the floor right now */
-const voidAdds = () => S.enemies.filter(e => !e.dead).length;
-const voidCalled = () => S.bosses.filter(bb => bb !== S.vorath && bb.calledBy).length;
-
-function vorathPowers(dt, b) {
-  const ph = vorathPhase(b);
-  if (ph !== b.vphase) {
-    /* a phase change is loud, and then it is over. No invulnerability
-       window: being unable to hit the boss is the least fun thing a
-       finale can do. */
-    b.vphase = ph;
-    b.def.speed = VORATH.speed[ph];
-    b.callCd = VORATH.callEvery*0.6;
-    b.stunCd = VORATH.stunEvery*0.7;
-    const nm = ['PRESENCE', 'COMMAND', 'STORM'][ph];
-    const sub2 = ['It has noticed you', 'It is calling them back up',
-                  'It has stopped being careful'][ph];
-    if (ph > 0) {
-      banner(nm, sub2, ph === 2 ? '#ff3b30' : '#bf5af2');
-      shakeScreen(14, 0.8); flashScreen(0.2);
-      beep(60, 1.2, 'sawtooth', 0.07, 34);
-      playSample('game/boss_spawn');
-    }
-  }
-
-  const p = pointAt(b.d);
-
-  /* ---- the minions, every phase ---- */
-  b.addCd -= dt;
-  if (b.addCd <= 0) {
-    b.addCd = VORATH.addEvery[ph];
-    if (voidAdds() < VORATH.addCap[ph]) {
-      /* they come out of HIM, not out of the spawn: the floor is his */
-      const pool = ph === 0 ? ['mote','mote','eater']
-                 : ph === 1 ? ['mote','eater','warder']
-                 : ['mote','eater','warder','knot'];
-      const n = 2 + ph;
-      for (let i = 0; i < n; i++) {
-        if (voidAdds() >= VORATH.addCap[ph]) break;
-        const k = pool[(S.vTick = (S.vTick || 0) + 1) % pool.length];
-        const e = makeWorldMob(VOID_WORLD, k);
-        /* placed just behind him on the road, so they walk his lap too */
-        e.d = Math.max(0, b.d - 40 - i*26);
-        S.enemies.push(e);
-      }
-      S.fx.push({ k:'ward', x:p.x, y:p.y, life:0.45, max:0.45, r:b.def.r*1.2 });
-    }
-  }
-
-  /* ---- COMMAND: the ladder, announced ---- */
-  if (ph >= 1) {
-    if (b.callTell > 0) {
-      b.callTell -= dt;
-      if (b.callTell <= 0 && b.callNext) {
-        const d2 = b.callNext; b.callNext = null;
-        const nb = addBoss(Object.assign({}, d2), { calledBy:1, d:0 });
-        shakeScreen(10, 0.6);
-        banner(d2.name.toUpperCase(), 'called back up', '#bf5af2');
-        beep(90, 0.8, 'sawtooth', 0.06, 40);
-      }
-    } else {
-      b.callCd -= dt;
-      if (b.callCd <= 0) {
-        b.callCd = VORATH.callEvery;
-        if (voidCalled() < VORATH.callCap) {
-          const d2 = VORATH_CALL[(b.callN = (b.callN || 0) + 1) % VORATH_CALL.length];
-          b.callNext = d2;
-          b.callTell = VORATH.callTell;
-          /* three seconds of warning with the name on it, every time */
-          toast(d2.name + ' is coming back up \u2014 ' + VORATH.callTell.toFixed(0) + 's');
-          banner('CALLING', d2.name, '#bf5af2');
-          beep(140, 0.5, 'triangle', 0.04, 70);
-        }
-      }
-    }
-  }
-
-  /* ---- STORM: the pulse ---- */
-  if (ph >= 2) {
-    if (b.stunTell > 0) {
-      b.stunTell -= dt;
-      if (b.stunTell <= 0) {
-        /* how deep into Storm he is decides how long it holds, between
-           one second and one and a half. Never longer. */
-        const deep = clamp01((0.33 - b.hp/b.max)/0.33);
-        const dur = VORATH.stunDur[0] + (VORATH.stunDur[1] - VORATH.stunDur[0])*deep;
-        let hit = 0;
-        for (const t of S.towers) {
-          if (Math.hypot(t.x - p.x, t.y - p.y) <= VORATH.stunR) {
-            t.jam = Math.max(t.jam || 0, dur); hit++;
-          }
-        }
-        b.ring = 0.9;
-        S.fx.push({ k:'ward', x:p.x, y:p.y, life:0.5, max:0.5, r:VORATH.stunR });
-        shakeScreen(11, 0.5); flashScreen(0.14);
-        beep(54, 0.7, 'sawtooth', 0.08, 30);
-        toast(hit ? 'Collapse pulse \u2014 ' + hit + ' Jaxon' + (hit === 1 ? '' : 's') +
-                    ' out for ' + dur.toFixed(1) + 's'
-                  : 'Collapse pulse \u2014 nothing in reach');
-      }
-    } else {
-      b.stunCd -= dt;
-      if (b.stunCd <= 0) {
-        b.stunCd = VORATH.stunEvery;
-        b.stunTell = VORATH.stunTell;
-        b.stunAt = { x:p.x, y:p.y };
-        toast('Collapse pulse incoming');
-        beep(200, 0.3, 'triangle', 0.035, 120);
-      }
-    }
-  }
-}
-
-/* he laps rather than leaking out of existence */
-function vorathLap(b) {
-  b.d = 0;
-  b.laps = (b.laps || 0) + 1;
-  const cost = VORATH.leak;
-  if (S.shield > 0) S.shield--;
-  else if (!SB()) { S.health -= cost; salvageLeak(cost); }
-  banner('IT CAME ROUND AGAIN', '-' + cost + ' lives', '#ff3b30');
-  shakeScreen(12, 0.6);
-  beep(70, 0.6, 'square', 0.06, 36);
-  syncHUD();
-}
-
 /* ------------------------------------------------------- a scripted wave */
 function advStartWave(v) {
   S.phase = 'wave';
@@ -14545,7 +14547,7 @@ function advStartWave(v) {
 const ADV_TARGET = 9;                     // shards in a complete Orb
 
 /* ------------------------------------------------- the void minions ---
-   Vorath does not bring an army, he brings a pattern. Four jobs, each one
+   Noxarch does not bring an army, he brings a pattern. Four jobs, each one
    a thing the campaign already taught, so nothing here is a surprise and
    everything here is a demand: you have to still be able to do all of it
    at the same time. */
@@ -15420,39 +15422,6 @@ function startWorld(id) {
   return true;
 }
 
-/* ---------------------------------------------------- the last fight ---
-   Not a world, but it runs on the world machinery, so getting in is the
-   same six lines plus one: he is standing there before the first wave,
-   because the fight IS him and the waves are weather. */
-function startVoid() {
-  if (!voidOpen()) { toast('The Orb is not whole.'); sfx('deny'); return false; }
-  closeHub(); closeOrb();
-  S.world = 'void';
-  S.mode = 'adventure';
-  S.best = 0;
-  $('ovMenu').classList.remove('on');
-  reset();
-  usePath(VOID_WORLD.path);
-  /* the money is the design: enough to field a board you are proud of
-     without having to own every ultra on the shelf. You should be able
-     to lose this with a good board and win it with a great one. */
-  S.money = VOID_WORLD.money;
-  S.health = VOID_WORLD.lives;
-  const b = addBoss({ name:'Vorath', hp:VORATH.hp, r:VORATH.r,
-                      speed:VORATH.speed[0], leak:VORATH.leak, theme:'vorath',
-                      power:'vorath' },
-                    { vphase:-1, addCd:3, callCd:VORATH.callEvery,
-                      stunCd:VORATH.stunEvery, callTell:0, stunTell:0, laps:0 });
-  S.vorath = b;
-  banner('VORATH', 'end it', '#ff3b30');
-  toast('It will not stop walking. Neither can you.');
-  playSample('game/boss_spawn');
-  beep(52, 1.6, 'sawtooth', 0.08, 28);
-  shakeScreen(18, 1.2);
-  syncHUD();
-  return true;
-}
-
 /* --------------------------------------------------------- the end ----
    The only win in the game that does not show a results screen. A score
    card after this would be a receipt stapled to an ending: how many waves
@@ -15462,7 +15431,31 @@ function startVoid() {
    So: the board goes quiet, the supernova plays, and the game hands you
    one notification and the main menu, the way a phone tells you something
    finished while you were looking at something else. */
-function voidWin(b) {
+function noxarchEnd(won) {
+  if (!won) {
+    /* the arena fell. An ordinary results sheet, because losing is not
+       an ending — it is Tuesday. */
+    S.phase = 'over';
+    const secs = Math.round(S.titan ? S.titan.t : 0);
+    $('endTitle').textContent = 'THE ARENA FELL';
+    $('endText').textContent = 'Noxarch was still standing after ' + fmtTime(secs) +
+      '. The Orb keeps its shards; the Black Hole is still open.';
+    $('scoreRow').innerHTML =
+      '<div><div class="k">Time</div><div class="v">' + fmtTime(secs) + '</div></div>' +
+      '<div><div class="k">Damage dealt</div><div class="v">' +
+        shortHp(Math.round(S.titan ? S.titan.dmg : 0)) + '</div></div>' +
+      '<div><div class="k">Jaxons built</div><div class="v">' + S.towers.length + '</div></div>';
+    $('ovEnd').classList.add('on');
+    $('endModes').textContent = 'Back to the solar map';
+    setShop(false); hideTip();
+    beep(140, 0.9, 'sawtooth', 0.07, 50);
+    syncHUD();
+    return;
+  }
+  voidWin();
+}
+
+function voidWin() {
   if (S.phase === 'over') return;
   S.phase = 'over';
   dropRun(slotKey());
@@ -15471,16 +15464,16 @@ function voidWin(b) {
   const first = !S.adv.finale && !mixed;
   if (!mixed) {
     S.adv.finale = 1;
-    S.adv.jaxons.celestial = 1;
+    S.adv.jaxons.noxarch = 1;
   }
-  if (first) coinsAdd(VOID_PAYOUT, 'Vorath');
+  if (first) coinsAdd(VOID_PAYOUT, 'Noxarch');
   saveNow();
 
   /* clear the floor before the camera does: nothing should still be
-     walking around underneath a supernova */
-  for (const bb of S.bosses.slice()) if (bb !== b) dropBoss(bb);
+     standing around underneath a supernova */
+  clearBosses();
   S.enemies = []; S.shots = []; S.spawnQueue = 0; S.plan = [];
-  dropBoss(b); S.vorath = null;
+  S.noxarch = null; S.titan = null;
   setShop(false); hideTip();
   shakeScreen(30, 1.8); flashScreen(0.4);
 
@@ -15491,8 +15484,8 @@ function voidWin(b) {
        system telling you about it rather than as the game's own fanfare */
     setTimeout(() => {
       notify('Jaxon Tower Defense',
-             mixed ? 'Vorath is down \u2014 exhibition run, so nothing was unlocked.'
-                   : 'You unlocked ' + TOWERS.celestial.name + '!', '\u{1F7E3}');
+             mixed ? 'Noxarch is down \u2014 exhibition run, so nothing was unlocked.'
+                   : 'You unlocked ' + TOWERS.noxarch.name + '!', '\u{1F7E3}');
       if (!mixed) coachStart();
     }, 620);
   });
@@ -15903,7 +15896,7 @@ const HUB_SUN = { x:300, y:450, r:92 };
  *  that the hub's pointer code happens to be able to return.
  * ======================================================================= */
 const VOID_NODE = {
-  id:'void', name:'The Black Hole', boss:'Vorath',
+  id:'void', name:'The Black Hole', boss:'Noxarch',
   x:1368, y:176, r:44,
   blurb:'It was always there. You simply could not see it until the Orb was whole.'
 };
@@ -16355,11 +16348,11 @@ function voidEnter() {
        on the map with the hole live, and you choose to walk into it */
     cinePlay('threat', 20, 0.99, () => {}, () => {
       openHub();
-      banner('VORATH', 'The Black Hole is open', '#ff8a2e');
+      banner('NOXARCH', 'The Black Hole is open', '#ff8a2e');
     });
     return;
   }
-  cinePlay('throne', 8.5, 0.92, () => { closeHub(); startVoid(); }, () => {});
+  cinePlay('throne', 8.5, 0.92, () => { closeHub(); startNoxarch(); }, () => {});
 }
 
 function syncHubChrome() {
@@ -17940,7 +17933,7 @@ const LEGACY_BOSSES = [
   { era:1, sprite:'Sprite15', name:'Boss 5',                hp:8000,   r:126, speed:65, leak:30, theme:'moonB' },
   { era:1, sprite:'Sprite17', name:'Boss 6',                hp:16000,  r:132, speed:66, leak:34, theme:'satB' },
   { era:1, sprite:'Sprite18', name:'Boss 7',                hp:32000,  r:140, speed:66, leak:38, theme:'earthB' },
-  { era:1, sprite:'Sprite21', name:'Boss 8',                hp:512000, r:156, speed:56, leak:52, theme:'vorath' },
+  { era:1, sprite:'Sprite21', name:'Boss 8',                hp:512000, r:156, speed:56, leak:52, theme:'noxarch' },
   /* and the second game's one */
   { era:2, sprite:'Enemy',    name:'Boss Enemy',            hp:3000,   r:118, speed:60, leak:28, theme:'venusB' }
 ];
@@ -18314,7 +18307,8 @@ function sbTools(body) {
     syncChips(); syncHUD(); sbRender();
   };
   $('tlSpeed').onclick = () => {
-    S.speed = S.speed === 1 ? 2 : (S.speed === 2 ? 3 : 1);
+    { const i = SPEEDS.indexOf(S.speed);
+      S.speed = SPEEDS[(i < 0 ? 1 : i + 1) % SPEEDS.length]; }
     syncChips(); saveNow(); sbRender();
   };
   $('tlReset').onclick = () => {
@@ -18647,11 +18641,7 @@ function update(dt) {
     if (B.stun > 0) B.stun -= dt;
     if (B.stun <= 0) B.d += B.def.speed*dt;      // bosses keep their own pace
     B.hit = Math.max(0, B.hit - dt*6);
-    if (B.hp > 0 && B === S.vorath) vorathPowers(dt, B);
-    else if (B.hp > 0) bossPowers(dt, B);
-    /* he circles instead of leaving, so the lap has to be caught before
-       the ordinary leak code sees it */
-    if (B === S.vorath && B.hp > 0 && B.d >= PATH_LEN) { vorathLap(B); }
+    if (B.hp > 0) bossPowers(dt, B);
     if (S.titan && B.hp <= 0) {          // the colossus goes down: that is the win
       const tp = SG.titan;
       burst(tp.x, tp.y, '#ff5a3c', 150, 3); burst(tp.x, tp.y, '#ffd83d', 110, 2.4);
@@ -18659,7 +18649,6 @@ function update(dt) {
       titanEnd(true);
       return;
     }
-    if (B === S.vorath && B.hp <= 0) { voidWin(B); return; }
     if (B.hp <= 0) {
       const p = pointAt(B.d), fin = B.def.power === 'final';
       burst(p.x, p.y, '#ff2d2d', fin ? 140 : 54); burst(p.x, p.y, '#ffd83d', fin ? 90 : 26);
@@ -18776,7 +18765,7 @@ function update(dt) {
     const spec = SP(t);
     if (t.fireSlow > 0) t.fireSlow -= dt;                // a Jammer elite is standing nearby
     if (t.scramble > 0) t.scramble -= dt;                // the Warden's pulse wearing off
-    /* 'Singularity' and the double ascension turn the Celestial into a
+    /* 'Singularity' and the double ascension turn the Noxarch into a
        fixed point on the board: everything inside his reach is always
        being pulled back, for the whole run. Deliberately gentle per
        second — it is a tax on crossing him, not a stun, and a stun is
@@ -20064,13 +20053,13 @@ function update(dt) {
       if (got) S.floats.push({ x:a.x, y:a.y - 200, txt:'TITAN LVL ' + astroLevel(a),
                                color:'#ffd83d', life:2.2, big:true });
     }
-    /* the Celestial banks the round's damage as experience */
+    /* the Noxarch banks the round's damage as experience */
     for (const a of S.towers) {
       if (TOWERS[a.type].ammo !== 'voidray') continue;
       const round = Math.max(0, a.dmg - (a.xpDmg || 0));
       a.xpDmg = a.dmg;
       const got = celGainXp(a, round);
-      if (got) S.floats.push({ x:a.x, y:a.y - 120, txt:'CELESTIAL LVL ' + celLevel(a),
+      if (got) S.floats.push({ x:a.x, y:a.y - 120, txt:'NOXARCH LVL ' + celLevel(a),
                                color:'#bf5af2', life:2.2, big:true });
     }
     /* the Admin Jaxon banks a wave's experience */
@@ -21474,7 +21463,7 @@ function gateOf() {
            neptune:['#dde6ff', '#16306a', '#6b8bff'] }[v.sky] || null;
 }
 function drawField() {
-  if (S.titan) { drawSiegeField(); drawTitanFx(); drawTitan(); return; }
+  if (S.titan) { drawSiegeField(); drawTitanFx(); drawNoxarchFx(); drawTitan(); return; }
   const v = viewBox();
   if (v.x0 < 0 || v.y0 < 0 || v.x1 > W || v.y1 > H) { makePark(); drawPark(v); drawPlots(); }
   if (S.omen) drawOmen();                        // out past the lawn, walking in
@@ -21906,7 +21895,7 @@ function drawRain(g, B, th, r, t, cols) {
 
 function drawBoss(bs) {
   if (S.titan) return;                       // the Titan paints itself with the hill
-  if (bs === S.vorath) { drawVorathField(bs); return; }
+  /* Noxarch is a siege now and paints himself with his arena */
   const B = bs.def, th = BOSS_THEME[B.theme];
   const p = pointAt(bs.d), r = B.r, pulse = 1 + Math.sin(S.t*3)*0.02;
   ctx.save();
@@ -22087,93 +22076,6 @@ function drawBoss(bs) {
 }
 
 let _flyingIn = false;
-/* He is the same figure the cutscenes drew, standing on the road at the
-   scale the field works at, plus the two things the FIGHT needs and the
-   cutscenes did not: a hit flash, and a telegraph you can plan around. */
-function drawVorathField(bs) {
-  const p = pointAt(bs.d);
-  const ph = vorathPhase(bs);
-  const sc = bs.def.r/118*1.35;
-
-  /* the pulse he is winding up, drawn on the FLOOR where it will land,
-     closing inward so the time left is readable without a number */
-  if (bs.stunTell > 0 && bs.stunAt) {
-    const k = 1 - bs.stunTell/VORATH.stunTell;
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = 0.1 + k*0.2;
-    ctx.fillStyle = '#bf5af2';
-    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR, 0, 7); ctx.fill();
-    ctx.globalAlpha = 0.5 + k*0.5;
-    ctx.strokeStyle = '#e07aff'; ctx.lineWidth = 4;
-    ctx.setLineDash([22, 16]); ctx.lineDashOffset = -S.t*40;
-    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR, 0, 7); ctx.stroke();
-    ctx.setLineDash([]);
-    /* the closing ring is the clock */
-    ctx.lineWidth = 6;
-    ctx.beginPath(); ctx.arc(p.x, p.y, VORATH.stunR*(1 - k*0.92) + 8, 0, 7); ctx.stroke();
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 1;
-    ctx.font = '900 30px ' + UI_FONT;
-    ctx.textAlign = 'center'; ctx.lineJoin = 'round';
-    ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 6;
-    ctx.strokeText('COLLAPSE', p.x, p.y - VORATH.stunR - 16);
-    ctx.fillStyle = '#f0d0ff';
-    ctx.fillText('COLLAPSE', p.x, p.y - VORATH.stunR - 16);
-    ctx.restore();
-  }
-
-  /* the one he is about to call, named, where it will arrive */
-  if (bs.callTell > 0 && bs.callNext) {
-    const q = pointAt(0);
-    ctx.save();
-    ctx.globalAlpha = 0.6 + Math.sin(S.t*9)*0.3;
-    ctx.strokeStyle = '#bf5af2'; ctx.lineWidth = 4;
-    ctx.setLineDash([16, 12]); ctx.lineDashOffset = -S.t*34;
-    ctx.beginPath(); ctx.arc(q.x, q.y, 70, 0, 7); ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.globalAlpha = 1;
-    ctx.font = '800 20px ' + UI_FONT; ctx.textAlign = 'center';
-    ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(0,0,0,.75)'; ctx.lineWidth = 5;
-    ctx.strokeText(bs.callNext.name, q.x + 60, q.y - 86);
-    ctx.fillStyle = '#e8c0ff';
-    ctx.fillText(bs.callNext.name, q.x + 60, q.y - 86);
-    ctx.font = '700 14px ' + UI_FONT;
-    ctx.strokeText(bs.callTell.toFixed(1) + 's', q.x + 60, q.y - 64);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText(bs.callTell.toFixed(1) + 's', q.x + 60, q.y - 64);
-    ctx.restore();
-  }
-
-  /* the ground he is standing on gives way a little */
-  ctx.save();
-  const un = ctx.createRadialGradient(p.x, p.y + 20, 8, p.x, p.y + 20, bs.def.r*1.6);
-  un.addColorStop(0, 'rgba(0,0,0,.6)'); un.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = un;
-  ctx.beginPath(); ctx.ellipse(p.x, p.y + 20, bs.def.r*1.6, bs.def.r*0.5, 0, 0, 7); ctx.fill();
-  ctx.restore();
-
-  drawVorath(ctx, p.x, p.y + bs.def.r*0.92, sc, S.t,
-             { rage:[0.25, 0.65, 1][ph] });
-
-  /* the hit flash, so damage registers on a figure this dark */
-  if (bs.hit > 0) {
-    ctx.save();
-    ctx.globalCompositeOperation = 'lighter';
-    ctx.globalAlpha = bs.hit*0.3;
-    const fl = ctx.createRadialGradient(p.x, p.y, 10, p.x, p.y, bs.def.r*1.3);
-    fl.addColorStop(0, 'rgba(255,220,200,.9)'); fl.addColorStop(1, 'rgba(255,120,90,0)');
-    ctx.fillStyle = fl;
-    ctx.beginPath(); ctx.arc(p.x, p.y, bs.def.r*1.3, 0, 7); ctx.fill();
-    ctx.restore();
-  }
-  /* the reach ring every boss gets, in his colour */
-  ctx.save();
-  ctx.setLineDash([26, 20]); ctx.lineDashOffset = -S.t*24;
-  ctx.strokeStyle = 'rgba(191,90,242,.26)'; ctx.lineWidth = 4;
-  ctx.beginPath(); ctx.arc(p.x, p.y, bs.def.r, 0, 7); ctx.stroke();
-  ctx.restore();
-}
 
 function drawTower(t, ghost) {
   /* The Titan arrives rather than appearing. While he is in the air his
@@ -22198,11 +22100,11 @@ function drawTower(t, ghost) {
   const rainbow = !ghost && TOWERS[t.type] && TOWERS[t.type].rainbow;
   const tiers = ghost ? 0 : (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
   /* Every upgrade puffs him up a little, and the two ascensions are a
-     step change rather than a nudge: 2.5x the base for an Ascended and
-     3.25x for a Double. The multipliers below are written against the
-     base rather than against each other, so a Double is 3.25 and not
-     2.5 times 3.25. */
-  const grow = (1 + tiers*0.03) * (t.dbl ? 3.25 : t.asc ? 2.5 : 1);
+     step change rather than a nudge: twice the base height for an
+     Ascended and three times for a Double, so three plain ones stacked
+     come to about one Double. Written against the base rather than
+     against each other, so a Double is 3 and not 2 times 3. */
+  const grow = (1 + tiers*0.03) * (t.dbl ? 3 : t.asc ? 2 : 1);
   const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
   const shw = sheetW(art)*grow, shh = sheetH(art)*grow;   // the picture around him
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
@@ -23666,7 +23568,7 @@ function drawCar(c) {
  *  the camera fits a 2900x1500 world into the 1600x900 frame. Nothing had  *
  *  to be rescaled per draw call — the world is simply bigger.              *
  * ======================================================================= */
-const SG = {
+const TITAN_SG = {
   W:2900, H:1500,
   /* The Titan's drawn centre and its logical position on the path are the
      SAME point — it is the boss singleton parked at path distance 0, so if
@@ -23687,7 +23589,29 @@ const SG = {
   phaseBonus:[0.75, 0.5, 0.25],                // paid once each as its health falls
   summonHp:4200, summonGrow:0.20
 };
+
+/* Noxarch's arena. Wider than the Titan's and darker: dead ground,
+   wreckage and energy scars, with the same left-stands / right-builds
+   reading. Five million health, which is the number the fight is tuned
+   around rather than a bar that happens to be long. */
+const NOX_SG = {
+  W:3100, H:1550, kind:'noxarch',
+  titan:{ x:760, y:800, r:430 },
+  base:{ x:1300, y:880, w:1500, h:520 },
+  path:[[760,800],[980,1010],[1200,1120],[1620,1160],[2100,1135],[2880,1135]],
+  hp:5000000, life:2000,
+  money:9000,
+  income:240,
+  perDamage:1/900,
+  phaseBonus:[0.75, 0.5, 0.25],
+  summonHp:26000, summonGrow:0.22
+};
+/* Whichever siege is standing. Everything downstream reads SG and never
+   has to know there are two of them. */
+let SG = TITAN_SG;
 const TITAN_H = T_H*9.5;                       // 9.5 Jaxons tall. That is the fantasy.
+/* and Noxarch is twice that presence in his own arena */
+const NOX_H = T_H*13.6;        /* 2x Titan Astro, who stands at 6.8 */
 
 /* the boss ladder supplies the summons; the Titan borrows a face of its own */
 BOSS_THEME.horizon = { bg:'#050014', glyph:'#b98bff', head:'#ffffff', ring:'#3a1070', ring2:'#c08bff',
@@ -23709,7 +23633,7 @@ BOSS_THEME.titanfight = { bg:'#160308', glyph:'#ff5a3c', head:'#ffd8cc', ring:'#
      D  the gravity ring        pulls the trail into orbit around him
      E  the gravity guillotine  paid, boss waves only — see astroSnap
 */
-/* The Celestial's levels. Earned from damage, never sold, and every one
+/* The Noxarch's levels. Earned from damage, never sold, and every one
    of them raises the whole Jaxon rather than one number — which is the
    difference between a level and an upgrade tier. */
 const CEL = {
@@ -23733,7 +23657,7 @@ function celGainXp(t, amount) {
   }
   if (got) {
     t._spec = null; t._sv = -1;
-    banner('CELESTIAL LEVEL ' + celLevel(t), TOWERS.celestial.name, '#bf5af2');
+    banner('NOXARCH LEVEL ' + celLevel(t), TOWERS.noxarch.name, '#bf5af2');
     flashScreen(0.14);
     beep(160, 0.6, 'sawtooth', 0.045, 820);
   }
@@ -23741,7 +23665,7 @@ function celGainXp(t, amount) {
 }
 
 const ASTRO = {
-  gate:300,                       // no Titan before wave 300 outside sandbox
+  gate:0,                         // the price and the pad are the gate
   xp0:3e8, xpPow:1.6,             // damage needed for each level
   dmgPer:1.14,                    // damage per level
   maxLvl:250,
@@ -24082,7 +24006,24 @@ function camZoomAt(wx, wy, factor) {
 }
 
 /* ------------------------------------------------------- starting a run - */
-function startTitan() {
+/* The last fight. Same machinery as the Titan siege, different arena,
+   different thing standing in it, and it is the campaign's ending rather
+   than a side mode — so winning hands over the tower. */
+const startVoid = () => startNoxarch();
+function startNoxarch() {
+  if (!voidOpen()) { toast('The Orb is not whole.'); sfx('deny'); return false; }
+  /* the solar map is how you got here and it is still sitting on top of
+     everything — startSiege clears the menu but knows nothing about it */
+  closeHub(); closeOrb();
+  SG = NOX_SG;
+  startSiege('noxarch');
+  banner('NOXARCH', 'end it', '#ff3b30');
+  toast('It has not moved in a very long time. Build, and make it.');
+  return true;
+}
+function startTitan() { SG = TITAN_SG; startSiege('titan'); }
+
+function startSiege(kind) {
   S.mode = 'titan';
   const md = M();
   S.phase = 'wave';                            // a siege never stops for a build phase
@@ -24096,17 +24037,23 @@ function startTitan() {
   usePath(SG.path);                            // the lane the summons walk
   camFit();
 
+  const nox = kind === 'noxarch';
   S.titan = {
-    t:0, dmg:0, summons:0, killed:0, phase:0, enraged:false,
+    kind:kind, t:0, dmg:0, summons:0, killed:0, phase:0, enraged:false,
     abCd:6.5, slam:null, rocks:[], grab:null, summonCd:34, incomeAcc:0, coinAcc:0,
-    rainT:0
+    rainT:0,
+    /* Noxarch's own: the sweep he is winding up, and the window after a
+       big attack when his plates are open */
+    sweep:null, weak:0, barrage:null, called:0, callCd:26
   };
-  const def = { name:'THE TITAN', hp:SG.hp, r:SG.titan.r, speed:0, leak:0, theme:'titanfight' };
+  const def = nox
+    ? { name:'NOXARCH', hp:SG.hp, r:SG.titan.r, speed:0, leak:0, theme:'noxarch' }
+    : { name:'THE TITAN', hp:SG.hp, r:SG.titan.r, speed:0, leak:0, theme:'titanfight' };
   addBoss(def, { pulseCd:1e9, slowCd:1e9 });
   $('ovMenu').classList.remove('on'); $('ovEnd').classList.remove('on');
   setShop(true); setPlacingBanner(); syncChips(); syncHUD();
-  toast('THE TITAN stirs. Build on the platform — only long reach touches him.');
-  beep(48, 2.2, 'sawtooth', 0.09, 24);
+  if (!nox) toast('THE TITAN stirs. Build on the platform — only long reach touches him.');
+  beep(nox ? 40 : 48, 2.2, 'sawtooth', 0.09, 22);
 }
 
 /* rebuild the shared path in place; every pathing consumer follows along */
@@ -24143,7 +24090,7 @@ function summonBoss() {
                    husk:pick.theme, leakN:40, siege:true });
   const p = pointAt(0);
   burst(p.x, p.y, '#ff5a3c', 26, 2);
-  toast('The Titan summons ' + pick.name);
+  toast((S.titan && S.titan.kind === 'noxarch' ? 'Noxarch calls up ' : 'The Titan summons ') + pick.name);
   beep(72, 0.8, 'sawtooth', 0.07, 34);
 }
 
@@ -24151,6 +24098,11 @@ function summonBoss() {
    Five, on one rotating timer with a visible telegraph on every one. All of
    them are timers and rectangles: nothing here allocates per frame.       */
 const TITAN_ABILITIES = ['slam', 'rockfall', 'grab', 'rain'];
+/* Noxarch's three, plus the summons on their own clock. Every one is
+   announced before it lands, every one has somewhere to not be standing,
+   and the two big ones leave his plates open afterwards — which is where
+   the damage you do actually comes from. */
+const NOX_ABILITIES = ['spikes', 'sweep', 'volley'];
 
 function titanUpdate(dt) {
   const T = S.titan, b = S.boss;
@@ -24184,13 +24136,115 @@ function titanUpdate(dt) {
   T.abCd -= dt*(T.enraged ? 1.55 : 1);
   if (T.abCd <= 0) {
     T.abCd = (T.enraged ? 5.4 : 8.2) + Math.random()*3;
-    const pool = TITAN_ABILITIES.filter(a => a !== T.last);
+    const set = T.kind === 'noxarch' ? NOX_ABILITIES : TITAN_ABILITIES;
+    const pool = set.filter(a => a !== T.last);
     const ab = pool[Math.floor(Math.random()*pool.length)];
     T.last = ab;
     titanCast(ab);
   }
   T.summonCd -= dt*(T.enraged ? 1.5 : 1);
   if (T.summonCd <= 0) { T.summonCd = T.enraged ? 17 : 26; summonBoss(); }
+
+  /* ---- Noxarch only ------------------------------------------------ */
+  if (T.weak > 0) T.weak -= dt*0.8;
+
+  /* spikes: a scatter of marked impacts on the platform. Each one is a
+     ring on the floor for a second and a half before anything happens,
+     and each only bites what is standing in it. */
+  if (T.barrage) {
+    T.barrage.t -= dt;
+    for (const sp of T.barrage.at) {
+      if (sp.fired) { sp.fade -= dt; continue; }
+      sp.t -= dt;
+      if (sp.t > 0) continue;
+      sp.fired = true; sp.fade = 0.5;
+      let hit = 0;
+      for (const t2 of S.towers) {
+        if (Math.hypot(t2.x - sp.x, t2.y - sp.y) > sp.r) continue;
+        t2.jam = Math.max(t2.jam || 0, T.enraged ? 2.2 : 1.4);
+        hit++;
+      }
+      /* the platform itself takes it, but a fixed slice rather than a
+         share of whatever is left */
+      const hurt = T.enraged ? 26 : 16;
+      S.health -= hurt; salvageLeak(hurt);
+      S.floats.push({ x:sp.x, y:sp.y - 20, txt:'-' + hurt, color:'#ff6b6b', life:1.2 });
+      S.fx.push({ k:'boom', x:sp.x, y:sp.y, life:0.4, max:0.4, r:sp.r });
+      shakeScreen(7, 0.3);
+      beep(70, 0.3, 'sawtooth', 0.05, 40);
+    }
+    if (T.barrage.t <= 0 && T.barrage.at.every(sp => sp.fired && sp.fade <= 0)) {
+      T.barrage = null;
+      T.weak = 1;                              /* spent: the plates open */
+    }
+  }
+
+  /* sweep: a line across the arena, drawn where it will be and then
+     fired. Standing out of the line is the whole answer. */
+  if (T.sweep) {
+    T.sweep.t -= dt;
+    if (T.sweep.t <= 0 && !T.sweep.fired) {
+      T.sweep.fired = true; T.sweep.glow = 0.55;
+      const a = T.sweep.a, ca = Math.cos(-a), sa = Math.sin(-a);
+      const ox = SG.titan.x, oy = SG.titan.y;
+      let hit = 0;
+      for (const t2 of S.towers) {
+        const dx = t2.x - ox, dy = t2.y - oy;
+        const ly = dx*sa + dy*ca, lx = dx*ca - dy*sa;
+        if (lx < 0 || Math.abs(ly) > T.sweep.w/2) continue;
+        t2.jam = Math.max(t2.jam || 0, T.enraged ? 3 : 2);
+        hit++;
+      }
+      const hurt = T.enraged ? 34 : 22;
+      S.health -= hurt; salvageLeak(hurt);
+      shakeScreen(14, 0.6); flashScreen(0.2);
+      beep(52, 0.8, 'sawtooth', 0.08, 30);
+      toast(hit ? 'Laser sweep \u2014 ' + hit + ' Jaxon' + (hit === 1 ? '' : 's') + ' knocked out'
+                : 'Laser sweep \u2014 nothing in the line');
+      T.weak = 1;                              /* spent: the plates open */
+    }
+    if (T.sweep.fired) {
+      T.sweep.glow -= dt;
+      if (T.sweep.glow <= 0) T.sweep = null;
+    }
+  }
+
+  /* volley: the batteries fire a short burst at whatever is nearest the
+     front of the platform. Small, frequent, and it does not open him. */
+  if (T.volley) {
+    T.volley.t -= dt;
+    if (T.volley.t <= 0) {
+      T.volley.n--;
+      T.volley.t = 0.22;
+      const pool = S.towers.filter(x => !(x.jam > 0));
+      if (pool.length) {
+        const g = pool[Math.floor(Math.random()*pool.length)];
+        g.jam = Math.max(g.jam || 0, 0.9);
+        S.fx.push({ k:'astroBeam', sx:SG.titan.x, sy:SG.titan.y - NOX_H*0.3,
+                    x:g.x, y:g.y, col:'#ff4a5a', fat:1.6, life:0.16, max:0.16 });
+        beep(900, 0.05, 'sawtooth', 0.02, 400);
+      }
+      if (T.volley.n <= 0) T.volley = null;
+    }
+  }
+
+  /* the ladder, called up in ones and capped. Three on the floor at a
+     time is a crowd; six is a slideshow. */
+  if (T.kind === 'noxarch') {
+    T.callCd -= dt*(T.enraged ? 1.4 : 1);
+    if (T.callCd <= 0) {
+      T.callCd = T.enraged ? 18 : 26;
+      if (S.bosses.length - 1 < 3) {
+        const done = BOSSES.filter(x => x.at >= 40 && x.at <= 160);
+        const pick = done[Math.floor(Math.random()*done.length)] || BOSSES[3];
+        const d = Object.assign({}, pick, { hp:Math.round(pick.hp*0.55) });
+        addBoss(d, { calledBy:1, d:0 });
+        banner('CALLED UP', d.name, '#bf5af2');
+        toast(d.name + ' is walking the lane');
+        beep(90, 0.7, 'sawtooth', 0.06, 44);
+      }
+    }
+  }
 
   /* --- slam: telegraph, then a shockwave across the platform --------- */
   if (T.slam) {
@@ -24237,7 +24291,38 @@ function titanUpdate(dt) {
 }
 
 function titanCast(ab) {
-  const T = S.titan, B = SG.base;
+  const T = S.titan;
+  if (ab === 'spikes') {
+    /* six to nine marks on the platform, each with its own fuse so they
+       land as a drumroll rather than all at once */
+    const n = (T.enraged ? 9 : 6);
+    const at = [];
+    for (let i = 0; i < n; i++) {
+      at.push({ x:SG.base.x + 60 + Math.random()*(SG.base.w - 120),
+                y:SG.base.y + 50 + Math.random()*(SG.base.h - 100),
+                r:120, t:1.5 + i*0.18, fired:false, fade:0 });
+    }
+    T.barrage = { t:1.5 + n*0.18 + 0.6, at:at };
+    banner('SPIKE BARRAGE', 'get off the marks', '#ff8a2e');
+    beep(190, 0.4, 'triangle', 0.04, 110);
+    return;
+  }
+  if (ab === 'sweep') {
+    /* a line out of him across the platform, aimed at its middle and
+       then nudged, so it is never the same line twice */
+    const cx = SG.base.x + SG.base.w*0.5, cy = SG.base.y + SG.base.h*0.5;
+    const a = Math.atan2(cy - SG.titan.y, cx - SG.titan.x) + (Math.random() - 0.5)*0.55;
+    T.sweep = { a:a, w:T.enraged ? 320 : 240, t:2.2, fired:false, glow:0 };
+    banner('LASER SWEEP', 'out of the line', '#ff3b30');
+    beep(140, 0.5, 'sawtooth', 0.05, 70);
+    return;
+  }
+  if (ab === 'volley') {
+    T.volley = { n:T.enraged ? 10 : 6, t:0.3 };
+    toast('Batteries firing');
+    return;
+  }
+  const B = SG.base;   /* T is already in scope from the head of this function */
   if (ab === 'slam') {
     T.slam = { t:1.25, fired:false, wave:0 };
     toast('The Titan raises a fist — SLAM incoming');
@@ -24341,6 +24426,9 @@ function drawSiegeField() {
 
 function drawTitan() {
   const T = SG.titan, b = S.boss;
+  /* Noxarch has no sprite sheet — he is the same routine the cutscenes
+     draw, at arena scale, with his plates open when he is exposed. */
+  if (S.titan && S.titan.kind === 'noxarch') { drawNoxarchArena(); return; }
   const sw = TITAN_H*(660/720), sh = TITAN_H;
   const breathe = Math.sin(S.t*0.9)*8;
   ctx.save();
@@ -24366,6 +24454,132 @@ function drawTitan() {
   ctx.strokeStyle = 'rgba(255,120,80,.28)'; ctx.lineWidth = 4;
   ctx.beginPath(); ctx.arc(T.x, T.y, T.r, 0, 7); ctx.stroke();
   ctx.setLineDash([]);
+  ctx.restore();
+}
+
+function drawNoxarchArena() {
+  const T = SG.titan, N = S.titan, b = S.boss;
+  const frac = b ? b.hp/b.max : 1;
+  const rage = N && N.enraged ? 1 : 0.3 + (1 - frac)*0.5;
+  const weak = N ? Math.max(0, Math.min(1, N.weak)) : 0;
+
+  ctx.save();
+  /* the ground he has ruined around himself */
+  const g = ctx.createRadialGradient(T.x, T.y, T.r*0.2, T.x, T.y, T.r*2.4);
+  g.addColorStop(0, weak > 0.05 ? 'rgba(255,150,40,.3)'
+                : rage > 0.8 ? 'rgba(230,40,70,.3)' : 'rgba(150,70,220,.22)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(T.x, T.y, T.r*2.4, 0, 7); ctx.fill();
+
+  /* energy scars across the dead ground, pointing back at him */
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < 9; i++) {
+    const a = i*0.698 + 0.3;
+    ctx.globalAlpha = 0.05 + Math.abs(Math.sin(S.t*0.6 + i))*0.05;
+    ctx.strokeStyle = '#a06cff'; ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.moveTo(T.x + Math.cos(a)*T.r*0.9, T.y + Math.sin(a)*T.r*0.35);
+    ctx.lineTo(T.x + Math.cos(a)*T.r*2.2, T.y + Math.sin(a)*T.r*0.8);
+    ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.beginPath(); ctx.ellipse(T.x, T.y + 24, NOX_H*0.3, NOX_H*0.05, 0, 0, 7); ctx.fill();
+
+  /* and him: feet on the hill, twice the Titan's presence */
+  drawNoxarch(ctx, T.x, T.y + 20, NOX_H/200, S.t, { rage:rage, weak:weak });
+
+  /* the window, said out loud, because a player who cannot see it is
+     not being rewarded for reading him */
+  if (weak > 0.05) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = Math.min(0.6, weak)*0.7;
+    ctx.strokeStyle = '#ffb43a'; ctx.lineWidth = 7;
+    ctx.setLineDash([30, 22]); ctx.lineDashOffset = -S.t*40;
+    ctx.beginPath(); ctx.arc(T.x, T.y - NOX_H*0.34, T.r*0.8, 0, 7); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = Math.min(1, weak*1.6);
+    ctx.font = '900 56px ' + UI_FONT;
+    ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,.7)'; ctx.lineWidth = 9;
+    ctx.strokeText('CORE EXPOSED', T.x, T.y - NOX_H*0.34 - T.r*0.9);
+    ctx.fillStyle = '#ffd08a';
+    ctx.fillText('CORE EXPOSED', T.x, T.y - NOX_H*0.34 - T.r*0.9);
+    ctx.restore();
+  }
+  if (b && b.hit > 0) {
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.globalAlpha = b.hit*0.3;
+    const fl = ctx.createRadialGradient(T.x, T.y - NOX_H*0.3, 20, T.x, T.y - NOX_H*0.3, T.r);
+    fl.addColorStop(0, 'rgba(255,220,200,.9)'); fl.addColorStop(1, 'rgba(255,120,90,0)');
+    ctx.fillStyle = fl;
+    ctx.beginPath(); ctx.arc(T.x, T.y - NOX_H*0.3, T.r, 0, 7); ctx.fill();
+    ctx.restore();
+  }
+  ctx.restore();
+}
+
+/* the spikes and the sweep, drawn on the floor where they will land */
+function drawNoxarchFx() {
+  const T = S.titan;
+  if (!T || T.kind !== 'noxarch') return;
+  ctx.save();
+  if (T.barrage) {
+    for (const sp of T.barrage.at) {
+      if (sp.fired) {
+        if (sp.fade <= 0) continue;
+        ctx.globalAlpha = sp.fade*0.5;
+        ctx.fillStyle = 'rgba(255,140,50,.5)';
+        ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, 7); ctx.fill();
+        continue;
+      }
+      const k = 1 - Math.max(0, sp.t)/1.5;
+      ctx.globalAlpha = 0.22 + k*0.3;
+      ctx.fillStyle = '#ff8a2e';
+      ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, 7); ctx.fill();
+      ctx.globalAlpha = 0.6 + k*0.4;
+      ctx.strokeStyle = '#ffd08a'; ctx.lineWidth = 5;
+      ctx.setLineDash([18, 14]); ctx.lineDashOffset = -S.t*34;
+      ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, 7); ctx.stroke();
+      ctx.setLineDash([]);
+      /* the closing ring is the clock */
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r*(1 - k*0.9) + 6, 0, 7); ctx.stroke();
+    }
+  }
+  if (T.sweep) {
+    const a = T.sweep.a, L = SG.W;
+    ctx.save();
+    ctx.translate(SG.titan.x, SG.titan.y - NOX_H*0.3);
+    ctx.rotate(a);
+    if (!T.sweep.fired) {
+      const k = 1 - Math.max(0, T.sweep.t)/2.2;
+      ctx.globalAlpha = 0.14 + k*0.3;
+      ctx.fillStyle = '#ff3b30';
+      ctx.fillRect(0, -T.sweep.w/2, L, T.sweep.w);
+      ctx.globalAlpha = 0.6 + k*0.4;
+      ctx.strokeStyle = '#ffb0a0'; ctx.lineWidth = 4;
+      ctx.setLineDash([26, 18]); ctx.lineDashOffset = -S.t*50;
+      ctx.strokeRect(0, -T.sweep.w/2, L, T.sweep.w);
+      ctx.setLineDash([]);
+    } else {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalAlpha = Math.min(1, T.sweep.glow*2);
+      const lg = ctx.createLinearGradient(0, -T.sweep.w/2, 0, T.sweep.w/2);
+      lg.addColorStop(0, 'rgba(255,60,50,0)');
+      lg.addColorStop(0.5, 'rgba(255,230,210,.95)');
+      lg.addColorStop(1, 'rgba(255,60,50,0)');
+      ctx.fillStyle = lg;
+      ctx.fillRect(0, -T.sweep.w/2, L, T.sweep.w);
+    }
+    ctx.restore();
+  }
   ctx.restore();
 }
 
@@ -24422,6 +24636,10 @@ function drawTitanFx() {
 /* --------------------------------------------------------- win and lose - */
 function titanEnd(won) {
   if (S.phase === 'over') return;
+  /* The last fight is the campaign's ending, not a side mode, so it
+     does not get a results sheet — it gets the supernova and the
+     unlock, the same way it did before it became a siege. */
+  if (S.titan && S.titan.kind === 'noxarch') { noxarchEnd(won); return; }
   S.phase = 'over';
   const T = S.titan, secs = Math.round(T.t);
   const prev = S.titanBest;
@@ -25909,8 +26127,8 @@ $('ovMenu').addEventListener('pointerdown', ev => {
   if (cla) cla.addEventListener('click', () => coachDone('classic'), true);
   const cats = $('cats');
   if (cats) cats.addEventListener('click', ev => {
-    const b = ev.target.closest && ev.target.closest('[data-c="celestial"]');
-    if (b) coachDone('celestial');
+    const b = ev.target.closest && ev.target.closest('[data-c="noxarch"]');
+    if (b) coachDone('noxarch');
   }, true);
 })();
 /* The front page had no pointer handling at all — the parallax was
@@ -26026,8 +26244,13 @@ $('autoBtn').onclick = () => {
   toast(S.autoSkip ? 'Auto-skip on — waves chain automatically' : 'Auto-skip off');
   syncChips(); saveNow(); syncHUD();
 };
+/* Half speed for reading a wave, and seven for a four-hundred-wave
+   grind. The chip walks the list rather than a chain of ternaries, so
+   adding one is adding a number. */
+const SPEEDS = [0.5, 1, 2, 3, 5, 7];
 $('spdBtn').onclick = () => {
-  S.speed = S.speed === 1 ? 2 : (S.speed === 2 ? 3 : 1);
+  const i = SPEEDS.indexOf(S.speed);
+  S.speed = SPEEDS[(i < 0 ? 1 : i + 1) % SPEEDS.length];
   syncChips(); saveNow();
 };
 $('sndBtn').onclick = () => {
@@ -26049,7 +26272,7 @@ $('perfBtn').onclick = () => {
 /* every chip's label and lit state, in one place */
 function syncChips() {
   $('autoBtn').classList.toggle('on', S.autoSkip);
-  $('spdBtn').textContent = 'Speed ' + S.speed + '×';
+  $('spdBtn').textContent = 'Speed ' + S.speed + '\u00d7';
   $('sndBtn').textContent = 'Sound' + (S.sound ? '' : ' Off');
   $('sndBtn').classList.toggle('on', S.sound);
   $('perfBtn').textContent = 'Graphics ' + (S.perfLock === null ? 'Auto' : S.perfLock === 0 ? 'High' : 'Fast');
@@ -26389,10 +26612,10 @@ function admWireMeta() {
 
   $('admCel').onclick = () => {
     advInit();
-    S.adv.forceCelestial = 1;
+    S.adv.forceNoxarch = 1;
     after();
-    say('Celestial tier on the shelf');
-    toast('Celestial Jaxon unlocked');
+    say('Noxarch tier on the shelf');
+    toast('Noxarch Jaxon unlocked');
   };
 
   $('admSkipTell').onclick = () => {
@@ -26419,7 +26642,7 @@ function admWireMeta() {
       b.dataset.armed = '1';
       b.textContent = 'PRESS AGAIN TO WIPE';
       say('This deletes shards, world clears, Jaxons, coins, skill nodes, ' +
-          'the Celestial tier and every seen-cutscene flag.');
+          'the Noxarch tier and every seen-cutscene flag.');
       beep(120, 0.3, 'sawtooth', 0.05, 70);
       setTimeout(() => {
         if (!$('admReset')) return;
@@ -26543,9 +26766,9 @@ function admRender() {
         '<button id="admCoins">GRANT 9,999,999</button></div>' +
       '<div class="admRow"><label>Finale</label>' +
         '<button id="admVoid">OPEN BLACK HOLE</button>' +
-        '<button id="admCel">CELESTIAL</button></div>' +
+        '<button id="admCel">NOXARCH</button></div>' +
       '<div class="admRow"><label>Jump there</label>' +
-        '<button id="admFight">FIGHT VORATH</button>' +
+        '<button id="admFight">FIGHT NOXARCH</button>' +
         '<button id="admSkipTell">SKIP CUTSCENES</button></div>' +
       '<h4 style="color:#ff6a5c">Danger</h4>' +
       '<div class="admRow"><label>Adventure meta</label>' +
@@ -28014,7 +28237,8 @@ function drawSettings() {
     fader('stSfx', 'Effects', 'Shots, pops, interface.', S.volSfx) +
     fader('stAmb', 'Atmosphere', 'Engines, wind, the room around you.', S.volAmb) +
     '<h4>Game</h4>' +
-    row('Default speed', 'Remembered for your next run.', seg('stSpeed', [[1,'1×'],[2,'2×'],[3,'3×']], S.speed)) +
+    row('Default speed', 'Remembered for your next run.',
+        seg('stSpeed', SPEEDS.map(v => [v, v + '\u00d7']), S.speed)) +
     row('Auto-skip waves', 'Start the next wave on its own.', sw('stAuto', S.autoSkip)) +
     '<h4>Graphics &amp; access</h4>' +
     row('Graphics', 'Fast cuts particles and simplifies blobs.',
@@ -28094,7 +28318,7 @@ function notify(title, body, icon) {
   playSample('ui/confirm');
 }
 /* ---------------------------------------------------------- coaching --
-   Fires once, after Vorath, and dies the moment it is obeyed. */
+   Fires once, after Noxarch, and dies the moment it is obeyed. */
 function coachSeen(k) { advInit(); return !!(S.adv.coach && S.adv.coach[k]); }
 function coachDone(k) {
   advInit();
@@ -28107,7 +28331,7 @@ function coachMark(id) {
   const el = $(id);
   if (el) el.classList.add('coachOn');
 }
-/* after the finale: the Celestial is bought in Classic like any other
+/* after the finale: the Noxarch is bought in Classic like any other
    Jaxon, and most people have been living on the solar map for an hour */
 function coachStart() {
   if (coachSeen('classic')) return;
@@ -28116,8 +28340,8 @@ function coachStart() {
 /* and when they do open a shop, the new rail is the only thing on it
    they have not seen before */
 function coachShop() {
-  if (coachSeen('celestial') || !celestialOpen()) return;
-  const b = $('cats') && $('cats').querySelector('[data-c="celestial"]');
+  if (coachSeen('noxarch') || !noxarchOpen()) return;
+  const b = $('cats') && $('cats').querySelector('[data-c="noxarch"]');
   if (b) b.classList.add('coachOn');
 }
 function flashScreen(a) { S.flash = Math.max(S.flash, a); }
