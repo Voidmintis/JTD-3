@@ -9932,19 +9932,25 @@ function pick(key) {
     syncCamChip();
   }
   /* and the Noxarch only fits in orbit, so the board goes to orbit */
-  if (TOWERS[key].spacePad) {
-    if (theNox()) { toast('There is only ever one Noxarch'); sfx('deny'); return; }
-    if (!upThere()) {
-      if (!plotCleared('sat')) {
-        toast('Clear the Satellite Plot, then buy the rocket \u2014 he stands in orbit');
-        sfx('deny'); return;
-      }
-      if (!S.orb.bought) {
-        toast('Buy the rocket on the Satellite Plot \u2014 ' + bigCash(Math.round(ROCKET_COST*M().cost)));
-        sfx('deny'); return;
-      }
-      launchOrbit();
+  if (TOWERS[key].spacePad && theNox()) {
+    toast('There is only ever one Noxarch'); sfx('deny'); return;
+  }
+  if (TOWERS[key].station && stationCount() >= STATION_MAX) {
+    toast('Three Ascension Stations is the limit'); sfx('deny'); return;
+  }
+  /* anything that only works in orbit takes you to orbit, or tells you
+     what you still have to buy to get there */
+  if ((TOWERS[key].spacePad || TOWERS[key].orbOnly) && !upThere()) {
+    if (!plotCleared('sat')) {
+      toast('Clear the <b>Satellite Plot</b> first \u2014 the rocket launches from it'
+            .replace(/<[^>]+>/g, ''));
+      sfx('deny'); return;
     }
+    if (!S.orb.bought) {
+      toast('Buy the rocket on the Satellite Plot \u2014 ' + bigCash(Math.round(ROCKET_COST*M().cost)));
+      sfx('deny'); return;
+    }
+    launchOrbit();
   }
   if (!afford(costOf(key))) { toast('Not enough coins for ' + TOWERS[key].name); sfx('deny'); return; }
   S.dupe = null;
@@ -20898,6 +20904,7 @@ function showShopTip(key, el) {
         gateBlocks(key) + '</b>. Sandbox never waits.</div>' : ''}
      ${TOWERS[key].bigPad ? '<div class="r" style="padding-bottom:7px;color:#ffb04a">Needs the cleared <b>Astro Pad</b> out to the right of the lawn. Nothing else will hold him.</div>' : ''}
      ${TOWERS[key].spacePad ? '<div class="r" style="padding-bottom:7px;color:#b08cff">Stands in <b>Low Orbit</b>, high above the park, and shoots down into the match. He will not fit on the ground.</div>' : ''}
+     ${TOWERS[key].orbOnly ? '<div class="r" style="padding-bottom:7px;color:#b08cff">Goes in <b>Low Orbit</b> only \u2014 picking it up will fly you there. Three at most.</div>' : ''}
      ${ASCEND[key] ? '<div class="r" style="padding-bottom:7px;color:#c9b0ee">Can ascend: three maxed ' +
         spec.name + 's, one per path, fuse into ' + ASCEND[key].name + '.</div>' : ''}
      ${statRows(spec, null)}`;
