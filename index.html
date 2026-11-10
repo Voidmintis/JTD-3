@@ -5410,6 +5410,68 @@ ULTRA_KIT.neptune = {
     </g>`
 };
 
+ULTRA_KIT.station = {
+  back:() => `<defs>
+      <linearGradient id="stMast" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#4a5064"/>
+        <stop offset="1" stop-color="#232834"/>
+      </linearGradient>
+      <radialGradient id="stDish" cx="0.4" cy="0.3" r="0.8">
+        <stop offset="0" stop-color="#cfe6ff"/>
+        <stop offset="1" stop-color="#5b7ca8"/>
+      </radialGradient>
+    </defs>
+
+    <!-- the mast, behind him, with the emitter dish pointed up at him -->
+    <g stroke="#15181f" stroke-width="8" stroke-linejoin="round">
+      <rect x="470" y="40" width="54" height="620" rx="12" fill="url(#stMast)"/>
+      <rect x="406" y="630" width="182" height="46" rx="14" fill="#2b313d"/>
+      <!-- cross braces -->
+      <path d="M470 160 L 404 120 M524 160 L 590 120" fill="none" stroke="#2b313d" stroke-width="16"/>
+      <path d="M470 340 L 404 300 M524 340 L 590 300" fill="none" stroke="#2b313d" stroke-width="16"/>
+      <path d="M470 520 L 404 480 M524 520 L 590 480" fill="none" stroke="#2b313d" stroke-width="16"/>
+    </g>
+    <!-- the dish -->
+    <g stroke="#15181f" stroke-width="8" stroke-linejoin="round">
+      <path d="M398 110 a 100 72 0 0 1 198 0 l -36 26 a 68 48 0 0 0 -126 0 Z" fill="url(#stDish)"/>
+      <rect x="486" y="118" width="22" height="78" rx="9" fill="#2b313d"/>
+      <circle cx="497" cy="112" r="17" fill="#ff8a4a"/>
+    </g>
+    <!-- conduit from the mast toward the Jaxon's console -->
+    <g fill="none" stroke="#2b313d" stroke-width="22" stroke-linecap="round">
+      <path d="M470 470 q -110 30 -148 92"/>
+    </g>
+    <g fill="#b08cff" opacity=".8">
+      <circle cx="442" cy="478" r="9"/><circle cx="392" cy="500" r="8"/>
+      <circle cx="348" cy="528" r="7"/>
+    </g>`,
+
+  front:() => `<!-- the console he is actually working: a slab, three lamps,
+       and the lever that does the breaking -->
+    <g stroke="#15181f" stroke-width="8" stroke-linejoin="round">
+      <path d="M96 494 L 320 494 L 306 596 L 110 596 Z" fill="#2b313d"/>
+      <rect x="120" y="508" width="176" height="46" rx="10" fill="#101620"/>
+    </g>
+    <g fill="#7fe9ff">
+      <circle cx="156" cy="531" r="11"/><circle cx="208" cy="531" r="11"/><circle cx="260" cy="531" r="11"/>
+    </g>
+    <!-- the shell-breaker clamp: two jaws on an arm, open -->
+    <g stroke="#15181f" stroke-width="8" stroke-linejoin="round">
+      <rect x="-104" y="292" width="188" height="40" rx="14" fill="url(#stMast)"/>
+      <path d="M-104 292 l -74 -58 l 36 -28 l 74 58 Z" fill="#3a4150"/>
+      <path d="M-104 332 l -74 58 l 36 28 l 74 -58 Z" fill="#3a4150"/>
+    </g>
+    <g fill="#ffd83d">
+      <circle cx="40" cy="312" r="10"/>
+    </g>
+    <!-- a resonator coil on his chest, which is the part that feeds him -->
+    <g stroke="#15181f" stroke-width="7" stroke-linejoin="round">
+      <circle cx="330" cy="392" r="46" fill="#1b2130"/>
+      <circle cx="330" cy="392" r="26" fill="none" stroke="#b08cff" stroke-width="12"/>
+      <circle cx="330" cy="392" r="10" fill="#e8d4ff" stroke="none"/>
+    </g>`
+};
+
 ULTRA_KIT.noxarch = {
   back:() => `<defs>
       <radialGradient id="noxVoid" cx="0.5" cy="0.5" r="0.5">
@@ -5555,6 +5617,154 @@ ULTRA_KIT.noxarch = {
       <path d="M184 214 l 15 -10 l 15 10 l 15 -10"/>
       <path d="M248 214 l 15 -10 l 15 10 l 15 -10"/>
     </g>`
+};
+
+/* ------------------------------------------------- the cracked shell ----
+   The base kit plus damage. Crack lines are drawn as bright seams under a
+   dark lip, which is what makes them read as openings with depth rather
+   than as scratches painted on the surface. */
+const NOX_CRACKS = [
+  'M172 372 l 26 44 l -16 30 l 30 38',
+  'M292 368 l -22 48 l 18 26 l -26 40',
+  'M150 440 l -34 22 l 10 30',
+  'M314 436 l 34 24 l -12 28',
+  'M206 312 l 14 -40 l -20 -34',
+  'M258 308 l -12 -42 l 22 -32',
+  'M190 548 l -24 36 l 14 28',
+  'M276 544 l 26 38 l -16 26'
+];
+function noxCrackSVG(w) {
+  const lip = NOX_CRACKS.map(d => '<path d="' + d + '"/>').join('');
+  return '<g fill="none" stroke-linecap="round" stroke-linejoin="round">' +
+         '<g stroke="#05030b" stroke-width="' + (w + 9) + '" opacity=".95">' + lip + '</g>' +
+         '<g stroke="#ff8a2e" stroke-width="' + w + '" opacity=".95">' + lip + '</g>' +
+         '<g stroke="#fff2d2" stroke-width="' + Math.max(2, w*0.4) + '" opacity=".9">' + lip + '</g>' +
+         '</g>';
+}
+
+ULTRA_KIT.noxarch_crack = {
+  back:() => ULTRA_KIT.noxarch.back() +
+    /* the light getting out behind him, now that there are holes in him */
+    `<g opacity=".55">
+      <ellipse cx="230" cy="420" rx="300" ry="250" fill="url(#noxVoid)"/>
+    </g>`,
+  front:() => ULTRA_KIT.noxarch.front() + noxCrackSVG(7) +
+    /* the core has pushed out of its housing: a second, wider ring with
+       the housing lip broken away on one side */
+    `<g>
+      <ellipse cx="232" cy="408" rx="104" ry="96" fill="none" stroke="#ff8a2e" stroke-width="6" opacity=".5"/>
+      <ellipse cx="232" cy="408" rx="92" ry="40" fill="none" stroke="#ffd0a0" stroke-width="7" opacity=".7"/>
+      <path d="M140 396 a 94 88 0 0 1 48 -74" fill="none" stroke="#05030b" stroke-width="16" opacity=".8"/>
+    </g>`
+};
+
+/* --------------------------------------------------- the inner Noxarch ----
+   The shell is off. This is its own front() rather than the base with
+   bits removed, because "take the plates away" is not something you can
+   do by drawing more on top -- the plates have to never be drawn. What is
+   left is the frame, and it is deliberately tighter and more skeletal
+   than the armour was: the Double Ascended form should look like the
+   thing that was inside, not like a bigger version of the outside. */
+ULTRA_KIT.noxarch_inner = {
+  back:() => ULTRA_KIT.noxarch.back() +
+    `<!-- the spine, open down the back of him, and the cooling fins that
+         were under the plates -->
+    <g stroke="#0b0813" stroke-width="7" stroke-linejoin="round">
+      <rect x="214" y="250" width="36" height="300" rx="14" fill="#2a2338"/>
+    </g>
+    <g fill="#ff8a2e" opacity=".85">
+      <rect x="222" y="268" width="20" height="18" rx="6"/>
+      <rect x="222" y="304" width="20" height="18" rx="6"/>
+      <rect x="222" y="340" width="20" height="18" rx="6"/>
+      <rect x="222" y="376" width="20" height="18" rx="6"/>
+      <rect x="222" y="412" width="20" height="18" rx="6"/>
+      <rect x="222" y="448" width="20" height="18" rx="6"/>
+      <rect x="222" y="484" width="20" height="18" rx="6"/>
+      <rect x="222" y="520" width="20" height="18" rx="6"/>
+    </g>
+    <!-- fins, fanned out behind the shoulders where the pauldrons were -->
+    <g stroke="#0b0813" stroke-width="6" stroke-linejoin="round">
+      <path d="M118 296 l -92 -58 l 14 68 l 78 24 Z" fill="#241d33"/>
+      <path d="M342 296 l 92 -58 l -14 68 l -78 24 Z" fill="#241d33"/>
+      <path d="M108 372 l -104 -22 l 32 60 l 74 -6 Z" fill="#1d1729"/>
+      <path d="M352 372 l 104 -22 l -32 60 l -74 -6 Z" fill="#1d1729"/>
+    </g>
+    <!-- and the hole he burned where the housing used to be -->
+    <g opacity=".8"><circle cx="230" cy="408" r="300" fill="url(#noxVoid)"/></g>`,
+
+  front:() => `<defs>
+      <linearGradient id="noxBone" x1="0" y1="0" x2="0.4" y2="1">
+        <stop offset="0" stop-color="#3b3350"/>
+        <stop offset="1" stop-color="#15111f"/>
+      </linearGradient>
+    </defs>
+
+    <!-- the ribs: the chest cavity, open, with the core hanging in it -->
+    <g stroke="#0b0813" stroke-width="7" stroke-linecap="round" fill="none">
+      <g stroke="#2e2742" stroke-width="20">
+        <path d="M168 352 q -26 56 -8 122"/>
+        <path d="M296 352 q 26 56 8 122"/>
+      </g>
+      <g stroke="#473c63" stroke-width="13">
+        <path d="M176 368 q 56 -22 112 0"/>
+        <path d="M170 404 q 62 -20 124 0"/>
+        <path d="M172 442 q 60 20 120 0"/>
+        <path d="M180 478 q 52 24 104 0"/>
+      </g>
+    </g>
+
+    <!-- what is left of the plates: fragments still bolted on at the edges -->
+    <g stroke="#120f1c" stroke-width="8" stroke-linejoin="round">
+      <path d="M140 362 L 170 356 L 166 414 L 142 408 Z" fill="url(#noxBone)"/>
+      <path d="M320 362 L 290 356 L 294 414 L 318 408 Z" fill="url(#noxBone)"/>
+      <path d="M146 492 L 174 486 L 178 520 L 150 524 Z" fill="url(#noxBone)"/>
+      <path d="M314 492 L 286 486 L 282 520 L 310 524 Z" fill="url(#noxBone)"/>
+    </g>
+    <g fill="#5a5472">
+      <circle cx="155" cy="372" r="5"/><circle cx="155" cy="398" r="5"/>
+      <circle cx="305" cy="372" r="5"/><circle cx="305" cy="398" r="5"/>
+    </g>
+
+    <!-- the core, out of its housing entirely and considerably bigger -->
+    <g>
+      <ellipse cx="232" cy="412" rx="100" ry="94" fill="#05030b"/>
+      <ellipse cx="232" cy="412" rx="78" ry="32" fill="none" stroke="#ffac3a" stroke-width="11" opacity=".95"/>
+      <ellipse cx="232" cy="412" rx="50" ry="20" fill="none" stroke="#fff2d2" stroke-width="7" opacity=".9"/>
+      <ellipse cx="232" cy="412" rx="26" ry="10" fill="none" stroke="#ffffff" stroke-width="5" opacity=".8"/>
+      <circle  cx="232" cy="412" r="24" fill="#000000"/>
+      <ellipse cx="232" cy="412" rx="100" ry="94" fill="none" stroke="#ff8a2e" stroke-width="5" opacity=".6"/>
+    </g>
+
+    <!-- the arms: no gauntlets, just the frame and the emitters bolted to it -->
+    <g stroke="#120f1c" stroke-width="8" stroke-linejoin="round">
+      <rect x="96"  y="420" width="34" height="140" rx="14" fill="url(#noxBone)"/>
+      <rect x="330" y="420" width="34" height="140" rx="14" fill="url(#noxBone)"/>
+    </g>
+    <g stroke="#120f1c" stroke-width="7" stroke-linejoin="round">
+      <rect x="62"  y="552" width="112" height="60" rx="16" fill="url(#noxBone)"/>
+      <rect x="286" y="552" width="112" height="60" rx="16" fill="url(#noxBone)"/>
+    </g>
+    <g fill="#ff4a5a">
+      <circle cx="86"  cy="582" r="10"/><circle cx="118" cy="582" r="10"/><circle cx="150" cy="582" r="10"/>
+      <circle cx="310" cy="582" r="10"/><circle cx="342" cy="582" r="10"/><circle cx="374" cy="582" r="10"/>
+    </g>
+
+    <!-- the crown is gone; what is left is the mount it was bolted to -->
+    <g stroke="#120f1c" stroke-width="7" stroke-linejoin="round">
+      <rect x="186" y="96" width="92" height="26" rx="10" fill="url(#noxBone)"/>
+      <path d="M186 96 l -26 -26 M278 96 l 26 -26" fill="none" stroke="#2e2742" stroke-width="13"/>
+    </g>
+    <g fill="#ff2a3a"><circle cx="232" cy="109" r="10"/></g>
+
+    <!-- and the eyes, which are worse now there is nothing over them -->
+    <g fill="none" stroke="#ff3b2a" stroke-width="9" stroke-linecap="round">
+      <path d="M180 212 l 18 -13 l 18 13 l 18 -13"/>
+      <path d="M248 212 l 18 -13 l 18 13 l 18 -13"/>
+    </g>
+    <g fill="#ff8a6a" opacity=".8">
+      <circle cx="198" cy="236" r="5"/><circle cx="266" cy="236" r="5"/>
+    </g>`
+    + noxCrackSVG(5)
 };
 
 /* ---------------------------------------------------- the old Jaxons -
@@ -5719,6 +5929,11 @@ VARIANTS.j2_tspk   = L2('speaker','#c8342a','#5a0e06','#ff9a7a','#a02018','#d858
 VARIANTS.j2_ttv    = L2('tv','#5a3a9a','#200e44','#c8a0ff','#3e2470','#6e4ab0','#160a2e');
 VARIANTS.j2_dspk   = L2('speaker','#2e2438','#120c18','#bf5af2','#1e1826','#3e3450','#0a0610');
 VARIANTS.j2_ripad  = L2('tv','#2a3a9a','#101a4a','#6c9aff','#1e2a6a','#44589a','#0a1030');
+
+VARIANTS.ascstation = { ultra:'station', wide:true,
+                    suitLite:'#9fb6d4', suit:'#44618a', suitDark:'#223044',
+                    arm:'#cfd8e6', armDark:'#5b6675',
+                    outline:'#121821', outlineWidth:8 };
 
 VARIANTS.noxarch = { ultra:'noxarch', wide:true, hires:true, sheetK:2,
                     suitLite:'#46306e', suit:'#1d1033', suitDark:'#0a0417',
@@ -6221,6 +6436,29 @@ const UPGRADES = {
   j2_dspk:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j2_toilet:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
   j2_ripad:{ A:{ name:'\u2014', tiers:[] }, B:{ name:'\u2014', tiers:[] } },
+  ascstation:{
+    A: { name:'Shell Breaker', tiers:[
+      { name:'Hairline',   cost:900000,
+        blurb:'The clamps find a seam. Nothing visible yet.',
+        mod:{ add:{ breaker:1 } } },
+      { name:'Split Plate', cost:2600000,
+        blurb:'A real crack. Two stations at this tier will Ascend him.',
+        mod:{ add:{ breaker:1 } } },
+      { name:'Full Teardown', cost:7000000,
+        blurb:'The shell comes off. Three stations at this tier will Double Ascend him.',
+        mod:{ add:{ breaker:1 } } }
+    ] },
+    B: { name:'Resonator', tiers:[
+      { name:'First Coil',  cost:800000,
+        blurb:'Doubles his damage. One plus the tier, and the stations multiply together.',
+        mod:{ add:{ reson:1 } } },
+      { name:'Second Coil', cost:2400000,
+        blurb:'Three times over from this station alone.',
+        mod:{ add:{ reson:1 } } },
+      { name:'Third Coil',  cost:6500000,
+        blurb:'Four times over. Three of these is sixty four.',
+        mod:{ add:{ reson:1 } } }
+    ] } },
   noxarch:{ levels:true,
     A: { name:'Event Horizon', tiers:[
       { name:'Tighter Orbit',  cost:260000,
@@ -6975,16 +7213,16 @@ const DOUBLE = {
 };
 ASCEND.noxarch = {
   name:'Ascended Noxarch Jaxon', cost:4800000,
-  mods:{ dmg:3.2, cd:0.6, range:1.3,
-         extra:{ mul:{ splash:2.6, splashR:1.3 }, add:{ pierce:6, pullT:0.6 } } },
-  blurb:'The hole in his chest stops being a wound and starts being a door. Everything in front of him is already falling in.'
+  mods:{ dmg:3.4, cd:0.55, range:1.3,
+         extra:{ mul:{ splash:3.6, splashR:1.35 }, add:{ pierce:8, pullT:0.6 } } },
+  blurb:'The shell cracks. What was holding the plates on was never metal, and now you can see what it was. Everything in front of him is already falling in.'
 };
 DOUBLE.noxarch = {
   name:'Double Ascended Noxarch Jaxon', cost:12000000,
-  mods:{ dmg:3.6, cd:0.55, range:1.35,
-         extra:{ mul:{ splash:3.2, splashR:1.4 }, add:{ pierce:10 },
+  mods:{ dmg:4, cd:0.52, range:1.35,
+         extra:{ mul:{ splash:4.2, splashR:1.45 }, add:{ pierce:14 },
                  set:{ crushPow:0.08 }, xtra:['pullAll','wellAura'] } },
-  blurb:'Two of them, folded into one. There is no trail any more, only the distance things travel before they stop existing.'
+  blurb:'The shell comes off. The thing that was wearing it is smaller, denser and considerably worse. There is no trail any more, only the distance things travel before they stop existing.'
 };
 
 const DBL_MAX = 1;                     // one of each, ever
@@ -6994,18 +7232,39 @@ const dblCount = k => S.towers.filter(o => o.dbl && o.type === k).length;
 /* the pair: two Ascended of this type, neither already doubled */
 function dblPair(t) {
   if (!t || t.dbl || !t.asc || !canDouble(t.type)) return null;
+  if (TOWERS[t.type].spacePad) return stationReady('dbl') ? [t] : null;
   const pool = S.towers.filter(o => o.type === t.type && o.asc && !o.dbl);
   if (pool.length < 2) return null;
   const other = pool.find(o => o !== t);
   return other ? [t, other] : null;
 }
+function dblWhyStation(t) { return stationWhy('dbl'); }
 function dblWhy(t) {
+  if (t && TOWERS[t.type].spacePad) return t.dbl ? null : stationWhy('dbl');
   if (!canDouble(t.type) || !t.asc || t.dbl) return null;
   if (dblCount(t.type) >= DBL_MAX) return 'There can only be one ' + DOUBLE[t.type].name;
   if (dblPair(t)) return null;
   return 'Needs a second Ascended ' + TOWERS[t.type].name + ' on the field';
 }
 function startDouble(t) {
+  if (t && TOWERS[t.type].spacePad) {
+    if (t.dbl || !t.asc) return;
+    if (!stationReady('dbl')) { toast(stationWhy('dbl').replace(/<[^>]+>/g, '')); sfx('deny'); return; }
+    const c = dblCost(t.type);
+    if (!afford(c)) { toast('Taking the shell off costs ' + bigCash(c)); sfx('deny'); return; }
+    spend(c);
+    t.dbl = true;
+    t._spec = null; t._sv = -1;
+    S.fuse = { x:t.x, y:t.y, t:0, dur:1.7, type:t.type, from:[] };
+    deselect();
+    shakeScreen(34, 2); flashScreen(0.7);
+    banner('DOUBLE ASCENDED', DOUBLE[t.type].name, '#ffd8ff');
+    toast('The shell is gone. What is left is smaller and much worse.');
+    beep(46, 2.1, 'sawtooth', 0.09, 260);
+    for (let i = 0; i < 6; i++) setTimeout(() => beep(240 + i*240, 0.24, 'triangle', 0.055), 280 + i*130);
+    syncHUD(); syncShelf();
+    return;
+  }
   const pair = dblPair(t);
   if (!pair) { toast(dblWhy(t) || 'No pair ready'); return; }
   if (dblCount(t.type) >= DBL_MAX) { toast('There can only be one'); return; }
@@ -7121,6 +7380,14 @@ Object.assign(ASC_VARIANTS.booster, { ultra:'booster' });
 Object.assign(ASC_VARIANTS.slayer,  { ultra:'slayer' });
 Object.assign(ASC_VARIANTS.wiper,   { ultra:'wiper' });
 Object.assign(ASC_VARIANTS.infmirror, { ultra:'infmirror' });
+/* His Ascended form is not "the same Jaxon with a halo" -- it is the same
+   armour with holes in it, so it keeps his own palette and his own kit
+   rather than taking ASC_TRIM's violet and the halo. */
+ASC_VARIANTS.noxarch = Object.assign({}, VARIANTS.noxarch, { ultra:'noxarch_crack' });
+/* and the Double Ascended form is a third sprite, which no other Jaxon in
+   the game has, because no other Jaxon gets taken apart */
+const DBL_KEY = k => 'dbl_' + k;
+VARIANTS[DBL_KEY('noxarch')] = Object.assign({}, VARIANTS.noxarch, { ultra:'noxarch_inner' });
 /* The Admin Jaxon's clothes are a hole in the screen. Two sprites make
    that work: the ordinary one is used only as a stencil for the rain, and
    this one has every scrap of cloth punched out of it, so what is left to
@@ -7837,12 +8104,19 @@ const TOWERS = {
    *  does not care what is in the way — and that is the reward: you did  *
    *  not merely beat him, you took the fight off him.                    *
    * ------------------------------------------------------------------ */
-  noxarch:{ name:'Noxarch Jaxon', cost:7000000, range:99000, cd:0.18, dmg:140000,
+  noxarch:{ name:'Noxarch Jaxon', cost:7000000, range:99000, cd:0.18, dmg:18000000,
              speed:2800, ammo:'voidray', noxarch:true, spacePad:true, noMirror:true,
-             splash:72000, splashR:520, pierce:9,
+             splash:9300000, splashR:520, pierce:12,
              baseXtra:{ pull:1, crush:1, antiHeal:1, wardBreak:1 },
-             blurb:'Stands in orbit and shoots the park. 140k every 0.18s through nine, 72k across 520, from anywhere on the map. Everything in the splash is dragged toward the middle before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him. Every other Jaxon on the board hits harder and fires faster while he is up there, and every Jaxon you put in orbit with him feeds his core.',
+             blurb:'Stands in orbit and shoots the park. 18m every 0.18s through thirteen, 9.3m across 520, from anywhere on the map. Everything in the splash is dragged toward the middle before it lands, armour counts for a third of what it says, nothing he hits heals, and no ward holds against him. Every other Jaxon on the board hits harder and fires faster while he is up there, and every Jaxon you put in orbit with him feeds his core.',
              tags:[['Noxarch','t-rain'],['Splash','t-aoe'],['Pull','t-single']] },
+
+  /* The rig that cracks him open. Orbit only, three at most, and it never
+     fires a shot in its life -- everything it does, it does to him. */
+  ascstation:{ name:'Ascension Station', cost:1200000, range:0, cd:1, dmg:0,
+             ammo:'station', station:true, orbOnly:true, noMirror:true, noxarch:true,
+             blurb:'The rig that opens a Noxarch. It has no weapon and it never will. <b>Shell Breaker</b> is the requirement \u2014 two stations at tier 2 crack him into his Ascended form, three at tier 3 take the shell off entirely. <b>Resonator</b> is the power: each station multiplies his damage by one plus its resonator tier, so three maxed stations are sixty four times over. Orbit only, and never more than three.',
+             tags:[['Station','t-slow'],['Noxarch','t-rain'],['Support','t-aoe']] },
 
   /* The Titan. He needs his own cleared pad, he will not fit anywhere
      else, and no Mirror can steal a single shot off him. */
@@ -7954,6 +8228,7 @@ const ROLE = {
   saturn:['dps','splash','adv','late'], uranus:['dps','splash','adv','late'],
   neptune:['dps','splash','adv','late','ultra'],
   noxarch:['dps','splash','late','noxarch'],
+  ascstation:['support','late','noxarch'],
   /* the old games. 'legacy' is their own rail; they keep their real jobs
      as well, so a Speakerman still turns up under Splash. */
   j1_basic:['legacy','starters'],
@@ -8021,7 +8296,7 @@ const ORDER = ['basic','slingshot','bubble','bedtime','ninja','nurse','bandaid',
                'rainbow','engineer','piggybank','pinwheel','recycler','boombox','goldeng','tax',
                'tipjar','factory','towtruck','caddy','mechanic','admin',
                'mercury','venus','earth','moon','mars','jupiter','saturn','uranus','neptune',
-               'crusher','booster','slayer','wiper','infmirror','astro','noxarch',
+               'crusher','booster','slayer','wiper','infmirror','astro','noxarch','ascstation',
                /* the past, in each old shop's own order */
                /* the first game's shop, read across its three rows */
                'j1_basic','j1_bedtime','j1_ninja','j1_laser','j1_rainbow',
@@ -8048,7 +8323,7 @@ const VALUE = {
                 saturn:100, uranus:100, neptune:100,
                 /* the Noxarch pays the same end-game premium the other
                    three monsters do: it wins runs on its own otherwise */
-                noxarch:88,
+                noxarch:88, ascstation:100,
                 /* the old towers are priced against this game's line so
                    they are playable rather than charitable */
                 /* the old games balanced themselves; these are what their
@@ -8141,8 +8416,15 @@ const BODY_SCALE = { titan:1.7, titanmax:2.5, titantablet:2.125,
                      astro:6.8, mercury:1.16, venus:1.2,
                      /* the last Jaxon: taller than every ultra on the
                         shelf, and nowhere near the Titan */
-                     /* five Titan Astros, who stands at 6.8 */
-                     noxarch:34,
+                     /* five Titan Astros, who stands at 6.8. All three of
+                        his forms are the same height here -- the 1.0 /
+                        1.15 / 1.3 step is applied by drawTower, and if
+                        these were left out the cracked and inner sprites
+                        would default to 1 and he would shrink by 97% the
+                        moment the stations opened him. */
+                     noxarch:34, asc_noxarch:34, dbl_noxarch:34,
+                     /* a gantry with a Jaxon on it: big, but not a monster */
+                     ascstation:3.2,
                      /* Legacy footprints come from LEGACY_ART, which was
                         measured in the source game; nothing here. */
                      j2_large:1.2, j2_lspk:1.2, j2_ltv:1.25, j2_ripad:1.2,
@@ -8167,7 +8449,11 @@ for (const k in VARIANTS) {
                 head: (FOOT_Y - (VARIANTS[k].wide ? -150 : 0)) / was.h };
 }
 /* an Ascended Jaxon draws with his own sprite, everyone else with theirs */
-const artOf = t => (t && (t.asc || t.dbl) && SPRITE[ASC_KEY(t.type)] ? ASC_KEY(t.type) : (t && t.type) || t);
+/* three forms where everything else in the game has two. Only the Noxarch
+   has a dbl_ sprite, so this is a no-op for every other Jaxon. */
+const artOf = t => (t && t.dbl && SPRITE[DBL_KEY(t.type)]) ? DBL_KEY(t.type)
+                 : (t && (t.asc || t.dbl) && SPRITE[ASC_KEY(t.type)]) ? ASC_KEY(t.type)
+                 : (t && t.type) || t;
 const spriteW = k => SPRITE[k].w, spriteH = k => SPRITE[k].h;
 /* the picture, not the Jaxon: only the code that blits wants these */
 const sheetW = k => SPRITE[k].sw, sheetH = k => SPRITE[k].sh;
@@ -18824,6 +19110,7 @@ function update(dt) {
               * (t.admField ? 1/(1 + ADM.field.rate) : 1)
               * (S.overdrive > 0 ? 0.5 : 1)
               * (t.noxLit ? 1/(1 + NOXB.rate) : 1)
+              * (t.noxRate > 1 ? 1/t.noxRate : 1)
               * (S.combo.boost > 0 ? 1/(1 + COMBO.rate) : 1);
     t.recoil = Math.max(0, (t.recoil || 0) - dt*8);
     if (t.fireFlash > 0) t.fireFlash -= dt;
@@ -18861,6 +19148,7 @@ function update(dt) {
     /* in orbit nobody uses their own gun: everyone is a battery pointed
        at a planet. One branch, ahead of all the others, so there is no
        question about which Jaxon this applies to. */
+    if (spec.ammo === 'station') { t.lit = true; continue; }
     if (isOrb(t)) {
       t.lit = true;
       t.cd -= dt;
@@ -20340,6 +20628,10 @@ function endGame() {
    so the button appears where the player is already looking. */
 function ascTrio(t) {
   if (!t || t.asc || !canAscend(t.type)) return null;
+  /* there is only one of him, so his "trio" is the station rig. Returning
+     him alone is what makes ascBtn offer the button; startAscend knows
+     not to consume anything. */
+  if (TOWERS[t.type].spacePad) return stationReady('asc') ? [t] : null;
   const pool = S.towers.filter(o => o.type === t.type && !o.asc);
   const pick = {};
   /* seat the open Jaxon first so he is never the one left out */
@@ -20360,6 +20652,7 @@ function ascWhy(t) {
   if (!canAscend(t.type)) return null;
   if (t.asc) return 'ascended';
   if (ascCount(t.type) >= ASC_MAX) return 'Two Ascended ' + TOWERS[t.type].name + 's already — that is the limit';
+  if (TOWERS[t.type].spacePad) return stationWhy('asc');
   if (ascTrio(t)) return null;
   const pool = S.towers.filter(o => o.type === t.type && !o.asc);
   const have = PATHS(t).filter(p => pool.some(o => upOf(o, p) >= 3));
@@ -20371,6 +20664,25 @@ function ascWhy(t) {
 
 /* the fusion: three pull in, flash, one walks out */
 function startAscend(t) {
+  /* the station route: nothing is fused, the shell is cracked where he
+     stands and he keeps his levels and his banked XP */
+  if (t && TOWERS[t.type].spacePad) {
+    if (t.asc) return;
+    if (!stationReady('asc')) { toast(stationWhy('asc').replace(/<[^>]+>/g, '')); sfx('deny'); return; }
+    const c = ascCost(t.type);
+    if (!afford(c)) { toast('Cracking him open costs ' + bigCash(c)); sfx('deny'); return; }
+    spend(c);
+    t.asc = true; t.upA = t.upB = t.upC = 3;
+    t._spec = null; t._sv = -1;
+    S.fuse = { x:t.x, y:t.y, t:0, dur:1.3, type:t.type, from:[] };
+    deselect();
+    shakeScreen(24, 1.3); flashScreen(0.45);
+    banner('SHELL CRACKED', ASCEND[t.type].name, '#bf5af2');
+    toast('The stations found a seam. There is something under the plates.');
+    beep(60, 1.5, 'sawtooth', 0.08, 420);
+    syncHUD(); syncShelf();
+    return;
+  }
   const trio = ascTrio(t);
   if (!trio) { toast(ascWhy(t) || 'No trio ready'); return; }
   if (ascCount(t.type) >= ASC_MAX) { toast('Already two Ascended of that Jaxon'); return; }
@@ -20668,6 +20980,10 @@ function drawPanel() {
       <div><div class="k">Range</div><div class="v">${rng}</div></div>
     </div>
     ${TOWERS[t.type].ammo === 'astro' ? astroPanelRows(t)
+        : (t.lvl !== undefined || TOWERS[t.type].ammo === 'admin') && hasTiers(t)
+            /* levels AND paths: he is the only Jaxon with both, and he
+               needs to be able to buy his modules after he has levelled */
+            ? admPanelRows(t) + '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'
         : t.lvl !== undefined || TOWERS[t.type].ammo === 'admin' ? admPanelRows(t)
         : !hasTiers(t) ? advPanelRows(t)
         : '<div class="paths' + (paths.length === 3 ? ' three' : '') + '">' + paths.map(col).join('') + '</div>'}
@@ -20909,9 +21225,12 @@ function dblBtn(t) {
     return why ? '<div class="ascWhy dbl">' + why + '</div>' : '';
   }
   const cost = dblCost(t.type);
+  const rig2 = TOWERS[t.type].spacePad;
   return '<button class="asc dbl' + (afford(cost) ? '' : ' poor') + '" id="pDbl">' +
-         '<span class="an">Double Ascend &nbsp;' + tagCash(cost) + '</span>' +
-         '<span class="as">Fuses two Ascended ' + TOWERS[t.type].name + 's. There can only be one.</span>' +
+         '<span class="an">' + (rig2 ? 'Take the shell off' : 'Double Ascend') + ' &nbsp;' + tagCash(cost) + '</span>' +
+         '<span class="as">' + (rig2
+           ? 'Three stations at Full Teardown. There is nothing after this.'
+           : 'Fuses two Ascended ' + TOWERS[t.type].name + 's. There can only be one.') + '</span>' +
          '</button>';
 }
 
@@ -20923,9 +21242,12 @@ function ascBtn(t, trio, why, cost) {
     return why ? '<div class="ascWhy">' + why + '</div>' : '';
   }
   const poor = !afford(cost);
+  const rig = TOWERS[t.type].spacePad;
   return '<button class="asc' + (poor ? ' poor' : '') + '" id="pAsc">' +
-         '<span class="an">Ascend &nbsp;' + tagCash(cost) + '</span>' +
-         '<span class="as">Fuses three maxed ' + TOWERS[t.type].name + 's into one</span>' +
+         '<span class="an">' + (rig ? 'Crack the shell' : 'Ascend') + ' &nbsp;' + tagCash(cost) + '</span>' +
+         '<span class="as">' + (rig
+           ? 'The stations are ready. He keeps his levels.'
+           : 'Fuses three maxed ' + TOWERS[t.type].name + 's into one') + '</span>' +
          '</button>';
 }
 
@@ -21147,6 +21469,48 @@ function astroFoot() { return SPRITE.astro ? SPRITE.astro.w*0.36 : 240; }
 function noxFoot() { return SPRITE.noxarch ? SPRITE.noxarch.w*0.26 : 760; }
 function theNox() { for (const t of S.towers) if (TOWERS[t.type].spacePad) return t; return null; }
 
+/* ------------------------------------------------- the station rig ----
+   Three numbers come out of the stations and nothing else in the game
+   needs to know how they were worked out: how far they have cracked him,
+   how hard they are driving him, and whether that is enough to promote
+   him. breaker and reson are ordinary stat keys added by the upgrade
+   tiers, so they go through applyMod and SP() like every other upgrade in
+   the game rather than being read off t.upA directly. */
+const STATION_MAX = 3;
+const stations = () => S.towers.filter(t => TOWERS[t.type].station);
+const stationCount = () => stations().length;
+/* how many stations have cracked him to at least this depth */
+function breakersAt(depth) {
+  let n = 0;
+  for (const t of stations()) if ((SP(t).breaker || 0) >= depth) n++;
+  return n;
+}
+/* the product, which is the single biggest multiplier in the game */
+function stationMul() {
+  let m = 1, n = 0;
+  for (const t of stations()) {
+    if (n++ >= STATION_MAX) break;
+    m *= 1 + (SP(t).reson || 0);
+  }
+  return m;
+}
+/* two at tier two to crack him; three at tier three to take it off */
+const ASC_RULE = { asc:{ need:2, depth:2 }, dbl:{ need:3, depth:3 } };
+function stationReady(which) {
+  const r = ASC_RULE[which];
+  return breakersAt(r.depth) >= r.need;
+}
+function stationWhy(which) {
+  const r = ASC_RULE[which];
+  const have = breakersAt(r.depth);
+  if (have >= r.need) return null;
+  const tierName = UPGRADES.ascstation.A.tiers[r.depth - 1].name;
+  if (!stationCount()) return 'Needs Ascension Stations in orbit \u2014 ' + r.need +
+    ' of them at <b>' + tierName + '</b>';
+  return 'Needs ' + (r.need - have) + ' more station' + (r.need - have === 1 ? '' : 's') +
+         ' at <b>' + tierName + '</b> (' + have + ' of ' + r.need + ')';
+}
+
 /* what he does for everyone else, and what it takes to feed him */
 const NOXB = { rate:0.55, dmg:0.60 };
 const NOX_FEED = { per:500000, cap:3.2 };
@@ -21232,7 +21596,7 @@ function orbStrike(t, spec, mul) {
 /* how much a Jaxon is worth as fuel: what he cost, how big he is, and
    what has been spent on him since. Deliberately not "one point each". */
 function feedOf(t) {
-  if (TOWERS[t.type].spacePad) return 0;
+  if (TOWERS[t.type].spacePad || TOWERS[t.type].station) return 0;
   const base = (TOWERS[t.type].cost || 0) * (t.dbl ? 3 : t.asc ? 2 : 1);
   const size = Math.min(8, BODY_SCALE[t.type] || 1);
   const tiers = (t.upA || 0) + (t.upB || 0) + (t.upC || 0);
@@ -21240,7 +21604,7 @@ function feedOf(t) {
 }
 
 function noxOrbit(dt) {
-  for (const t of S.towers) { t.noxB = 1; t.noxLit = 0; t.noxFeed = 0; }
+  for (const t of S.towers) { t.noxB = 1; t.noxLit = 0; t.noxFeed = 0; t.drained = 0; t.noxRate = 1; }
   const nx = theNox();
   if (!nx || S.titan) { S.noxFeed = 0; S.noxMul = 1; S.noxNuke = null; return; }
 
@@ -21251,11 +21615,19 @@ function noxOrbit(dt) {
     const f = feedOf(t);
     if (f <= 0) continue;
     t.noxFeed = f; feed += f;
+    /* how washed out he looks is how much he is giving up, so the board
+       tells you which Jaxons are carrying the rig without a tooltip */
+    t.drained = Math.min(1, 0.35 + f/NOX_FEED.per*0.9);
   }
   S.noxFeed = feed;
-  const core = 1 + Math.min(NOX_FEED.cap, feed/NOX_FEED.per) * (1 + (nx.upC || 0)*0.22);
-  S.noxMul = core;
-  nx.noxB = core;
+  const drain = 1 + Math.min(NOX_FEED.cap, feed/NOX_FEED.per) * (1 + (nx.upC || 0)*0.22);
+  const rig = stationMul();
+  S.noxFeedMul = drain; S.noxRig = rig;
+  S.noxMul = drain * rig;
+  nx.noxB = S.noxMul;
+  /* the drain is the half that also makes him fire faster -- the stations
+     drive his damage, the Jaxons feeding him drive his rate */
+  nx.noxRate = drain;
 
   /* ---- the gift ---- */
   const give = 1 + NOXB.dmg*(1 + (nx.upC || 0)*0.25);
@@ -21265,12 +21637,12 @@ function noxOrbit(dt) {
   const core_y = nx.y - spriteH(artOf(nx))*0.52;
   nx.feedT = (nx.feedT || 0) - dt;
   if (nx.feedT <= 0) {
-    nx.feedT = 0.26;
+    nx.feedT = 0.55;
     for (const t of S.towers) {
       if (!(t.noxFeed > 0)) continue;
       const big = t.noxFeed/NOX_FEED.per;
       S.fx.push({ k:'noxfeed', x:t.x, y:t.y - spriteH(artOf(t))*0.5, tx:nx.x, ty:core_y,
-                  r:3 + Math.min(9, big*14), life:0.85, max:0.85 });
+                  r:4 + Math.min(14, big*18), life:2.1, max:2.1 });
     }
   }
 
@@ -22626,6 +22998,19 @@ function drawBoss(bs) {
 let _flyingIn = false;
 
 function drawTower(t, ghost) {
+  /* the drain, drawn: colour is being pulled out of him. Done as a filter
+     on the whole blit rather than a palette swap so it costs nothing and
+     works on every Jaxon in the game, legacy sprites included. */
+  if (t && t.drained > 0 && !ghost) {
+    const d = t.drained;
+    ctx.save();
+    ctx.filter = 'grayscale(' + (d*0.88).toFixed(2) + ') brightness(' + (1 - d*0.34).toFixed(2) + ')';
+    try { drawTowerInner(t, ghost); } finally { ctx.restore(); }
+    return;
+  }
+  return drawTowerInner(t, ghost);
+}
+function drawTowerInner(t, ghost) {
   /* The Titan arrives rather than appearing. While he is in the air his
      position is lent out to the ordinary drawing code below, so shadow,
      sprite and gear all travel together and land as one. */
@@ -22635,7 +23020,7 @@ function drawTower(t, ghost) {
     const ox = t.x, oy = t.y;
     t.x = ox + (1 - e)*2400; t.y = oy - (1 - e)*1100;
     _flyingIn = true;
-    try { drawTower(t, ghost); } finally { _flyingIn = false; t.x = ox; t.y = oy; }
+    try { drawTowerInner(t, ghost); } finally { _flyingIn = false; t.x = ox; t.y = oy; }
     return;
   }
   const rec = (t.recoil || 0)*3;
@@ -22652,7 +23037,9 @@ function drawTower(t, ghost) {
      Ascended and three times for a Double, so three plain ones stacked
      come to about one Double. Written against the base rather than
      against each other, so a Double is 3 and not 2 times 3. */
-  const grow = (1 + tiers*0.03) * (t.dbl ? 3 : t.asc ? 2 : 1);
+  const ascGrow = TOWERS[t.type].spacePad ? (t.dbl ? 1.3 : t.asc ? 1.15 : 1)
+                                          : (t.dbl ? 3 : t.asc ? 2 : 1);
+  const grow = (1 + tiers*0.03) * ascGrow;
   const sw = spriteW(art)*grow, sh = spriteH(art)*grow;
   const shw = sheetW(art)*grow, shh = sheetH(art)*grow;   // the picture around him
   const foot = T_W * (0.42 + (sh/T_H - 1)*0.26);      // bigger Jaxons cast a bigger shadow
@@ -24188,7 +24575,7 @@ const CEL = {
   xp0: 4.5e6,        /* damage for the first level            */
   xpPow: 1.42,       /* and how much steeper each one gets    */
   maxLvl: 200,
-  dmgPer: 1.045,     /* compounding, so late levels are real  */
+  dmgPer: 1.068,     /* compounding, so late levels are real  */
   cdPer: 0.004,      /* rate, to a floor                      */
   cdFloor: 0.06,
   rangePer: 0.004,   /* reach                                 */
@@ -26286,6 +26673,7 @@ function validSpot(x, y) {
     if (!sn) return false;
     const pd = sn.pad, big = S.placing && TOWERS[S.placing].spacePad;
     if (big && !pd.main) return false;            // he only fits on the main deck
+    if (S.placing && TOWERS[S.placing].station && stationCount() >= STATION_MAX) return false;
     const r = big ? noxFoot() : ORBF.gap*0.5;
     if (x < pd.x + r || x > pd.x + pd.w - r) return false;
     for (const t of S.towers) {
@@ -26318,6 +26706,7 @@ function validSpot(x, y) {
   }
   if (S.placing && TOWERS[S.placing].bigPad) return false;   // he only fits on his pad
   if (S.placing && TOWERS[S.placing].spacePad) return false; // and he does not fit on the ground at all
+  if (S.placing && TOWERS[S.placing].orbOnly) return false;  // the rig only works in orbit
   if (x < 30 || x > W - 30 || y < 34 || y > H - 30) return false;
   if (distToPath(x, y) < PATH_W/2 + 11) return false;   // original: can't touch the brown trail
   if (S.placing && VARIANTS[S.placing].wide && distToPath(x, y) < PATH_W/2 + 16) return false;
@@ -28757,7 +29146,7 @@ const GUIDE = [
   } },
 
 { ch:'Orbit', title:'Low Orbit, and the Noxarch',
-  text:'Getting there takes three purchases. Clear the <b>Satellite Plot</b> out west of the lawn, buy the <b>rocket</b> that appears on it (<b>$900k</b> — press it twice), then press it again to launch. Low Orbit is a <b>separate map</b>: the park is not on screen and you cannot pan back to it, you fly back down. Nothing pauses — the wave keeps walking the whole time you are up there, which is what the <b>Back to Earth</b> chip is for.<br><br>The station is a long deck with two gantries over it and Earth underneath. <b>Everything standing on it fires orbital lasers</b> straight down into the match, at any enemy anywhere on the board — range stops meaning anything up here. Ordinary Jaxons were not built to shoot a planet, so they do it at <b>45% damage on a slower cycle</b>; that is the price of unlimited reach, and deck space is limited, so the station roster is a choice.<br><br>The <b>Noxarch Jaxon</b> is native to orbit and pays no penalty. He costs <b>$7,000,000</b>, he is <b>five Titan Astros tall</b>, and he will not fit on the lawn, the Astro Pad or anywhere else on the ground — only the main deck, and he takes most of it.<br><br>Two things happen around him. <b>Every Jaxon you own</b> hits harder and fires faster while he is up there, on either map. And <b>any Jaxon on the station</b> is wired into his core and raises his damage — you can watch the energy going in. Cheap starters are worth almost nothing as fuel; your most expensive, biggest, most upgraded Jaxons are worth a great deal.<br><br>Finish his <b>Void Ray</b> path and he gains the <b>nuke</b>. Every two minutes: ten seconds of warning, then the board goes white and everything on it takes a number with six zeroes in it.',
+  text:'Getting there takes three purchases. Clear the <b>Satellite Plot</b> out west of the lawn, buy the <b>rocket</b> that appears on it (<b>$900k</b> — press it twice), then press it again to launch. Low Orbit is a <b>separate map</b>: the park is not on screen and you cannot pan back to it, you fly back down. Nothing pauses — the wave keeps walking the whole time you are up there.<br><br>The station is a long deck with two gantries over it and Earth underneath. <b>Everything standing on it fires orbital lasers</b> straight down into the match, at any enemy anywhere on the board. Ordinary Jaxons were not built to shoot a planet, so they do it at <b>45% damage on a slower cycle</b>; that is the price of unlimited reach.<br><br>The <b>Noxarch Jaxon</b> is native to orbit and pays no penalty. <b>$7,000,000</b>, five Titan Astros tall, and he will not stand anywhere but the main deck. He takes <b>levels</b> off the damage he deals, like the Titan does, and he keeps his three module paths as well — he is the only Jaxon in the game with both.<br><br><b>Ascension Stations</b> are how he grows, because there is only ever one of him and there is nothing to fuse. Three at most, orbit only, and each one carries two paths. <b>Shell Breaker</b> is the requirement: two stations at <i>Split Plate</i> crack him into his <b>Ascended</b> form, three at <i>Full Teardown</i> take the shell off entirely and leave the <b>Double Ascended</b> inner frame. <b>Resonator</b> is the power: each station multiplies his damage by one plus its tier, so three maxed stations are <b>sixty four times over</b> — the largest single multiplier in this game. He barely grows in size across the three forms (1×, 1.15×, 1.3×); everything else about him grows enormously.<br><br><b>Any other Jaxon on the station</b> is wired into his core. They go <b>grey</b> while it happens, because the energy really is coming out of them, and you can watch a mote travel the whole way in. The drain raises his <b>damage and his fire rate</b>, and it is worth what the donor cost — a maxed Infinity Mirror is worth about seven thousand cheap starters.<br><br>Finish his <b>Void Ray</b> path and he gains the <b>nuke</b>. Every two minutes: ten seconds of warning, then the board goes white.',
   art:(g, w, h, t) => {
     const p = frac(t/4.2);
     /* space */
